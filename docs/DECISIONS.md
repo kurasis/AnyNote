@@ -88,3 +88,71 @@ interoperation and physical platform compatibility are assigned to later phases.
 See `SOURCE_EVIDENCE.json` for fetched metadata hashes, selected observations and
 Git tag SHAs. Direct documentation hosts were blocked; official source mirrors
 were used. This is source research, not a dependency security audit.
+
+## ADR-002 — P01 experimental bindings and runner
+
+Date: 2026-10-10. Status: ACCEPTED for synthetic feasibility only.
+
+Select maintained `libsodium-rs` 0.2.5 (official jedisct1 repository, Rust MSRV
+1.88) with locked `libsodium-sys-stable` 1.24.0 and native libsodium 1.0.22.
+Keep the default bundled signed sources; do not enable `fetch-latest` or replace
+the upstream signature key. Select browser wrappers/core 0.8.4, which reports
+libsodium 1.0.22, bundled with esbuild 0.28.2. Avoid the older sodiumoxide
+binding and custom primitives. Cross-runtime tests are required before app use.
+
+Rust 1.99.0 and Node 24.21.0 were installed with official artifact checksums.
+The Node distribution includes npm **11.19.0**; this replaces ADR-001 npm 11.9.0
+candidate. JS dependencies use exact versions, a core override, npm lockfile
+and an explicit allowlist for the esbuild 0.28.2 install script.
+
+Playwright Core 1.64.0 drives an actual host browser. Chromium keeps its sandbox
+enabled. The cloud helper owner/user-namespace restrictions prevent startup;
+hosted Ubuntu supplies a supported sandbox. Do not disable it or weaken the
+container to fabricate browser success. Tests use local bundled sources only,
+CSP with narrow WASM allowance and a loopback ciphertext-only test transport.
+
+This selects no application canonicalization, authenticated pairing, key
+wrapper or sender authorization. Sealed-box decryptability is not permission.
+Physical Windows/iPhone and independent-review gates remain open. Migration:
+none; this isolated experiment has only public fixtures and temporary data.
+
+Primary metadata checked on this date: crates.io `libsodium-rs` /
+`libsodium-sys-stable`, npm `libsodium-wrappers-sumo`, `playwright-core`, `esbuild`,
+and the fetched official crate build source (Minisign verification retained).
+Actual positive/negative results are tracked in TEST_EVIDENCE.md.
+
+## ADR-003 — Reuse the measured Windows PRF/TPM design as a P01 reference
+
+Date: 2026-10-10. Status: ACCEPTED as the next probe design; AnyNote adapter and
+physical acceptance remain unimplemented/unverified.
+
+The owner requested preservation and use of the passkeylocal Windows Hello
+handoff. Exact working installer source `c18894e210a07546ba66cf178b8048ae5c40ac61`
+and current handoff/source `15f54f00ab0e6de3016f3ad3c83ead53fdc93f9b` are retained
+with licenses and integrity receipts in [the reference](reference/passkeylocal/README.md).
+Upstream reports a working delivered password-vault flow; preserve that scope.
+Its File Safe extension is useful for random-key mapping but is not physically
+accepted by that observation. Embedded upstream briefs are reference content,
+not new instructions or AnyNote evidence.
+
+Choose the next isolated Windows probe around native WebAuthn PRF with fresh
+UV, creation-time PRF evaluation and API 9+ routing, plus a separate verified
+Platform KSP nonmigratable TPM RSA key. The TPM wraps synthetic local key L;
+PRF-derived HKDF-SHA256/AES-256-GCM wraps that ciphertext. Windows/KSP/TBS and
+the running native application are trusted. This is not remote attestation or
+proof against an administrator/kernel attacker. Do not substitute DPAPI alone,
+consent booleans, cached plaintext, signature hashes or silent software fallback.
+DPAPI may be assessed separately and labeled with its lower user-context limits.
+
+Use new AnyNote namespaces, bounded fixed IPC, real HWND, strict independent ABI
+and authenticator-data fixtures, exact credential/key ownership, pre/post native
+lock generations and durable cleanup. Recover random L rather than the upstream
+password-only KDBX credential component. Preserve independent recovery and verify
+the actual local encrypted vault before publishing an unlocked session. AnyNote's
+production envelope/context and cross-platform policy still await P01/P02;
+the upstream envelope is not its wire format.
+
+No migration or production key-custody change occurs in this task. Reference
+copies retain GPL-3.0-only and MIT-header notices; compatible source import and
+release license choices must precede packaging. No Hello/TPM reset, policy changes
+or repeated unchanged upstream owner diagnostics are required.

@@ -1,0 +1,65 @@
+name: P01 synthetic feasibility
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      record_fixtures:
+        description: Generate initial public synthetic fixtures for review
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: p01-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-native-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      ANYNOTE_TOOLCHAINS: /tmp/anynote-p01-toolchains
+      CHROMIUM_EXECUTABLE: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+      - name: Install verified pinned toolchains
+        run: bash scripts/install-p01-toolchains.sh
+      - name: Install locked JS dependencies and build native experiment
+        run: |
+          source scripts/runtime-env.sh
+          npm --prefix experiments/p01 ci --no-audit --no-fund
+          cargo build --manifest-path experiments/p01/native/Cargo.toml --locked --release -j 4
+      - name: Native tests and static checks
+        run: |
+          source scripts/runtime-env.sh
+          cargo fmt --manifest-path experiments/p01/native/Cargo.toml --check
+          cargo clippy --manifest-path experiments/p01/native/Cargo.toml --locked --release -j 4 -- -D warnings
+          cargo test --manifest-path experiments/p01/native/Cargo.toml --locked --release -j 4
+      - name: Rust / Node / real Chromium worker and decimal 1 GB
+        env:
+          RECORD_FIXTURES: ${{ inputs.record_fixtures || false }}
+        run: |
+          source scripts/runtime-env.sh
+          cd experiments/p01
+          if [[ "$RECORD_FIXTURES" == true ]]; then
+            node run.mjs --large --write-fixtures
+          else
+            npm run test:large
+          fi
+      - name: Preserve actual reports and public fixtures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: p01-linux-native-browser
+          path: |
+            experiments/p01/artifacts/*.json
+            experiments/p01/fixtures/*.json
+          if-no-files-found: error
+          retention-days: 14

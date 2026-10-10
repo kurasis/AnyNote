@@ -19,9 +19,10 @@ does not validate encryption, platform compatibility or the future application.
 
 ## Planned application tooling
 
-Exact selected versions and primary sources are in [ADR-001](DECISIONS.md).
-P03 creates package manifests/lockfiles and scripts; do not run nonexistent
-`npm install`, `cargo test` or `php artisan` commands yet. Use npm with
+Exact selected versions and primary sources are in [decisions](DECISIONS.md).
+The isolated [P01 experiment](../experiments/p01/README.md) has working Rust/Node
+setup, lockfiles, build/test commands and hosted Chromium checks now. P03 creates
+the application/backend manifests and services; `php artisan` is not available yet. Use npm with
 `npm ci`, Cargo with `--locked`, and Composer installation from `composer.lock`
 once those files exist. Future installs must keep artifact checksums,
 package-signature and TLS verification enabled.
@@ -40,16 +41,17 @@ Safari PWA testing on physical iPhones, including the exact 1 GB export path.
 
 Git HTTPS proxy access works. Package-manager presets currently cover GitHub
 Git, raw GitHub, npm, crates, Rust, Node and Debian packages. Some primary
-documentation hosts and `api.github.com` returned proxy HTTP 403. Official
+documentation hosts returned proxy HTTP 403. GitHub API now works, including
+PRs and Actions evidence. Official
 GitHub source mirrors were used where available; provenance is recorded.
 
-GitHub CLI reported its provided token unusable. Use platform Git authentication
-for Git operations; do not extract credentials or infer that Git access fails
-from this CLI result. CI run status must be checked through an authenticated
-API when available; a pushed workflow is not evidence of a passed Actions run.
+The initial GitHub CLI auth/status failure preceded restored API access.
+Existing injected authentication now supports Git, PRs and Actions; do not
+extract credentials or request duplicate tokens. Record exact run/head evidence;
+a pushed workflow alone is not evidence of a passed Actions run.
 
 Future environment settings may need these **additional** destinations:
-`api.github.com`, `laravel.com`, `www.php.net`, `mariadb.org`, `nginx.org`,
+`laravel.com`, `www.php.net`, `mariadb.org`, `nginx.org`,
 `v2.tauri.app`, `getcomposer.org`, `learn.microsoft.com`, `webkit.org`,
 `doc.libsodium.org`. Preserve existing network presets and custom rules.
 

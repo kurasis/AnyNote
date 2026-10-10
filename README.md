@@ -4,8 +4,10 @@ An invite-only, end-to-end encrypted notes and files service for Windows
 (Tauri 2 / WebView2) and iPhone (installed PWA), backed by Laravel, MariaDB,
 Nginx and PHP-FPM.
 
-**Current state:** P00 repository assessment and scope baseline. No application,
-authentication, encryption or storage service is implemented yet. Do not store
+**Current state:** P00 complete; P01 isolated synthetic feasibility in progress. Rust/Node/Chromium
+cryptographic interoperability and synthetic 1 GB host pipelines pass; physical
+Windows/iPhone acceptance remains open. No application or backend service is
+implemented yet. Do not store
 real secrets or user data in this repository's future experimental builds.
 
 ## Start here
@@ -39,3 +41,5 @@ owner is in Russian. The eventual interface must include English and Russian.
 
 No release license has been chosen for AnyNote. Third-party component licenses
 do not grant a license to this project's own source or the supplied specification.
+
+P01 experiment: [commands and boundaries](experiments/p01/README.md).

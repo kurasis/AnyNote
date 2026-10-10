@@ -1,0 +1,244 @@
+{
+  "experiment": "P01-CRYPTO-INTEROP",
+  "date": "2026-10-10T12:36:47.155Z",
+  "node": "v24.21.0",
+  "platform": "linux/x64",
+  "large": false,
+  "native_only": false,
+  "primitive_checks": [
+    {
+      "direction": "Rust -> Rust",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "Rust -> Node",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "Node -> Rust",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "Node -> Node",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "Rust -> Chromium worker",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "Node -> Chromium worker",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "Chromium worker -> Rust",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "Chromium worker -> Node",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    }
+  ],
+  "native_files": [
+    {
+      "baseline_peak_rss_kib": 2492,
+      "chunks": 0,
+      "ciphertext_bytes": 0,
+      "elapsed_ms": 65,
+      "limitation": "local synthetic disk pipeline; no backend, recovery, manifest or Windows acceptance",
+      "mode": "native-file-roundtrip",
+      "peak_rss_kib": 2560,
+      "plaintext_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sodium_version": "1.0.22"
+    },
+    {
+      "baseline_peak_rss_kib": 2544,
+      "chunks": 1,
+      "ciphertext_bytes": 17,
+      "elapsed_ms": 1,
+      "limitation": "local synthetic disk pipeline; no backend, recovery, manifest or Windows acceptance",
+      "mode": "native-file-roundtrip",
+      "peak_rss_kib": 2588,
+      "plaintext_bytes": 1,
+      "sha256": "83891d7fe85c33e52c8b4e5814c92fb6a3b9467299200538a6babaa8b452d879",
+      "sodium_version": "1.0.22"
+    },
+    {
+      "baseline_peak_rss_kib": 2492,
+      "chunks": 1,
+      "ciphertext_bytes": 8388623,
+      "elapsed_ms": 229,
+      "limitation": "local synthetic disk pipeline; no backend, recovery, manifest or Windows acceptance",
+      "mode": "native-file-roundtrip",
+      "peak_rss_kib": 27176,
+      "plaintext_bytes": 8388607,
+      "sha256": "48faadab718d11bede4c0580cc88f008d57f569930e7c1c4e2ee709448f00384",
+      "sodium_version": "1.0.22"
+    },
+    {
+      "baseline_peak_rss_kib": 2480,
+      "chunks": 1,
+      "ciphertext_bytes": 8388624,
+      "elapsed_ms": 192,
+      "limitation": "local synthetic disk pipeline; no backend, recovery, manifest or Windows acceptance",
+      "mode": "native-file-roundtrip",
+      "peak_rss_kib": 26820,
+      "plaintext_bytes": 8388608,
+      "sha256": "cd7001dc83e72f7b52b27f67fb3363f28dc7ef00562af91d8bd92ae20587530d",
+      "sodium_version": "1.0.22"
+    },
+    {
+      "baseline_peak_rss_kib": 2496,
+      "chunks": 2,
+      "ciphertext_bytes": 8388641,
+      "elapsed_ms": 233,
+      "limitation": "local synthetic disk pipeline; no backend, recovery, manifest or Windows acceptance",
+      "mode": "native-file-roundtrip",
+      "peak_rss_kib": 26952,
+      "plaintext_bytes": 8388609,
+      "sha256": "de76d7a6e09b9a375f3389b8c6fd54651dc489e6e1fe2e70a92449cf4a46dd5a",
+      "sodium_version": "1.0.22"
+    }
+  ],
+  "browser_files": [
+    {
+      "mode": "chromium-worker-loopback-roundtrip",
+      "plaintext_bytes": 0,
+      "chunks": 0,
+      "ciphertext_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsed_ms": 1,
+      "sodium_version": "1.0.22",
+      "timings_ms": {
+        "random_ms": 0,
+        "crypto_ms": 0,
+        "upload_ms": 0,
+        "download_ms": 0,
+        "verify_ms": 0
+      },
+      "limitation": "synthetic generated stream through local ciphertext-only HTTP; no iPhone, file picker, manifest, resume or Files export acceptance",
+      "uploaded_bytes": 0,
+      "downloaded_bytes": 0,
+      "baseline_aggregate_rss_kib": 833448,
+      "sampled_peak_aggregate_rss_kib": 833448,
+      "sampled_increment_rss_kib": 0,
+      "memory_method": "25ms CDP process enumeration + Linux /proc RSS; shared pages may count twice; transient peaks may be missed"
+    },
+    {
+      "mode": "chromium-worker-loopback-roundtrip",
+      "plaintext_bytes": 1,
+      "chunks": 1,
+      "ciphertext_bytes": 17,
+      "sha256": "a9253dc8529dd214e5f22397888e78d3390daa47593e26f68c18f97fd7a3876b",
+      "elapsed_ms": 21,
+      "sodium_version": "1.0.22",
+      "timings_ms": {
+        "random_ms": 0,
+        "crypto_ms": 0,
+        "upload_ms": 14,
+        "download_ms": 7,
+        "verify_ms": 0
+      },
+      "limitation": "synthetic generated stream through local ciphertext-only HTTP; no iPhone, file picker, manifest, resume or Files export acceptance",
+      "uploaded_bytes": 17,
+      "downloaded_bytes": 17,
+      "baseline_aggregate_rss_kib": 834460,
+      "sampled_peak_aggregate_rss_kib": 834460,
+      "sampled_increment_rss_kib": 0,
+      "memory_method": "25ms CDP process enumeration + Linux /proc RSS; shared pages may count twice; transient peaks may be missed"
+    },
+    {
+      "mode": "chromium-worker-loopback-roundtrip",
+      "plaintext_bytes": 8388607,
+      "chunks": 1,
+      "ciphertext_bytes": 8388623,
+      "sha256": "3d544578aed344ef5f58ebcbc35978b1ee3d2729c3eef4c88fa1f35b6f13ca19",
+      "elapsed_ms": 13514,
+      "sodium_version": "1.0.22",
+      "timings_ms": {
+        "random_ms": 12411,
+        "crypto_ms": 162,
+        "upload_ms": 346,
+        "download_ms": 446,
+        "verify_ms": 148
+      },
+      "limitation": "synthetic generated stream through local ciphertext-only HTTP; no iPhone, file picker, manifest, resume or Files export acceptance",
+      "uploaded_bytes": 8388623,
+      "downloaded_bytes": 8388623,
+      "baseline_aggregate_rss_kib": 835580,
+      "sampled_peak_aggregate_rss_kib": 1150764,
+      "sampled_increment_rss_kib": 315184,
+      "memory_method": "25ms CDP process enumeration + Linux /proc RSS; shared pages may count twice; transient peaks may be missed"
+    },
+    {
+      "mode": "chromium-worker-loopback-roundtrip",
+      "plaintext_bytes": 8388608,
+      "chunks": 1,
+      "ciphertext_bytes": 8388624,
+      "sha256": "5e8465659875cb5364f8c9b1501908edee8645e8026cf7a62edc89ad6e34bafd",
+      "elapsed_ms": 12969,
+      "sodium_version": "1.0.22",
+      "timings_ms": {
+        "random_ms": 12280,
+        "crypto_ms": 65,
+        "upload_ms": 277,
+        "download_ms": 265,
+        "verify_ms": 81
+      },
+      "limitation": "synthetic generated stream through local ciphertext-only HTTP; no iPhone, file picker, manifest, resume or Files export acceptance",
+      "uploaded_bytes": 8388624,
+      "downloaded_bytes": 8388624,
+      "baseline_aggregate_rss_kib": 999912,
+      "sampled_peak_aggregate_rss_kib": 1152500,
+      "sampled_increment_rss_kib": 152588,
+      "memory_method": "25ms CDP process enumeration + Linux /proc RSS; shared pages may count twice; transient peaks may be missed"
+    },
+    {
+      "mode": "chromium-worker-loopback-roundtrip",
+      "plaintext_bytes": 8388609,
+      "chunks": 2,
+      "ciphertext_bytes": 8388641,
+      "sha256": "865a599f63606cef4151680a60dc14e769456069406becb8484f3945b8b7c356",
+      "elapsed_ms": 12201,
+      "sodium_version": "1.0.22",
+      "timings_ms": {
+        "random_ms": 11383,
+        "crypto_ms": 66,
+        "upload_ms": 288,
+        "download_ms": 408,
+        "verify_ms": 57
+      },
+      "limitation": "synthetic generated stream through local ciphertext-only HTTP; no iPhone, file picker, manifest, resume or Files export acceptance",
+      "uploaded_bytes": 8388641,
+      "downloaded_bytes": 8388641,
+      "baseline_aggregate_rss_kib": 1032288,
+      "sampled_peak_aggregate_rss_kib": 1159080,
+      "sampled_increment_rss_kib": 126792,
+      "memory_method": "25ms CDP process enumeration + Linux /proc RSS; shared pages may count twice; transient peaks may be missed"
+    }
+  ],
+  "limitations": [
+    "Primitive-only synthetic fixtures, not a frozen/reviewed application protocol.",
+    "Chromium on the host is not iPhone, Windows WebView2 or Hello evidence.",
+    "Loopback transfer is not Laravel authorization, resume, recovery, durable publication or iOS Files export."
+  ],
+  "browser_version": "154.0.8037.97",
+  "fixture_rejection_checks": 6,
+  "external_requests": 0,
+  "oversize_rejections": 2,
+  "status": "PASS",
+  "provenance": {
+    "run_url": "https://github.com/kurasis/AnyNote/actions/runs/38052534170",
+    "head_sha": "f48dc074407ef63ee8346bc5d06dee1de577795c",
+    "purpose": "Initial actual Chromium fixture recording; small boundaries only, before bulk CSPRNG optimization"
+  }
+}
