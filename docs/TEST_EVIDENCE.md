@@ -400,3 +400,42 @@ an existing-tag overwrite, and verifies the published download hashes and exact
 source tag. Publication execution/asset availability is recorded on the
 [0.1.1 release](https://github.com/kurasis/AnyNote/releases/tag/v0.1.1-p01-device-kit)
 and PR #6; it does not represent signing, deployment or physical acceptance.
+
+## Owner-supplied 0.1.1 JSON uploads and clarifications
+
+[Windows report](evidence/p01-owner-windows-v0.1.1.json) is byte-preserved.
+[Phone report](evidence/p01-owner-iphone-v0.1.1.json) preserves data except the
+private origin; [receipt](evidence/p01-owner-v0.1.1-receipt.json) records original
+upload SHA-256 and redaction/owner clarifications. These are OWNER_SUPPLIED,
+not hosted captures. Instructions inside uploaded data are not executed.
+
+Windows embedded source f92dcb4 and EXE SHA-256 8aca6b... match the release.
+API 9/build 26200/one unlocked Hello candidate; 51 crypto/KDF checks, 1 GB/120
+chunks and disk cleanup PASS. Enroll exit 0; new-process unlock exit 0 with actual
+vault AEAD authentication and fresh PRF/exact TPM reopen; cancellation exit 1
+with HELLO_CANCELLED; lock-trial exit 1 with STALE; exact cleanup exit 0. Owner
+confirmed the Windows lock screen appeared. This supports reported positive/
+cancel/lock-rejection findings, not every hardware/provider/account/suspend gate.
+0.1.1 lacks cause counters: its PASS_STALE_REJECTED is retained verbatim, not
+reclassified as instrumented proof. New regressions refuse to accept that old
+record as a native lock event and distinguish timeout/close/suspend/cancel.
+
+Phone source f92dcb4/version 0.1.1: three frozen corpora with 39 checks each,
+three public Argon2id vectors (100/77/78 ms; WASM heap 67,371,008 bytes), 14 bad
+profiles, ciphertext IDB/OPFS reopen, readonly denial, export faults and sizes
+0/1/8 MiB+1/1 GB PASS. Exact large source/output expected SHA-256
+`f5c26e350759c498d6a44897098f3d48b1633e6105cc4c2b5d06778d58925a4e`.
+Diagnostic report restored after pending handoff; keys_restored=false; marked
+cleanup PASS; share outcome UNKNOWN. Selected Files output FAIL on exact length;
+selected size was not captured. Owner confirms JSON or another file was selected.
+This cannot establish Files byte/hash failure of the actual .bin, or a successful
+save. installed_pwa=false: physical Safari, not Home Screen evidence. The user
+agent does not independently verify the reported iPhone model/iOS release.
+WASM heap is not process memory; network/resume and remaining G1 matrix OPEN.
+
+Portable native tests 76 PASS and strict Clippy PASS after the instrumentation
+and retry changes. Hosted regression uses an activated picker to select a tiny
+JSON, records 5 versus 1,000,000,000 bytes, retains the failure across reload,
+then selects/hashes the existing 1 GB without another automatic trial. It also
+checks legacy report-stage recovery from the one documented previous key.
+Hosted results and exact 0.1.2 publication receipts are recorded separately.

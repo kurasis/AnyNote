@@ -171,3 +171,30 @@ raw recovery/browser and Windows records are in docs/evidence. The explicit
 publication job uses these frozen verified bytes for v0.1.1-p01-device-kit;
 actual publication execution and availability are recorded in PR #6/release.
 P01/G1 remains OPEN pending an updated owner run.
+
+## P01 owner 0.1.1 results — lock interpretation and Files selection
+
+Owner supplied both device JSON files. Windows source f92dcb4 and EXE 8aca6b...
+match the 0.1.1 release: enrollment, fresh-process actual-vault authentication
+with PRF/exact TPM reopen, explicit HELLO_CANCELLED and exact cleanup PASS;
+51 crypto/KDF checks and exact 1 GB/120 chunks PASS. Guided lock returned STALE,
+and the owner confirmed that Win+L showed the Windows lock screen. Subsequent
+fingerprint waiting can be Windows sign-in, not continuing old authorization.
+The old report lacks event counters, so retain this as an owner-confirmed lock
+plus native rejection, not instrumented proof or complete G1 acceptance.
+
+Phone source f92dcb4: 117 crypto checks, three public Argon2id vectors, negative
+profiles/storage/export faults, exact 1 GB/120 chunks and diagnostic recovery
+PASS. Saved-output selection failed on length; owner confirms JSON/another
+file was selected instead of the .bin. Files bytes/hash are NOT VERIFIED. Report
+says installed_pwa=false, so this is physical Safari, not installed-PWA evidence.
+Archive only a redacted phone origin; original-upload checksums and exact scope
+are recorded separately. Device process memory stays NOT MEASURED.
+
+0.1.2 adds WTS lock/unlock/suspend/close counters and strict lock-plus-STALE
+classification, clearer Windows sign-in guidance, wrong-file size telemetry,
+retry/recovery without a new automatic trial, and bounded same-origin migration
+from the one documented previous diagnostic path. Native imported crypto,
+provider checks, cancellation watcher and exact cleanup are unchanged. Local
+portable tests 76 PASS and strict Clippy PASS; hosted checks/release execution
+are recorded as they complete. P01/G1 remains OPEN; P03 continues independently.

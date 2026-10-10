@@ -26,6 +26,7 @@ use zeroize::Zeroizing;
 
 static ACTIVE: AtomicBool = AtomicBool::new(true);
 static GENERATION: AtomicU64 = AtomicU64::new(0);
+static EVENTS: crate::trial_lifecycle::Events = crate::trial_lifecycle::Events::new();
 const FINISHED: u32 = WM_APP + 1;
 const MARKER: &[u8] = b"AnyNote P01 authenticated synthetic local vault";
 const AAD: &[u8] = b"AnyNote.P01.SyntheticLocalVault.v1";
@@ -203,15 +204,30 @@ fn run(hwnd: usize, command: &str) -> Result<Value> {
     result
 }
 
+fn lifecycle_event(message: u32, wp: WPARAM) -> Option<crate::trial_lifecycle::Event> {
+    use crate::trial_lifecycle::Event;
+    match (message, wp) {
+        (WM_WTSSESSION_CHANGE, value) if value == WTS_SESSION_LOCK as usize => Some(Event::Lock),
+        (WM_WTSSESSION_CHANGE, value) if value == WTS_SESSION_UNLOCK as usize => {
+            Some(Event::Unlock)
+        }
+        (WM_POWERBROADCAST, 4) => Some(Event::Suspend),
+        (WM_CLOSE, _) => Some(Event::OwnerClose),
+        _ => None,
+    }
+}
 unsafe extern "system" fn window_proc(hwnd: HWND, message: u32, wp: WPARAM, lp: LPARAM) -> LRESULT {
-    if message == WM_WTSSESSION_CHANGE && wp == WTS_SESSION_LOCK as usize
-        || message == WM_POWERBROADCAST && wp == 4
-    {
-        GENERATION.fetch_add(1, Ordering::AcqRel);
+    if let Some(event) = lifecycle_event(message, wp) {
+        EVENTS.record(event);
+        if event.invalidates() {
+            GENERATION.fetch_add(1, Ordering::AcqRel);
+        }
     }
     if message == WM_CLOSE || message == FINISHED {
         ACTIVE.store(false, Ordering::Release);
-        GENERATION.fetch_add(1, Ordering::AcqRel);
+        if message == FINISHED {
+            GENERATION.fetch_add(1, Ordering::AcqRel);
+        }
         unsafe { DestroyWindow(hwnd) };
         return 0;
     }
@@ -289,7 +305,8 @@ pub fn main() -> std::result::Result<(), &'static str> {
         }
         WTSUnRegisterSessionNotification(hwnd);
         match task.join().map_err(|_| "native probe thread failed")? {
-            Ok(report) => {
+            Ok(mut report) => {
+                report["lifecycle"] = json!(EVENTS.snapshot());
                 println!("{report}");
                 Ok(())
             }
@@ -297,10 +314,33 @@ pub fn main() -> std::result::Result<(), &'static str> {
                 eprintln!(
                     "{}",
                     json!({"status":"FAIL_OR_UNAVAILABLE","code":error.code,
-                "physical_acceptance":false,"cleanup":"Run cleanup; a retained journal must not be discarded"})
+                "physical_acceptance":false,"lifecycle":EVENTS.snapshot(),
+                "cleanup":"Run cleanup; a retained journal must not be discarded"})
                 );
                 Err("native probe did not pass")
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn native_message_mapping_distinguishes_unlock_suspend_close_and_internal_finish() {
+        assert!(
+            lifecycle_event(WM_WTSSESSION_CHANGE, WTS_SESSION_LOCK as usize)
+                .unwrap()
+                .invalidates()
+        );
+        assert!(
+            !lifecycle_event(WM_WTSSESSION_CHANGE, WTS_SESSION_UNLOCK as usize)
+                .unwrap()
+                .invalidates()
+        );
+        assert!(lifecycle_event(WM_POWERBROADCAST, 4).unwrap().invalidates());
+        assert!(lifecycle_event(WM_CLOSE, 0).unwrap().invalidates());
+        assert!(lifecycle_event(FINISHED, 0).is_none());
+        assert!(lifecycle_event(WM_POWERBROADCAST, 0).is_none());
     }
 }

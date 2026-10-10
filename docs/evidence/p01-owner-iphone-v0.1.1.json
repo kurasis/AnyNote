@@ -1,0 +1,161 @@
+{
+  "version": 1,
+  "status": "PASS_AUTOMATED_LOCAL_CHECKS",
+  "physical_acceptance": false,
+  "checks": [
+    {
+      "name": "frozen-rust-crypto",
+      "status": "PASS",
+      "checks": 39
+    },
+    {
+      "name": "frozen-node-crypto",
+      "status": "PASS",
+      "checks": 39
+    },
+    {
+      "name": "frozen-browser-worker-crypto",
+      "status": "PASS",
+      "checks": 39
+    },
+    {
+      "name": "public-argon2id-vector",
+      "status": "PASS",
+      "elapsed_ms": 100,
+      "wasm_heap_bytes": 67371008
+    },
+    {
+      "name": "public-argon2id-vector",
+      "status": "PASS",
+      "elapsed_ms": 77,
+      "wasm_heap_bytes": 67371008
+    },
+    {
+      "name": "public-argon2id-vector",
+      "status": "PASS",
+      "elapsed_ms": 78,
+      "wasm_heap_bytes": 67371008
+    },
+    {
+      "name": "14-invalid-KDF-profiles",
+      "status": "PASS"
+    },
+    {
+      "name": "ciphertext-only-IDB-OPFS-reopen",
+      "status": "PASS",
+      "ciphertext_only": true,
+      "indexeddb_reopened": true,
+      "opfs_reopened": true
+    },
+    {
+      "name": "actual-readonly-storage-denial",
+      "status": "PASS",
+      "readonly_denial": true,
+      "quota_exhaustion": "NOT RUN: readonly denial is not quota exhaustion"
+    },
+    {
+      "name": "second-part-corrupt-abort-preserves-output",
+      "status": "PASS"
+    },
+    {
+      "name": "second-part-truncate-abort-preserves-output",
+      "status": "PASS"
+    },
+    {
+      "name": "second-part-overflow-abort-preserves-output",
+      "status": "PASS"
+    },
+    {
+      "name": "lock-invalidates-live-key",
+      "status": "PASS"
+    }
+  ],
+  "files": [
+    {
+      "status": "PASS",
+      "bytes": 0,
+      "chunks": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transport": "LOCAL_OPFS_CIPHERTEXT_ONLY; no network request",
+      "export": "VERIFIED_OPFS_STAGING; Files not yet verified"
+    },
+    {
+      "status": "PASS",
+      "bytes": 1,
+      "chunks": 1,
+      "sha256": "684888c0ebb17f374298b65ee2807526c066094c701bcc7ebbe1c1095f494fc1",
+      "transport": "LOCAL_OPFS_CIPHERTEXT_ONLY; no network request",
+      "export": "VERIFIED_OPFS_STAGING; Files not yet verified"
+    },
+    {
+      "status": "PASS",
+      "bytes": 8388609,
+      "chunks": 2,
+      "sha256": "952b9be872350d25f2096331a5c777f9cde920fc717954afefed69ce5dfef49f",
+      "transport": "LOCAL_OPFS_CIPHERTEXT_ONLY; no network request",
+      "export": "VERIFIED_OPFS_STAGING; Files not yet verified"
+    },
+    {
+      "status": "PASS",
+      "bytes": 1000000000,
+      "chunks": 120,
+      "sha256": "f5c26e350759c498d6a44897098f3d48b1633e6105cc4c2b5d06778d58925a4e",
+      "transport": "LOCAL_OPFS_CIPHERTEXT_ONLY; no network request",
+      "export": "VERIFIED_OPFS_STAGING; Files not yet verified"
+    }
+  ],
+  "started_at": "2026-10-10T17:46:31.921Z",
+  "transport": "Local ciphertext-only OPFS adapter, not a network/backend test",
+  "opfs_commit": "Verified close publishes an in-memory disk-file alias; not a production atomic-path guarantee",
+  "files_destination": {
+    "status": "FAIL",
+    "error": "Saved Files output must be exactly 1,000,000,000 bytes"
+  },
+  "memory": "NOT MEASURED: WASM heap is not device process memory",
+  "remaining": [
+    "Network upload/download and resume",
+    "Actual device memory / older iPhone",
+    "Physical low-space fault",
+    "Passkeys/PRF and enrollment",
+    "Force-close/background recovery",
+    "PWA update with pending writes"
+  ],
+  "capabilities": {
+    "secure_context": true,
+    "indexeddb": true,
+    "opfs": true,
+    "usage_bytes": 113,
+    "quota_bytes": 41231686042,
+    "persisted": false
+  },
+  "cleaned_orphans": 0,
+  "large_storage_estimate": {
+    "quota": 41231686042,
+    "usage": 109052191
+  },
+  "completed_at": "2026-10-10T17:46:59.988Z",
+  "build": {
+    "source_commit": "f92dcb4eda58c6ce164728a378699f93adef572b",
+    "version": "0.1.1",
+    "kind": "P01 synthetic static device kit",
+    "production": false
+  },
+  "user_agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Mobile/15E148 Safari/604.1",
+  "installed_pwa": false,
+  "origin": "REDACTED_PRIVATE_TEST_ORIGIN",
+  "owner_reported_target": "iPhone 17 Pro / iOS 26.7.1; not verified by this page",
+  "share": "OUTCOME_UNKNOWN_AFTER_RESTART: verify the saved file; no share success inferred",
+  "recovery": {
+    "status": "RESTORED_DIAGNOSTICS_ONLY",
+    "previous_stage": "handoff",
+    "loaded_build": {
+      "source_commit": "f92dcb4eda58c6ce164728a378699f93adef572b",
+      "version": "0.1.1",
+      "kind": "P01 synthetic static device kit",
+      "production": false
+    },
+    "restored_at": "2026-10-10T17:47:03.278Z",
+    "keys_restored": false
+  },
+  "temporary_export_cleanup": "PASS"
+}

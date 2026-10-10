@@ -162,9 +162,10 @@ pub fn main() -> Result<(), &'static str> {
                     "physical_cancel_classification":"Only explicit HELLO_CANCELLED is cancellation"});
                 operations.push(cancel);
             }
-            if authenticated && dialog("Next: lock while authorization is pending.\n\nAfter the NEXT Hello prompt opens, press Win+L. Sign back in to Windows. The old request must be rejected as STALE.\n\nPress OK to start, or Cancel to leave this physical test NOT RUN.", true) {
+            if authenticated && dialog("Next: lock while authorization is pending.\n\nAfter the NEXT Hello prompt opens, press Win+L. You must see the Windows lock/sign-in screen. Signing back into WINDOWS may ask for your fingerprint or PIN; that is expected. The old TEST request must be cancelled and rejected as STALE.\n\nIf no lock screen appears, cancel the test prompt; cancellation alone is not a lock pass. The report records the actual Windows lock event.\n\nPress OK to start, or Cancel to leave this physical test NOT RUN.", true) {
                 let locked=observe_or_failure("unlock");
-                record["guided_lock"]=json!({"status":if locked["report"]["code"] == "STALE" { "PASS_STALE_REJECTED" } else { "FAIL_OR_UNAVAILABLE: inspect original native code" }});
+                record["guided_lock"]=json!({"status":if crate::trial_lifecycle::lock_observed_and_rejected(&locked) { "PASS_NATIVE_LOCK_EVENT_STALE_REJECTED" } else { "NOT_PROVEN: require a native lock event and STALE rejection" },
+                    "limitation":"Lock/suspend/close counters describe this fresh subprocess; owner must observe that the Hello prompt was pending"});
                 operations.push(locked);
             }
         }
@@ -205,7 +206,7 @@ pub fn main() -> Result<(), &'static str> {
             1,
         );
     }
-    dialog(&format!("Hello route: {}\nLocal automatic tests: {}\n\nThe report folder opens automatically. Send this one JSON report back:\n{}\n\nYou can press Ctrl+C in this dialog to copy its text.\n\nBLOCKED means the actual native API/Hello provider is unavailable; there is no software fallback. Physical acceptance remains open.", record["status"].as_str().unwrap_or("FAIL"),record["local_checks"]["status"].as_str().unwrap_or("NOT RUN"), path.display()), false);
+    dialog(&format!("Hello route: {}\nLocal automatic tests: {}\nGuided cancellation: {}\nGuided session lock: {}\n\nThe report folder opens automatically. Send this one JSON report back:\n{}\n\nYou can press Ctrl+C in this dialog to copy its text.\n\nBLOCKED means the actual native API/Hello provider is unavailable; there is no software fallback. Physical acceptance remains open.", record["status"].as_str().unwrap_or("FAIL"),record["local_checks"]["status"].as_str().unwrap_or("NOT RUN"), record["guided_cancel"]["status"].as_str().unwrap_or("NOT RUN"), record["guided_lock"]["status"].as_str().unwrap_or("NOT RUN"), path.display()), false);
     Ok(())
 }
 
