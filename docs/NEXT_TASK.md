@@ -4,7 +4,9 @@
 
 Prerequisite: P00 VERIFIED; P01 host crypto/KDF/storage/export/fault findings
 recorded. P01/G1 physical Windows/iPhone acceptance is OPEN and must remain
-separate. The owner reports the private HTTPS host is not ready. Single-EXE/static-ZIP device runbooks
+separate. The owner has now run the iPhone installed PWA and supplied a Windows
+0.1.0 report. Kit recovery/admission fixes are the current bounded P01 slice;
+P03 resumes independently afterwards. Single-EXE/static-ZIP device runbooks
 and the unfilled template are in P01_OWNER_TRIALS.md. The static ZIP requires
 only a trusted existing HTTPS web directory, not Node/PHP or a new certificate. No repeated OS/model
 questions, remote access, device actions or HTTPS deployment are assumed.

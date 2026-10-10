@@ -237,11 +237,10 @@ pub fn main() -> std::result::Result<(), &'static str> {
         libsodium_rs::ensure_init().map_err(|_| "sodium unavailable")?;
         let report = hello::prf::run(0, || true, hello::prf::Experiment::Capability)
             .map_err(|_| "capability API failed")?;
-        println!(
-            "{}",
-            json!({"status":"CAPABILITY_ONLY","report":report,"native_objects_created":false,
-            "source_commit":option_env!("ANYNOTE_PROBE_SOURCE"),"physical_acceptance":false})
-        );
+        let mut capability = json!({"status":"CAPABILITY_ONLY","report":report,"native_objects_created":false,
+            "source_commit":option_env!("ANYNOTE_PROBE_SOURCE"),"physical_acceptance":false});
+        capability["trial_route_available"] = json!(crate::trial_route::available(&capability));
+        println!("{capability}");
         return Ok(());
     }
     unsafe {

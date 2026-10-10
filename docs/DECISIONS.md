@@ -265,3 +265,17 @@ actions:read instead of requesting an owner's secret or retrying unchanged
 credentials. Publish only frozen already successful synthetic artifacts;
 revalidate source/runtime/hash/ZIP receipts and downloaded release bytes.
 Refuse existing-release overwrite and preserve the exact build-source tag.
+
+ADR-006 owner-feedback addendum (0.1.1): native capability route availability
+is admission to an experiment, not security eligibility. Keep the upstream
+`eligible=false` and all per-key checks; validate the complete content-free
+capability observation before starting owned native enrollment. Persist only
+small synthetic diagnostic JSON in path-scoped browser storage, with synchronous
+write/readback before Share to retain real transient user activation. Restore
+diagnostics and expected synthetic output digests, never live crypto keys or
+file handles. Interrupted system handoff stays UNKNOWN; actual selected bytes
+must independently match. Bounded verified storage failure blocks handoff/new
+trials. Recovery cleanup requires an exclusive Web Lock and exact purpose marker.
+Use a new static subdirectory when replacing an old installed kit to avoid its
+service-worker cache without clearing retained site evidence. No production
+unlocked/transfer resume or physical durability guarantee follows.

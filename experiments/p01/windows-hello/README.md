@@ -100,3 +100,15 @@ There is no DPAPI/software/consent-only fallback. Imported Passport diagnostic
 helpers are not CLI actions or alternative unlock methods. Independent AnyNote
 recovery, production vault/session integration, WebView2 IPC and comprehensive
 physical expiry/revoke/lifecycle acceptance remain future gates.
+
+### Trial admission versus key eligibility (0.1.1)
+
+`trial_route_available` allows the synthetic owner trial only after all four
+native capability checks pass, API >= 9, platform Hello is available, an unlocked
+display-name candidate is reported, and the observation created no native
+objects. The earlier kit incorrectly required `report.eligible`, which deliberately
+stays false until security gates are resolved. The owner's 0.1.0 API 9/build
+26200 report exposed this dead end. Neither eligibility nor per-key TPM/PRF
+proofs are changed or inferred from route availability. Hosted mode still never
+enrolls/unlocks; actual enrollment and fresh-process authenticated unlock retain
+all native checks, original errors and exact journal-based cleanup.

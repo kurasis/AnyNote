@@ -148,3 +148,23 @@ build jobs are skipped for this publication-only mode; normal PR/main checks
 remain unchanged. Publication execution is pending at this initial snapshot;
 actual run/download evidence is recorded in the publication PR and release.
 No signing, production deployment, user secret or dependency change is added.
+
+## P01 owner feedback — 0.1.1 trial recovery
+
+Owner supplied the 0.1.0 Windows JSON (source 5a09852, released EXE hash matches):
+51 native crypto/KDF checks, exact 1 GB/120 chunks and cleanup PASS; actual
+API 9, build 26200, Hello platform/candidate checks passed. Operations were
+empty because the kit incorrectly gated trial admission on unresolved key
+eligibility. A separate fail-closed route predicate now admits the trial without
+altering native PRF/TPM/fresh-authentication gates. Owner also reported iPhone
+PWA restarting after Save to Files, losing the memory-only diagnostic report.
+Persist bounded nonsecret checkpoints before OS handoff, restore the report and
+selected-output verification without keys, and clean only marked synthetic
+orphans under the trial lock. Saving/downloading diagnostics is independent of
+the primary test step. No actual Files hash/Hello enrollment evidence was supplied.
+
+Local portable tests: 74 PASS, strict Clippy PASS. New hosted regression destroys
+the actual page while mocked Share remains pending, reloads retained diagnostics,
+reselects and hashes the saved 1 GB, preserves pass/failure reports across reopen,
+and rejects denied/malformed checkpoint storage. Hosted execution and updated
+test-release publication are pending at this development snapshot. P01/G1 OPEN.

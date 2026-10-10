@@ -344,3 +344,26 @@ subsequent API listing confirmed no retained release or tag. This was not a
 CI/build/physical failure. A guarded Actions publisher now uses its own job
 token and verifies actual published bytes/tag. Its execution is pending in
 this initial source snapshot; no upload success is inferred from preparation.
+
+## Owner-supplied 0.1.0 trial and 0.1.1 regressions
+
+[Raw Windows report](evidence/p01-owner-windows-v0.1.0.json) is the owner's
+chat-supplied JSON, semantically preserved, not a cloud/hosted capture. Its source
+5a09852 and EXE hash 6e4902fd... match the published 0.1.0 artifact. Timestamp
+1791651566384 is reported by that device, not independently verified. Owner
+reports Windows 11 Pro 25H2; observed report is build 26200/API 9, available
+platform, one unlocked display-name candidate. Crypto/KDF 51, exact 1 GB/120
+chunks and local cleanup PASS. No native operations ran; no per-key or Hello
+authorization acceptance is inferred. The unresolved `eligible=false` flag was
+incorrectly used as trial admission. Portable regressions exercise this exact
+record and reject old/missing APIs, malformed reports, failed checks, locked or
+missing providers; all 74 native portable tests and strict Clippy PASS.
+
+The owner separately reported installed iPhone PWA resetting to its initial page
+after saving to Files. No phone JSON, hash, process-memory or precise termination
+cause was available. New regression uses a real sandboxed browser page reload
+while an activated mocked Share is pending after its bounded 1 GB OS-copy stand-in.
+It restores the same diagnostic files/digests, marks handoff UNKNOWN, independently
+reselects/hashes saved bytes, downloads the retained report, preserves success and
+failure across reopen, and rejects malformed/denied storage. Actual hosted result
+and new release evidence will be attached after CI; this is not physical iOS proof.

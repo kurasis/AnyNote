@@ -152,6 +152,9 @@ self.onmessage=async({data})=>{
     }else if(data.kind==='verify-file'){
       if(!(data.file instanceof Blob)||data.file.size!==MAX)throw new Error('Saved Files output must be exactly 1,000,000,000 bytes');
       await sodium.ready;postMessage({kind:'result',result:{bytes:data.file.size,sha256:await hashFile(data.file,run)}});
+    }else if(data.kind==='cleanup-orphans'){
+      // Page owns the exclusive trial Web Lock; only exact marked synthetic dirs qualify.
+      postMessage({kind:'result',result:{removed:await removeTrialOrphans()}});
     }else if(data.kind==='cleanup'){
       if(owned){await removeTrial(owned);owned=null;}
       postMessage({kind:'result',result:{status:'PASS',owned_temporary_export_removed:true}});

@@ -1,0 +1,55 @@
+{
+  "capability": {
+    "exit_code": 0,
+    "operation": "capabilities",
+    "report": {
+      "native_objects_created": false,
+      "physical_acceptance": false,
+      "report": {
+        "algorithm": "webauthn-prf-aes256gcm",
+        "checks": [
+          {"status": "passed", "test": "webauthn-load"},
+          {"status": "passed", "test": "webauthn-api"},
+          {"status": "passed", "test": "hello-platform"},
+          {"status": "passed", "test": "hello-route"}
+        ],
+        "eligible": false,
+        "enrolled": false,
+        "outcome": "webauthn-capability-observed",
+        "purpose": "webauthn-prf-capability",
+        "remaining": ["per-key-tpm-proof", "fresh-authorization-proof", "fresh-process-proof", "account-machine-copy-proof"],
+        "unlocked": false,
+        "version": 1,
+        "webauthn": {
+          "apiVersion": 9,
+          "helloCandidates": 1,
+          "helloLocked": false,
+          "osBuild": 26200,
+          "platformAvailable": true,
+          "routing": "display-name-candidate",
+          "tpmBinding": "not-verified"
+        }
+      },
+      "source_commit": "5a09852b15f863de297a1ac4965c417d580df80d",
+      "status": "CAPABILITY_ONLY"
+    }
+  },
+  "environment_kind": "owner_device",
+  "executable_sha256": "6e4902fdcee70ae55808b85afc3e96330f5c5a8a87f286bc915b9f6c5d462975",
+  "license": "GPL-3.0-only; corresponding source and license accompany the GitHub test release",
+  "local_checks": {
+    "cleaned_orphans": 0,
+    "crypto": {"checks": 51, "scope": "Frozen XChaCha20-Poly1305 corpora and three public 64 MiB Argon2id vectors", "status": "PASS"},
+    "file": {"bytes": 1000000000, "chunks": 120, "memory": "NOT MEASURED", "sha256": "7933d92f71d021991205c6eb64998e7706a421067c04237b8f06220cff2d052d", "status": "PASS", "transport": "Local disk ciphertext only; network and WebView2 not tested"},
+    "status": "PASS",
+    "synthetic_disk_cleanup": "PASS"
+  },
+  "operations": [],
+  "physical_acceptance": false,
+  "purpose": "AnyNote P01 synthetic device kit",
+  "remaining": ["Real lock/suspend with a pending prompt", "TPM/provider changes", "Other-account denial", "Windows file/memory/WebView2 integration"],
+  "source_commit": "5a09852b15f863de297a1ac4965c417d580df80d",
+  "status": "BLOCKED",
+  "timestamp_unix_ms": 1791651566384,
+  "version": 1
+}
