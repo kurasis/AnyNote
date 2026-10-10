@@ -2,14 +2,16 @@ import assert from 'node:assert/strict';
 import { createHash, randomFillSync } from 'node:crypto';
 import { open, rm } from 'node:fs/promises';
 import { join } from 'node:path';
+import { beginRssSample } from './memory.mjs';
+import { checkExportFaults } from './export-fault-checks.mjs';
 
-export async function checkSelectedFiles(page,transport,scratch,large) {
+export async function checkSelectedFiles(page,transport,scratch,large,cdp) {
   const report={source:'real selected browser File',sink:'explicit synthetic plaintext OPFS export test only',
     physical_iphone:'NOT RUN', ios_files:'NOT VERIFIED',cases:[]};
   await page.goto(transport.origin+'/physical/');
   await page.waitForFunction(()=>typeof physicalP01==='object');
   report.storage_estimate=await page.evaluate(()=>navigator.storage.estimate());
-  report.memory='NOT MEASURED for selected-file export; earlier generated-stream RSS is a separate trial';
+  report.memory='Per-case upload and export/readback desktop aggregate RSS; separate from the generated-stream trial; no iPhone memory claim';
   await page.waitForFunction(async()=>Boolean((await navigator.serviceWorker.getRegistration('/physical/'))?.active),{},{timeout:30000});
   for(const size of [0,1,8388609,...(large?[1000000000]:[])]){
     await transport.reset();
@@ -21,18 +23,27 @@ export async function checkSelectedFiles(page,transport,scratch,large) {
     }finally{await file.close();}
     const expected=hash.digest('hex');
     await page.locator('input[type=file]').setInputFiles(path);
-    const uploaded=await page.evaluate(()=>physicalP01.call({kind:'upload',source:document.querySelector('input[type=file]').files[0]}));
+    const stopUpload=await beginRssSample(cdp);
+    let uploaded,uploadMemory;
+    try{uploaded=await page.evaluate(()=>physicalP01.call({kind:'upload',source:document.querySelector('input[type=file]').files[0]}));}
+    finally{uploadMemory=await stopUpload();}
     assert.equal(uploaded.bytes,size);assert.equal(uploaded.sha256,expected);
     const id='anynote-p01-export-'+crypto.randomUUID().replaceAll('-','');
     try{
-      const exported=await page.evaluate(async(id)=>{
+      const stopExport=await beginRssSample(cdp);
+      let exported,exportMemory;
+      try{exported=await page.evaluate(async(id)=>{
         const directory=await (await navigator.storage.getDirectory()).getDirectoryHandle(id,{create:true});
         const sink=await directory.getFileHandle('explicit-synthetic-export',{create:true});
         const report=await physicalP01.call({kind:'export',sink});
         const actual=await sink.getFile();
         const readback=await physicalP01.call({kind:'reselect',source:actual});
         return {...report,saved_bytes:actual.size,readback:readback.status};
-      },id);
+      },id);}finally{exportMemory=await stopExport();}
+      if(process.platform==='linux'){
+        assert.equal(uploadMemory.status,'MEASURED');assert.equal(exportMemory.status,'MEASURED');
+        assert.equal(uploadMemory.sampling_errors,0);assert.equal(exportMemory.sampling_errors,0);
+      }
       assert.equal(exported.saved_bytes,size);assert.equal(exported.sha256,expected);assert.equal(exported.readback,'SOURCE_MATCHES');
       if(size===0){
         const staged=await page.evaluate(()=>physicalP01.prepareExport());
@@ -51,7 +62,8 @@ export async function checkSelectedFiles(page,transport,scratch,large) {
       }));}
       const transferred=size+Math.ceil(size/8388608)*16;
       assert.equal(transport.counts().uploaded_bytes,transferred);assert.equal(transport.counts().downloaded_bytes,transferred);
-      report.cases.push({size,sha256:expected,status:exported.status,saved_bytes:exported.saved_bytes,uploaded_bytes:transferred,downloaded_bytes:transferred});
+      report.cases.push({size,sha256:expected,status:exported.status,saved_bytes:exported.saved_bytes,uploaded_bytes:transferred,downloaded_bytes:transferred,
+        memory:{upload:uploadMemory,export_and_readback:exportMemory}});
       await page.evaluate(()=>physicalP01.worker.postMessage({kind:'lock'}));
       await assert.rejects(page.evaluate(async(id)=>{
         const directory=await(await navigator.storage.getDirectory()).getDirectoryHandle(id);
@@ -87,5 +99,6 @@ export async function checkSelectedFiles(page,transport,scratch,large) {
     gate.release();await rejected;
     report.late_upload_after_lock_rejected=true;
   }finally{clearTimeout(timer);gate.release();await rm(delayed);}
+  report.faults=await checkExportFaults(page,transport,scratch);
   return report;
 }

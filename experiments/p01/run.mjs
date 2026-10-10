@@ -10,6 +10,7 @@ import './build.mjs';
 import { checkLocalUnlock } from './unlock-checks.mjs';
 import { serve } from './transport.mjs';
 import { checkSelectedFiles } from './physical-checks.mjs';
+import { sampleRss } from './memory.mjs';
 
 const large = process.argv.includes('--large');
 const updateFixtures = process.argv.includes('--write-fixtures');
@@ -43,21 +44,6 @@ async function executable() {
     '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean);
   for (const path of candidates) { try { await access(path); return path; } catch {} }
   throw new Error('A real Chromium/Chrome executable is required; set CHROMIUM_EXECUTABLE');
-}
-
-// CDP enumerates browser processes; Linux /proc samples actual RSS (not JS heap).
-// Aggregated RSS can double-count shared pages, so it is not a mobile memory claim.
-async function sampleRss(cdp) {
-  if (process.platform !== 'linux') return null;
-  const { processInfo } = await cdp.send('SystemInfo.getProcessInfo');
-  let total = 0, sampled = 0;
-  for (const info of processInfo) {
-    try {
-      const match = /^VmRSS:\s+(\d+)\s+kB/m.exec(await readFile(`/proc/${info.id}/status`, 'utf8'));
-      if (match) { total += Number(match[1]); sampled++; }
-    } catch {} // A process may exit between enumeration and sampling.
-  }
-  return sampled === 0 ? null : total;
 }
 
 let transport, browser, context;
@@ -185,7 +171,7 @@ try {
     }
   }
   results.local_unlock = await checkLocalUnlock(native, page);
-  results.selected_file_export = await checkSelectedFiles(page, transport, scratch, large);
+  results.selected_file_export = await checkSelectedFiles(page, transport, scratch, large, cdp);
   assert.equal(externalRequests.length, 0, 'No external requests including the physical trial page');
   assert.equal(pageErrors.length, 0, 'No hidden browser errors including the physical trial page');
   results.status = 'PASS';

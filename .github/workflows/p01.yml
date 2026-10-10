@@ -104,6 +104,14 @@ jobs:
           & ./target/release/anynote-p01-windows-hello.exe capabilities | Out-File artifacts/capabilities.json -Encoding utf8
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Get-FileHash target/release/anynote-p01-windows-hello.exe -Algorithm SHA256 | Format-List | Out-File artifacts/executable-sha256.txt
+      - name: Validate content-free device collector on the hosted runner
+        run: |
+          $probe=(Resolve-Path target/release/anynote-p01-windows-hello.exe).Path
+          $hash=(Get-FileHash $probe -Algorithm SHA256).Hash
+          ./scripts/collect-physical.ps1 -Probe $probe -ExpectedSha256 $hash -ExpectedSource $env:ANYNOTE_PROBE_SOURCE -Operation capabilities -EnvironmentKind hosted -OutputDirectory artifacts/hosted-collector
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $record=Get-Content (Get-ChildItem artifacts/hosted-collector/trial-*.json).FullName -Raw | ConvertFrom-Json
+          if ($record.environment_kind -ne 'hosted' -or $record.physical_acceptance -ne $false -or $record.source_commit -ne $env:ANYNOTE_PROBE_SOURCE -or $record.capability.native_objects_created -ne $false) { throw 'Invalid hosted collector record' }
       - name: Preserve unsigned synthetic probe and actual capability evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
