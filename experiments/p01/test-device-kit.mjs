@@ -86,6 +86,32 @@ try{
   assert.deepEqual(wrongSelection.files,automatic.files);
   await page.reload();await page.waitForFunction(()=>deviceP01.stage==='verify');
   assert.equal((await page.evaluate(()=>deviceP01.report)).files_destination.status,'FAIL');
+  // Reject arbitrary owner/name and a purpose-marker mismatch without touching other data.
+  const exportRef=await page.evaluate(()=>deviceP01.report.pending_export);
+  const rejected=await page.evaluate(async(ref)=>{
+    const request=data=>new Promise(resolve=>{const channel=new MessageChannel();channel.port1.onmessage=({data})=>{channel.port1.close();resolve(data);};navigator.serviceWorker.controller.postMessage({kind:'prepare-download',...data},[channel.port2]);});
+    const traversal=await request({owner_id:ref.owner_id,name:'../purpose.marker'});
+    const root=await navigator.storage.getDirectory(),id='anynote-p01-device-'+ 'e'.repeat(32);
+    const directory=await root.getDirectoryHandle(id,{create:true});
+    const writer=await(await directory.getFileHandle('purpose.marker',{create:true})).createWritable();await writer.write('not this kit');await writer.close();
+    let wrongMarker;try{wrongMarker=await request({owner_id:id,name:ref.name});}finally{await root.removeEntry(id,{recursive:true});}
+    return {traversal,wrongMarker};
+  },exportRef);
+  assert.match(rejected.traversal.error,/Invalid synthetic export/);
+  assert.match(rejected.wrongMarker.error,/purpose marker mismatch/);
+  // Cancel a real partial SW response; the next request must get the released trial lock.
+  await page.evaluate(()=>{deviceP01.report.stream_download={status:'REQUESTED_OUTCOME_UNKNOWN',method:'SCOPED_SERVICE_WORKER_DISK_STREAM',physical_acceptance:false};});
+  const cancelUrl=await page.locator('#download-sample').getAttribute('href');
+  const cancellation=await page.evaluate(async(url)=>{
+    const response=await fetch(url),reader=response.body.getReader();
+    const first=await reader.read();await reader.cancel();
+    return {status:response.status,chunk:first.value.length,cache:response.headers.get('Cache-Control')};
+  },cancelUrl);
+  assert.equal(cancellation.status,200);assert.equal(cancellation.cache,'no-store');
+  assert.ok(cancellation.chunk>0&&cancellation.chunk<=262144);
+  await page.waitForFunction(async()=>deviceP01.report.stream_download?.status==='CANCELLED'
+    &&!(await navigator.locks.query()).held.some(lock=>lock.name==='anynote-p01-device-kit'));
+  await page.waitForFunction(url=>document.querySelector('#download-sample').href!==url,cancelUrl);
   // Download through the actual service worker/network stack. No OS Share mock here.
   const streamPromise=page.waitForEvent('download');await page.locator('#download-sample').click();
   const streamed=await streamPromise;
@@ -167,13 +193,16 @@ try{
     report_download_restart_retained:true,failed_report_retained:true,interrupted_run_not_restarted:true,
     real_service_worker_stream_download:true,streamed_download_bytes:total,
     stream_download_selected_hash:true,unknown_download_token_rejected:true,
+    cancelled_stream_releases_lock:true,arbitrary_export_path_rejected:true,unmarked_export_rejected:true,download_replay_rejected:true,
     retained_staged_export_reopened_and_hashed:true,
     wrong_json_size_recorded:true,wrong_json_retry_after_reload:true,legacy_failed_report_offers_retry:true,
     malformed_checkpoint_rejected:true,denied_checkpoint_blocks_before_work:true,
     wrong_selected_length_rejected:true,downloaded_report_matches:true,owned_export_directories_remaining:0,
     nested_path:'/nested/anynote-p01/',secure_context:'Trustworthy loopback, not a phone HTTPS origin'});
   console.log('PASS: real exact 1 GB service-worker attachment and selected hash, activated mocked share with real page destruction/reload, durable report, recovered selected-output hash, denied storage, cleanup.');
-}catch(error){record.status='FAIL';record.error=String(error.stack);throw error;}
+}catch(error){record.status='FAIL';record.error=String(error.stack);
+  try{record.page_diagnostics=await context.pages()[0].evaluate(()=>({stage:deviceP01?.stage,report:deviceP01?.report,controller:!!navigator.serviceWorker.controller,output:document.querySelector('#status')?.textContent}));}catch{}
+  throw error;}
 finally{
   await mkdir('artifacts',{recursive:true});await writeFile('artifacts/device-kit-report.json',JSON.stringify(record,null,2));
   await context?.close();await new Promise(resolve=>server.close(resolve));await rm(scratch,{recursive:true,force:true});

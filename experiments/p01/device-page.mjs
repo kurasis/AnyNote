@@ -94,7 +94,7 @@ async function prepareDownload(){
   });
   const url=new URL(result.url);
   if(url.origin!==location.origin||!url.pathname.startsWith(new URL('download/',location.href).pathname))throw new Error('Invalid synthetic download destination');
-  downloadLink.href=url.href;downloadLink.download=report.pending_export.name;downloadLink.hidden=false;
+  downloadLink.href=url.href;downloadLink.hidden=false;
 }
 downloadLink.addEventListener('click',event=>{
   if(!prepared||!writable||downloadActive){event.preventDefault();return;}
