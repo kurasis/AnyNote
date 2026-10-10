@@ -1,0 +1,87 @@
+{
+  "capability": {
+    "exit_code": 0,
+    "operation": "capabilities",
+    "report": {
+      "native_objects_created": false,
+      "physical_acceptance": false,
+      "report": {
+        "algorithm": "webauthn-prf-aes256gcm",
+        "checks": [
+          {
+            "status": "passed",
+            "test": "webauthn-load"
+          },
+          {
+            "operation": "webauthn-api-9-required",
+            "status": "failed",
+            "test": "webauthn-api"
+          },
+          {
+            "status": "not-run",
+            "test": "hello-platform"
+          },
+          {
+            "status": "not-run",
+            "test": "hello-route"
+          }
+        ],
+        "eligible": false,
+        "enrolled": false,
+        "outcome": "blocked",
+        "purpose": "webauthn-prf-capability",
+        "remaining": [
+          "per-key-tpm-proof",
+          "fresh-authorization-proof",
+          "fresh-process-proof",
+          "account-machine-copy-proof"
+        ],
+        "unlocked": false,
+        "version": 1,
+        "webauthn": {
+          "apiVersion": 7,
+          "osBuild": 26100,
+          "routing": "display-name-candidate",
+          "tpmBinding": "not-verified"
+        }
+      },
+      "source_commit": "4629afe9a22ddf37ac28a6de8a52771274371481",
+      "status": "CAPABILITY_ONLY"
+    }
+  },
+  "environment_kind": "hosted",
+  "executable_sha256": "dd8b658e754a88233a45f885726c1cf3ac580893216bc892422d7005b92dd802",
+  "license": "GPL-3.0-only; corresponding source and license accompany the GitHub test release",
+  "local_checks": {
+    "cleaned_orphans": 0,
+    "crypto": {
+      "checks": 51,
+      "scope": "Frozen XChaCha20-Poly1305 corpora and three public 64 MiB Argon2id vectors",
+      "status": "PASS"
+    },
+    "file": {
+      "bytes": 1000000000,
+      "chunks": 120,
+      "memory": "NOT MEASURED",
+      "sha256": "cf9b663aaf0d062ee3d3fa96fec6ecdcfc77ecc456b161357f641afc0bb87641",
+      "status": "PASS",
+      "transport": "Local disk ciphertext only; network and WebView2 not tested"
+    },
+    "status": "PASS",
+    "synthetic_disk_cleanup": "PASS"
+  },
+  "operations": [],
+  "physical_acceptance": false,
+  "purpose": "AnyNote P01 synthetic device kit",
+  "remaining": [
+    "Real lock/suspend with a pending prompt",
+    "TPM/provider changes",
+    "Other-account denial",
+    "Windows file/memory/WebView2 integration"
+  ],
+  "source_commit": "4629afe9a22ddf37ac28a6de8a52771274371481",
+  "status": "BLOCKED",
+  "timestamp_unix_ms": 1791649967734,
+  "version": 1,
+  "github_run": "https://github.com/kurasis/AnyNote/actions/runs/38067929130"
+}

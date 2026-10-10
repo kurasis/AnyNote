@@ -42,3 +42,14 @@
 - Browser-origin compromise, unlocked endpoint compromise, prior recipient
   copies and malicious-server freshness limits remain inherent specification
   boundaries, not bugs declared fixed by this baseline.
+
+- The simplified iPhone ZIP runs local ciphertext OPFS transport; network/API
+  upload/download and resume are NOT RUN there. Exact 1 GB requires about
+  3.1 GB browser quota and worker synchronous OPFS support. A verified staged
+  disk File can still be rejected by the physical Web Share provider. System
+  Files save/reselect require owner interaction; hosted sharing is mocked.
+- Windows one-EXE tests use the scoped GPL native adapter and static CRT, but
+  are unsigned synthetic tooling. Actual native capability may remain BLOCKED
+  even when crypto/KDF/local 1 GB checks pass. Cancellation is recognized only
+  from HELLO_CANCELLED, lock rejection only from STALE. No full physical gate
+  or all-negative-matrix pass follows from positive fresh-process unlock.

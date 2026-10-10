@@ -228,3 +228,32 @@ trials require the owner's devices and a ready private trusted HTTPS origin;
 manual CA trust provisioning is an optional owner action, not a TLS bypass or
 cloud deployment. Retain the existing device strings without repeatedly asking.
 No protocol, release scope, migration or key-custody change occurs here.
+
+## ADR-006 — one EXE and a static ZIP for owner trials
+
+Date: 2026-10-10. Status: ACCEPTED for isolated P01 test tooling.
+
+Owner instruction replaces multi-command physical setup with a self-contained
+Windows EXE and a ready-to-upload iPhone ZIP. Reuse the native Hello adapter
+without changing reference imports; statically link the MSVC CRT and compute
+executable hash at runtime. Capabilities gate actual native operations; fresh
+processes, explicit cancel/lock instructions, original native codes and durable
+exact cleanup remain intact. One report replaces separate collector records.
+
+The iPhone ZIP works under any HTTPS subdirectory using relative bundled
+assets, scoped manifest/static-only service-worker cache and worker synchronous
+OPFS access. An exclusive Web Lock protects marked orphan cleanup. Its
+transport is a bounded local ciphertext adapter, deliberately labeled in all
+reports; this avoids introducing unauthenticated upload endpoints or requiring
+a Node/PHP server for the requested simple kit. It does not certify network
+transfers, account/session/recipient protocols or production resume.
+
+One button starts all automatic checks and then advances through Files and
+report steps. Separate taps and OS choices are required by transient user
+activation and actual Files output selection; no hidden permission bypass or
+1 GB plaintext Blob fallback is added. Disk staging publishes a verified
+in-memory file alias, not a claim about atomic production path replacement.
+Physical acceptance stays false; host mocks, public KDF heap measurements and
+selected-output hashes retain their exact scope. Test artifacts may be
+published as an unsigned GitHub prerelease with exact corresponding source,
+asset receipts and scoped licenses; this is not production release/deployment.

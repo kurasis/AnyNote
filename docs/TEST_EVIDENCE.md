@@ -280,3 +280,46 @@ runbooks are procedures, not executed certificate/firewall/device tests. The
 template is explicitly UNFILLED. Actual Windows prompts, installed-iPhone
 storage/KDF/Files/process memory, physical low space and the second older phone
 remain **NOT RUN/BLOCKED**. G1 is open; next independent work is P03 tooling.
+
+## P01-DEVICE-KIT local preparation
+
+72 portable native tests PASS: prior 70 plus frozen AEAD/three public Argon2id
+corpora and actual 8 MiB+1 disk output / pre-write 1 GB+1 refusal. Strict clippy
+and formatting PASS. Static kit build PASS with bundled pinned sodium; ZIP
+contains 14 root-level assets with CRC and SHA-256 receipts verified. Original
+21 specification checksums and baseline checks PASS. No dependency resolutions
+changed. Actual hosted nested-path one-button/exact 1 GB/mock-share workflow,
+MSVC build/ABI/single-EXE 1 GB report and publication are pending in this initial
+source snapshot. Physical iPhone/Hello and production release gates stay open.
+
+### Hosted device-kit evidence
+
+At `4629afe9a22ddf37ac28a6de8a52771274371481`,
+[run 38067929130](https://github.com/kurasis/AnyNote/actions/runs/38067929130)
+passed all three feasibility jobs, including the existing full 1 GB
+Rust/Node/browser network/export/fault suite. Chrome
+154.0.8037.97 with sandbox enabled exercised the actual button/worker at
+`/nested/anynote-p01/`: three frozen crypto corpora, public KDF vectors/invalid
+profiles, ciphertext storage, local bounded pipelines and real second-part
+corruption/truncation/overflow preservation, exact 1 GB/120 parts, selected saved
+output, downloaded JSON and zero remaining owned export directories.
+Share was an explicit test-only mock with a real bounded disk copy, not an OS
+Files pass. The full SHA-256 was
+`bac21eb6053ff6e85c13c06149afb0c8ef217fb7a5f86601947b52b0562184e7`.
+[Raw browser report](evidence/p01-device-kit-hosted-browser.json).
+
+MSVC: 100 routine native tests passed, one independent official C-header ABI
+test explicitly passed. Single-EXE hosted report included 51 frozen AEAD/KDF
+checks, a real exact 1 GB/120-part disk round-trip and cleanup PASS. Its source
+and executable hash were validated by CI. Actual hosted WebAuthn API 7/build
+26100 remained BLOCKED and no native objects were created; there was no fallback
+or physical Hello claim. [Raw Windows report](evidence/p01-device-kit-hosted-windows.json).
+Final dependency-import inspection and latest-source CI remain pending here.
+
+The first static job in
+[run 38067761595](https://github.com/kurasis/AnyNote/actions/runs/38067761595)
+failed during saved-file verification: the next action was enabled while
+share cleanup still held the worker request. The overall run was subsequently
+cancelled by the next push, not counted as a full pass. The corrected UI keeps
+the action disabled until cleanup finishes; the repeat at 4629afe passed.
+No assertion was weakened and no browser sandbox was disabled.

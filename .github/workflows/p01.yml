@@ -156,6 +156,8 @@ jobs:
           if ($record.environment_kind -ne 'hosted' -or $record.physical_acceptance -ne $false -or $record.source_commit -ne $env:ANYNOTE_PROBE_SOURCE -or $record.capability.report.native_objects_created -ne $false -or $record.operations.Count -ne 0 -or $record.executable_sha256 -ne $hash) { throw 'Invalid single-EXE hosted record' }
           if ($record.local_checks.status -ne 'PASS' -or $record.local_checks.file.bytes -ne 1000000000 -or $record.local_checks.file.chunks -ne 120 -or $record.local_checks.synthetic_disk_cleanup -ne 'PASS') { throw 'Built-in exact 1 GB local check failed' }
           Copy-Item target/x86_64-pc-windows-msvc/release/anynote-p01-windows-hello.exe artifacts/AnyNote-P01-Windows-x64.exe
+          ./scripts/check-one-exe.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Preserve unsigned synthetic probe and actual capability evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:

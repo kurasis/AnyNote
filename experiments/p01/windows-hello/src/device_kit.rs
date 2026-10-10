@@ -187,7 +187,24 @@ pub fn main() -> Result<(), &'static str> {
     }
     let path = save(&record)?;
     println!("Report: {}", path.display());
-    dialog(&format!("Result: {}\n\nSend this one report back:\n{}\n\nYou can press Ctrl+C in this dialog to copy its text.\n\nBLOCKED means the actual native API/Hello provider is unavailable; there is no software fallback. Physical acceptance remains open.", record["status"].as_str().unwrap_or("FAIL"), path.display()), false);
+    let folder: Vec<u16> = path
+        .parent()
+        .ok_or("Missing report parent")?
+        .to_string_lossy()
+        .encode_utf16()
+        .chain(Some(0))
+        .collect();
+    unsafe {
+        windows_sys::Win32::UI::Shell::ShellExecuteW(
+            std::ptr::null_mut(),
+            windows_sys::core::w!("open"),
+            folder.as_ptr(),
+            std::ptr::null(),
+            std::ptr::null(),
+            1,
+        );
+    }
+    dialog(&format!("Hello route: {}\nLocal automatic tests: {}\n\nThe report folder opens automatically. Send this one JSON report back:\n{}\n\nYou can press Ctrl+C in this dialog to copy its text.\n\nBLOCKED means the actual native API/Hello provider is unavailable; there is no software fallback. Physical acceptance remains open.", record["status"].as_str().unwrap_or("FAIL"),record["local_checks"]["status"].as_str().unwrap_or("NOT RUN"), path.display()), false);
     Ok(())
 }
 

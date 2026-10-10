@@ -4,8 +4,9 @@
 
 Prerequisite: P00 VERIFIED; P01 host crypto/KDF/storage/export/fault findings
 recorded. P01/G1 physical Windows/iPhone acceptance is OPEN and must remain
-separate. The owner reports the private HTTPS host is not ready. Device runbooks
-and the unfilled template are in P01_OWNER_TRIALS.md. No repeated OS/model
+separate. The owner reports the private HTTPS host is not ready. Single-EXE/static-ZIP device runbooks
+and the unfilled template are in P01_OWNER_TRIALS.md. The static ZIP requires
+only a trusted existing HTTPS web directory, not Node/PHP or a new certificate. No repeated OS/model
 questions, remote access, device actions or HTTPS deployment are assumed.
 
 Read AGENTS.md, progress, decisions, limitations, dependency inventory and

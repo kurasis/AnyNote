@@ -25,8 +25,8 @@ cargo fmt --check
 cargo clippy --locked --all-targets -- -D warnings
 cargo test --locked
 cargo test --locked generated_layout_matches_the_pinned_microsoft_c_header -- --ignored
-cargo build --locked --release
-./target/release/anynote-p01-windows-hello.exe capabilities
+cargo build --locked --release --target x86_64-pc-windows-msvc
+./target/x86_64-pc-windows-msvc/release/anynote-p01-windows-hello.exe capabilities
 ```
 
 The explicit ignored test compares generated Rust layouts to a separately
@@ -49,15 +49,22 @@ Capture the actual OS build/API, authenticator, probe source and executable hash
 during a new AnyNote trial. Use the existing account; no reset or security-policy
 change is required. Preserve upstream completed experiments and exclusions.
 
-[The owner runbook](../../../docs/P01_OWNER_TRIALS.md) gives a frozen successful
-EXE hash/source and the content-free collector. `scripts/collect-physical.ps1`
-verifies that hash/source, captures actual OS/model/RAM, gates enrollment/unlock
-on capabilities and preserves failed operation exit status. Its hosted CI record
-is labeled hosted and cannot certify physical acceptance.
+[The owner runbook](../../../docs/P01_OWNER_TRIALS.md) now uses a single
+double-click EXE. Its built-in workflow covers frozen AEAD/Argon2id checks,
+an exact 1 GB local disk round-trip, capability gating, fresh-process synthetic
+Hello enrollment/unlock, guided cancel/lock and exact cleanup, then saves one
+content-free report. The MSVC CRT is statically linked; no separate VC runtime,
+collector script or fixture generator is needed. The EXE embeds GPL license
+text accessible with `--license`; source is linked from the test release.
+
+`--hosted-report` collects only capability/hash/source. `--hosted-local-report`
+also exercises native crypto/KDF/exact 1 GB disk checks, never Hello enrollment.
+Actions labels these records hosted and `physical_acceptance:false`. The older
+`scripts/collect-physical.ps1` remains available solely for developer diagnostics.
 
 ```powershell
-Get-FileHash ./target/release/anynote-p01-windows-hello.exe -Algorithm SHA256
-./target/release/anynote-p01-windows-hello.exe roundtrip
+Get-FileHash ./target/x86_64-pc-windows-msvc/release/anynote-p01-windows-hello.exe -Algorithm SHA256
+./target/x86_64-pc-windows-msvc/release/anynote-p01-windows-hello.exe roundtrip
 ```
 
 `roundtrip` creates a real native window and registers Windows lock/suspend
