@@ -217,3 +217,66 @@ It still requires publication in environment settings for future tasks.
 Actual Windows Hello prompts/cancellation/lock and installed-iPhone
 KDF/storage/memory/Files trials remain **NOT RUN**. See NEXT_TASK.md for the
 next bounded physical/fault evidence slice.
+
+## P01 export memory, fault and owner-trial preparation
+
+[Run 38060083515](https://github.com/kurasis/AnyNote/actions/runs/38060083515)
+completed **PASS** at `1664d0dcdc4db560d1c342a70c8f7dead73f3c4b`, together
+with baseline run 38060083516. Sanitized reports/provenance:
+[p01-export-faults-large.json](evidence/p01-export-faults-large.json) and
+[p01-hosted-collector.json](evidence/p01-hosted-collector.json).
+
+- All 663 live/frozen primitive checks, KDF/storage/quota checks and the exact
+  native/generated-stream/selected-file 1 GB pipelines pass. Existing Rust
+  suites and strict fmt/clippy gates also pass: 4 native, 70 portable, 98 Windows
+  routine plus 1 explicitly executed independent ABI test.
+- Real selected File: saved 1,000,000,000 bytes; upload/download each
+  1,000,001,920 ciphertext bytes; independent SHA-256
+  `e2127a52742b8c47998ad53e5558d0092b058c0f9ce9f489045a94a317e8fdba`.
+  Browser sandbox remains enabled; there are no external requests/page errors.
+- Separate selected-file desktop RSS measurements:
+
+| 1 GB phase | Baseline KiB | Sampled peak KiB | Increment KiB | Samples | Duration ms |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Encrypt/upload | 1,064,008 | 1,480,700 | 416,692 | 140 | 62,461 |
+| Decrypt/export/saved-file readback | 1,323,872 | 1,428,848 | 104,976 | 986 | 25,157 |
+
+These are aggregate desktop process samples, not mobile memory or hard peaks.
+Shared pages may be counted twice. The requested 25 ms timer is serialized
+behind CDP/proc reads and can have much longer gaps; sample count/duration are
+reported, not a claim of an achieved fixed interval. The final sampler adds
+longest observed gap tracking. iPhone memory remains **NOT MEASURED**.
+
+- Corrupt and truncated HTTP second parts after one verified first-part write
+  are rejected. Actual OPFS writer abort preserves the previous committed file.
+  An unchanged-ciphertext retry fully authenticates and rereads the correct file.
+- Holding the second real GET until lock acknowledgement then releasing it is
+  rejected as PAUSED_LOCKED, with only the first part processed and old output
+  preserved. This is a host lifecycle fault, not a physical interruption pass.
+- Real gzip response: encoded Content-Length 32,784, decoded bytes 32,785.
+  Fixed-buffer reader rejects expansion before any plaintext write; old output
+  remains unchanged. Actual exclusive OPFS writable ownership denies a competing
+  export. No mocked crypto/sink replaces these checks.
+- Failed share preparation removes its owned temporary directory. Reload loses
+  live keys; marked orphan cleanup removes one verified export while preserving
+  no-marker, different-marker and unrelated test controls. Second cleanup removes
+  zero. No secure-erasure or arbitrary-OS-sink claim.
+- Windows collector executes capabilities on actual hosted Windows Server 2025
+  build 26100/24H2, checks source/EXE hash and writes content-free metadata.
+  Embedded source matches the run, SHA-256
+  `c0105e5ac6301fbd509629d53a66b2cd1579c89aff215344b4f64db8b3b96aea`.
+  API 7 is BLOCKED by the required API 9 gate, native objects false, physical
+  acceptance false, environment explicitly hosted. Hardware is a VM.
+
+Local actual fixture-tool checks pass at 0/32,768/8,388,609 bytes: create/inspect
+agree with independent Python SHA-256, overwrite is refused without changing
+existing data, 1,000,000,002 is rejected before creation. Native-only small
+interop/KDF passes; browser is explicitly NOT RUN in that mode. A separate full
+local invocation failed at sandbox startup after the native slice: cloud helper
+ownership remains the environment blocker. No sandbox/verification bypass used.
+
+Owner reports the private HTTPS host is not ready. Prepared owner/Windows HTTPS
+runbooks are procedures, not executed certificate/firewall/device tests. The
+template is explicitly UNFILLED. Actual Windows prompts, installed-iPhone
+storage/KDF/Files/process memory, physical low space and the second older phone
+remain **NOT RUN/BLOCKED**. G1 is open; next independent work is P03 tooling.

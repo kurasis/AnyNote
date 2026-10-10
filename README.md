@@ -45,3 +45,4 @@ No release license has been chosen for AnyNote. Third-party component licenses
 do not grant a license to this project's own source or the supplied specification.
 
 P01 experiment: [commands and boundaries](experiments/p01/README.md).
+Physical trials: [owner actions and required results](docs/P01_OWNER_TRIALS.md).

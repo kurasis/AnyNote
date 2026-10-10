@@ -5,6 +5,11 @@ These are procedures and required future harness capabilities, not passed tests.
 The primitive CLI/worker is a useful prerequisite, not the complete platform
 harness. Do not replace missing physical evidence with GitHub Linux results.
 
+[Owner instructions](P01_OWNER_TRIALS.md) and an
+[unfilled capture template](evidence/p01-physical-template.json) are prepared.
+Independent host export memory/fault/cleanup results are in TEST_EVIDENCE.md;
+physical statuses below remain unchanged. The private HTTPS host is not ready.
+
 ## Evidence record for every trial
 
 Record date, source commit, executable/bundle hash, device model/RAM, exact OS

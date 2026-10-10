@@ -27,11 +27,13 @@ async function upload(source, origin) {
     for (let index=0; index<count; index++) {
       current(run);
       const clear = new Uint8Array(await source.slice(index*CHUNK, Math.min((index+1)*CHUNK,source.size)).arrayBuffer());
-      current(run); sodium.crypto_hash_sha256_update(inputHash,clear);
       const nonce = new Uint8Array(24);nonce.set(prefix);new DataView(nonce.buffer).setBigUint64(16,BigInt(index),true);
       const aad = sodium.from_string(`AnyNote.P01.PhysicalFile.v1/${index}/${count}/${source.size}/${clear.length}`);
       let cipher;
-      try { cipher = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(clear,aad,null,nonce,key); }
+      try {
+        current(run); sodium.crypto_hash_sha256_update(inputHash,clear);
+        cipher = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(clear,aad,null,nonce,key);
+      }
       finally { sodium.memzero(clear); }
       const response = await fetch(`${origin}/ciphertext/${index}`, {method:'PUT',body:cipher});
       current(run); if (!response.ok) throw new Error(`Upload stopped at part ${index}; restart server/session before retry`);
@@ -45,6 +47,23 @@ async function upload(source, origin) {
       limitation:'Live local experimental key/inventory only; no production manifest, recipient trust or resume.'};
   } catch (error) { sodium.memzero(key); if (uploadingKey === key) uploadingKey = null; throw error; }
 }
+async function boundedCiphertext(response,expected,run) {
+  // Content-Length bounds encoded bytes, not necessarily browser-decoded bytes.
+  // Read into a fixed part buffer and reject expansion before full-body allocation.
+  if(!response.body)throw new Error('Missing ciphertext body');
+  const reader=response.body.getReader(),bytes=new Uint8Array(expected);
+  let total=0;
+  try {
+    for(;;){
+      current(run);const {done,value}=await reader.read();current(run);
+      if(done)break;
+      if(value.length>expected-total)throw new Error('Ciphertext exceeds bounded part length');
+      bytes.set(value,total);total+=value.length;
+    }
+    if(total!==expected)throw new Error('Truncated ciphertext');
+    return bytes;
+  }finally{await reader.cancel().catch(()=>{});reader.releaseLock();}
+}
 async function exportFile(sink) {
   if (!staged || !sink || sink.kind !== 'file' || typeof sink.createWritable !== 'function') throw new Error('No live upload or bounded explicit export sink');
   const prepared=staged,run=generation, outputHash=sodium.crypto_hash_sha256_init();
@@ -55,7 +74,7 @@ async function exportFile(sink) {
       const response=await fetch(`${prepared.origin}/ciphertext/${index}`,{cache:'no-store'});
       const length=Number(response.headers.get('Content-Length'));
       if (!response.ok || length!==item.bytes || length>CHUNK+16) throw new Error('Invalid bounded ciphertext response');
-      const cipher=new Uint8Array(await response.arrayBuffer());current(run);
+      const cipher=await boundedCiphertext(response,item.bytes,run);current(run);
       if (cipher.length!==item.bytes || digest(cipher)!==item.sha256) throw new Error('Ciphertext integrity mismatch');
       const clear=sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null,cipher,item.aad,item.nonce,prepared.key);
       try {sodium.crypto_hash_sha256_update(outputHash,clear);await writer.write(clear);total+=clear.length;}
@@ -85,7 +104,10 @@ self.onmessage=async({data})=>{
     else if(data.kind==='reselect') {
       sizeCheck(data.source); if(!staged || data.source.size!==staged.size)throw new Error('Source changed; restart with fresh keys');
       const state=sodium.crypto_hash_sha256_init(),run=generation;
-      for(let offset=0;offset<data.source.size;offset+=CHUNK){current(run);const bytes=new Uint8Array(await data.source.slice(offset,offset+CHUNK).arrayBuffer());current(run);sodium.crypto_hash_sha256_update(state,bytes);sodium.memzero(bytes);}
+      for(let offset=0;offset<data.source.size;offset+=CHUNK){
+        current(run);const bytes=new Uint8Array(await data.source.slice(offset,offset+CHUNK).arrayBuffer());
+        try{current(run);sodium.crypto_hash_sha256_update(state,bytes);}finally{sodium.memzero(bytes);}
+      }
       if(sodium.to_hex(sodium.crypto_hash_sha256_final(state))!==staged.sha256)throw new Error('Source changed; restart with fresh keys');
       result={status:'SOURCE_MATCHES',resume:'NOT IMPLEMENTED; matching source is only a prerequisite'};
     }else throw new Error('Unknown experiment operation');

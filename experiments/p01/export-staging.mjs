@@ -4,9 +4,10 @@ const records=new Map();
 export async function prepareExport(call) {
   const id=PREFIX+crypto.randomUUID().replaceAll('-','');
   const root=await navigator.storage.getDirectory(),directory=await root.getDirectoryHandle(id,{create:true});
-  const marker=await(await directory.getFileHandle('purpose.marker',{create:true})).createWritable();
-  await marker.write(MARKER);await marker.close();
   try{
+    const marker=await(await directory.getFileHandle('purpose.marker',{create:true})).createWritable();
+    try{await marker.write(MARKER);await marker.close();}
+    catch(error){await marker.abort().catch(()=>{});throw error;}
     const sink=await directory.getFileHandle('synthetic-export.bin',{create:true});
     const result=await call({kind:'export',sink});
     const file=await sink.getFile();
@@ -26,10 +27,11 @@ export async function discardExport(id) {
 }
 export async function shareExport(id) {
   const item=records.get(id);
-  if(!item||typeof navigator.share!=='function'||!navigator.canShare?.({files:[item.file]})){
-    throw new Error('BLOCKED: Web Share of the verified disk File is unavailable; no whole-file Blob fallback');
-  }
+  if(!item)throw new Error('No verified export to share');
   try{
+    if(typeof navigator.share!=='function'||!navigator.canShare?.({files:[item.file]})){
+      throw new Error('BLOCKED: Web Share of the verified disk File is unavailable; no whole-file Blob fallback');
+    }
     // Called from a separate explicit click to preserve transient user activation.
     await navigator.share({files:[item.file],title:'AnyNote P01 synthetic export'});
     return {status:'SHARE_COMPLETED',files_destination:'NOT VERIFIED: independently inspect/hash the actual Files output',

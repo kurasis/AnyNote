@@ -1,0 +1,43 @@
+{
+  "format_version": 1,
+  "kind": "UNFILLED_PHYSICAL_TRIAL_TEMPLATE",
+  "physical_acceptance": false,
+  "date_utc": null,
+  "source_commit": null,
+  "executable_or_bundle_sha256": null,
+  "windows": {
+    "owner_reported": "Windows 11 Pro 25H2; Hello planned",
+    "observed_build": null,
+    "provider": null,
+    "capabilities_record": null,
+    "roundtrip": "NOT RUN",
+    "cancel": "NOT RUN",
+    "lock": "NOT RUN",
+    "fresh_process_unlock": "NOT RUN",
+    "cleanup": "NOT RUN",
+    "observations": null
+  },
+  "iphone": {
+    "owner_reported": "iPhone 17 Pro / iOS 26.7.1",
+    "observed_model_and_build": null,
+    "installed_pwa": null,
+    "private_https_origin": null,
+    "capabilities": null,
+    "kdf": null,
+    "storage": null,
+    "available_storage_bytes": null,
+    "memory": {"status": "NOT MEASURED", "tool": null, "baseline_bytes": null, "peak_bytes": null, "sampling_interval_ms": null},
+    "file_trials": [],
+    "background_lock": "NOT RUN",
+    "termination_reload": "NOT RUN",
+    "network_interrupt": "NOT RUN",
+    "source_reselect": "NOT RUN",
+    "share_cancel_and_cleanup": "NOT RUN",
+    "physical_low_space": "NOT RUN",
+    "observations": null
+  },
+  "file_trial_fields": ["source_bytes", "source_sha256", "saved_files_bytes", "saved_files_sha256", "export_sink", "actual_files_destination", "elapsed_ms", "status", "failure_or_block_reason"],
+  "older_lower_memory_iphone": "NOT SUPPLIED",
+  "unsupported_harness_features": ["passkey login verifier", "fresh recipient recovery", "production resume"],
+  "g1": "OPEN"
+}

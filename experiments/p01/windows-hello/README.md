@@ -49,6 +49,12 @@ Capture the actual OS build/API, authenticator, probe source and executable hash
 during a new AnyNote trial. Use the existing account; no reset or security-policy
 change is required. Preserve upstream completed experiments and exclusions.
 
+[The owner runbook](../../../docs/P01_OWNER_TRIALS.md) gives a frozen successful
+EXE hash/source and the content-free collector. `scripts/collect-physical.ps1`
+verifies that hash/source, captures actual OS/model/RAM, gates enrollment/unlock
+on capabilities and preserves failed operation exit status. Its hosted CI record
+is labeled hosted and cannot certify physical acceptance.
+
 ```powershell
 Get-FileHash ./target/release/anynote-p01-windows-hello.exe -Algorithm SHA256
 ./target/release/anynote-p01-windows-hello.exe roundtrip
