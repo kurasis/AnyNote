@@ -131,3 +131,20 @@ the Share UI in hosted integration tests is explicitly mocked. No production
 format, data migration, signing or site deployment is introduced. Rollback:
 revert the isolated kit additions and remove only the test site's kit directory;
 preserve outstanding native cleanup journals until exact owned cleanup succeeds.
+
+## P01-DEVICE-KIT publication transport
+
+PR #4 merged after final source 5a09852 passed all four checks. Downloaded
+EXE/ZIP hashes, ZIP CRC/asset receipts and system-only Windows PE imports were
+verified. Direct cloud release upload then failed with HTTP 401 specifically
+at uploads.github.com; the same GitHub API credential supports PR/merge/read.
+The CLI rolled back its unsuccessful release, leaving no tag or assets.
+
+An explicit workflow_dispatch-only job now publishes the frozen successful
+run 38068299281 using its own scoped Actions token. It rechecks CI success,
+source, native report/hash, ZIP receipts and absence of a conflicting release,
+then verifies published downloads and the exact source tag. Other dispatch
+build jobs are skipped for this publication-only mode; normal PR/main checks
+remain unchanged. Publication execution is pending at this initial snapshot;
+actual run/download evidence is recorded in the publication PR and release.
+No signing, production deployment, user secret or dependency change is added.
