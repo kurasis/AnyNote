@@ -44,12 +44,12 @@ jobs:
           cargo test --manifest-path experiments/p01/native/Cargo.toml --locked --release -j 4
       - name: Rust / Node / real Chromium worker and decimal 1 GB
         env:
-          RECORD_FIXTURES: 'true' # Initial branch run records real browser fixtures; remove before final merge.
+          RECORD_FIXTURES: ${{ inputs.record_fixtures || false }}
         run: |
           source scripts/runtime-env.sh
           cd experiments/p01
           if [[ "$RECORD_FIXTURES" == true ]]; then
-            node run.mjs --write-fixtures
+            node run.mjs --large --write-fixtures
           else
             npm run test:large
           fi

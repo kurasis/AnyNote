@@ -98,6 +98,14 @@ through CDP and `/proc` every 25 ms. Shared pages may be counted twice and short
 peaks may be missed. Reports describe exact environment/method; these measurements
 cannot certify a 64 MiB iPhone budget. No forced garbage collection is used.
 
+Bulk synthetic browser source generation uses native Web Crypto CSPRNG calls
+of at most 64 KiB. Initial measurements isolated expensive per-byte entropy
+bridging in `libsodium.randombytes_buf` for an 8 MiB test source; it was not an
+AEAD slowdown. Libsodium still generates the small file keys/prefixes. Actual
+uploads will read selected files instead of generating random source data.
+Phase timings and optional WASM linear-heap measurements distinguish these costs;
+WASM heap size alone is not total worker/process memory.
+
 No full encrypted manifest/key-envelope path, trust/roles, source reselect,
 crash resume, quota, lifecycle lock, passkeys/PRF, Windows Hello, WebView2 or
 physical iPhone export is implemented by this experiment. Physical procedures
