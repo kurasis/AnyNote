@@ -194,8 +194,6 @@ impl UnverifiedCertification<'_> {
 
 #[cfg(windows)]
 mod signature;
-#[cfg(windows)]
-pub use signature::SignatureCheckedCertification;
 
 mod pcp;
 #[cfg(test)]

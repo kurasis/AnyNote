@@ -10,8 +10,6 @@ mod read_public;
 
 #[cfg(windows)]
 pub(super) mod windows;
-#[cfg(windows)]
-pub use windows::run;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum Experiment {

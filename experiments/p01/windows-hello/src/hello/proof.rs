@@ -5,8 +5,6 @@ use serde::Serialize;
 
 #[cfg(windows)]
 pub(super) mod windows;
-#[cfg(windows)]
-pub use windows::run;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "kebab-case")]

@@ -895,6 +895,8 @@ mod tests {
         assert_eq!(cap.hello_candidates, Some(2));
         list.cAuthenticatorDetails = 1;
         entry.bLocked = 1;
+        // Keep the mutated native-shaped fixture visible through its raw pointer.
+        std::hint::black_box(&entry);
         assert!(unsafe { select(&list, &mut cap) }.is_err());
         assert_eq!(cap.hello_locked, Some(true));
         list.cAuthenticatorDetails = 33;

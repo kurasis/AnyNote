@@ -77,8 +77,13 @@ fn authenticate(root: &Path, local_key: &[u8]) -> Result<()> {
     )?)?;
     let key = aead::Key::from_bytes(local_key).map_err(|_| Error::new("CORRUPT"))?;
     let clear = Zeroizing::new(
-        aead::decrypt(&vault.ciphertext, Some(AAD), &vault.nonce, &key)
-            .map_err(|_| Error::new("CORRUPT"))?,
+        aead::decrypt(
+            &vault.ciphertext,
+            Some(AAD),
+            &aead::Nonce::from_bytes(vault.nonce),
+            &key,
+        )
+        .map_err(|_| Error::new("CORRUPT"))?,
     );
     if !utils::memcmp(&clear, MARKER) {
         return Err(Error::new("CORRUPT"));

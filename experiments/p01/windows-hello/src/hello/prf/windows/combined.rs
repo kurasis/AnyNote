@@ -278,6 +278,8 @@ mod tests {
         );
         assert!(unsafe { owned_ids(&list, &[8; 32]) }.unwrap().is_empty());
         rp_info.pwszId = other.as_ptr();
+        // The native-shaped list observes this mutation through a raw pointer.
+        std::hint::black_box(&rp_info);
         assert!(unsafe { owned_ids(&list, &[7; 32]) }.unwrap().is_empty());
         let oversized = WEBAUTHN_CREDENTIAL_DETAILS_LIST {
             cCredentialDetails: 257,
