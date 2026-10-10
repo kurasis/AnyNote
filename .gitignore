@@ -1,0 +1,14 @@
+# Local configuration and generated outputs
+.env
+.env.*
+!.env.example
+node_modules/
+vendor/
+target/
+dist/
+coverage/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+artifacts/

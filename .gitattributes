@@ -1,0 +1,6 @@
+* text=auto
+*.py text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+# Preserve the exact bytes covered by the original specification checksums.
+docs/spec/* -text whitespace=-blank-at-eol

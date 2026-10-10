@@ -1,0 +1,117 @@
+{
+  "checked_on": "2026-10-10",
+  "purpose": "P00 source research; metadata hashes are receipts, not an independent artifact signature or security audit",
+  "sources": [
+    {
+      "name": "laravel",
+      "url": "https://repo.packagist.org/p2/laravel/framework.json",
+      "response_status": 200,
+      "response_sha256": "0449aa74cd75070ce78df5a46ca51b5c2ab6423caf6419349d14592231ed722c"
+    },
+    {
+      "name": "laravel-releases",
+      "url": "https://raw.githubusercontent.com/laravel/docs/13.x/releases.md",
+      "response_status": 200,
+      "response_sha256": "0297b3f994b9a46d54ae4401e61367aa7535d7cbe4709a3a3d5d8b0051d48a1c"
+    },
+    {
+      "name": "node",
+      "url": "https://nodejs.org/dist/index.json",
+      "response_status": 200,
+      "response_sha256": "c7005c9dd6c35ded6bab489597ab51094dc3e923e19b6236014e652b7cf5a7cb"
+    },
+    {
+      "name": "node-support",
+      "url": "https://raw.githubusercontent.com/nodejs/Release/main/schedule.json",
+      "response_status": 200,
+      "response_sha256": "1cf0432ceb9dfde7f1fd4cce43206519942cfdfad5a26039c2f4bb20fde8549c"
+    },
+    {
+      "name": "rust",
+      "url": "https://static.rust-lang.org/dist/channel-rust-stable.toml",
+      "response_status": 200,
+      "response_sha256": "ce6dddc886364f8d786514771212cebe9b731ba82d6b859951c6b0ccc516b6a2"
+    },
+    {
+      "name": "tauri",
+      "url": "https://registry.npmjs.org/@tauri-apps/api/latest",
+      "response_status": 200,
+      "response_sha256": "6c28453d2491a063471d1e2c1aa1e6b785835c08ad29bea5046a95607c311394"
+    },
+    {
+      "name": "react",
+      "url": "https://registry.npmjs.org/react/latest",
+      "response_status": 200,
+      "response_sha256": "c9b7f5adeab67cd3146ffc69712aee7ddc37c23e656e41feaaa5624dff4e02aa"
+    },
+    {
+      "name": "typescript",
+      "url": "https://registry.npmjs.org/typescript/latest",
+      "response_status": 200,
+      "response_sha256": "28a8ef314c6bbc3fddb831088f80eb2fcac6351cb618c8ac029f7229f587b8aa"
+    },
+    {
+      "name": "sodium",
+      "url": "https://registry.npmjs.org/libsodium-wrappers-sumo/latest",
+      "response_status": 200,
+      "response_sha256": "26e0222144a5701db2f1824968cff8ca7bff4119a43873421edd3c604eb3a2c5"
+    },
+    {
+      "name": "php-support",
+      "url": "https://raw.githubusercontent.com/php/web-php/master/include/branches.inc",
+      "response_status": 200,
+      "response_sha256": "33ab86e7c396ba8d036b04af288d495aa9d8d6c89796d67d4500b6e04cdf3f35"
+    },
+    {
+      "name": "debian-packages",
+      "url": "https://deb.debian.org/debian/dists/trixie/main/binary-amd64/Packages.xz",
+      "response_status": 200,
+      "response_sha256": "7778d3e3f303b7ddb8ce0fe7c8d57473a076c6bf2e8f241f75421d2396352498"
+    },
+    {
+      "name": "tauri-prerequisites",
+      "url": "https://raw.githubusercontent.com/tauri-apps/tauri-docs/v2/src/content/docs/start/prerequisites.mdx",
+      "response_status": 200,
+      "response_sha256": "2b72fc4fa86ff825e745c5371c97d4c314064f380af2882a80676cb49aa9a4fc"
+    },
+    {
+      "name": "tauri-crate",
+      "url": "https://crates.io/api/v1/crates/tauri",
+      "response_status": 200,
+      "response_sha256": "21df95aadd702dfd0a186f0352b2ca04ce8c81966dc44310064faf70cc415e91"
+    }
+  ],
+  "git_tags": {
+    "laravel/framework v13.35.0": "a413a9da94884e5e9d58f4e6612884f712827804",
+    "MariaDB/server mariadb-11.8.6": "2eeb8795e593db09241c1c5210fee34b3569ca47",
+    "nginx/nginx release-1.26.3": "4d2b955c8e25b4dd2fc477ebc05bcd392e9bd2df",
+    "actions/checkout v5.0.0": "08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+    "actions/setup-python v6.0.0": "e797f83bcb11b83ae66e0230d6156d7c80228e7c"
+  },
+  "observations": {
+    "laravel": "13.35.0; requires PHP ^8.3; MIT",
+    "node": "24.21.0 Krypton LTS; schedule security EOL 2028-04-30",
+    "rust": "1.99.0; stable channel dated 2026-10-01",
+    "tauri": "2.12.2 Rust crate and JS API; MIT OR Apache-2.0",
+    "react": "19.3.0; MIT",
+    "typescript": "7.0.2; Apache-2.0",
+    "sodium_js": "0.8.4; ISC",
+    "debian": "PHP 8.4.24-1~deb13u1; Composer 2.8.8-1+deb13u3; MariaDB 1:11.8.6-0+deb13u1; Nginx 1.26.3-3+deb13u7"
+  },
+  "blocked_direct_hosts": [
+    "www.php.net",
+    "laravel.com",
+    "mariadb.org",
+    "nginx.org",
+    "v2.tauri.app",
+    "api.github.com",
+    "getcomposer.org"
+  ],
+  "archive": {
+    "filename": "encrypted_notes_files_spec_en_v1.zip",
+    "sha256": "8ba6961178ab5ca8a392b01b2aba1de24c34b2c6f35b29dd671fc2edea818ffa",
+    "zip_crc": "PASS",
+    "specification_version": "1.1.0",
+    "numbered_documents": 21
+  }
+}

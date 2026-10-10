@@ -1,0 +1,13 @@
+{
+  "specification_version": "1.1.0",
+  "max_plaintext_file_bytes": 1000000000,
+  "global_committed_ciphertext_quota_bytes": 100000000000,
+  "chunk_plaintext_bytes": 8388608,
+  "aead_tag_bytes": 16,
+  "ios_cache_soft_cap_bytes": 1073741824,
+  "account_pending_reservation_cap_bytes": 2147483648,
+  "required_clients": ["windows-webview2", "ios-installed-pwa"],
+  "required_backend": ["laravel", "mariadb", "nginx", "php-fpm"],
+  "required_group_types": ["private", "shared"],
+  "interface_languages": ["en", "ru"]
+}
