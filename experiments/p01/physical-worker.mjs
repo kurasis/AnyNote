@@ -6,7 +6,7 @@ const MAX = 1000000000, CHUNK = 8388608;
 let busy = false, generation = 0;
 let staged; // Test-only live file/key state, never a durable production transfer session.
 let uploadingKey;
-function locked() {
+export function locked() {
   generation++;
   if (uploadingKey) sodium.memzero(uploadingKey);
   uploadingKey = null;
@@ -18,7 +18,7 @@ function sizeCheck(source) {
   if (!(source instanceof Blob) || source.size > MAX) throw new Error('Select a synthetic file of at most 1,000,000,000 bytes');
 }
 function current(expected) { if (generation !== expected) throw new Error('PAUSED_LOCKED: restart with fresh keys after lifecycle interruption'); }
-async function upload(source, origin) {
+export async function upload(source, origin) {
   sizeCheck(source); locked();
   const count = Math.ceil(source.size / CHUNK), key = sodium.randombytes_buf(32), prefix = sodium.randombytes_buf(16);
   uploadingKey = key;
@@ -64,7 +64,7 @@ async function boundedCiphertext(response,expected,run) {
     return bytes;
   }finally{await reader.cancel().catch(()=>{});reader.releaseLock();}
 }
-async function exportFile(sink) {
+export async function exportFile(sink) {
   if (!staged || !sink || sink.kind !== 'file' || typeof sink.createWritable !== 'function') throw new Error('No live upload or bounded explicit export sink');
   const prepared=staged,run=generation, outputHash=sodium.crypto_hash_sha256_init();
   const writer=await sink.createWritable(); let total=0;

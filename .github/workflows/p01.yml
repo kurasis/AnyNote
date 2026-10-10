@@ -19,6 +19,40 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  static-device-kit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      ANYNOTE_TOOLCHAINS: /tmp/anynote-p01-toolchains
+      CHROMIUM_EXECUTABLE: /usr/bin/google-chrome
+      ANYNOTE_PROBE_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - name: Install verified toolchains and locked browser dependencies
+        run: |
+          bash scripts/install-p01-toolchains.sh
+          source scripts/runtime-env.sh
+          npm --prefix experiments/p01 ci --no-audit --no-fund
+      - name: Exercise one-button kit at a nested static path with sandbox enabled
+        run: |
+          source scripts/runtime-env.sh
+          cd experiments/p01
+          node test-device-kit.mjs
+      - name: Package root-level iPhone ZIP and verify all receipts
+        run: python3 scripts/zip-device-kit.py
+      - name: Preserve static kit and actual hosted report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: p01-iphone-device-kit
+          path: |
+            experiments/p01/artifacts/AnyNote-P01-iPhone.zip
+            experiments/p01/artifacts/device-kit-report.json
+          if-no-files-found: error
+          retention-days: 14
+
   linux-native-browser:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -72,6 +106,7 @@ jobs:
     timeout-minutes: 15
     env:
       ANYNOTE_PROBE_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+      CARGO_BUILD_TARGET: x86_64-pc-windows-msvc
     defaults:
       run:
         working-directory: experiments/p01/windows-hello
@@ -101,23 +136,32 @@ jobs:
       - name: Capability-only runtime observation (no native objects created)
         run: |
           New-Item -ItemType Directory -Force artifacts | Out-Null
-          & ./target/release/anynote-p01-windows-hello.exe capabilities | Out-File artifacts/capabilities.json -Encoding utf8
+          & ./target/x86_64-pc-windows-msvc/release/anynote-p01-windows-hello.exe capabilities | Out-File artifacts/capabilities.json -Encoding utf8
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          Get-FileHash target/release/anynote-p01-windows-hello.exe -Algorithm SHA256 | Format-List | Out-File artifacts/executable-sha256.txt
+          Get-FileHash target/x86_64-pc-windows-msvc/release/anynote-p01-windows-hello.exe -Algorithm SHA256 | Format-List | Out-File artifacts/executable-sha256.txt
       - name: Validate content-free device collector on the hosted runner
         run: |
-          $probe=(Resolve-Path target/release/anynote-p01-windows-hello.exe).Path
+          $probe=(Resolve-Path target/x86_64-pc-windows-msvc/release/anynote-p01-windows-hello.exe).Path
           $hash=(Get-FileHash $probe -Algorithm SHA256).Hash
           ./scripts/collect-physical.ps1 -Probe $probe -ExpectedSha256 $hash -ExpectedSource $env:ANYNOTE_PROBE_SOURCE -Operation capabilities -EnvironmentKind hosted -OutputDirectory artifacts/hosted-collector
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $record=Get-Content (Get-ChildItem artifacts/hosted-collector/trial-*.json).FullName -Raw | ConvertFrom-Json
           if ($record.environment_kind -ne 'hosted' -or $record.physical_acceptance -ne $false -or $record.source_commit -ne $env:ANYNOTE_PROBE_SOURCE -or $record.capability.native_objects_created -ne $false) { throw 'Invalid hosted collector record' }
+      - name: Exercise built-in single-EXE report without hardware objects
+        run: |
+          & ./target/x86_64-pc-windows-msvc/release/anynote-p01-windows-hello.exe --hosted-local-report | Out-File artifacts/device-kit-hosted.json -Encoding utf8
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $record=Get-Content artifacts/device-kit-hosted.json -Raw | ConvertFrom-Json
+          $hash=(Get-FileHash target/x86_64-pc-windows-msvc/release/anynote-p01-windows-hello.exe -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($record.environment_kind -ne 'hosted' -or $record.physical_acceptance -ne $false -or $record.source_commit -ne $env:ANYNOTE_PROBE_SOURCE -or $record.capability.report.native_objects_created -ne $false -or $record.operations.Count -ne 0 -or $record.executable_sha256 -ne $hash) { throw 'Invalid single-EXE hosted record' }
+          if ($record.local_checks.status -ne 'PASS' -or $record.local_checks.file.bytes -ne 1000000000 -or $record.local_checks.file.chunks -ne 120 -or $record.local_checks.synthetic_disk_cleanup -ne 'PASS') { throw 'Built-in exact 1 GB local check failed' }
+          Copy-Item target/x86_64-pc-windows-msvc/release/anynote-p01-windows-hello.exe artifacts/AnyNote-P01-Windows-x64.exe
       - name: Preserve unsigned synthetic probe and actual capability evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: p01-windows-synthetic-probe
           path: |
-            experiments/p01/windows-hello/target/release/anynote-p01-windows-hello.exe
+            experiments/p01/windows-hello/target/x86_64-pc-windows-msvc/release/anynote-p01-windows-hello.exe
             experiments/p01/windows-hello/artifacts/*
           if-no-files-found: error
           retention-days: 14

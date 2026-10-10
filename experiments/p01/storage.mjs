@@ -29,7 +29,7 @@ export async function persistRequest() {
   return { granted: await navigator.storage?.persist?.() ?? false,
     interpretation: 'A false result is denial, not permission to rely on durable storage.' };
 }
-export async function writeStorage() {
+export async function writeStorage(createWriter = (file) => file.createWritable()) {
   await sodium.ready;
   const id = PREFIX + sodium.to_hex(sodium.randombytes_buf(16));
   const marker = sodium.from_string('PUBLIC SYNTHETIC PLAINTEXT MUST NOT ENTER NORMAL CACHE');
@@ -46,7 +46,7 @@ export async function writeStorage() {
   try {
     const directory = await (await navigator.storage.getDirectory()).getDirectoryHandle(id, {create: true});
     const file = await directory.getFileHandle('opaque-object', {create: true});
-    const writer = await file.createWritable();
+    const writer = await createWriter(file);
     try { await writer.write(cipher); await writer.close(); }
     catch (error) { await writer.abort().catch(() => {}); throw error; }
   } catch (error) {
