@@ -10,9 +10,9 @@ import tempfile
 import zipfile
 
 REPO = "kurasis/AnyNote"
-RUN = "38068299281"
-SOURCE = "5a09852b15f863de297a1ac4965c417d580df80d"
-TAG = "v0.1.0-p01-device-kit"
+RUN = "38071301931"
+SOURCE = "f92dcb4eda58c6ce164728a378699f93adef572b"
+TAG = "v0.1.1-p01-device-kit"
 
 
 def gh(*args):
@@ -59,7 +59,11 @@ def main():
                 or win_report["local_checks"]["file"]["bytes"] != 1_000_000_000
                 or win_report["local_checks"]["crypto"]["checks"] != 51
                 or phone_report["status"] != "PASS" or phone_report["source_commit"] != SOURCE
-                or phone_report["os_share_mocked"] is not True):
+                or phone_report["os_share_mocked"] is not True
+                or phone_report["pending_share_page_destroyed_and_report_restored"] is not True
+                or phone_report["restored_selected_output_hash"] is not True
+                or phone_report["report_download_restart_retained"] is not True
+                or phone_report["denied_checkpoint_blocks_before_work"] is not True):
             raise RuntimeError("Asset runtime/source/hash evidence mismatch")
         with zipfile.ZipFile(bundle) as archive:
             if archive.testzip() is not None or json.loads(archive.read("BUILD.json"))["source_commit"] != SOURCE:
@@ -88,7 +92,9 @@ def main():
         notes.write_text(f"""Download only the file for your device. Other attachments are optional evidence, checksums and license notices.
 
 - **Windows:** download `AnyNote-P01-Windows-x64.exe`, double-click and press OK. Crypto, public 64 MiB Argon2id and an exact 1 GB local disk trial run automatically. Follow the Hello confirmation/cancel/lock dialogs. The report folder opens afterwards; send the one JSON report back. No installer, PowerShell, fixture generator, VC runtime or extra DLL is needed.
-- **iPhone:** unzip the contents of `AnyNote-P01-iPhone.zip` into `<web-root>/anynote-p01/` on the existing trusted HTTPS test site. Open `https://YOUR-TEST-SITE/anynote-p01/` in Safari. For the PWA trial, Share -> Add to Home Screen and open the app. Tap **Run all automatic tests**; the same button then guides Save to Files, selecting that saved file for exact size/SHA-256 verification, and saving one report. No Node.js, PHP, account, database or source-file preparation needed.
+- **iPhone:** unzip the contents of `AnyNote-P01-iPhone.zip` into `<web-root>/anynote-p01-v011/` on the existing trusted HTTPS test site. Open `https://YOUR-TEST-SITE/anynote-p01-v011/` in Safari. For the PWA trial, Share -> Add to Home Screen and open the app. Tap **Run all automatic tests**; the same button then guides Save to Files, selecting that saved file for exact size/SHA-256 verification, and saving one report. No Node.js, PHP, account, database or source-file preparation needed.
+
+**Fixed in 0.1.1:** Windows API 9/Hello capability now admits the synthetic trial without treating unresolved key eligibility as a prerequisite; all native PRF/TPM/authentication checks remain intact. iPhone reports are durably saved before the Files sheet. If the app restarts, reopen the same new app/address to verify the file already saved and download the retained report, without another automatic 1 GB run. Handoff outcome stays UNKNOWN until saved bytes are checked. **Save report now** and copyable report text are available on intermediate/failure steps. A lost 0.1.0 memory-only report cannot be reconstructed; repeat the trial once with 0.1.1. Use the new directory to avoid the old installed static cache without clearing site data. The page displays **Test kit 0.1.1**.
 
 Allow about 3.1 GB free system/browser storage. Keep the phone page in the foreground. Confirm system prompts and Files choices yourself; delete the disposable saved `.bin` afterwards.
 
@@ -96,7 +102,7 @@ These are **unsigned P01 synthetic test artifacts**, not a production release or
 
 Build source: `{SOURCE}`. This tag's automatic **Source code** downloads provide exact corresponding modified source and pinned build inputs. The Windows experiment/modifications are GPL-3.0-only; full text is embedded (`--license`) and attached. This does not choose a license for the rest of AnyNote. Sodium ISC notices are included in the iPhone ZIP.
 
-Validation: [feasibility run {RUN}](https://github.com/{REPO}/actions/runs/{RUN}) and [baseline run 38068299240](https://github.com/{REPO}/actions/runs/38068299240). Full 1 GB native/Node/browser interop/export/fault checks; sandboxed nested-path one-button kit; 100 Windows routine tests plus independent Microsoft C-header ABI; one-EXE 51 frozen crypto/KDF checks and exact 1 GB disk output/cleanup; PE imports contain system DLLs only. Build tree merged through [PR #4](https://github.com/{REPO}/pull/4).
+Validation: [feasibility run {RUN}](https://github.com/{REPO}/actions/runs/{RUN}) and [baseline run 38071301914](https://github.com/{REPO}/actions/runs/38071301914). Full 1 GB native/Node/browser interop/export/fault checks; sandboxed nested-path kit with real page destruction during pending mocked Share, retained logs and restored selected 1 GB output hash; 102 Windows routine tests plus independent Microsoft C-header ABI; one-EXE 51 frozen crypto/KDF checks and exact 1 GB disk output/cleanup; PE imports contain system DLLs only. Build tree merged through [PR #6](https://github.com/{REPO}/pull/6).
 
 Windows SHA-256: `{sha(exe)}`. iPhone ZIP SHA-256: `{sha(bundle)}`.
 
@@ -104,7 +110,7 @@ Windows SHA-256: `{sha(exe)}`. iPhone ZIP SHA-256: `{sha(bundle)}`.
 """)
         subprocess.run(["gh", "release", "create", TAG, *(str(path) for path in files),
                         "--repo", REPO, "--target", SOURCE, "--prerelease", "--title",
-                        "P01 device test kit: one Windows EXE and one iPhone ZIP",
+                        "P01 device kit 0.1.1: Hello trial and iPhone report recovery",
                         "--notes-file", str(notes)], check=True)
         # Verify the actually published downloads, not only the upload response.
         downloaded = root / "published"

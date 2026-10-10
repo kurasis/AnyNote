@@ -166,5 +166,8 @@ the primary test step. No actual Files hash/Hello enrollment evidence was suppli
 Local portable tests: 74 PASS, strict Clippy PASS. New hosted regression destroys
 the actual page while mocked Share remains pending, reloads retained diagnostics,
 reselects and hashes the saved 1 GB, preserves pass/failure reports across reopen,
-and rejects denied/malformed checkpoint storage. Hosted execution and updated
-test-release publication are pending at this development snapshot. P01/G1 OPEN.
+and rejects denied/malformed checkpoint storage. All three hosted jobs and baseline PASS at f92dcb4 (run 38071301931);
+raw recovery/browser and Windows records are in docs/evidence. The explicit
+publication job uses these frozen verified bytes for v0.1.1-p01-device-kit;
+actual publication execution and availability are recorded in PR #6/release.
+P01/G1 remains OPEN pending an updated owner run.

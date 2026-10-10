@@ -367,3 +367,36 @@ It restores the same diagnostic files/digests, marks handoff UNKNOWN, independen
 reselects/hashes saved bytes, downloads the retained report, preserves success and
 failure across reopen, and rejects malformed/denied storage. Actual hosted result
 and new release evidence will be attached after CI; this is not physical iOS proof.
+
+Hosted browser regression PASS at source
+`f92dcb4eda58c6ce164728a378699f93adef572b`, feasibility run 38071301931,
+static job 114269092773 (sandboxed Chromium 154.0.8037.97). Actual raw report:
+[p01-device-kit-recovery-hosted-browser.json](evidence/p01-device-kit-recovery-hosted-browser.json).
+The exact selected output has SHA-256
+`5dc9473978377eb7d3454963eee3354bc4c512d615ad2850fbbb403596f19697`;
+checkpoint restored after actual page destruction during pending mocked Share,
+then independently verified 1 GB/120-part output, report-download reopening,
+pass/failure retention, no implicit interrupted-run restart, invalid/denied
+storage refusal and zero owned temporary export directories. ZIP CRC and all
+14 root asset receipts PASS; ZIP SHA-256
+`b6c16683d091467fcb1349fd4485b9eb9f75f7037013439102b8b02326cf3bd5`.
+This is hosted diagnostic recovery with mocked OS copy, not physical iOS proof.
+
+Full feasibility run [38071301931](https://github.com/kurasis/AnyNote/actions/runs/38071301931)
+and baseline [38071301914](https://github.com/kurasis/AnyNote/actions/runs/38071301914)
+PASS at f92dcb4. Windows: 102 routine tests plus separately executed pinned
+Microsoft C-header ABI check PASS; built-in 51 native crypto/KDF vectors,
+exact 1 GB/120 parts and cleanup PASS. Hosted API 7 remains BLOCKED with no
+native objects or operations, as intended. Raw record:
+[p01-device-kit-recovery-hosted-windows.json](evidence/p01-device-kit-recovery-hosted-windows.json).
+EXE SHA-256 `8aca6b9184d18a228a292ac44c3616568caff4d57d009526bd269d210b0bf218`;
+PE dependencies are Windows system DLLs only. The existing full native/Node/
+sandboxed-browser network/export/fault suite also PASS. Downloaded artifacts,
+source receipts and hashes were verified before release publication.
+
+The explicit publication job selects only this frozen successful source/run,
+requires the actual new page-loss/recovery/hash/denied-storage results, refuses
+an existing-tag overwrite, and verifies the published download hashes and exact
+source tag. Publication execution/asset availability is recorded on the
+[0.1.1 release](https://github.com/kurasis/AnyNote/releases/tag/v0.1.1-p01-device-kit)
+and PR #6; it does not represent signing, deployment or physical acceptance.
