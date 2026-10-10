@@ -18,8 +18,8 @@ questions, remote access, device actions or HTTPS deployment are assumed.
 
 Latest 0.1.2 owner run: lock HELLO_CANCELLED/zero events, no Windows lock
 screen; phone restarts at 1 GB Share, no new JSON. 0.1.3 adds a scoped stream
-download and explicitly selected one-shot OS lock. Hosted checks/publication
-are pending; actual Files/lock acceptance remains OPEN.
+download and explicitly selected one-shot OS lock. All three hosted source checks and baseline PASS at 2cc346e; publication
+execution is recorded on PR #8/release. Actual Files/lock acceptance is OPEN.
 
 Read AGENTS.md, progress, decisions, limitations, dependency inventory and
 specification 02/08/13/14/15. Preserve supplied spec bytes, existing experiments,

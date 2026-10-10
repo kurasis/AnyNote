@@ -224,3 +224,13 @@ selected size/hash determines saved-file evidence. Windows adds an explicitly
 selected one-shot LockWorkStation request after 8 seconds while unlock remains
 pending. Ordinary/hosted operations never request lock. API acceptance is not
 WTS lock evidence. Hosted checks/publication pending; P01/G1 remains OPEN.
+
+Hosted 0.1.3 source 2cc346e: all three feasibility jobs and baseline PASS
+(run 38076184680 / 38076184710). Raw stream/browser and Windows records are
+archived. Real 1 GB SW attachment/picker/hash, partial cancellation/retry,
+replay/path/marker rejection, recovery and exact cleanup PASS. Windows 106
+routine plus explicit C-header ABI PASS; full existing 663-primitive/native/
+Node/network/browser/fault suite PASS. Freeze these verified EXE/ZIP bytes for
+v0.1.3-p01-device-kit; Actions publisher revalidates runtime/source/receipts
+and actual downloads. Publication execution is recorded in PR #8/release.
+Actual iOS PWA/Safari and selected Windows lock require owner testing; G1 OPEN.

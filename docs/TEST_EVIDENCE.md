@@ -484,3 +484,36 @@ Local 77 portable tests PASS, including actual owner cancelled/zero-event
 regression and refusal to classify OS-request acceptance as lock proof. Strict
 Clippy PASS. Static kit builds; hosted real attachment/replay/recovery/picker/hash,
 Windows compilation/ABI and release publication are pending.
+
+Hosted candidate 2cc346e: static kit and Windows jobs PASS in [run
+38076184680](https://github.com/kurasis/AnyNote/actions/runs/38076184680).
+[Raw browser](evidence/p01-stream-download-hosted-browser.json) and
+[raw Windows](evidence/p01-stream-download-hosted-windows.json) are archived.
+Chrome 154.0.8037.97 uses its actual sandbox and download stack: exact 1 GB
+streaming attachment, independent Node disk SHA-256 and activated picker match;
+partial stream cancellation releases the lock, replay/unknown token/arbitrary
+path/wrong-purpose marker are rejected. Retained synthetic output reopens and
+rehashes after page destruction/reload; wrong JSON retry and previous diagnostic
+migration pass. Owned export directories remaining: zero. Optional OS Share
+alone remains explicitly mocked. The initial fcee8b3 candidate failed when a
+download attribute cancelled the new attachment; navigating to the scoped SW
+attachment fixes that route. No failed run is counted as acceptance.
+
+Windows: 106 routine tests PASS; one ABI test initially ignored is explicitly
+run separately and PASS against the Microsoft C-header measurements. Strict
+Clippy, 51 native crypto/KDF, exact 1 GB/120 chunks, cleanup and system-only PE
+imports PASS; hosted API 7 creates no Hello objects and requests no system lock.
+
+Frozen candidate asset SHA-256:
+
+- EXE: `1a3dbdd9b62965a00d2a36a46ddc63a849ba8205c411e1f8c7a94ad3603db85e`
+- ZIP: `01670435db6fa4f08078cc41ec7ffa009aa3787640cb90032cb7e6325e995e50`
+
+ZIP CRC, exact source/version and all static asset receipts PASS locally.
+Source baseline [38076184710](https://github.com/kurasis/AnyNote/actions/runs/38076184710)
+PASS. Full Linux native/Node/network/browser job also PASS: 663 primitive checks,
+public Argon2id vectors, real storage, exact 1 GB selected upload/download/export,
+corrupt/truncated/expanded response, late-lock/exclusive-sink/orphan cleanup.
+All three source feasibility jobs PASS; publication execution remains pending
+and is recorded on PR #8/release after it runs. Physical iOS stream/Files/memory and selected Windows lock
+remain OPEN; these reports do not close G1.

@@ -33,7 +33,8 @@
   17 Pro / iOS 26.7.1. Exact builds/providers are uninspected; the required older
   or lower-memory iPhone remains unspecified. The working passkeylocal source
   is now adapted into a built/tested native synthetic AnyNote probe; its physical
-  PRF/TPM operations remain unrun. Hosted Windows reports API 7, below the API 9
+  positive PRF/TPM operations now have owner-supplied fresh-process evidence;
+  complete physical acceptance remains open. Hosted Windows reports API 7, below the API 9
   route requirement, and creates no native objects.
 - Production signing, release publishing, deployment and clean-host backup
   restoration have not been performed or authorized by the push/merge preference.
