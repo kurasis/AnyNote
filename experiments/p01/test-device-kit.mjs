@@ -63,7 +63,7 @@ try{
   });
   await page.waitForFunction(()=>deviceP01.stage==='report',null,{timeout:120000});
   const result=await page.evaluate(()=>deviceP01.report);
-  assert.equal(result.files_destination.status,'PASS_SELECTED_OUTPUT_HASH');
+  assert.equal(result.files_destination.status,'PASS_SELECTED_OUTPUT_HASH',JSON.stringify(result));
   assert.equal(result.files_destination.sha256,result.files.at(-1).sha256);
   assert.equal(result.temporary_export_cleanup,'PASS');
   assert.equal(result.physical_acceptance,false);

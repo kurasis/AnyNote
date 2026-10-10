@@ -49,6 +49,8 @@ async function run(){
         show('Automatic local checks passed.\nTap the same button, choose “Save to Files”, and save the sample.\nThen select that saved file when asked so its size and SHA-256 can be checked.');
       }
     }catch(error){
+      if(prepared){try{await call({kind:'cleanup'});report.temporary_export_cleanup='PASS';}
+        catch{report.temporary_export_cleanup='FAIL: reload to clean marked files';}prepared=null;}
       if(report.status==='NOT RUN')report={...report,status:'FAIL',error:String(error.message)};
       finish(`${report.status}: ${error.message}\nSave the report and send it back.`);
     }
@@ -59,19 +61,22 @@ button.addEventListener('click',async()=>{
   if(stage==='run'){await run();return;}
   if(stage==='share'){
     sharing=true;button.disabled=true;
+    let shared=false,shareError;
     try{
       // Invoke directly in the click, before any await; user activation cannot be manufactured.
       await navigator.share({files:[prepared.file],title:'AnyNote P01 synthetic 1 GB export'});
       report.share='COMPLETED; this alone does not verify Files';
-      stage='verify';button.disabled=false;button.textContent='Verify saved Files output';
-      show('Choose the exact sample you just saved in Files. The page reads it in 8 MiB parts and compares size and SHA-256.');
-    }catch(error){report.share=`BLOCKED_OR_CANCELLED: ${error.name}`;finish('Sharing did not complete. Save the report.');}
+      shared=true;
+    }catch(error){report.share=`BLOCKED_OR_CANCELLED: ${error.name}`;shareError='Sharing did not complete. Save the report.';}
     finally{
-      sharing=false;
       try{await call({kind:'cleanup'});report.temporary_export_cleanup='PASS';}
       catch{report.temporary_export_cleanup='FAIL: reload to clean marked files';}
-      prepared=null;
-      if(stage==='verify'){releaseSession?.();releaseSession=null;}
+      prepared=null;sharing=false;
+      if(shared){
+        stage='verify';button.disabled=false;button.textContent='Verify saved Files output';
+        show('Choose the exact sample you just saved in Files. The page reads it in 8 MiB parts and compares size and SHA-256.');
+        releaseSession?.();releaseSession=null;
+      }else finish(shareError);
     }
   }else if(stage==='verify')input.click();
   else if(stage==='report'){
