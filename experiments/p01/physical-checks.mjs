@@ -8,7 +8,9 @@ export async function checkSelectedFiles(page,transport,scratch,large) {
     physical_iphone:'NOT RUN', ios_files:'NOT VERIFIED',cases:[]};
   await page.goto(transport.origin+'/physical/');
   await page.waitForFunction(()=>typeof physicalP01==='object');
-  await page.evaluate(()=>navigator.serviceWorker.ready);
+  report.storage_estimate=await page.evaluate(()=>navigator.storage.estimate());
+  report.memory='NOT MEASURED for selected-file export; earlier generated-stream RSS is a separate trial';
+  await page.waitForFunction(async()=>Boolean((await navigator.serviceWorker.getRegistration('/physical/'))?.active),{},{timeout:30000});
   for(const size of [0,1,8388609,...(large?[1000000000]:[])]){
     await transport.reset();
     const path=join(scratch,`selected-${size}.bin`),file=await open(path,'wx'),hash=createHash('sha256');
@@ -32,6 +34,14 @@ export async function checkSelectedFiles(page,transport,scratch,large) {
         return {...report,saved_bytes:actual.size,readback:readback.status};
       },id);
       assert.equal(exported.saved_bytes,size);assert.equal(exported.sha256,expected);assert.equal(exported.readback,'SOURCE_MATCHES');
+      if(size===0){
+        const staged=await page.evaluate(()=>physicalP01.prepareExport());
+        try{
+          assert.equal(staged.status,'VERIFIED_TEMPORARY_EXPORT');assert.equal(staged.bytes,0);assert.equal(staged.sha256,expected);
+          if(!staged.can_share_file)await assert.rejects(page.evaluate((id)=>physicalP01.shareExport(id),staged.id));
+          report.web_share_candidate={prepared_empty_file:true,available:staged.can_share_file,actual_share:'NOT RUN'};
+        }finally{await page.evaluate((id)=>physicalP01.discardExport(id),staged.id);}
+      }
       await assert.rejects(page.evaluate(()=>physicalP01.call({kind:'reselect',source:new File(['changed'],'changed.bin')})));
       // Same length but changed bytes must also fail (one-byte case).
       if(size===1){await assert.rejects(page.evaluate(async()=>{

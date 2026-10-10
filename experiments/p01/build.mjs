@@ -14,6 +14,8 @@ await writeFile('dist/physical.html', `<!doctype html><html lang="en"><meta char
 <button id="capabilities">Probe storage and export capabilities</button> <button id="storage">Check ciphertext storage</button>
 <p><label>Synthetic source file <input type="file"></label></p>
 <button id="upload">Encrypt and upload selected source</button> <button id="reselect">Verify reselected source</button> <button id="export">Download, verify and explicitly save</button>
+<p>Experimental iPhone candidate: a verified temporary disk export followed by a separate share action. A completed share does not prove that Files received the output.</p>
+<button id="prepare-share">Prepare verified temporary export</button> <button id="share">Share verified export</button> <button id="cleanup-export">Remove leftover marked test exports</button>
 <pre><output aria-live="polite">Ready for a synthetic trial.</output></pre><script type="module" src="/physical-page.js"></script></html>`);
 await writeFile('dist/manifest.webmanifest',JSON.stringify({name:'AnyNote P01 synthetic trial',short_name:'AnyNote P01',start_url:'/physical/',scope:'/physical/',display:'standalone',icons:[{src:'/icon.svg',sizes:'any',type:'image/svg+xml'}]}));
 await writeFile('dist/icon.svg','<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="32" fill="#123"><text x="96" y="116" text-anchor="middle" font-size="58" fill="white">P01</text></svg>');

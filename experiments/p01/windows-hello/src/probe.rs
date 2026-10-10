@@ -38,12 +38,12 @@ struct Vault {
     ciphertext: Vec<u8>,
 }
 fn now() -> Result<i64> {
-    Ok(SystemTime::now()
+    SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|_| Error::new("CLOCK"))?
         .as_millis()
         .try_into()
-        .map_err(|_| Error::new("CLOCK"))?)
+        .map_err(|_| Error::new("CLOCK"))
 }
 fn root() -> Result<PathBuf> {
     let base =

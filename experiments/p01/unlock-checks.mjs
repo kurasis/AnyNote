@@ -5,6 +5,7 @@ import { derive, invalidProfiles } from './local-unlock.mjs';
 import { sodium } from './crypto.mjs';
 
 export async function checkLocalUnlock(native, page) {
+  console.log('Starting Argon2id/storage feasibility checks');
   const fixture = JSON.parse(await readFile('fixtures/argon2id.json', 'utf8'));
   const results = { kdf_vectors: [], profile_rejections: {}, physical_iphone: 'NOT RUN' };
   for (const test of fixture.cases) {
@@ -50,6 +51,7 @@ export async function checkLocalUnlock(native, page) {
     assert.equal(concurrent,true);
     results.concurrent_kdf_rejected = true;
     results.storage_capabilities = (await page.evaluate(()=>p01({kind:'storage-capabilities'}))).result;
+    console.log('Worker KDF checks complete; starting persistent storage checks');
     assert.equal(results.storage_capabilities.opfs,true); assert.equal(results.storage_capabilities.indexeddb,true);
     // Persistence requires a Window in several engines, not a dedicated worker.
     results.persistence = {granted: await page.evaluate(()=>navigator.storage.persist()),
@@ -60,12 +62,17 @@ export async function checkLocalUnlock(native, page) {
       results.storage_durability = (await page.evaluate((expected)=>p01({kind:'storage-inspect',expected}),stored)).result;
       results.storage_denial = (await page.evaluate(()=>p01({kind:'storage-denied'}))).result;
     } finally { await page.evaluate((id)=>p01({kind:'storage-cleanup',id}),stored.id); }
-    const cdp=await page.context().newCDPSession(page),origin=new URL(page.url()).origin;
+    // Isolate quota faults from the large-file profile instead of trusting a later override reset.
+    const quotaContext=await page.context().browser().newContext(),quotaPage=await quotaContext.newPage();
+    const origin=new URL(page.url()).origin;
+    await quotaPage.goto(origin);await quotaPage.waitForFunction(()=>typeof p01==='function');
+    const cdp=await quotaContext.newCDPSession(quotaPage);
+    console.log('Starting bounded origin-quota injection');
     try{
       await cdp.send('Storage.overrideQuotaForOrigin',{origin,quotaSize:1048576});
-      results.quota_injection=(await page.evaluate(()=>p01({kind:'storage-quota'}))).result;
+      results.quota_injection=(await quotaPage.evaluate(()=>p01({kind:'storage-quota'}))).result;
       assert.equal(results.quota_injection.status,'QUOTA_EXCEEDED');
-    }finally{await cdp.send('Storage.overrideQuotaForOrigin',{origin});await cdp.detach();}
+    }finally{await cdp.send('Storage.overrideQuotaForOrigin',{origin});await cdp.detach();await quotaContext.close();}
   } else results.browser = 'NOT RUN';
   console.log('PASS: Argon2id cross-binding vectors, bounded profiles and wrong phrase; storage',page?'real browser':'NOT RUN');
   return results;

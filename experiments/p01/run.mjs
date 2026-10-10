@@ -60,7 +60,7 @@ async function sampleRss(cdp) {
   return sampled === 0 ? null : total;
 }
 
-let transport, browser;
+let transport, browser, context;
 try {
   await sodium.ready;
   const rust = nativeJson(['emit']);
@@ -116,9 +116,12 @@ try {
   const externalRequests = [], pageErrors = [];
   // Keep Chromium's sandbox enabled. Any container-specific exception requires
   // an explicitly isolated runner override documented in the resulting evidence.
-  browser = await chromium.launch({ executablePath: await executable(), headless: true, chromiumSandbox: true });
+  context = await chromium.launchPersistentContext(join(scratch, 'browser-profile'),
+    { executablePath: await executable(), headless: true, chromiumSandbox: true });
+  browser = context.browser();
+  assert(browser, 'Persistent Chromium must expose its browser connection');
   results.browser_version = browser.version();
-  const context = await browser.newContext();
+  results.browser_storage_mode = 'isolated temporary disk-backed persistent profile; not incognito';
   // Do not intercept binary PUT bodies through CDP: it creates large artificial
   // copies and distorts the bounded-transfer experiment. CSP restricts all
   // script/worker/connect sources to this origin; observe URLs without body reads.
@@ -196,7 +199,7 @@ try {
   await writeFile('artifacts/failure-report.json', JSON.stringify(results, null, 2) + '\n');
   throw error;
 } finally {
-  await browser?.close();
+  if (context) await context.close(); else await browser?.close();
   if (transport) await new Promise((done) => transport.server.close(done));
   await rm(scratch, { recursive: true, force: true });
 }

@@ -1,6 +1,8 @@
 // Synthetic feasibility UI only; never a usable vault or public service.
+import { prepareExport, shareExport, discardExport, removeOrphans } from './export-staging.mjs';
 const worker=new Worker('/physical-worker.js',{type:'module'});
 let pending, locked=false;
+let prepared,sharing=false;
 const output=document.querySelector('output'), source=document.querySelector('input[type=file]');
 function show(value){output.textContent=typeof value==='string'?value:JSON.stringify(value,null,2);}
 function call(data){return new Promise((resolve,reject)=>{
@@ -20,7 +22,9 @@ worker.onmessage=({data})=>{
 };
 worker.onerror=(event)=>{if(pending){clearTimeout(pending.timer);pending.reject(new Error(event.message));pending=null;}show('Worker failed; reload to restart.');};
 document.addEventListener('visibilitychange',()=>{
-  if(document.hidden){locked=true;worker.postMessage({kind:'lock'});show('PAUSED_LOCKED: foreground/reselect alone cannot resume; restart with fresh keys and server session.');}
+  if(document.hidden){locked=true;worker.postMessage({kind:'lock'});
+    if(prepared&&!sharing){discardExport(prepared.id).catch(()=>{});prepared=null;}
+    show('PAUSED_LOCKED: foreground/reselect alone cannot resume; restart with fresh keys and server session.');}
 });
 window.addEventListener('pagehide',()=>{locked=true;worker.postMessage({kind:'lock'});});
 document.querySelector('#capabilities').onclick=async()=>{
@@ -46,5 +50,18 @@ document.querySelector('#export').onclick=async()=>{
       required:'Independently hash the actual saved file; desktop support does not prove iOS Files.'});
   }catch(error){show(error.message);}
 };
+document.querySelector('#prepare-share').onclick=async()=>{
+  if(locked){show('PAUSED_LOCKED: restart required.');return;}
+  try{if(prepared)await discardExport(prepared.id);prepared=await prepareExport(call);show(prepared);}
+  catch(error){prepared=null;show(error.message);}
+};
+document.querySelector('#share').onclick=async()=>{
+  if(!prepared||locked){show('Prepare a verified synthetic export first.');return;}
+  sharing=true;
+  try{show(await shareExport(prepared.id));}
+  catch(error){show(error.message);}
+  finally{if(prepared)await discardExport(prepared.id).catch(()=>{});sharing=false;prepared=null;}
+};
+document.querySelector('#cleanup-export').onclick=async()=>{try{prepared=null;show(await removeOrphans());}catch(error){show(error.message);}};
 if('serviceWorker' in navigator)navigator.serviceWorker.register('/service-worker.js',{scope:'/physical/'}).catch(error=>show(`Installation unavailable: ${error.message}`));
-globalThis.physicalP01={call,worker}; // Test-only hook; not a production key API.
+globalThis.physicalP01={call,worker,prepareExport:()=>prepareExport(call),shareExport,discardExport,removeOrphans}; // Test-only hook.

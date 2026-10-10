@@ -91,6 +91,34 @@ Normal CI never regenerates fixtures and fails when a fixture is absent or bad.
 Review public generated fixtures before committing. No report contains random
 benchmark keys or real user data.
 
+## Local unlock/storage and physical-harness continuation
+
+`npm test` / `test:large` now also consume committed public Argon2id13 vectors
+in native Rust, Node and a real Chromium worker. Profile v1 validates 64–256 MiB
+and opslimit 3–10 before allocation; measured vectors use exactly 64 MiB / 3,
+32-byte outputs and 16-byte salts. UTF-8 includes an embedded NUL without
+normalization/truncation. Wrong phrases cannot open the synthetic key wrapper;
+invalid profiles and concurrent worker jobs are rejected. No weaker retry exists.
+Upper-bound acceptance does not mean a 256 MiB device measurement was performed.
+
+IndexedDB/OPFS tests store ciphertext only, reopen through a new worker after
+page reload and verify exact bytes/digests. Persistence results are permissions,
+not promises against eviction. Readonly denial and a genuine QuotaExceededError
+under a CDP-injected 1 MiB origin quota are labeled separately from physical disk
+exhaustion. The bounded quota trial attempts only 2 MiB of opaque random bytes.
+
+The selected-file suite uses real browser Files at 0, 1, 8 MiB+1 and, for large
+runs, decimal 1 GB. It verifies bounded ciphertext transfer and writes an explicit
+temporary plaintext OPFS export, then reads the saved File back and compares
+hashes against independent Node SHA-256. OPFS exports are removed after tests.
+Matching reselect, changed source, oversize-before-read and locked export are
+checked; this does not implement restart/resume or an authorized fresh recipient.
+
+See [Windows probe](windows-hello/README.md) for native PRF/TPM build/trial
+commands and scoped GPL-3.0-only source licensing, and
+[private HTTPS PWA harness](PHYSICAL_HARNESS.md) for physical preparation and
+explicit Files-sink limitations. No native provider code enters browser bundles.
+
 ## Measurements and remaining gates
 
 Native RSS uses Linux `VmHWM`; browser memory samples aggregate process RSS
