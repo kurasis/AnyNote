@@ -10,6 +10,8 @@ mod local_checks;
 #[cfg(windows)]
 mod probe;
 mod storage;
+#[cfg_attr(not(windows), allow(dead_code))]
+mod trial_route;
 
 fn main() {
     if std::env::args().nth(1).as_deref() == Some("--license") {

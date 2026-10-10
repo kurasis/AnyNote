@@ -53,3 +53,13 @@
   even when crypto/KDF/local 1 GB checks pass. Cancellation is recognized only
   from HELLO_CANCELLED, lock rejection only from STALE. No full physical gate
   or all-negative-matrix pass follows from positive fresh-process unlock.
+
+- Owner-reported 0.1.0 Windows result establishes reported local checks and
+  available API 9/build 26200/Hello route only. `operations=[]`; native enrollment,
+  TPM binding and fresh authorization remain unverified. The kit admission bug
+  is corrected in 0.1.1; a new owner run is required for those results.
+- Owner reported the iPhone PWA restarted after saving to Files, losing the old
+  memory-only report. A terminated 0.1.0 report cannot be recovered retroactively.
+  0.1.1 persists diagnostics before handoff and survives hosted page destruction,
+  but origin eviction/clearing or denied storage can still remove/prevent them.
+  Real updated iPhone Files/hash/restart and process-memory acceptance remain OPEN.

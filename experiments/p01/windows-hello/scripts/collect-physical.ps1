@@ -27,7 +27,7 @@ $nativeExit=$null
 $nativeText=$null
 if($Operation -eq 'capabilities'){
     $nativeText=$capText;$nativeExit=$capExit;$outcome=$cap.report.outcome
-}elseif($Operation -ne 'cleanup' -and $cap.report.eligible -ne $true){
+}elseif($Operation -ne 'cleanup' -and $cap.trial_route_available -ne $true){
     $outcome='BLOCKED: capability gate; no selected native operation executed'
 }else{
     # Expected cancellation/unavailability can return nonzero; always preserve it.

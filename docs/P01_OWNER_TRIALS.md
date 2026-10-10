@@ -1,13 +1,13 @@
 # One-file owner device trials
 
 The owner requested one Windows executable and one ready-to-upload iPhone ZIP.
-Use the [P01 test release](https://github.com/kurasis/AnyNote/releases/tag/v0.1.0-p01-device-kit).
+Use the [P01 test release](https://github.com/kurasis/AnyNote/releases/tag/v0.1.1-p01-device-kit).
 These are unsigned synthetic experiments, not a production release or installer.
 No real accounts, secrets, passwords, vaults or administrator access are needed.
 
 ## Windows
 
-Download [AnyNote-P01-Windows-x64.exe](https://github.com/kurasis/AnyNote/releases/download/v0.1.0-p01-device-kit/AnyNote-P01-Windows-x64.exe) and double-click it.
+Download [AnyNote-P01-Windows-x64.exe](https://github.com/kurasis/AnyNote/releases/download/v0.1.1-p01-device-kit/AnyNote-P01-Windows-x64.exe) and double-click it.
 Press OK to start. Crypto, public 64 MiB Argon2id and an exact 1 GB local disk
 round-trip run automatically. Keep about 3.1 GB free on the system drive.
 
@@ -36,7 +36,7 @@ links exact corresponding source. Advanced developer commands remain in the
 
 ## iPhone
 
-Download [AnyNote-P01-iPhone.zip](https://github.com/kurasis/AnyNote/releases/download/v0.1.0-p01-device-kit/AnyNote-P01-iPhone.zip).
+Download [AnyNote-P01-iPhone.zip](https://github.com/kurasis/AnyNote/releases/download/v0.1.1-p01-device-kit/AnyNote-P01-iPhone.zip).
 Unzip its **contents** into the test site's web root under `anynote-p01/`:
 `<web-root>/anynote-p01/index.html` must exist. No extra nested ZIP directory.
 Open `https://YOUR-TEST-SITE/anynote-p01/` in Safari on the iPhone. The existing
@@ -64,9 +64,10 @@ and physical review. The ZIP README has MIME/CSP details for the site operator.
 
 ## Remaining physical gates
 
-Targets supplied by the owner: Windows 11 Pro 25H2 with Hello planned, iPhone
+Targets supplied by the owner: Windows 11 Pro 25H2 with Hello available in the owner-supplied API 9/build 26200 report, iPhone
 17 Pro / iOS 26.7.1. These are reported targets, not inspected hardware.
-The HTTPS host was not ready when reported; packaging does not deploy it.
+The owner subsequently ran the installed iPhone PWA; the hosting address and
+configuration remain uninspected. Packaging does not deploy it.
 This kit's ciphertext transport is **local OPFS**, not a network/backend test.
 The earlier network harness remains available in the experiment and its
 [private HTTPS developer runbook](P01_PRIVATE_HTTPS_WINDOWS.md).
@@ -77,3 +78,29 @@ update with pending writes stay NOT RUN until separately evidenced. Hosted
 Share mocks are UI integration evidence only. No kit result automatically
 closes P01/G1 or establishes production acceptance. The original
 [physical template](evidence/p01-physical-template.json) remains unfilled.
+
+## Recovery and updating from 0.1.0
+
+For an existing 0.1.0 installation, upload this ZIP into a **new directory**,
+`<web-root>/anynote-p01-v011/`, and open
+`https://YOUR-TEST-SITE/anynote-p01-v011/`. Add that address to Home Screen and
+open the new app. Its page displays **Test kit 0.1.1**. This avoids the old
+installed service-worker cache; no site-data deletion is required. All assets
+and manifest paths also work at this new location.
+
+A 0.1.0 report lost on page termination was never persisted and cannot be
+reconstructed. Repeat the automatic trial once with 0.1.1. The new kit saves
+only a small diagnostic report before opening Files. If the app restarts,
+reopen the **same new app/address**: it offers verification of the sample already
+saved in Files, without another 1 GB automatic run. The share outcome after
+termination is UNKNOWN until selected bytes are checked; no keys or file handles
+are restored. Marked temporary files are cleaned under an exclusive trial lock.
+
+**Save report now** is available on intermediate/failure/recovered steps.
+The report text is also shown for selection/copy if the system download UI is
+unavailable. Saving the report can restart the PWA without losing that retained
+report. **Run a new trial** explicitly replaces the last diagnostic record.
+Storage eviction/site-data clearing still removes it; denied storage blocks a
+new automatic trial before opening any system sheet. Keep the same site/path
+and installation while recovering a report. Other physical lifecycle/transfer
+acceptance remains open.

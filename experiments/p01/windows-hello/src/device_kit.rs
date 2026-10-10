@@ -130,20 +130,21 @@ pub fn main() -> Result<(), &'static str> {
     if capability["exit_code"] != 0 || capability["report"]["native_objects_created"] != false {
         return Err("Capability observation failed");
     }
-    let eligible = capability["report"]["report"]["eligible"] == true;
+    let route_available = crate::trial_route::available(&capability["report"]);
     let mut record = json!({"version":1,"purpose":"AnyNote P01 synthetic device kit",
         "environment_kind":if hosted { "hosted" } else { "owner_device" },
         "source_commit":option_env!("ANYNOTE_PROBE_SOURCE"),"executable_sha256":executable_hash()?,
-        "capability":capability,"status":if eligible { "NOT RUN" } else { "BLOCKED" },
+        "capability":capability,"trial_route_available":route_available,
+        "status":if route_available { "NOT RUN" } else { "BLOCKED" },
         "physical_acceptance":false,"operations":[],
         "remaining":["Real lock/suspend with a pending prompt", "TPM/provider changes", "Other-account denial", "Windows file/memory/WebView2 integration"],
         "license":"GPL-3.0-only; corresponding source and license accompany the GitHub test release",
         "timestamp_unix_ms":std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)
             .map_err(|_| "Clock unavailable")?.as_millis()});
     if !hosted && dialog(
-        "Start the synthetic device test?\n\n1. Crypto, public 64 MiB Argon2id and an exact 1 GB local disk round-trip run automatically (about 3.1 GB free space required).\n2. Confirm Windows Hello when asked, if the native route is eligible.\n3. Follow the cancellation/lock instructions.\n4. Test objects are removed and one JSON report is saved.\n\nNo administrator access, passwords, real vaults or extra programs are needed.", true) {
+        "Start the synthetic device test?\n\n1. Crypto, public 64 MiB Argon2id and an exact 1 GB local disk round-trip run automatically (about 3.1 GB free space required).\n2. Confirm Windows Hello when asked, if the native route is available.\n3. Follow the cancellation/lock instructions.\n4. Test objects are removed and one JSON report is saved.\n\nNo administrator access, passwords, real vaults or extra programs are needed.", true) {
         record["local_checks"]=json!(local_suite());
-        if eligible {
+        if route_available {
         let mut operations = Vec::new();
         let enrollment = observe_or_failure("enroll");
         let enrolled = enrollment["exit_code"] == 0 && enrollment["report"]["status"] == "PASS_SYNTHETIC_ENROLLMENT";
