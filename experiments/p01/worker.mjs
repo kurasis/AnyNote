@@ -10,10 +10,18 @@ async function roundtrip(length) {
   const inputHash = sodium.crypto_hash_sha256_init(), outputHash = sodium.crypto_hash_sha256_init();
   let transferred = 0;
   const timings = { random_ms: 0, crypto_ms: 0, upload_ms: 0, download_ms: 0, verify_ms: 0 };
+  const initialWasmHeap = sodium.libsodium?.HEAPU8?.buffer.byteLength ?? null;
+  let peakWasmHeap = initialWasmHeap;
   for (let index = 0; index < count; index++) {
     const part = Math.min(CHUNK, length - index * CHUNK);
     let before = performance.now();
-    const source = sodium.randombytes_buf(part); // CSPRNG-generated incompressible synthetic stream.
+    // Test source only: Web Crypto CSPRNG, respecting its 64 KiB request limit.
+    // The wrapper's per-byte entropy bridge is unsuitable for bulk test data;
+    // content keys/nonces still use libsodium. Real uploads read a selected file.
+    const source = new Uint8Array(part);
+    for (let offset = 0; offset < part; offset += 65536) {
+      crypto.getRandomValues(source.subarray(offset, Math.min(offset + 65536, part)));
+    }
     timings.random_ms += performance.now() - before; before = performance.now();
     sodium.crypto_hash_sha256_update(inputHash, source);
     const nonce = new Uint8Array(24); nonce.set(prefix); new DataView(nonce.buffer).setBigUint64(16, BigInt(index), true);
@@ -34,6 +42,8 @@ async function roundtrip(length) {
     sodium.crypto_hash_sha256_update(outputHash, plaintext);
     timings.verify_ms += performance.now() - before;
     transferred += encrypted.length;
+    const heap = sodium.libsodium?.HEAPU8?.buffer.byteLength ?? null;
+    if (heap !== null) peakWasmHeap = Math.max(peakWasmHeap ?? 0, heap);
     postMessage({ kind: 'progress', index, count });
   }
   const sourceHash = sodium.crypto_hash_sha256_final(inputHash), recoveredHash = sodium.crypto_hash_sha256_final(outputHash);
@@ -42,6 +52,7 @@ async function roundtrip(length) {
   return { mode: 'chromium-worker-loopback-roundtrip', plaintext_bytes: length, chunks: count,
     ciphertext_bytes: transferred, sha256: sodium.to_hex(sourceHash), elapsed_ms: Math.round(performance.now() - started),
     sodium_version: sodium.sodium_version_string(),
+    initial_wasm_heap_bytes: initialWasmHeap, peak_wasm_heap_bytes: peakWasmHeap,
     timings_ms: Object.fromEntries(Object.entries(timings).map(([name, value]) => [name, Math.round(value)])),
     limitation: 'synthetic generated stream through local ciphertext-only HTTP; no iPhone, file picker, manifest, resume or Files export acceptance' };
 }
