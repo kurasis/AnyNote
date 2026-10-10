@@ -63,3 +63,14 @@ no chosen release license. Optional mkcert is referenced solely as a manual
 local certificate procedure, not installed, executed or added as a runtime
 dependency. Its official release/README observation is documented in
 P01_PRIVATE_HTTPS_WINDOWS.md; no asset digest or trust provisioning is claimed.
+
+## Simplified device kit
+
+No new Cargo/npm packages or lockfile resolutions. The existing windows-sys
+crate adds its Shell API feature to open the owned report folder. MSVC target configuration
+links the CRT statically for the Windows test EXE. Scoped GPL license is embedded
+and exact corresponding source is linked from the GitHub prerelease. The iPhone
+ZIP bundles only existing exact sodium JS/WASM dependencies, their actual ISC
+license files, original generated PNG icons and local static assets; no native
+GPL adapter is bundled. esbuild/Playwright/Python are build/test tools, not owner
+runtime requirements. Whole-project licensing remains unselected.

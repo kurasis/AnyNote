@@ -108,3 +108,26 @@ Files output/memory and low physical space remain NOT RUN/BLOCKED. No physical
 acceptance, production protocol or deployment is claimed. Next independent
 development is P03 tooling, while P01 awaits device records. Rollback: revert
 the isolated test/helper additions; no production state or format migration.
+
+## P01-DEVICE-KIT — simplified physical trial packaging
+
+The owner requested one executable and one ZIP instead of multiple tools.
+Added a double-click native Windows workflow with statically linked CRT, bundled
+frozen AEAD/64 MiB Argon2id/exact 1 GB disk checks, fresh subprocess Hello
+operations, guided cancel/lock, exact cleanup and one hash/source/native report.
+Added a static relative-path iPhone ZIP for `<web-root>/anynote-p01/`, one
+automatic runner plus guided Files save/reselect/hash and one report. The
+phone generates its own synthetic sources and uses bounded worker OPFS access.
+No Node server, backend or account is needed for this local trial.
+
+Portable native tests: 72 PASS, including actual boundary output/oversize
+admission and frozen native AEAD/Argon2id corpora. Kit build, ZIP CRC and asset
+SHA-256 receipts PASS locally. All three hosted feasibility jobs (existing full interop/network/export/fault
+suite, nested-path static kit and MSVC/one-EXE local tests) passed at
+`4629afe9a22ddf37ac28a6de8a52771274371481`; raw reports are in docs/evidence.
+Final source CI and GitHub test-release publication are pending at this snapshot. Physical
+Hello/iPhone, network/resume and device process-memory acceptance stay OPEN;
+the Share UI in hosted integration tests is explicitly mocked. No production
+format, data migration, signing or site deployment is introduced. Rollback:
+revert the isolated kit additions and remove only the test site's kit directory;
+preserve outstanding native cleanup journals until exact owned cleanup succeeds.
