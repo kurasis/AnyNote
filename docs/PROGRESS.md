@@ -234,3 +234,11 @@ Node/network/browser/fault suite PASS. Freeze these verified EXE/ZIP bytes for
 v0.1.3-p01-device-kit; Actions publisher revalidates runtime/source/receipts
 and actual downloads. Publication execution is recorded in PR #8/release.
 Actual iOS PWA/Safari and selected Windows lock require owner testing; G1 OPEN.
+
+0.1.3 was published from the verified source. A further lifecycle fix is now
+prepared as 0.1.4: store short-lived synthetic download tickets durably in a
+dedicated path-scoped IndexedDB table, so idle SW termination does not erase
+a prepared URL. Transactions atomically consume tokens; bounded expiry/client
+replacement keep the registry small. No export bytes or vault keys are persisted.
+Hosted regression stops the real SW after preparation before the 1 GB download.
+New validation/publication pending; prior release assets remain immutable.

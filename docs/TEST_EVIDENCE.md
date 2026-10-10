@@ -517,3 +517,9 @@ corrupt/truncated/expanded response, late-lock/exclusive-sink/orphan cleanup.
 All three source feasibility jobs PASS; publication execution remains pending
 and is recorded on PR #8/release after it runs. Physical iOS stream/Files/memory and selected Windows lock
 remain OPEN; these reports do not close G1.
+
+0.1.3 publication run 38076628838 PASS; independently downloaded EXE/ZIP
+match recorded hashes, ZIP source/version/receipts and exact source tag.
+0.1.4 adds durable single-use synthetic ticket metadata and a real CDP worker
+stop before attachment request; new source run pending. The earlier test
+release remains unchanged, not overwritten with unverified bytes.

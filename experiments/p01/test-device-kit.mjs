@@ -112,7 +112,10 @@ try{
   await page.waitForFunction(async()=>deviceP01.report.stream_download?.status==='CANCELLED'
     &&!(await navigator.locks.query()).held.some(lock=>lock.name==='anynote-p01-device-kit'));
   await page.waitForFunction(url=>document.querySelector('#download-sample').href!==url,cancelUrl);
-  // Download through the actual service worker/network stack. No OS Share mock here.
+  // Stop the real service worker after it prepared a ticket: lose all of its JS state.
+  const cdp=await context.newCDPSession(page);
+  await cdp.send('ServiceWorker.enable');await cdp.send('ServiceWorker.stopAllWorkers');await cdp.detach();
+  // Download through the restarted actual service worker/network stack. No OS Share mock here.
   const streamPromise=page.waitForEvent('download');await page.locator('#download-sample').click();
   const streamed=await streamPromise;
   assert.match(streamed.suggestedFilename(),/^synthetic-export-[0-9a-f-]{36}\.bin$/);
@@ -192,6 +195,7 @@ try{
     pending_share_page_destroyed_and_report_restored:true,restored_selected_output_hash:true,
     report_download_restart_retained:true,failed_report_retained:true,interrupted_run_not_restarted:true,
     real_service_worker_stream_download:true,streamed_download_bytes:total,
+    prepared_ticket_survives_actual_service_worker_stop:true,
     stream_download_selected_hash:true,unknown_download_token_rejected:true,
     cancelled_stream_releases_lock:true,arbitrary_export_path_rejected:true,unmarked_export_rejected:true,download_replay_rejected:true,
     retained_staged_export_reopened_and_hashed:true,

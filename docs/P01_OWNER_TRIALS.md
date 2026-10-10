@@ -1,13 +1,13 @@
 # One-file owner device trials
 
 The owner requested one Windows executable and one ready-to-upload iPhone ZIP.
-Use the [P01 test release](https://github.com/kurasis/AnyNote/releases/tag/v0.1.3-p01-device-kit).
+Use the [P01 test release](https://github.com/kurasis/AnyNote/releases/tag/v0.1.4-p01-device-kit).
 These are unsigned synthetic experiments, not a production release or installer.
 No real accounts, secrets, passwords, vaults or administrator access are needed.
 
 ## Windows
 
-Download [AnyNote-P01-Windows-x64.exe](https://github.com/kurasis/AnyNote/releases/download/v0.1.3-p01-device-kit/AnyNote-P01-Windows-x64.exe) and double-click it.
+Download [AnyNote-P01-Windows-x64.exe](https://github.com/kurasis/AnyNote/releases/download/v0.1.4-p01-device-kit/AnyNote-P01-Windows-x64.exe) and double-click it.
 Press OK to start. Crypto, public 64 MiB Argon2id and an exact 1 GB local disk
 round-trip run automatically. Keep about 3.1 GB free on the system drive.
 
@@ -38,10 +38,10 @@ links exact corresponding source. Advanced developer commands remain in the
 
 ## iPhone
 
-Download [AnyNote-P01-iPhone.zip](https://github.com/kurasis/AnyNote/releases/download/v0.1.3-p01-device-kit/AnyNote-P01-iPhone.zip).
-Unzip its **contents** into the test site's web root under `anynote-p01-v013/`:
-`<web-root>/anynote-p01-v013/index.html` must exist. No extra nested ZIP directory.
-Open `https://YOUR-TEST-SITE/anynote-p01-v013/` in Safari on the iPhone. The existing
+Download [AnyNote-P01-iPhone.zip](https://github.com/kurasis/AnyNote/releases/download/v0.1.4-p01-device-kit/AnyNote-P01-iPhone.zip).
+Unzip its **contents** into the test site's web root under `anynote-p01-v014/`:
+`<web-root>/anynote-p01-v014/index.html` must exist. No extra nested ZIP directory.
+Open `https://YOUR-TEST-SITE/anynote-p01-v014/` in Safari on the iPhone. The existing
 HTTPS certificate must already be trusted by that phone. No Node.js, PHP,
 database, external libraries or new certificate setup is required.
 
@@ -91,9 +91,9 @@ the same app/address after a restart to verify the sample already saved, or use
 memory-only report cannot be reconstructed. Clearing/evicting site storage still
 removes diagnostics. **Run a new trial** explicitly replaces the last record.
 
-## 0.1.3 update and retry
+## 0.1.4 update and retry
 
-The page must show **Test kit 0.1.3** at `/anynote-p01-v013/`. Keep the earlier
+The page must show **Test kit 0.1.4** at `/anynote-p01-v014/`. Keep the earlier
 reports and site storage. The new path reads only the known sibling v012/v011
 diagnostic keys on the same origin/browser store; it preserves those records.
 If a 0.1.3 staged output was retained, recovery validates its exact purpose
@@ -113,3 +113,9 @@ The old pending test must fail STALE with a real WTS lock. Signing back into
 Windows may require fingerprint/PIN. If no screen appears, cancel the prompt
 and send the report. The 0.1.2 owner cancellation/zero-event result remains
 NOT PROVEN, separate from the earlier 0.1.1 owner-confirmed screen/STALE run.
+
+0.1.4 persists short-lived synthetic download tickets in a dedicated path-scoped
+IndexedDB store. Browser termination of the SW before clicking cannot erase
+that prepared ticket. Expiry and atomic single-use consumption remain intact;
+no exported bytes, vault keys or crypto handles are stored there. Streaming
+in progress can still be terminated by the OS; no background guarantee.

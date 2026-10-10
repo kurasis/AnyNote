@@ -1,9 +1,9 @@
-# AnyNote P01 static iPhone test kit 0.1.3
+# AnyNote P01 static iPhone test kit 0.1.4
 
-Unzip all contents into `<web-root>/anynote-p01-v013/`, with `index.html`
-directly inside. Open `https://YOUR-TEST-SITE/anynote-p01-v013/` in Safari.
+Unzip all contents into `<web-root>/anynote-p01-v014/`, with `index.html`
+directly inside. Open `https://YOUR-TEST-SITE/anynote-p01-v014/` in Safari.
 Use Share -> Add to Home Screen and launch that app for the installed-PWA trial.
-The page must display Test kit 0.1.3. No Node/PHP/backend/account is required.
+The page must display Test kit 0.1.4. No Node/PHP/backend/account is required.
 
 Tap **Run all automatic tests**, keeping the page foreground. Allow about
 3.1 GB browser quota. The same button then offers **Download 1 GB sample**,
@@ -42,3 +42,9 @@ object-src/base-uri/form-action none. Do not disable sandbox or TLS. Service
 worker caches approved static assets only, never dynamic export responses.
 All paths are relative. BUILD.json and SHA256SUMS.txt identify exact source,
 version and asset hashes; bundled sodium ISC license notices accompany them.
+
+0.1.4 persists short-lived synthetic download tickets in a dedicated path-scoped
+IndexedDB store. Browser termination of the SW before clicking cannot erase
+that prepared ticket. Expiry and atomic single-use consumption remain intact;
+no exported bytes, vault keys or crypto handles are stored there. Streaming
+in progress can still be terminated by the OS; no background guarantee.

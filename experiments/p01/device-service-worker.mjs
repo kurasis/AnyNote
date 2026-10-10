@@ -1,8 +1,8 @@
 import {openTrialOutput} from './device-disk.mjs';
+import {ticketStore} from './device-download-tickets.mjs';
 // Synthetic exports only. No vault keys, arbitrary paths, network proxy or runtime caching.
 const CACHE=__DEVICE_CACHE__,ASSETS=__DEVICE_ASSETS__.map(name=>new URL(name,self.registration.scope).href);
-const tickets=new Map(),TTL=300000,CHUNK=262144;
-function prune(){for(const[token,ticket]of tickets)if(ticket.expires<Date.now())tickets.delete(token);}
+const tickets=ticketStore(self.registration.scope),TTL=300000,CHUNK=262144;
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));
 self.addEventListener('message',event=>{
@@ -15,20 +15,19 @@ self.addEventListener('message',event=>{
       if(!navigator.locks)throw new Error('Web Locks unavailable in service worker');
       const {owner_id,name}=event.data;
       await openTrialOutput(owner_id,name);
-      prune();for(const[token,ticket]of tickets)if(ticket.client===client.id)tickets.delete(token);
-      if(tickets.size>=64)throw new Error('Too many pending synthetic downloads');
       const token=crypto.randomUUID().replaceAll('-','');
-      tickets.set(token,{owner_id,name,client:client.id,expires:Date.now()+TTL});
+      await tickets.issue({token,owner_id,name,client:client.id,expires:Date.now()+TTL});
       port.postMessage({url:new URL(`download/${token}`,self.registration.scope).href});
     }catch(error){port.postMessage({error:error.message});}
   })());
 });
 function download(event,token){
-  prune();const ticket=tickets.get(token);tickets.delete(token);
   const denied=()=>new Response('Synthetic download unavailable. Reopen the kit to retry.',{status:410,headers:{'Cache-Control':'no-store'}});
-  if(!ticket||event.request.method!=='GET'||event.request.headers.has('Range')){event.respondWith(denied());return;}
   let respond;const response=new Promise(resolve=>{respond=resolve;});event.respondWith(response);
-  event.waitUntil(navigator.locks.request('anynote-p01-device-kit',{ifAvailable:true},async lock=>{
+  event.waitUntil((async()=>{
+    const ticket=await tickets.consume(token);
+    if(!ticket||event.request.method!=='GET'||event.request.headers.has('Range')){respond(denied());return;}
+    await navigator.locks.request('anynote-p01-device-kit',{ifAvailable:true},async lock=>{
     if(!lock){respond(denied());return;}
     let complete,offset=0,timer,done=false;
     const ended=new Promise(resolve=>{complete=resolve;});
@@ -54,7 +53,8 @@ function download(event,token){
         'Content-Disposition':`attachment; filename="${ticket.name}"`,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}}));
       await notify('STARTED');await ended;
     }catch{respond(denied());finish('UNAVAILABLE');}
-  }).catch(()=>respond(denied())));
+    });
+  })().catch(()=>respond(denied())));
 }
 self.addEventListener('fetch',event=>{
   const prefix=new URL('download/',self.registration.scope).href;

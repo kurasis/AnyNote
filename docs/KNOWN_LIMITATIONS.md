@@ -90,3 +90,8 @@
   trial's exact marked cleanup. Dynamic streams are never cached; expired or
   replayed tickets cannot resume. Other site data/old reports are preserved.
   No network/backend or production plaintext-stream path is added.
+
+- 0.1.4 addresses loss of prepared tickets when an idle SW is terminated;
+  an actively streaming SW can still be stopped by the OS. Transactional
+  metadata storage is small and contains no bytes/vault keys. Denied ticket
+  storage blocks the download; expired/consumed tickets do not resume.

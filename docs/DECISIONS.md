@@ -312,3 +312,12 @@ remove its timer on completion/close, never retry automatically. Record OS
 accepted/denied/not-requested separately. Only WTS lock plus STALE is a lock
 PASS; prompt timing still needs owner observation. No Hello/TPM reset or
 policy change, production deployment or crypto change.
+
+ADR-006 0.1.4 lifecycle correction: an in-memory SW ticket registry cannot
+guarantee that a prepared attachment remains available after the browser stops
+that worker. Persist only generated synthetic ticket metadata in a dedicated
+path-scoped IndexedDB table. Issue prunes expired/same-client records and caps
+retained tickets at 64; consume atomically removes before use. Keep five-minute
+expiry, strict synthetic owner/name/marker checks and no runtime export cache.
+Test actual SW termination before consuming the prepared URL, not a JS mock.
+This does not resume an interrupted stream or guarantee background survival.
