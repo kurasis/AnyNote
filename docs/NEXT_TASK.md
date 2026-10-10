@@ -1,39 +1,57 @@
 # Next bounded task
 
-## P01-CRYPTO-INTEROP — synthetic feasibility harness
+## P01-LOCAL-UNLOCK — local wrapper and storage feasibility probes
 
-Prerequisite: P00 baseline verified. Read progress/decisions/limitations, then
-specification 04, 05, 10, 11 and 13. Read the mandatory initial chapters if this
-is a fresh session. Inspect actual Git state and preserve unrelated changes.
+Prerequisite: P01-CRYPTO-INTEROP host/CI evidence recorded. Read progress,
+decisions, limitations, current Git state and specification 04, 05, 10, 11 and
+13. Preserve the original spec and unrelated work. This remains P01; do not
+claim its physical G1 gate complete or start production key custody prematurely.
 
-Objective: establish a maintained native libsodium binding and browser/WASM
-binding can exchange XChaCha20-Poly1305, Ed25519 and sealed-box outputs using
-public synthetic fixtures; measure bounded chunk processing. This is feasibility,
-not the frozen application protocol or production crypto implementation.
+Objective: evaluate supported local unlock/key wrappers and PWA storage/export
+capabilities with synthetic keys/files before choosing production adapters.
 
 Scope:
 
-1. Pin/install Rust 1.99.0 and Node 24.21.0 with verification intact; reconcile
-   selected versions with actual available security revisions in an ADR.
-2. Create isolated `experiments/p01` with exact lockfiles and documented commands.
-3. Produce native→JS and JS→native fixtures; reject wrong key/tag/context and
-   report exact library/provider/toolchain versions. Browser-worker execution
-   must be exercised separately; a Node-only result is not browser acceptance.
-4. Measure synthetic incompressible chunk encryption/decryption memory; preserve
-   the decimal 1 GB requirement. Avoid whole-file memory buffers.
-5. Prepare reproducible physical Windows key-gating and iPhone 1 GB export/resume
-   procedures. Mark these BLOCKED while the devices are unavailable.
-6. Update decisions/progress/risks/evidence and the next bounded task. Run actual
-   meaningful checks, commit, push and merge automatically as authorized.
+1. Add an isolated native/browser Argon2id v1.3 probe using exact libsodium
+   opslimit/memlimit/salt semantics. Start at 64 MiB / opslimit 3; reject bounds
+   before allocation and serialize KDF jobs. Measure genuine browser latency
+   without silently lowering the cost. Verify cross-binding outputs and wrong
+   phrase behavior; use public synthetic fixtures only.
+2. Add Chrome/browser OPFS and IndexedDB capability/quota/persistence probes and
+   ciphertext-only durability inspection. Record denial/exhaustion accurately.
+   Actual iPhone behavior remains a separate physical test.
+3. Read the preserved passkeylocal handoff/source in
+   docs/reference/passkeylocal; verify its SHA256SUMS before extraction. The
+   working installer-source reference is c18894e..., current handoff is 15f54f00...;
+   exact SHAs are in PROVENANCE.json. Use ADR-003's native PRF + separately
+   verified Platform KSP TPM design to protect independent synthetic random L.
+   Reuse the tested PRF creation input, generated ABI/independent-header checks,
+   exact per-key TPM proof and lifecycle invariants with fresh AnyNote namespaces.
+   Do not port KDBX password-component semantics or upstream native objects.
+   Build a minimal real-provider Windows probe; no raw-key frontend API or silent
+   DPAPI/consent/software fallback. Hosted Windows can check MSVC/ABI and failure
+   handling but cannot stand in for physical Hello. Retain licensing/notices when
+   importing source and record that choice before packaging.
+4. Prepare the controlled-HTTPS physical PWA harness for selected-file source
+   and bounded explicit export, plus lifecycle/reselect tests. Do not mistake
+   OPFS or a desktop download for saving 1 GB into iOS Files. Keep it isolated
+   from future production auth, protocol and app bundles.
+5. Target the supplied Windows 11 Pro 25H2 with Hello planned and iPhone 17 Pro
+   / iOS 26.7.1 (owner-reported, not inspected). Capture actual build/provider
+   during physical trials; do not ask for already supplied strings again.
+   Physical Windows and at least two iPhone targets are required to close P01/G1;
+   the older/lower-memory iPhone remains unspecified. Continue the
+   independent probes if devices are unavailable; report exact blocked parts.
+6. Update evidence, ADRs, risks, limitations and next task; run meaningful checks,
+   then push and merge automatically as authorized.
 
-Invariants: synthetic data only, no primitive implementation by hand, no server
-plaintext fallback, no real key custody, no fabricated physical evidence.
+Invariants: synthetic data, real crypto/provider operations, exact agreed 1 GB
+limit, no plaintext server fallback, no verification/sandbox bypass and no
+invented physical-platform success. Application wire contracts await P02;
+qualified review remains an external production gate.
 
-Exclusions: application UI/auth, device enrollment protocol, production crypto,
-Laravel business logic and a complete P03 scaffold. P03 tooling can proceed
-independently after P00; final wire contracts need P02.
-
-Exit: repeatable interop harness with positive and negative evidence plus exact
-unmet platform gates. P01 remains IN PROGRESS/BLOCKED until its complete physical
-feasibility criteria are evidenced. Recovery: discard generated public fixtures
-and scratch outputs; no user data exists.
+Exit: reproducible wrapper/storage feasibility evidence and concrete platform
+constraints. P01 remains IN PROGRESS/BLOCKED until the complete physical
+acceptance path is evidenced. If a genuine iOS export failure requires changing
+scope/platform, present tested options for owner decision. P03 tooling is an
+independent permitted track after P00, but cannot replace these gates.

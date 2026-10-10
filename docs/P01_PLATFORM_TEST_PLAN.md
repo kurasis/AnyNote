@@ -16,22 +16,28 @@ content-free counters; never record real passkeys, private keys or recovery kits
 Use at least two supported iPhones: an older/lower-memory candidate and a
 current model. Minimum OS support remains a candidate until measured.
 
-## W01 — DPAPI baseline and actual Hello key-operation gating
+## W01 — Actual PRF/TPM protection of a random local key
 
 Prerequisites: actual Windows 11 x64 with current WebView2, Rust MSVC and C++
-Build Tools; a future isolated key-wrapper probe, not yet implemented. Review
-official CNG/Windows Hello API semantics before choosing a wrapper (ADR required).
+Build Tools; a future isolated key-wrapper probe, not yet implemented. Follow
+ADR-003 and the [preserved working reference](reference/passkeylocal/README.md),
+including its generated native ABI and independent official-header validation.
 
-1. Generate an independent random synthetic local key L in native memory. Wrap
-   under DPAPI user scope and verify restart/unwrapping for the same Windows
-   user; other-user access must fail. Record that same-user malware may unwrap.
-2. Evaluate a supported CNG/Hello construction that gates the **actual unwrap
-   operation**, including supported TPM/provider behavior. A successful UI
-   consent dialog followed by ordinary DPAPI unwrap is not Hello key protection.
-3. Attempt key use before consent, with consent cancellation, after Windows lock,
+1. Generate independent random synthetic L in native memory. Use the reference's
+   native WebAuthn PRF with creation-time evaluation, fresh required UV and exact
+   credential/RP/route checks; inner RSA-OAEP-SHA256 envelope uses a separately
+   verified Platform KSP TPM key. Verify public area/Name on creation and reopen.
+   Use new fixed AnyNote-owned namespaces. Test the enrollment round trip and
+   authenticate an actual synthetic encrypted local vault before session success.
+2. Verify that unlock requires the fresh PRF output to open the authenticated
+   outer envelope. Direct TPM decrypt alone must not expose L from the stored
+   envelope. A successful consent boolean is not decrypt capability. If DPAPI
+   is measured as an independent baseline, record same-user malware access and
+   do not call it Hello gating; never select it as a silent fallback.
+3. Attempt key use before authorization, with cancellation, after Windows lock,
    suspend/resume and fresh process restart. Direct native calls must not bypass
    the intended cryptographic gate. Compare key hashes locally; do not export L.
-4. Test no-TPM/no-Hello/provider failure and alternate configured wrappers.
+4. Test absent API 9/PRF/TPM/Hello and provider failures; reject unsupported paths.
    Do not silently enable a weaker fallback. The weakest enabled wrapper limits
    security; report fallback behavior explicitly.
 5. Test a stale lock-generation reply and unauthorized IPC/window context when
@@ -40,6 +46,9 @@ official CNG/Windows Hello API semantics before choosing a wrapper (ADR required
 Acceptance: operation-level protection evidenced with positive and bypass tests,
 or a documented unsupported result with concrete owner options. CI Windows
 compilation alone cannot prove real Hello user presence or physical TPM behavior.
+Use the existing account and disposable synthetic objects. Preserve the upstream
+owner's completed diagnostics; do not request its excluded second-account manual
+test or reset Hello/TPM. Account isolation remains unverified by this procedure.
 
 ## I01 — Installed PWA crypto/storage baseline
 
@@ -105,8 +114,8 @@ agreed mobile file limit or platform; never introduce server decryption.
 
 | Target | Hardware / OS / provider | Evidence | Status |
 | --- | --- | --- | --- |
-| Windows 11 x64 + WebView2/Hello | Not supplied | W01 pending probe and physical execution | BLOCKED |
+| Windows 11 x64 + WebView2/Hello | Owner reports Windows 11 Pro 25H2; Hello planned; exact build/provider/WebView2 pending capture | W01 pending AnyNote probe and physical execution | NOT RUN |
 | Lower-memory iPhone installed PWA | Not supplied | I01–I03 | BLOCKED |
-| Current iPhone installed PWA | Not supplied | I01–I03 | BLOCKED |
+| Current iPhone installed PWA | Owner reports iPhone 17 Pro, iOS 26.7.1; exact build/storage/provider pending capture | I01–I03 | NOT RUN |
 | Linux native/Node | Cloud host, Rust/Node pinned | P01 report | Separate primitive/file evidence |
-| Real desktop Chromium worker | Hosted Ubuntu runner | P01 CI report when executed | Separate browser evidence |
+| Real desktop Chromium worker | Hosted Ubuntu 24.04, Chrome 154.0.8037.97 | Run 38052778078, 663 primitive checks and 1 GB generated-stream round-trip PASS | Separate browser evidence; physical/mobile memory unresolved |

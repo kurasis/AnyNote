@@ -1,7 +1,8 @@
 # Initial dependency and license inventory
 
 P00 candidate inventory, checked 2026-10-10. No application dependency manifests,
-transitive lockfiles, vendored code or release artifacts exist yet. This is not
+transitive lockfiles or release artifacts existed at P00. P01 additions are
+recorded below. This is not
 a release SBOM. P03 must generate exact resolved inventories, notices and
 automated dependency/secret checks; P17 reviews the release chain.
 
@@ -29,3 +30,24 @@ not a completed distribution compliance assessment. Capture exact LICENSE,
 NOTICE and Debian copyright files for shipped versions before release.
 Do not apply any third-party license to AnyNote automatically; the owner has
 not selected a project license. The specification is owner-supplied input.
+
+## P01 resolved experiment inventory
+
+The isolated experiment now has Cargo/npm lockfiles and a machine-readable
+inventory in experiments/p01/dependency-inventory.json: 70 Rust package records
+(including the unlicensed private root) and 30 npm lock entries including
+optional platform binaries. Licenses come from package metadata, not inference.
+Rust 1.99.0, Node 24.21.0/npm 11.19.0, sodium native/WASM 1.0.22, bindings
+0.2.5 / 0.8.4, esbuild 0.28.2 and Playwright Core 1.64.0 were exercised.
+This is an experiment inventory, not an application release SBOM or professional
+dependency/legal review. P03/P17 still own complete app scanning and release review.
+
+## Preserved Windows reference
+
+Owner-requested passkeylocal source/document snapshots retain their upstream
+GPL-3.0-only license; the Microsoft ABI test header retains its own MIT notice.
+Exact revisions, selected-file hashes and unchanged license copies are in
+[reference provenance](reference/passkeylocal/PROVENANCE.json). These archives
+are not compiled or bundled into AnyNote. A future source import must preserve
+notices and make compatible distribution choices. AnyNote's own release license
+remains unselected; reference capture does not assign it GPL automatically.
