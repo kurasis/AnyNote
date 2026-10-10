@@ -6,7 +6,7 @@ does not satisfy a feature gate. Production release is not ready.
 
 | Phase | Status | Evidence / remaining gate |
 | --- | --- | --- |
-| P00 | VERIFIED | Local baseline and four negative cases passed; scope/version/inventory deliverables complete; bootstrap publication tracked separately in TEST_EVIDENCE.md |
+| P00 | VERIFIED | Local baseline and four negative cases passed; scope/version/inventory deliverables complete; remote bootstrap and clean-clone verification passed; Actions status unavailable |
 | P01 | NOT STARTED | Physical Windows/iPhone unavailable; independent synthetic experiments can proceed |
 | P02 | NOT STARTED | Depends on P00/P01 findings; qualified review remains external |
 | P03 | NOT STARTED | Tooling may begin after P00; final contracts follow P02 |

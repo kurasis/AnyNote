@@ -40,3 +40,21 @@ reduced file limit. The restored copy passed. No tracked input was damaged.
 `gh api repos/kurasis/AnyNote --jq .default_branch` failed with proxy Forbidden.
 The earlier CLI token status therefore does not establish that the injected
 credential itself is expired; API network access must be resolved first.
+
+## Publication and clean-clone evidence
+
+Initial commit `0967778a02bcd3beaee3e2e1695d435e3bb31c4a` was pushed to
+`origin/main`; `git ls-remote origin refs/heads/main` returned the identical SHA.
+This bootstrapped the empty repository directly, so there was no PR to merge.
+
+A separate remote `git clone --depth 1 --branch main` into a disposable `/tmp`
+directory ran `python3 scripts/check_baseline.py` successfully; the clone stayed
+clean. Baseline fresh-clone reproducibility is verified, not application setup.
+
+The Actions workflow was included in that push. Querying Actions runs still
+returned proxy Forbidden, so CI execution/result is UNVERIFIED. Only
+`api.github.com` was added to custom allowed domains in a confirmed saved cloud
+configuration draft; existing package-manager presets were preserved. The save
+requires environment-settings review/save and publication; it did not apply
+network changes to this instance. No setup/start script or secret field was
+changed: P00 needs no dependency installation or live service.
