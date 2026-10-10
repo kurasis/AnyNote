@@ -7,7 +7,7 @@ does not satisfy a feature gate. Production release is not ready.
 | Phase | Status | Evidence / remaining gate |
 | --- | --- | --- |
 | P00 | VERIFIED | Local baseline and four negative cases passed; scope/version/inventory deliverables complete; remote bootstrap and clean-clone verification passed; Actions status unavailable |
-| P01 | NOT STARTED | Physical Windows/iPhone unavailable; independent synthetic experiments can proceed |
+| P01 | IN PROGRESS | Native/Node harness and real-file checks implemented; hosted Chromium evidence pending; physical Windows/iPhone gates blocked |
 | P02 | NOT STARTED | Depends on P00/P01 findings; qualified review remains external |
 | P03 | NOT STARTED | Tooling may begin after P00; final contracts follow P02 |
 | P04 | NOT STARTED | P02/P03; signature acceptance also needs P05 fixtures |
@@ -26,7 +26,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P17 | NOT STARTED | P02/P08–P16; independent review |
 | P18 | NOT STARTED | P14–P17 and release/signing gates |
 
-## Current task: P00-BASELINE
+## Completed task: P00-BASELINE
 
 Establish the empty repository, preserve the owner's specification, lock the
 accepted scope, select exact maintained development candidates, document risks
@@ -38,3 +38,12 @@ Revert its reviewed commit if necessary; do not rewrite published history.
 
 See [test evidence](TEST_EVIDENCE.md) and [next task](NEXT_TASK.md) for exact
 commands, outcomes, blocked gates and continuation scope.
+
+## Current task: P01-CRYPTO-INTEROP
+
+Isolated Rust/Node/browser-worker primitive and bounded-file feasibility harness.
+Pinned Rust/Node installed outside the checkout; Cargo/npm lockfiles preserve
+resolved dependencies. No application protocol or migration changes. Native/Node
+positive and negative checks passed. Cloud Chromium sandbox startup failed;
+real browser tests move to the hosted Ubuntu runner. Physical platform plan is
+in P01_PLATFORM_TEST_PLAN.md. No physical-platform or audit claim is made.

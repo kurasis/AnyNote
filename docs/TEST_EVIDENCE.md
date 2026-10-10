@@ -58,3 +58,21 @@ configuration draft; existing package-manager presets were preserved. The save
 requires environment-settings review/save and publication; it did not apply
 network changes to this instance. No setup/start script or secret field was
 changed: P00 needs no dependency installation or live service.
+
+## P01-CRYPTO-INTEROP — initial local run
+
+Pinned Rust/Cargo 1.99.0, Node 24.21.0/npm 11.19.0 and libsodium 1.0.22.
+`cargo test --locked --release`: 3 passed, 0 failed/ignored.
+`cargo clippy --locked --release -- -D warnings` passed after using Rust
+1.99 is_multiple_of instead of the earlier modulo-style lint violation.
+`node run.mjs --native-only --large --write-fixtures`: PASS_NATIVE_BROWSER_NOT_RUN;
+156 primitive positive/negative checks across Rust/Node. Real files at 0, 1,
+8 MiB−1, 8 MiB, 8 MiB+1 and 1,000,000,000 bytes round-tripped; oversize rejected
+before directory creation. Maximum file used 120 chunks and 1,000,001,920 data
+ciphertext bytes; native SHA-256 and output length agreed, peak RSS 26,128 KiB.
+
+Browser startup with sandbox enabled failed before page load: the cloud helper
+is owned by nobody and /proc user namespace mapping is read-only. This is a
+confirmed runtime capability blocker. No --no-sandbox workaround was used.
+Hosted Ubuntu browser evidence is pending. No physical Windows/Hello/iPhone
+checks or qualified review have run.

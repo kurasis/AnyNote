@@ -88,3 +88,35 @@ interoperation and physical platform compatibility are assigned to later phases.
 See `SOURCE_EVIDENCE.json` for fetched metadata hashes, selected observations and
 Git tag SHAs. Direct documentation hosts were blocked; official source mirrors
 were used. This is source research, not a dependency security audit.
+
+## ADR-002 — P01 experimental bindings and runner
+
+Date: 2026-10-10. Status: ACCEPTED for synthetic feasibility only.
+
+Select maintained `libsodium-rs` 0.2.5 (official jedisct1 repository, Rust MSRV
+1.88) with locked `libsodium-sys-stable` 1.24.0 and native libsodium 1.0.22.
+Keep the default bundled signed sources; do not enable `fetch-latest` or replace
+the upstream signature key. Select browser wrappers/core 0.8.4, which reports
+libsodium 1.0.22, bundled with esbuild 0.28.2. Avoid the older sodiumoxide
+binding and custom primitives. Cross-runtime tests are required before app use.
+
+Rust 1.99.0 and Node 24.21.0 were installed with official artifact checksums.
+The Node distribution includes npm **11.19.0**; this replaces ADR-001 npm 11.9.0
+candidate. JS dependencies use exact versions, a core override, npm lockfile
+and an explicit allowlist for the esbuild 0.28.2 install script.
+
+Playwright Core 1.64.0 drives an actual host browser. Chromium keeps its sandbox
+enabled. The cloud helper owner/user-namespace restrictions prevent startup;
+hosted Ubuntu supplies a supported sandbox. Do not disable it or weaken the
+container to fabricate browser success. Tests use local bundled sources only,
+CSP with narrow WASM allowance and a loopback ciphertext-only test transport.
+
+This selects no application canonicalization, authenticated pairing, key
+wrapper or sender authorization. Sealed-box decryptability is not permission.
+Physical Windows/iPhone and independent-review gates remain open. Migration:
+none; this isolated experiment has only public fixtures and temporary data.
+
+Primary metadata checked on this date: crates.io `libsodium-rs` /
+`libsodium-sys-stable`, npm `libsodium-wrappers-sumo`, `playwright-core`, `esbuild`,
+and the fetched official crate build source (Minisign verification retained).
+Actual positive/negative results are tracked in TEST_EVIDENCE.md.
