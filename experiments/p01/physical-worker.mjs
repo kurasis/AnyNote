@@ -5,8 +5,11 @@ import { capabilities, writeStorage, inspectStorage, cleanupStorage } from './st
 const MAX = 1000000000, CHUNK = 8388608;
 let busy = false, generation = 0;
 let staged; // Test-only live file/key state, never a durable production transfer session.
+let uploadingKey;
 function locked() {
   generation++;
+  if (uploadingKey) sodium.memzero(uploadingKey);
+  uploadingKey = null;
   if (staged) sodium.memzero(staged.key);
   staged = null;
 }
@@ -18,6 +21,7 @@ function current(expected) { if (generation !== expected) throw new Error('PAUSE
 async function upload(source, origin) {
   sizeCheck(source); locked();
   const count = Math.ceil(source.size / CHUNK), key = sodium.randombytes_buf(32), prefix = sodium.randombytes_buf(16);
+  uploadingKey = key;
   const run = generation, inputHash = sodium.crypto_hash_sha256_init(), chunks = [];
   try {
     for (let index=0; index<count; index++) {
@@ -36,9 +40,10 @@ async function upload(source, origin) {
     }
     current(run);
     staged = {key,prefix,chunks,size:source.size,sha256:sodium.to_hex(sodium.crypto_hash_sha256_final(inputHash)),origin};
+    uploadingKey = null;
     return {status:'UPLOADED',bytes:source.size,chunks:count,sha256:staged.sha256,
       limitation:'Live local experimental key/inventory only; no production manifest, recipient trust or resume.'};
-  } catch (error) { sodium.memzero(key); throw error; }
+  } catch (error) { sodium.memzero(key); if (uploadingKey === key) uploadingKey = null; throw error; }
 }
 async function exportFile(sink) {
   if (!staged || !sink || sink.kind !== 'file' || typeof sink.createWritable !== 'function') throw new Error('No live upload or bounded explicit export sink');
