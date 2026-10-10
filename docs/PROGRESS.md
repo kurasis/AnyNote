@@ -198,3 +198,10 @@ from the one documented previous diagnostic path. Native imported crypto,
 provider checks, cancellation watcher and exact cleanup are unchanged. Local
 portable tests 76 PASS and strict Clippy PASS; hosted checks/release execution
 are recorded as they complete. P01/G1 remains OPEN; P03 continues independently.
+
+Hosted 0.1.2: all three feasibility jobs and baseline PASS at a225e3f
+(run 38074016248). Native 105 routine tests plus explicit C-header ABI PASS;
+retry/reload/migration and exact 1 GB output/hash/cleanup PASS. Actual hosted
+records are archived in docs/evidence. The publisher selects this frozen source
+for v0.1.2-p01-device-kit; execution/availability is recorded on PR #7/release.
+Remaining phone Files hash/installed-PWA and full G1 gates remain OPEN.

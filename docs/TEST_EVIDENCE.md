@@ -439,3 +439,33 @@ JSON, records 5 versus 1,000,000,000 bytes, retains the failure across reload,
 then selects/hashes the existing 1 GB without another automatic trial. It also
 checks legacy report-stage recovery from the one documented previous key.
 Hosted results and exact 0.1.2 publication receipts are recorded separately.
+
+### Hosted 0.1.2 build and publication selection
+
+All three feasibility jobs [38074016248](https://github.com/kurasis/AnyNote/actions/runs/38074016248)
+and baseline [38074016234](https://github.com/kurasis/AnyNote/actions/runs/38074016234)
+PASS at a225e3f099551b95aa1893f941de522f543e8f44. Windows: 105 routine native
+tests plus separately executed pinned Microsoft C-header ABI PASS; 51 crypto/
+KDF checks and exact 1 GB/120 chunks/cleanup PASS; hosted API 7 stays BLOCKED
+with no native objects. Event-mapping tests use Windows message constants,
+not a physical lock; portable classification rejects missing-event legacy STALE,
+timeout/close/suspend/cancel and successful-authentication mismatches.
+
+Raw hosted records: [browser](evidence/p01-selection-retry-hosted-browser.json),
+[Windows](evidence/p01-selection-retry-hosted-windows.json). Browser selected
+5-byte JSON through the activated picker, retained its FAIL across reopen, then
+selected and independently hashed the same saved 1 GB without another automatic
+trial. Large selected digest `efeac2a321293d568de43140742c05a579a8b8974f747154f49e2d7d4648bc18`.
+Legacy failed report-stage recovery from the one documented sibling key PASS;
+original key preserved. Prior page-loss/denied-storage/fault/cleanup regressions
+and the existing full native/Node/browser network/export/fault suite PASS.
+
+Downloaded EXE SHA-256 `434878b19f7b0816c07ddf283d5156b652ac68650a4ad03df4718eda45550cb1`; system-only PE dependencies.
+ZIP SHA-256 `02a6b5b1f46db4fe1eb85a6706e5d177906a38f0d865489392cec0d29a7c6f96`;
+CRC/source/14 asset receipts verified. The explicit publisher freezes these
+successful bytes, additionally requires actual wrong-JSON size/retry and legacy
+recovery results, and verifies published downloads and the exact source tag.
+Publication execution is recorded in [PR #7](https://github.com/kurasis/AnyNote/pull/7)
+and the [0.1.2 release](https://github.com/kurasis/AnyNote/releases/tag/v0.1.2-p01-device-kit).
+Hosted sharing remains mocked; no production deployment/signing or complete
+physical acceptance is inferred.
