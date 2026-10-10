@@ -7,7 +7,7 @@ does not satisfy a feature gate. Production release is not ready.
 | Phase | Status | Evidence / remaining gate |
 | --- | --- | --- |
 | P00 | VERIFIED | Local baseline and four negative cases passed; scope/version/inventory deliverables complete; remote bootstrap and clean-clone verification passed; both baseline Actions runs verified |
-| P01 | IN PROGRESS | Rust/Node/Chromium, Argon2id, ciphertext storage and selected 1 GB disk export host evidence VERIFIED; Windows native probe/ABI verified; actual Hello and iPhone G1 remain open |
+| P01 | IN PROGRESS | Crypto/KDF/storage, selected 1 GB disk export, per-phase desktop RSS and real export fault/cleanup host evidence VERIFIED; Windows native probe/ABI/collector verified; actual Hello and iPhone G1 remain open |
 | P02 | NOT STARTED | Depends on P00/P01 findings; qualified review remains external |
 | P03 | NOT STARTED | Tooling may begin after P00; final contracts follow P02 |
 | P04 | NOT STARTED | P02/P03; signature acceptance also needs P05 fixtures |
@@ -83,3 +83,28 @@ installed-iPhone sharing/Files output, memory and restart/resume remain unrun;
 no private HTTPS origin was deployed. No production formats or data migration
 changed. Revert this isolated slice to roll back; preserve any physical trial
 cleanup journal until its exact native objects are removed.
+
+## Completed slice: P01-PHYSICAL-TRIALS independent host preparation
+
+Selected-file upload and export/readback now have separate sampled desktop RSS
+reports. Exact 1 GB saved-file length/SHA-256 match independent Node output.
+The initial measured upload increment was 416,692 KiB; export/readback increment
+104,976 KiB. These are sampled aggregate desktop process figures, with shared
+page double counting and irregular cadence, not an iPhone 64 MiB pass.
+
+Real worker/HTTP/OPFS tests reject corrupt/truncated second parts, decoded gzip
+overflow and lock before a delayed second response, abort the uncommitted writer
+and preserve its previous output. Exclusive sink denial, verified retry of the
+unchanged ciphertext, failed share-preparation cleanup, reload requiring fresh
+keys and selective/idempotent marked-orphan cleanup pass. Network faults are
+internal runner controls, never HTTP/IPC actions or production features.
+
+The bounded synthetic-file helper passed size/hash/no-overwrite checks locally.
+The Windows hash/source collector passed on hosted Windows without creating
+objects; actual provider gating remains BLOCKED at API 7. Owner runbooks and
+an unfilled physical record template are ready. The owner reports the HTTPS
+host is not ready; phone access, actual Windows Hello operations, installed-PWA
+Files output/memory and low physical space remain NOT RUN/BLOCKED. No physical
+acceptance, production protocol or deployment is claimed. Next independent
+development is P03 tooling, while P01 awaits device records. Rollback: revert
+the isolated test/helper additions; no production state or format migration.

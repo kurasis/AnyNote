@@ -54,3 +54,12 @@ The experiment adds 108 resolved Cargo metadata package records, including the
 private GPL-3.0-only root, in the inventory under windows_hello_rust_packages.
 This is not a release distribution assessment. The rest of AnyNote's release
 license remains unselected.
+
+## Export fault / device-capture slice
+
+No Cargo/npm packages or lockfiles changed. Native collector scripts remain
+inside the GPL-3.0-only Windows experiment; the rest of the project still has
+no chosen release license. Optional mkcert is referenced solely as a manual
+local certificate procedure, not installed, executed or added as a runtime
+dependency. Its official release/README observation is documented in
+P01_PRIVATE_HTTPS_WINDOWS.md; no asset digest or trust provisioning is claimed.

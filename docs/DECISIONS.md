@@ -195,3 +195,36 @@ P01/G1 remains open for physical Windows and at least two iPhones, tested Files
 output and low-space/lifecycle/resume. The prepared harness has no production
 auth, sender/recipient trust, signed manifest, durable key/transfer recovery or
 remote deployment. Application key custody/contracts still await P02/P07.
+
+## ADR-005 — Bound decoded responses and preserve explicit export evidence
+
+Date: 2026-10-10. Status: ACCEPTED for the isolated P01 harness.
+
+Content-Length may describe encoded bytes while fetch returns a decoded body.
+Read selected-file ciphertext into a fixed expected-part buffer through the
+response reader, enforce the decoded bound before copying, reject truncation,
+then validate digest/tag. Never allocate an entire response before enforcing
+its limit. A real padded gzip fixture tests correct encoded length with excess
+decoded data; it must fail before plaintext writing.
+
+Use actual Chromium OPFS transactional writers to test second-part corruption,
+network truncation and lifecycle invalidation after a verified first write.
+Abort must preserve the old committed test output for those pre-close failures.
+Do not generalize to all OS sinks or rollback once an OS close/commit occurred.
+Cleanup encloses marker creation and failed preparation; unsupported sharing
+also removes its authorized temporary record. Reload tests prove loss of live
+keys and selective removal of only correctly marked directories. No test
+fault switch is exposed over HTTP/IPC; no production retry/resume is inferred.
+
+Separate selected-file upload from export/readback memory sampling. Record
+baseline, observed aggregate peak/increment, duration, sample count and actual
+cadence limitations. The timer interval is only requested; final samplers also
+report longest observed gap. Shared-page double counting, irregular samples,
+retained browser processes and missed peaks prevent an iPhone budget claim.
+
+Prepare content-free Windows capture only after verifying the exact native EXE
+hash and embedded source. Hosted execution remains labeled hosted. Physical
+trials require the owner's devices and a ready private trusted HTTPS origin;
+manual CA trust provisioning is an optional owner action, not a TLS bypass or
+cloud deployment. Retain the existing device strings without repeatedly asking.
+No protocol, release scope, migration or key-custody change occurs here.

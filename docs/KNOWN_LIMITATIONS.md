@@ -19,6 +19,16 @@
 - Browser aggregate RSS is a sampled desktop metric with shared-page double
   counting, not evidence of the 64 MiB iPhone budget. WASM heap alone does not
   include JS/network/UI buffers. Physical memory/export evidence remains required.
+- Selected-file export now has its own per-phase RSS report and real abort/fault
+  checks. The initial 1 GB export/readback sampled increment was 104,976 KiB,
+  upload 416,692 KiB; this does not verify the mobile 64 MiB budget. A 25 ms
+  requested timer does not guarantee sample cadence. OPFS abort preserves the
+  prior committed output in the tested failures before close; arbitrary physical
+  sinks or rollback after OS close/commit are not established by these tests.
+- The physical runbook, bounded file helper and hash/source Windows collector
+  are ready. Owner reports the private HTTPS host is not ready. Reachability,
+  phone certificate trust and actual installation remain unverified. The local
+  Windows certificate procedure is optional, manual and unexecuted here.
 - Owner-reported targets are Windows 11 Pro 25H2 with Hello planned and iPhone
   17 Pro / iOS 26.7.1. Exact builds/providers are uninspected; the required older
   or lower-memory iPhone remains unspecified. The working passkeylocal source

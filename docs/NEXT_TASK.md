@@ -1,55 +1,55 @@
 # Next bounded task
 
-## P01-PHYSICAL-TRIALS — platform memory, export sink and fault evidence
+## P03-TOOLING-FOUNDATION — independent developer environment and smoke path
 
-Prerequisite: P01-CRYPTO-INTEROP and P01-LOCAL-UNLOCK host reports recorded.
-Read AGENTS.md, progress, decisions, limitations, P01_PLATFORM_TEST_PLAN.md,
-experiments/p01/PHYSICAL_HARNESS.md and windows-hello/README.md. Preserve
-original specification bytes and unrelated changes. This remains P01; G1 is open.
+Prerequisite: P00 VERIFIED; P01 host crypto/KDF/storage/export/fault findings
+recorded. P01/G1 physical Windows/iPhone acceptance is OPEN and must remain
+separate. The owner reports the private HTTPS host is not ready. Device runbooks
+and the unfilled template are in P01_OWNER_TRIALS.md. No repeated OS/model
+questions, remote access, device actions or HTTPS deployment are assumed.
 
-Objective: establish which prepared native/PWA paths work on the actual supplied
-platforms, improve bounded export/fault handling from measured evidence and
-record the exact remaining platform constraints.
+Read AGENTS.md, progress, decisions, limitations, dependency inventory and
+specification 02/08/13/14/15. Preserve supplied spec bytes, existing experiments,
+reference archives and unrelated changes. This task starts the independently
+permitted P03 tooling track; it does not declare P01/P02 completed.
 
-1. Continue independent host work: measure actual selected-file export process
-   memory separately from generated-stream RSS; add meaningful interruption,
-   corrupt/truncated download, export abort and orphan-cleanup checks where the
-   changed implementation needs them. Do not infer a 64 MiB iPhone pass from WASM
-   heap or a desktop aggregate metric. Preserve exact 1,000,000,000-byte trials.
-2. Verify the compiled Windows probe source/hash and actual capability report.
-   Target Windows 11 Pro 25H2 with Hello planned (already supplied). On the
-   existing physical account, use only disposable native objects: roundtrip;
-   cancellation/lock; explicit enroll -> new-process unlock -> cleanup; verify
-   the real synthetic vault and exact ownership deletion. Capture actual build,
-   API/provider and prompt observations. Hosted API 7 is expected BLOCKED, not
-   permission for fallback. No reset/policy changes or repeated upstream trials.
-3. Prepare a trusted private HTTPS test host when its access/certificate are
-   available; do not publish an unauthenticated test server publicly or deploy
-   production. The manifest/worker/server and runbook already exist. No cloud
-   localhost preview or TLS verification bypass. Synthetic data only.
-4. Target iPhone 17 Pro / iOS 26.7.1 (already supplied, owner-reported) installed
-   from Safari. Capture actual capabilities/KDF/storage and device memory.
-   Evaluate the bounded verified disk File -> separate Web Share candidate or
-   another supported sink. Independently inspect the actual Files output and
-   hash/length; canShare, a share completion or OPFS file alone is insufficient.
-   Test small sizes before the exact 1 GB file; no whole-file buffer/Blob fallback.
-5. Run I01–I03 lifecycle/low-space/source-reselect procedures as implemented.
-   Current backgrounding locks and requires fresh session/keys; matching source
-   is not resume. Do not claim production manifests/recipient trust or recovered
-   progress before those parts exist. Clear only owned marked test export state.
-6. The older/lower-memory second iPhone remains unspecified. Complete independent
-   host checks while physical access/target/HTTPS prerequisites are absent; do not
-   request already supplied OS/model strings again. Mark precise parts NOT RUN
-   or BLOCKED. If a real iOS sink/1 GB trial fails, present measured options
-   before changing the agreed scope. P03 tooling is an independent permitted
-   track after P00 and may proceed when physical work has no executable next step.
-7. Record actual reports, exact sources, limitations and next bounded task;
-   run checks, push and merge tested completed work automatically as authorized.
+1. Inspect the actual cloud runtime, existing tool activation/setup, services,
+   lockfiles and CI. Reuse Rust/Node pins and existing checkout, no worktree.
+   Verify maintained PHP/Composer/MariaDB/Nginx candidates against primary
+   sources before installing; record actual versions and any justified changes.
+   Preserve checksums/signatures/TLS and frozen dependency installs.
+2. Prepare a bounded repository foundation: documented component layout,
+   workspace/check commands and a Laravel development skeleton or equivalent
+   repository-supported initialization. Keep experiments independently runnable.
+   Do not invent/freeze crypto, authentication, authorization or wire schemas
+   while P02 contracts and review are pending. No dummy production auth/crypto.
+3. Start only owned development services on loopback/private synthetic bindings.
+   Exercise a meaningful PHP/Laravel -> MariaDB request/transaction plus Nginx/
+   PHP-FPM routing if supported. Use isolated disposable data, content-free logs
+   and normal configuration, no public exposure or destructive system changes.
+   A listening port or static HTML alone is insufficient readiness evidence.
+4. Add appropriate reproducible checks/CI for changed foundation behavior and
+   dependency/configuration drift. Record exact dependencies/licenses and
+   provide clean-clone commands. Final application contracts follow P02; do not
+   fabricate generated types or security acceptance from a scaffold.
+5. Apply cloud-environment-onboarding:setup to actual setup changes: test required
+   activation/install/start steps and save only necessary complete draft fields.
+   Do not overwrite unknown allowlists or request supplied credentials again.
+   Saved configuration and publication/new-instance verification are separate.
+6. If the owner supplies actual device records, verify their source/hash and
+   report physical outcomes in parallel with this independent work. Windows
+   capability BLOCKED means no fallback; iPhone canShare/OPFS is not Files
+   acceptance. Keep process memory/older-phone/low-space/recipient/resume gates
+   precise. Never claim that prepared instructions were physically executed.
+7. Record progress/decisions/limitations/evidence and the next bounded task.
+   Run relevant checks, push and automatically merge tested completed work as
+   authorized. Do not bypass branch protection or a failing required check.
 
-Invariants: no real secrets/user vaults, key-bearing frontend/native replies,
-plaintext server, silent software/DPAPI fallback, verification/sandbox bypass,
-permission/protection bypass or fabricated hardware/audit evidence.
+Invariants: no real user secrets/vaults, production deployment, plaintext server
+content fallback, verification/sandbox/protection bypass, arbitrary native key
+interfaces or fabricated physical/audit evidence. Preserve synthetic cleanup
+journals until their exact owned objects are removed.
 
-Exit: reviewable platform/fault evidence and concrete supported/blocked sink
-constraints. P01/G1 remains open until physical acceptance is actually recorded;
-qualified review and production protocol/release gates are not replaced by CI.
+Exit: a fresh developer reproduces the prepared tooling and meaningful bounded
+service smoke path, with actual reports and exact remaining prerequisites.
+P01/G1, P02 final contracts/review and all production release gates stay open.

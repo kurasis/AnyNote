@@ -5,6 +5,9 @@ controlled physical trials. They are separate from production application/auth
 and native Windows code. No public deployment or trusted HTTPS certificate has
 been configured by this task. Use only disposable synthetic files.
 
+Owner actions and capture template: [physical trial runbook](../../docs/P01_OWNER_TRIALS.md).
+Windows LAN certificate option: [manual private HTTPS procedure](../../docs/P01_PRIVATE_HTTPS_WINDOWS.md).
+
 ## Serve with trusted HTTPS
 
 From this directory after frozen npm installation:
@@ -60,6 +63,15 @@ computed Node SHA-256. Those test outputs are removed afterward. This verifies
 the browser streaming/writable mechanics and actual File reading, not an iOS
 Files output, fresh recipient, production manifest or physical interruption.
 Normal OPFS/IndexedDB durability probes separately store ciphertext only.
+
+Selected-file upload and export/readback now have separate desktop process RSS
+samplers. Real worker/HTTP/OPFS fault trials cover corrupted/truncated second
+parts, decoded gzip expansion beyond the claimed part length, lifecycle lock
+before a delayed download, exclusive writable denial and marked orphan removal
+after reload. The first-part writes are aborted before commit and the prior
+committed OPFS output must remain unchanged. This does not establish atomic
+abort semantics for every physical OS sink or a rollback after close/commit.
+Physical low disk and interruption acceptance still require device evidence.
 
 Target supplied: iPhone 17 Pro, iOS 26.7.1 (owner-reported). Record actual build,
 browser/provider, installation, memory/storage, source commit and actual saved
