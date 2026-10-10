@@ -10,9 +10,9 @@ import tempfile
 import zipfile
 
 REPO = "kurasis/AnyNote"
-RUN = "38076184680"
-SOURCE = "2cc346e0dea51af0665b1947367a74a3d4ec8d69"
-TAG = "v0.1.3-p01-device-kit"
+RUN = "38076947436"
+SOURCE = "566ec84a6630794f266a2ab4bdfea8a170457e6a"
+TAG = "v0.1.4-p01-device-kit"
 
 
 def gh(*args):
@@ -74,7 +74,8 @@ def main():
                 or phone_report["download_replay_rejected"] is not True
                 or phone_report["arbitrary_export_path_rejected"] is not True
                 or phone_report["unmarked_export_rejected"] is not True
-                or phone_report["retained_staged_export_reopened_and_hashed"] is not True):
+                or phone_report["retained_staged_export_reopened_and_hashed"] is not True
+                or phone_report["prepared_ticket_survives_actual_service_worker_stop"] is not True):
             raise RuntimeError("Asset runtime/source/hash evidence mismatch")
         with zipfile.ZipFile(bundle) as archive:
             if archive.testzip() is not None or json.loads(archive.read("BUILD.json"))["source_commit"] != SOURCE:
@@ -103,9 +104,9 @@ def main():
         notes.write_text(f"""Download the single file for your device; other attachments are optional evidence/license/checksums.
 
 - **Windows:** double-click `AnyNote-P01-Windows-x64.exe`. Confirm the positive Hello prompts, cancel when instructed, and optionally select the disclosed automatic lock trial. After selecting it, leave the next prompt pending without touching the sensor; the test requests Windows lock once after 8 seconds. Win+L is not required. Windows sign-in afterwards may need fingerprint/PIN. The report folder opens automatically; send its one JSON back. No installer, PowerShell, VC runtime or extra DLL is needed.
-- **iPhone:** unzip the ZIP contents into `<web-root>/anynote-p01-v013/`, with `index.html` directly inside. Open `https://YOUR-TEST-SITE/anynote-p01-v013/`; the page must show **Test kit 0.1.3**. Add to Home Screen and launch that app for the PWA trial. Tap **Run all automatic tests**, then **Download 1 GB sample**. Find the downloaded `synthetic-export-….bin` in Downloads/Files, select it for exact size/SHA-256 verification and send only the small JSON report. No Node/PHP/account/backend setup.
+- **iPhone:** unzip the ZIP contents into `<web-root>/anynote-p01-v014/`, with `index.html` directly inside. Open `https://YOUR-TEST-SITE/anynote-p01-v014/`; the page must show **Test kit 0.1.4**. Add to Home Screen and launch that app for the PWA trial. Tap **Run all automatic tests**, then **Download 1 GB sample**. Find the downloaded `synthetic-export-….bin` in Downloads/Files, select it for exact size/SHA-256 verification and send only the small JSON report. No Node/PHP/account/backend setup.
 
-**Changed in 0.1.3:** The owner confirmed physical 0.1.2 restarts at 1 GB Web Share. The default now downloads the verified synthetic disk output through a scoped service-worker streaming attachment, with 256 KiB reads, single-use five-minute capability and no export cache; it does not pass a gigabyte File into system Share or build a giant Blob. Diagnostics and generated owner/name metadata are saved before the request. Reopen after interruption to recheck and reuse a retained marked disk output without keys/handles. A sent stream alone cannot pass Files: selected bytes must independently match.
+**Changed in 0.1.4:** The owner confirmed physical 0.1.2 restarts at 1 GB Web Share. The default now downloads the verified synthetic disk output through a scoped service-worker streaming attachment, with 256 KiB reads, single-use five-minute capability and no export cache; it does not pass a gigabyte File into system Share or build a giant Blob. Diagnostics and generated owner/name metadata are saved before the request. Short-lived synthetic download tickets use a dedicated path-scoped IndexedDB store with atomic consumption, so stopping an idle service worker does not erase a prepared link. No file bytes or vault keys are stored in that table. Active streams can still be interrupted by the OS. Reopen after interruption to recheck and reuse a retained marked disk output without keys/handles. A sent stream alone cannot pass Files: selected bytes must independently match.
 
 If the PWA denies the download, try the same new URL in Safari and preserve both reports; Safari success is a separate result, not installed-PWA acceptance. **Use system Share instead** remains optional/experimental. A physical iOS rerun is still required; hosted Chromium success does not establish iPhone memory or Files/PWA support. If an earlier v012/v011 diagnostic is restored but no .bin was saved, choose **Run a new trial** once. Same-origin/browser storage is required; prior known records and other site data are preserved, no keys restored and no automatic rerun. Keep the new directory to avoid the older installed static cache.
 
@@ -117,7 +118,7 @@ These are **unsigned P01 synthetic test artifacts**, not a production release/de
 
 Exact build source: `{SOURCE}`. Automatic **Source code** archives from this tag contain the corresponding modifications and pinned build inputs. Windows code/modifications are GPL-3.0-only; license text is embedded (`--license`) and attached. This does not choose a license for the rest of AnyNote. The iPhone ZIP includes sodium ISC notices.
 
-Validation: [source feasibility {RUN}](https://github.com/{REPO}/actions/runs/{RUN}) and [baseline 38076184710](https://github.com/{REPO}/actions/runs/38076184710). Full 1 GB native/Node/browser interop/network/fault suite; sandboxed nested-path kit with actual 1 GB streaming download and disk picker/hash, cancelled stream releasing its lock, replay/unknown/arbitrary-path/unmarked-output rejection, pending mocked-Share page destruction/recovery and exact cleanup. Native Windows regression/independent C-header ABI, 51 crypto/KDF/exact 1 GB disk checks and system-only PE imports. Build reviewed/merged in [PR #8](https://github.com/{REPO}/pull/8); publication verifies frozen CI/source/receipts and actual downloaded release bytes using the scoped Actions token.
+Validation: [source feasibility {RUN}](https://github.com/{REPO}/actions/runs/{RUN}) and [baseline 38076947435](https://github.com/{REPO}/actions/runs/38076947435). Full 1 GB native/Node/browser interop/network/fault suite; sandboxed nested-path kit with actual 1 GB streaming download and disk picker/hash, cancelled stream releasing its lock, replay/unknown/arbitrary-path/unmarked-output rejection, pending mocked-Share page destruction/recovery, real service-worker stop after ticket preparation and exact cleanup. Native Windows regression/independent C-header ABI, 51 crypto/KDF/exact 1 GB disk checks and system-only PE imports. Build reviewed/merged in [PR #8](https://github.com/{REPO}/pull/8); publication verifies frozen CI/source/receipts and actual downloaded release bytes using the scoped Actions token.
 
 EXE SHA-256: `{sha(exe)}`. ZIP SHA-256: `{sha(bundle)}`.
 
@@ -125,7 +126,7 @@ EXE SHA-256: `{sha(exe)}`. ZIP SHA-256: `{sha(bundle)}`.
 """)
         subprocess.run(["gh", "release", "create", TAG, *(str(path) for path in files),
                         "--repo", REPO, "--target", SOURCE, "--prerelease", "--title",
-                        "P01 device kit 0.1.3: streaming download and selected OS lock",
+                        "P01 device kit 0.1.4: persistent download links and selected OS lock",
                         "--notes-file", str(notes)], check=True)
         # Verify the actually published downloads, not only the upload response.
         downloaded = root / "published"

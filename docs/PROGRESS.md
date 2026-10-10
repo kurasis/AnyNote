@@ -242,3 +242,12 @@ a prepared URL. Transactions atomically consume tokens; bounded expiry/client
 replacement keep the registry small. No export bytes or vault keys are persisted.
 Hosted regression stops the real SW after preparation before the 1 GB download.
 New validation/publication pending; prior release assets remain immutable.
+
+0.1.4 hosted source 566ec84: all three jobs plus baseline PASS. Real SW stop
+followed by exact 1 GB attachment/picker/hash and replay/cancel/recovery checks
+PASS; 106 Windows tests plus separate ABI and full 663-primitive/network/fault
+suite PASS. Exact raw records and frozen SHA-256 values are archived. Publish
+these verified bytes as a new v0.1.4-p01-device-kit tag through Actions; do not
+overwrite 0.1.3. Final publication/download evidence is in PR #8/release.
+Actual installed-iPhone stream/Files/memory and selected Windows lock still
+need owner records; earlier Windows positive findings are preserved.

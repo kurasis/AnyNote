@@ -523,3 +523,30 @@ match recorded hashes, ZIP source/version/receipts and exact source tag.
 0.1.4 adds durable single-use synthetic ticket metadata and a real CDP worker
 stop before attachment request; new source run pending. The earlier test
 release remains unchanged, not overwritten with unverified bytes.
+
+0.1.4 source 566ec84: all three [feasibility jobs
+38076947436](https://github.com/kurasis/AnyNote/actions/runs/38076947436) and
+[baseline 38076947435](https://github.com/kurasis/AnyNote/actions/runs/38076947435)
+PASS. [Durable-link browser report](evidence/p01-durable-download-hosted-browser.json)
+and [Windows report](evidence/p01-durable-download-hosted-windows.json) retain
+exact source and scope. CDP stops the real service worker after ticket
+preparation; its restarted worker streams a full 1 GB browser download, whose
+independent Node disk digest and real picker/hash match. Cancellation releases
+the trial lock; replay, unknown token, arbitrary path and wrong marker reject;
+recovery, wrong JSON retry, diagnostics and zero owned export directories PASS.
+Optional Share remains a mock, and device memory/physical acceptance false.
+Windows 106 routine plus explicit C-header ABI, 51 crypto/KDF/exact 1 GB and
+cleanup PASS; no native objects or lock request in hosted mode. Existing full
+663-check native/Node/Chromium/network/export/fault suite also PASS.
+
+Frozen 0.1.4 artifacts:
+
+- EXE SHA-256: `ee8327e9fc83a491ccca89bf6104fd7d374d4bb1bae1e9357f8177ccb52d6555`
+- ZIP SHA-256: `28f081e40ff831f1ea558d6942efbe0966d5653c7778e6961b0cb10779ae5d52`
+
+ZIP CRC/source/version/all-asset receipts and EXE runtime-reported hash PASS.
+The publisher freezes that successful run and requires the actual worker-stop
+regression flag as well as previous download/negative gates. Publication
+execution and independently downloaded release bytes are recorded on PR #8
+and the 0.1.4 release, not assumed from configuration. Both original physical
+owner limitations remain OPEN; no complete G1 result.
