@@ -70,5 +70,22 @@ export async function checkSelectedFiles(page,transport,scratch,large) {
     await assert.rejects(page.evaluate(()=>physicalP01.call({kind:'upload',source:document.querySelector('input[type=file]').files[0]})));
   }finally{await rm(oversize);}
   report.oversize_before_read=true;report.locked_export_rejected=true;
+  await transport.reset();
+  const delayed=join(scratch,'delayed-synthetic.bin'),tiny=await open(delayed,'wx');
+  await tiny.write(new Uint8Array([7]));await tiny.close();
+  const gate=transport.holdNextUpload();
+  let timer;
+  try{
+    await page.locator('input[type=file]').setInputFiles(delayed);
+    const rejected=assert.rejects(page.evaluate(()=>physicalP01.call({kind:'upload',source:document.querySelector('input[type=file]').files[0]})),/PAUSED_LOCKED/);
+    await Promise.race([gate.arrived,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Upload gate not reached')),30000);})]);
+    clearTimeout(timer);
+    await page.evaluate(()=>new Promise(resolve=>{
+      const handler=({data})=>{if(data.kind==='locked'){physicalP01.worker.removeEventListener('message',handler);resolve();}};
+      physicalP01.worker.addEventListener('message',handler);physicalP01.worker.postMessage({kind:'lock'});
+    }));
+    gate.release();await rejected;
+    report.late_upload_after_lock_rejected=true;
+  }finally{clearTimeout(timer);gate.release();await rm(delayed);}
   return report;
 }

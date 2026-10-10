@@ -19,7 +19,7 @@ current model. Minimum OS support remains a candidate until measured.
 ## W01 — Actual PRF/TPM protection of a random local key
 
 Prerequisites: actual Windows 11 x64 with current WebView2, Rust MSVC and C++
-Build Tools; a future isolated key-wrapper probe, not yet implemented. Follow
+Build Tools; use the isolated [native probe](../experiments/p01/windows-hello/README.md). Follow
 ADR-003 and the [preserved working reference](reference/passkeylocal/README.md),
 including its generated native ABI and independent official-header validation.
 
@@ -52,9 +52,10 @@ test or reset Hello/TPM. Account isolation remains unverified by this procedure.
 
 ## I01 — Installed PWA crypto/storage baseline
 
-Prerequisites: dedicated controlled HTTPS synthetic app/API origins, reviewed
-test-only harness packaging, physical iPhones and a storage/export adapter. The
-current loopback test page is not remotely exposed and is not an installed PWA.
+Prerequisites: dedicated trusted HTTPS synthetic host and physical iPhones.
+[The prepared PWA harness](../experiments/p01/PHYSICAL_HARNESS.md) has a manifest,
+worker, ciphertext storage probes, file selection and explicit bounded export
+adapters. No HTTPS host is deployed or physical installed-PWA trial completed.
 
 1. Install from Safari to Home Screen. Record Safari/OS/provider versions.
 2. Run the committed native/browser fixture corpus in the real PWA worker.
@@ -82,9 +83,11 @@ Do not silently lower KDF cost to close a feasibility gate.
 
 ## I03 — Exact 1 GB upload/download/decrypt/save to Files
 
-Prerequisites: immutable chunk upload/session/manifest journal and a reviewed
-bounded export sink in an isolated synthetic harness. These parts are not yet
-implemented. OPFS alone is not an iOS Files export pipeline.
+The isolated harness now tests selected File -> ciphertext upload/download ->
+verified explicit OPFS export on Chrome. It also prepares an experimental
+verified disk File -> separate Web Share action for physical evaluation. This
+is not a production immutable session/manifest journal or recipient protocol.
+OPFS, canShare or a resolved share promise alone is not an iOS Files pass.
 
 1. Generate a **1,000,000,000-byte** CSPRNG source, record its SHA-256 and move
    that synthetic source to the phone. Verify 120 parts, final length 1,755,648;
@@ -114,7 +117,7 @@ agreed mobile file limit or platform; never introduce server decryption.
 
 | Target | Hardware / OS / provider | Evidence | Status |
 | --- | --- | --- | --- |
-| Windows 11 x64 + WebView2/Hello | Owner reports Windows 11 Pro 25H2; Hello planned; exact build/provider/WebView2 pending capture | W01 pending AnyNote probe and physical execution | NOT RUN |
+| Windows 11 x64 + WebView2/Hello | Owner reports Windows 11 Pro 25H2; Hello planned; exact build/provider/WebView2 pending capture | W01 native probe built; physical execution NOT RUN | NOT RUN |
 | Lower-memory iPhone installed PWA | Not supplied | I01–I03 | BLOCKED |
 | Current iPhone installed PWA | Owner reports iPhone 17 Pro, iOS 26.7.1; exact build/storage/provider pending capture | I01–I03 | NOT RUN |
 | Linux native/Node | Cloud host, Rust/Node pinned | P01 report | Separate primitive/file evidence |

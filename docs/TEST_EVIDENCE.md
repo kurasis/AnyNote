@@ -148,3 +148,72 @@ Upstream owner confirmation applies to its password-vault Hello flow, not AnyNot
 or the newer File Safe flow. The PRF/TPM mechanism is mapped to a random local
 vault key in ADR-003 and the next probe task. No upstream installer/source build
 or Windows hardware operation was executed in this cloud capture.
+
+## P01-LOCAL-UNLOCK host evidence
+
+[Run 38056304802](https://github.com/kurasis/AnyNote/actions/runs/38056304802)
+completed **PASS** at `066fdd0a6838c3dfaa1dc9831b6fe8b527820c2c`.
+Raw sanitized reports and provenance are retained in
+[p01-local-unlock-large.json](evidence/p01-local-unlock-large.json) and
+[p01-windows-capabilities.json](evidence/p01-windows-capabilities.json).
+This is host feasibility evidence, not physical G1 acceptance.
+
+- All 663 prior live/frozen primitive checks passed. Native Rust tests: 4;
+  portable Windows policy/lifecycle tests: 70. Formatting and strict clippy pass.
+- Three frozen Argon2id13 vectors match Rust, Node and a real Chromium worker;
+  14 invalid profiles per consumer (42), three wrong-phrase wrapper rejections
+  and concurrent KDF admission rejection pass. Browser times: 174/161/163 ms;
+  WASM heap: 67,371,008 bytes at the 64 MiB / opslimit 3 public profile. These
+  figures do not establish a total-process 64 MiB iPhone budget.
+- IndexedDB and OPFS contain only synthetic opaque ciphertext. Exact bytes/hash
+  reopen across worker restart, actual read-only transaction rejection and
+  bounded quota fault rejection pass. CDP quota injection produces real
+  QuotaExceededError; it is not physical disk exhaustion. Persistence was denied.
+- A real selected disk File of 1,000,000,000 bytes is encrypted, uploaded,
+  downloaded, authenticated and explicitly written to an OPFS test export;
+  reread saved-file length/hash match independent Node SHA-256
+  `55cdb814804366d2ba8e2915b88c513df1ed0cc77a7e8af131a9af140d49cbbe`.
+  Upload and download are each 1,000,001,920 ciphertext bytes. The runner uses an
+  isolated disk-backed Chrome profile with the sandbox enabled. This selected
+  file pipeline has no separate process-memory result yet.
+- Oversize-before-read, source-reselection mismatch and locked export rejection
+  pass. A verified empty disk File share candidate is prepared, but Chrome
+  reports share capability false: actual sharing **NOT RUN**, iOS Files
+  **NOT VERIFIED**. No whole-file buffer/Blob fallback was introduced.
+- Windows 2025 / MSVC: 98 routine tests pass; one independent official-header
+  ABI case is ignored in the routine run and then explicitly executed: 1 pass,
+  zero ignored. Release build passes. The preserved Microsoft header retains
+  exact SHA-256 `da82d5be6b90a2706185ae44ad93649bcefc0f89c97ab930ec4e6f0abb7b2283`.
+  The unsigned probe artifact hash is recorded with source provenance. Hosted
+  OS build 26100 reports WebAuthn API 7: **BLOCKED** by the required API 9 gate,
+  no native objects created, no enroll/unlock or physical acceptance claimed.
+
+Earlier [run 38055718166](https://github.com/kurasis/AnyNote/actions/runs/38055718166)
+failed: Windows strict clippy found needless_question_mark; Linux completed
+primitive/KDF/storage checks but the selected 1 GB OPFS export produced
+QuotaExceededError in an incognito context after quota fault injection. The
+successful run isolated that fault in another context and used a fresh disk
+profile; both changed, so the isolated cause is not proven. The unchanged 1 GB
+size and all assertions were retained. The initial compile/lint run
+38055457400 also failed, and its superseded Linux job was cancelled. Failures
+are not counted as successful complete runs.
+
+Local pinned runtime checks also passed: native-only interoperability/KDF,
+both Rust test suites, formatting, strict clippy, baseline and clean diff
+whitespace. Local sandboxed browser startup remains BLOCKED by the cloud
+sandbox helper; full browser evidence comes from Actions without disabling it.
+An optional GNU cross-target attempt could not build sodium without MinGW;
+the successful MSVC build above supplies Windows build evidence.
+
+The installer steps were repeated successfully, including frozen npm install
+and both Rust builds. A temporary loopback trusted-HTTPS server was exercised
+with normal certificate verification: PWA assets/CSP, 32-byte bounded ciphertext
+PUT/GET and rejection of part 120. Its own server was stopped and temporary
+payload state cleaned. No public/private-device origin was deployed.
+
+The updated tested cloud install/start draft was saved as
+`06e641e5-588c-4150-8c32-487c9910c0b2~cecfgdraft_6aca3db0b514819fbc2465187459c698`.
+It still requires publication in environment settings for future tasks.
+Actual Windows Hello prompts/cancellation/lock and installed-iPhone
+KDF/storage/memory/Files trials remain **NOT RUN**. See NEXT_TASK.md for the
+next bounded physical/fault evidence slice.

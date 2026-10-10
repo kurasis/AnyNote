@@ -12,6 +12,7 @@ await writeFile('dist/physical.html', `<!doctype html><html lang="en"><meta char
 <h1>AnyNote P01 synthetic platform trial</h1><p>Use disposable synthetic files only. This is an isolated feasibility experiment. No account, recovery, recipient protocol or production resume is implemented.</p>
 <p>Backgrounding locks the live trial. Saving 1 GB to iOS Files remains an open physical gate.</p>
 <button id="capabilities">Probe storage and export capabilities</button> <button id="storage">Check ciphertext storage</button>
+<button id="measure-kdf">Measure public 64 MiB Argon2id profile</button>
 <p><label>Synthetic source file <input type="file"></label></p>
 <button id="upload">Encrypt and upload selected source</button> <button id="reselect">Verify reselected source</button> <button id="export">Download, verify and explicitly save</button>
 <p>Experimental iPhone candidate: a verified temporary disk export followed by a separate share action. A completed share does not prove that Files received the output.</p>

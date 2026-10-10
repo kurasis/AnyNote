@@ -7,7 +7,7 @@ does not satisfy a feature gate. Production release is not ready.
 | Phase | Status | Evidence / remaining gate |
 | --- | --- | --- |
 | P00 | VERIFIED | Local baseline and four negative cases passed; scope/version/inventory deliverables complete; remote bootstrap and clean-clone verification passed; both baseline Actions runs verified |
-| P01 | IN PROGRESS | Rust/Node/Chromium interop and 1 GB host pipelines VERIFIED; working Hello reference preserved; local wrappers/storage and physical Windows/iPhone G1 still open |
+| P01 | IN PROGRESS | Rust/Node/Chromium, Argon2id, ciphertext storage and selected 1 GB disk export host evidence VERIFIED; Windows native probe/ABI verified; actual Hello and iPhone G1 remain open |
 | P02 | NOT STARTED | Depends on P00/P01 findings; qualified review remains external |
 | P03 | NOT STARTED | Tooling may begin after P00; final contracts follow P02 |
 | P04 | NOT STARTED | P02/P03; signature acceptance also needs P05 fixtures |
@@ -56,3 +56,30 @@ snapshots are preserved in docs/reference/passkeylocal and inform ADR-003 and
 P01-LOCAL-UNLOCK. Physical G1 and qualified review are not complete. Rollback:
 revert this isolated experiment/reference addition; there is no user data or
 production-format migration. See evidence and NEXT_TASK.md for continuation.
+
+## Completed slice: P01-LOCAL-UNLOCK
+
+Added bounded Argon2id13 v1 vectors (64 MiB / opslimit 3) across Rust/Node/real
+Chromium worker, wrong-phrase and invalid-profile checks, single worker KDF
+admission, ciphertext-only IndexedDB/OPFS reopen verification and bounded quota
+fault injection. Real selected File upload/download/explicit OPFS export at
+decimal 1 GB verified saved length and SHA-256 against independent Node output.
+Initial incognito/post-quota-injection export failed with QuotaExceededError;
+separate quota fault context and isolated disk-backed profile passed without
+reducing the file limit or disabling checks.
+
+The preserved working source now supplies an adapted GPL-3.0-only native
+PRF/TPM random-L probe with journal-before-create, independent namespaces,
+native HWND/lock generations, exact cleanup and actual encrypted-vault admission.
+Portable tests: 70; Windows MSVC: 98 routine plus one explicit official-header
+ABI case. Hosted Windows API 7 is below required 9: capability BLOCKED, no
+hardware objects created. This is not a physical Hello pass.
+
+Prepared private trusted-HTTPS PWA packaging, selected-file/reselect/lock checks,
+an explicit writable sink and experimental verified disk-File Web Share
+candidate. Local HTTPS assets and ciphertext transport were exercised with
+certificate trust intact, then only the owned server was stopped. Actual
+installed-iPhone sharing/Files output, memory and restart/resume remain unrun;
+no private HTTPS origin was deployed. No production formats or data migration
+changed. Revert this isolated slice to roll back; preserve any physical trial
+cleanup journal until its exact native objects are removed.

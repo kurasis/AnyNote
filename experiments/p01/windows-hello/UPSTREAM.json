@@ -8,139 +8,163 @@
       "path": "src/hello/prf.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/prf.rs",
       "upstream_sha256": "2f8480f17758a35caf6ffbf59c0f0a9692562f2239eabba3cd33a8489b36b308",
-      "import_sha256": "d3cdb7b06441fef92577212338dc253e90b4e8f1830cf594911a319b6c878afa"
+      "import_sha256": "d3cdb7b06441fef92577212338dc253e90b4e8f1830cf594911a319b6c878afa",
+      "adapted_sha256": "0e1215982c9caf674dabd7f5909e9ae05e571e20b5efb7b478e28f7eb4a2f75f"
     },
     {
       "path": "src/hello/prf/windows.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/prf/windows.rs",
       "upstream_sha256": "844f7b20299f6a9b7f2821d220c9f68c352182583c64adc1f1c60ecb4064bbee",
-      "import_sha256": "9d6db91a6b15bdc7a4aed75e778ca8c17c983e6c9cc19ef297de5c9a8eb0c2fc"
+      "import_sha256": "9d6db91a6b15bdc7a4aed75e778ca8c17c983e6c9cc19ef297de5c9a8eb0c2fc",
+      "adapted_sha256": "4019d031d9798c58881ac758b1c7e2fa8eef50a5406b00a9da8594627fdd29de"
     },
     {
       "path": "src/hello/prf/direct.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/prf/direct.rs",
       "upstream_sha256": "5d772dee9c40c632ff75a6508ada5453041d77ad023d58db3382ba0bd3249adc",
-      "import_sha256": "5d772dee9c40c632ff75a6508ada5453041d77ad023d58db3382ba0bd3249adc"
+      "import_sha256": "5d772dee9c40c632ff75a6508ada5453041d77ad023d58db3382ba0bd3249adc",
+      "adapted_sha256": "5d772dee9c40c632ff75a6508ada5453041d77ad023d58db3382ba0bd3249adc"
     },
     {
       "path": "src/hello/prf/bindings.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/prf/bindings.rs",
       "upstream_sha256": "79da16a6a1e51d3cdbe2ff17ae321183a78b7228064181f0b67fd097ea7ed6c2",
-      "import_sha256": "79da16a6a1e51d3cdbe2ff17ae321183a78b7228064181f0b67fd097ea7ed6c2"
+      "import_sha256": "79da16a6a1e51d3cdbe2ff17ae321183a78b7228064181f0b67fd097ea7ed6c2",
+      "adapted_sha256": "79da16a6a1e51d3cdbe2ff17ae321183a78b7228064181f0b67fd097ea7ed6c2"
     },
     {
       "path": "src/hello/prf/abi.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/prf/abi.rs",
       "upstream_sha256": "b6ef2265f4d72e21540a76148f65b2e0ba824c82173f5bd1e55a7de9f29733d1",
-      "import_sha256": "b6ef2265f4d72e21540a76148f65b2e0ba824c82173f5bd1e55a7de9f29733d1"
+      "import_sha256": "b6ef2265f4d72e21540a76148f65b2e0ba824c82173f5bd1e55a7de9f29733d1",
+      "adapted_sha256": "b6ef2265f4d72e21540a76148f65b2e0ba824c82173f5bd1e55a7de9f29733d1"
     },
     {
       "path": "src/hello/prf/windows/combined.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/prf/windows/combined.rs",
       "upstream_sha256": "09ed8ca0c3c4e3a1679dcb44db4d6e1132aea31ab316b2795ee77d8409d3cc58",
-      "import_sha256": "bef1a5c048ebed648b0201e3616127c285f2a74962594de3958b59770fb8ca08"
+      "import_sha256": "bef1a5c048ebed648b0201e3616127c285f2a74962594de3958b59770fb8ca08",
+      "adapted_sha256": "0aed038b81193a656b3224a95c41a18a5e103f5ffe3d610682c80ee6705c40c3"
     },
     {
       "path": "src/hello/prf/direct/tests.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/prf/direct/tests.rs",
       "upstream_sha256": "fb9efe0ee16fb9d24839df095e3031d997990bbfdb2d3a22b086c70abfd73104",
-      "import_sha256": "fb9efe0ee16fb9d24839df095e3031d997990bbfdb2d3a22b086c70abfd73104"
+      "import_sha256": "fb9efe0ee16fb9d24839df095e3031d997990bbfdb2d3a22b086c70abfd73104",
+      "adapted_sha256": "fb9efe0ee16fb9d24839df095e3031d997990bbfdb2d3a22b086c70abfd73104"
     },
     {
       "path": "src/hello/tpm.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/tpm.rs",
       "upstream_sha256": "8593b46c17083813db1b8efca34509564bfa28772ae2e2895cf5c79be8227daf",
-      "import_sha256": "8593b46c17083813db1b8efca34509564bfa28772ae2e2895cf5c79be8227daf"
+      "import_sha256": "8593b46c17083813db1b8efca34509564bfa28772ae2e2895cf5c79be8227daf",
+      "adapted_sha256": "35a97e13a7012c3536bf176c197851c9313901b9747ad6981d5d34008dff0373"
     },
     {
       "path": "src/hello/tpm/windows.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/tpm/windows.rs",
       "upstream_sha256": "5957aa8a9f589974adc403f81b1299cf9f496c7b77c5119a8cdb1331839d68d9",
-      "import_sha256": "5957aa8a9f589974adc403f81b1299cf9f496c7b77c5119a8cdb1331839d68d9"
+      "import_sha256": "5957aa8a9f589974adc403f81b1299cf9f496c7b77c5119a8cdb1331839d68d9",
+      "adapted_sha256": "5957aa8a9f589974adc403f81b1299cf9f496c7b77c5119a8cdb1331839d68d9"
     },
     {
       "path": "src/hello/tpm/read_public.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/tpm/read_public.rs",
       "upstream_sha256": "a3320194139f115778a317652346fce870b79b5a06b10aa80fed568dd92f40ce",
-      "import_sha256": "a3320194139f115778a317652346fce870b79b5a06b10aa80fed568dd92f40ce"
+      "import_sha256": "a3320194139f115778a317652346fce870b79b5a06b10aa80fed568dd92f40ce",
+      "adapted_sha256": "a3320194139f115778a317652346fce870b79b5a06b10aa80fed568dd92f40ce"
     },
     {
       "path": "src/hello/tpm/windows/read_public.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/tpm/windows/read_public.rs",
       "upstream_sha256": "ad83db0964ae206a18c70cf5ce21b8d2cd2a21091e7c410e3c1f671f19a055b8",
-      "import_sha256": "ad83db0964ae206a18c70cf5ce21b8d2cd2a21091e7c410e3c1f671f19a055b8"
+      "import_sha256": "ad83db0964ae206a18c70cf5ce21b8d2cd2a21091e7c410e3c1f671f19a055b8",
+      "adapted_sha256": "ad83db0964ae206a18c70cf5ce21b8d2cd2a21091e7c410e3c1f671f19a055b8"
     },
     {
       "path": "src/hello/tpm/windows/combined.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/tpm/windows/combined.rs",
       "upstream_sha256": "c7c0fa6802057e4758792fbabd3131e09ee74c8036b2e578abfd7b00092a1e1c",
-      "import_sha256": "c7c0fa6802057e4758792fbabd3131e09ee74c8036b2e578abfd7b00092a1e1c"
+      "import_sha256": "c7c0fa6802057e4758792fbabd3131e09ee74c8036b2e578abfd7b00092a1e1c",
+      "adapted_sha256": "c7c0fa6802057e4758792fbabd3131e09ee74c8036b2e578abfd7b00092a1e1c"
     },
     {
       "path": "src/hello/tpm/read_public/tests.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/tpm/read_public/tests.rs",
       "upstream_sha256": "63b2bbddd4f6bd635a4beb1be4a3cd1cf776d54d59601020ed6e433773ba88bd",
-      "import_sha256": "6cde18d726f8800b11acd3a352b6314c81f137cdd3087a3ab66c1cae6031c912"
+      "import_sha256": "6cde18d726f8800b11acd3a352b6314c81f137cdd3087a3ab66c1cae6031c912",
+      "adapted_sha256": "8cac0f598942dff99c4dd91848622343edd9dc50a0be758eff83c08bf5c36b92"
     },
     {
       "path": "src/hello/proof.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/proof.rs",
       "upstream_sha256": "4660c2689c74b90f642e1e070f2d4fd310df1584744ca30acd40e510d8ae932b",
-      "import_sha256": "4660c2689c74b90f642e1e070f2d4fd310df1584744ca30acd40e510d8ae932b"
+      "import_sha256": "4660c2689c74b90f642e1e070f2d4fd310df1584744ca30acd40e510d8ae932b",
+      "adapted_sha256": "cdd4411da3f0fb6014987b77afd880ee7eb6fb94ffb1e989584be42e5004da2c"
     },
     {
       "path": "src/hello/proof/windows.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/proof/windows.rs",
       "upstream_sha256": "4629894c3bf90c0aab0eef4dba78ccb943730047eec381a3865ab4c0a3362e1a",
-      "import_sha256": "4629894c3bf90c0aab0eef4dba78ccb943730047eec381a3865ab4c0a3362e1a"
+      "import_sha256": "4629894c3bf90c0aab0eef4dba78ccb943730047eec381a3865ab4c0a3362e1a",
+      "adapted_sha256": "4629894c3bf90c0aab0eef4dba78ccb943730047eec381a3865ab4c0a3362e1a"
     },
     {
       "path": "src/hello/attestation.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/attestation.rs",
       "upstream_sha256": "35b2e8d642c69bd04c5e7ff11e8e130e27a8b29fab0cbe83af8fc87e768ac881",
-      "import_sha256": "35b2e8d642c69bd04c5e7ff11e8e130e27a8b29fab0cbe83af8fc87e768ac881"
+      "import_sha256": "35b2e8d642c69bd04c5e7ff11e8e130e27a8b29fab0cbe83af8fc87e768ac881",
+      "adapted_sha256": "91af77ea5122b97544368c4253f7e69ef65a469d6920720af4268c851d165b99"
     },
     {
       "path": "src/hello/attestation/tests.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/attestation/tests.rs",
       "upstream_sha256": "e74bf75bbbd075ac130b07063aedeced1f728e7d65cfd5e9c5de86f219455554",
-      "import_sha256": "85572871d0fbb2d34a3846f2478beaef8127f1ff37ee1e21dd69b18deee3d1f6"
+      "import_sha256": "85572871d0fbb2d34a3846f2478beaef8127f1ff37ee1e21dd69b18deee3d1f6",
+      "adapted_sha256": "189b0b5c94ddc37338e52bbefd3a931ff9e6f179474a54175525b51ec27bab87"
     },
     {
       "path": "src/hello/attestation/signature.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/attestation/signature.rs",
       "upstream_sha256": "8194529a03d1e62d4d0dcfbd9fa942240881513482fd200310af512c672db513",
-      "import_sha256": "8194529a03d1e62d4d0dcfbd9fa942240881513482fd200310af512c672db513"
+      "import_sha256": "8194529a03d1e62d4d0dcfbd9fa942240881513482fd200310af512c672db513",
+      "adapted_sha256": "8194529a03d1e62d4d0dcfbd9fa942240881513482fd200310af512c672db513"
     },
     {
       "path": "src/hello/attestation/pcp.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/attestation/pcp.rs",
       "upstream_sha256": "c06a31a1e0f00f0fdc545a2e895f0a85201096e5d4355f4e2646c14c4c4dbd43",
-      "import_sha256": "c06a31a1e0f00f0fdc545a2e895f0a85201096e5d4355f4e2646c14c4c4dbd43"
+      "import_sha256": "c06a31a1e0f00f0fdc545a2e895f0a85201096e5d4355f4e2646c14c4c4dbd43",
+      "adapted_sha256": "c06a31a1e0f00f0fdc545a2e895f0a85201096e5d4355f4e2646c14c4c4dbd43"
     },
     {
       "path": "src/filesystem.rs",
       "upstream_path": "apps/desktop/src-tauri/src/filesystem.rs",
       "upstream_sha256": "2492c254b424c842f656f1ad3a63e6f4ac500735aca0429c67b67f2bbce77013",
-      "import_sha256": "bd6a908e6c44c0c7e33698f0ba7eb12d38974966277bfdff42deda05b0a719e4"
+      "import_sha256": "bd6a908e6c44c0c7e33698f0ba7eb12d38974966277bfdff42deda05b0a719e4",
+      "adapted_sha256": "2492c254b424c842f656f1ad3a63e6f4ac500735aca0429c67b67f2bbce77013"
     },
     {
       "path": "src/hello/enrollment.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/enrollment.rs",
       "upstream_sha256": "c443f8f8b5babe10643c649356d8f92f24a625c3b26d8782766486c8f2418dfa",
-      "import_sha256": "0d89a824a6274c5286ad4e9b040030cbfe3a31d903225fc1186f94ce30b90651"
+      "import_sha256": "0d89a824a6274c5286ad4e9b040030cbfe3a31d903225fc1186f94ce30b90651",
+      "adapted_sha256": "0d89a824a6274c5286ad4e9b040030cbfe3a31d903225fc1186f94ce30b90651"
     },
     {
       "path": "src/hello/enrollment/windows.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/enrollment/windows.rs",
       "upstream_sha256": "d7a9ab9e9e7ac053c59ce6570f05467cf7a1a3915454b2cfe4e1d1438297a240",
-      "import_sha256": "5af9f9c3c2256ae425f811ae59038cd79680f439420bdbcc1b6645b7d26c69a0"
+      "import_sha256": "5af9f9c3c2256ae425f811ae59038cd79680f439420bdbcc1b6645b7d26c69a0",
+      "adapted_sha256": "5af9f9c3c2256ae425f811ae59038cd79680f439420bdbcc1b6645b7d26c69a0"
     },
     {
       "path": "src/hello/enrollment/tests.rs",
       "upstream_path": "apps/desktop/src-tauri/src/hello/enrollment/tests.rs",
       "upstream_sha256": "da6c0d98f13d324e2e5f22b56761f12b68b84299543c73d9732c5f5c8ec02828",
-      "import_sha256": "77818d68b1f92e979963dbba154fa0d0e860119fb230121b166b575c7b57b0b8"
+      "import_sha256": "77818d68b1f92e979963dbba154fa0d0e860119fb230121b166b575c7b57b0b8",
+      "adapted_sha256": "77818d68b1f92e979963dbba154fa0d0e860119fb230121b166b575c7b57b0b8"
     }
-  ]
+  ],
+  "hash_semantics": "upstream_sha256 identifies original preserved Git bytes; import_sha256 is capture before later edits; adapted_sha256 is current reviewed source before this record commit."
 }

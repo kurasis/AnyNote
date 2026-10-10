@@ -9,6 +9,7 @@ import { Transform } from 'node:stream';
 export async function serve({ scratch, tls, host = "127.0.0.1", port = 0 } = {}) {
   const directory = join(scratch, 'ciphertext'); await mkdir(directory);
   let uploadedBytes = 0, downloadedBytes = 0;
+  let heldUpload;
   const assets = new Map([['/', ['index.html', 'text/html']], ['/page.js', ['page.js', 'text/javascript']], ['/worker.js', ['worker.js', 'text/javascript']], ['/physical/', ['physical.html', 'text/html']], ['/physical-page.js', ['physical-page.js', 'text/javascript']], ['/physical-worker.js', ['physical-worker.js', 'text/javascript']], ['/service-worker.js', ['service-worker.js', 'text/javascript']], ['/manifest.webmanifest', ['manifest.webmanifest', 'application/manifest+json']], ['/icon.svg', ['icon.svg', 'image/svg+xml']]]);
   const handler = (req, res) => {
     res.setHeader('Cache-Control', 'no-store');
@@ -34,7 +35,9 @@ export async function serve({ scratch, tls, host = "127.0.0.1", port = 0 } = {})
         } });
         await pipeline(req, bounded, createWriteStream(path, { flags: 'wx' }));
         if (length !== declared) throw new Error('Truncated upload');
-        uploadedBytes += length; res.writeHead(204).end(); return;
+        uploadedBytes += length;
+        if (heldUpload) { const gate=heldUpload; heldUpload=null;gate.arrive();await gate.wait; }
+        res.writeHead(204).end(); return;
       }
       if (req.method === 'GET') {
         const metadata = await stat(path);
@@ -47,6 +50,14 @@ export async function serve({ scratch, tls, host = "127.0.0.1", port = 0 } = {})
   const server = tls ? createSecureServer(tls, handler) : createServer(handler);
   await new Promise((done, fail) => { server.once('error', fail); server.listen(port, host, done); });
   return { server, origin: `${tls ? "https" : "http"}://${host}:${server.address().port}`,
+    // Internal runner fault injection only; never an HTTP/IPC endpoint.
+    holdNextUpload: () => {
+      if(heldUpload)throw new Error('Upload gate already pending');
+      let arrive,release;
+      const arrived=new Promise(resolve=>{arrive=resolve;}),wait=new Promise(resolve=>{release=resolve;});
+      heldUpload={arrive,wait};
+      return {arrived,release:()=>{heldUpload=null;release();}};
+    },
     counts: () => ({ uploaded_bytes: uploadedBytes, downloaded_bytes: downloadedBytes }),
     reset: async () => { await rm(directory, { recursive: true }); await mkdir(directory); uploadedBytes = 0; downloadedBytes = 0; } };
 }

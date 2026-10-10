@@ -1,0 +1,62 @@
+{
+  "native_objects_created": false,
+  "physical_acceptance": false,
+  "report": {
+    "algorithm": "webauthn-prf-aes256gcm",
+    "checks": [
+      {
+        "status": "passed",
+        "test": "webauthn-load"
+      },
+      {
+        "operation": "webauthn-api-9-required",
+        "status": "failed",
+        "test": "webauthn-api"
+      },
+      {
+        "status": "not-run",
+        "test": "hello-platform"
+      },
+      {
+        "status": "not-run",
+        "test": "hello-route"
+      }
+    ],
+    "eligible": false,
+    "enrolled": false,
+    "outcome": "blocked",
+    "purpose": "webauthn-prf-capability",
+    "remaining": [
+      "per-key-tpm-proof",
+      "fresh-authorization-proof",
+      "fresh-process-proof",
+      "account-machine-copy-proof"
+    ],
+    "unlocked": false,
+    "version": 1,
+    "webauthn": {
+      "apiVersion": 7,
+      "osBuild": 26100,
+      "routing": "display-name-candidate",
+      "tpmBinding": "not-verified"
+    }
+  },
+  "source_commit": "066fdd0a6838c3dfaa1dc9831b6fe8b527820c2c",
+  "status": "CAPABILITY_ONLY",
+  "provenance": {
+    "run_url": "https://github.com/kurasis/AnyNote/actions/runs/38056304802",
+    "source_commit": "066fdd0a6838c3dfaa1dc9831b6fe8b527820c2c",
+    "runner": "Ubuntu 24.04 / Windows 2025 hosted runners",
+    "physical_acceptance": false
+  },
+  "routine_native_tests": {
+    "passed": 98,
+    "ignored": 1,
+    "ignored_reason": "Independent ABI case executed explicitly in the next command"
+  },
+  "explicit_abi_test": {
+    "passed": 1,
+    "ignored": 0
+  },
+  "executable_sha256": "02b1088f0f44e592a8b19baf292e3eefe9dd8f58c84124103d523eab7b6dcb94"
+}

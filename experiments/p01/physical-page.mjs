@@ -33,6 +33,13 @@ document.querySelector('#capabilities').onclick=async()=>{
     persist_granted:await navigator.storage.persist(),physical_acceptance:'NOT RUN until device trial is recorded'});}catch(error){show(error.message);}
 };
 document.querySelector('#storage').onclick=async()=>{try{show(await call({kind:'storage'}));}catch(error){show(error.message);}};
+document.querySelector('#measure-kdf').onclick=async()=>{
+  try{
+    const {derived_hex,...measurement}=await call({kind:'kdf',request:{profile_version:1,algorithm:'argon2id13',
+      phrase:'public synthetic strong phrase alpha',salt_hex:'000102030405060708090a0b0c0d0e0f',opslimit:3,memlimit:67108864}});
+    show(measurement); // Never render a key, even though this vector is explicitly public.
+  }catch(error){show(error.message);}
+};
 document.querySelector('#upload').onclick=async()=>{
   if(!source.files[0]){show('Select a synthetic file first.');return;}
   try{locked=false;show(await call({kind:'upload',source:source.files[0]}));}catch(error){show(error.message);}

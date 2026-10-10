@@ -1,8 +1,10 @@
 # Known limitations
 
 - P00 is complete; an isolated P01 synthetic native/Node/browser-worker harness
-  exists. No application authentication, device trust, encrypted vault, Laravel
-  service, manifests, resume or iOS Files export is implemented yet.
+  exists. No production application authentication, device trust, encrypted vault, Laravel
+  service, manifests or resume is implemented. The isolated selected-file PWA
+  harness and experimental disk-File sharing candidate do not establish iOS Files
+  export or a real recipient/recovery path.
 - Rust/Cargo 1.99.0 and Node 24.21.0/npm 11.19.0 are installed and activated
   through scripts/runtime-env.sh; experiment dependencies have lockfiles. PHP,
   Composer, MariaDB and Nginx are still not prepared (P03).
@@ -19,8 +21,10 @@
   include JS/network/UI buffers. Physical memory/export evidence remains required.
 - Owner-reported targets are Windows 11 Pro 25H2 with Hello planned and iPhone
   17 Pro / iOS 26.7.1. Exact builds/providers are uninspected; the required older
-  or lower-memory iPhone remains unspecified. The preserved passkeylocal working
-  reference is not a built AnyNote adapter or its physical acceptance evidence.
+  or lower-memory iPhone remains unspecified. The working passkeylocal source
+  is now adapted into a built/tested native synthetic AnyNote probe; its physical
+  PRF/TPM operations remain unrun. Hosted Windows reports API 7, below the API 9
+  route requirement, and creates no native objects.
 - Production signing, release publishing, deployment and clean-host backup
   restoration have not been performed or authorized by the push/merge preference.
 - The cloud disk is too small for a 100 GB capacity drill; dedicated synthetic

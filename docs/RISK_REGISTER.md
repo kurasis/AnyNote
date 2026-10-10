@@ -5,7 +5,7 @@ No risk is resolved by this document alone. Only evidence closes a gate.
 | ID | Risk / effect | Mitigation and owner phase | Current status |
 | --- | --- | --- | --- |
 | RK01 | iPhone 1 GB decrypt/save path may exceed platform memory/storage or be interrupted | Synthetic physical-device trials, bounded sink/source pipeline, measured options; P01/P15 | BLOCKED: no physical iPhone attached |
-| RK02 | UI-only Hello prompt may leave actual private keys accessible | CNG/Hello operation gating and negative tests; document DPAPI user-context limits; P01/P07 | OPEN: working PRF/TPM source reference pinned; AnyNote adapter and physical execution pending |
+| RK02 | UI-only Hello prompt may leave actual private keys accessible | CNG/Hello operation gating and negative tests; document DPAPI user-context limits; P01/P07 | OPEN: scoped random-L native PRF/TPM probe, policy tests and official API 9 header ABI pass; physical execution pending; hosted API 7 is BLOCKED |
 | RK03 | Candidate protocol composition may fail authorization/recovery or canonicalization | Frozen transcripts/schemas/vectors plus qualified design review at P02, implementation review at P17 | NOT STARTED |
 | RK04 | Stale rosters/revocation and recovery reset races leak future epochs | Chapters 19/20 invariants, expected-head transitions and R02/R06–R08/R14; P08/P10 | NOT STARTED |
 | RK05 | Ambiguous publication receipts or snapshots lose/duplicate drafts | Immutable attempt IDs, receipt reconciliation, pinned snapshot inventories; P11 | NOT STARTED |
