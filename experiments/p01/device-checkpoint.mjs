@@ -13,11 +13,12 @@ export function readCheckpoint(storage,key){
   const value=JSON.parse(text);
   if(value.version!==1||!['run','share','handoff','verify','verifying','report'].includes(value.stage)
     ||value.report?.physical_acceptance!==false||typeof value.report.status!=='string'
+    ||(value.report.files!==undefined&&!Array.isArray(value.report.files))
     ||value.report.build?.kind!=='P01 synthetic static device kit'
     ||!/^[0-9a-f]{40}$/.test(value.report.build.source_commit))throw new Error('Invalid diagnostic checkpoint');
   return value;
 }
 export function savedOutputExpected(report){
-  const item=report.files?.find(item=>item.bytes===1000000000);
+  const item=Array.isArray(report.files)?report.files.find(item=>item?.bytes===1000000000):null;
   return item?.status==='PASS'&&/^[0-9a-f]{64}$/.test(item.sha256)?item:null;
 }
