@@ -205,3 +205,49 @@ retry/reload/migration and exact 1 GB output/hash/cleanup PASS. Actual hosted
 records are archived in docs/evidence. The publisher selects this frozen source
 for v0.1.2-p01-device-kit; execution/availability is recorded on PR #7/release.
 Remaining phone Files hash/installed-PWA and full G1 gates remain OPEN.
+
+## P01 owner 0.1.2 feedback — stream download and selected OS lock
+
+The new owner Windows upload matches the exact 0.1.2 source/EXE. Local 51
+crypto/KDF, exact 1 GB, enrollment, fresh-process actual-vault authentication,
+explicit cancellation and exact cleanup PASS. Lock-step HELLO_CANCELLED with
+all four counters zero is NOT PROVEN; owner confirms no lock screen this time.
+Keep the earlier 0.1.1 screen/STALE observation as a different run. Owner reports
+iPhone 0.1.2 restarts at Save 1 GB to Files; no updated phone JSON was supplied.
+
+0.1.3 adds a scoped single-use service-worker attachment stream from the marked
+verified synthetic disk output (256 KiB reads), replacing default 1 GB Web Share.
+Retain nonsecret generated owner/name metadata; recovery rechecks size/hash
+under the exclusive trial lock, without keys or persisted handles. The stream
+holds that lock through completion/cancellation and is never cached. Only
+selected size/hash determines saved-file evidence. Windows adds an explicitly
+selected one-shot LockWorkStation request after 8 seconds while unlock remains
+pending. Ordinary/hosted operations never request lock. API acceptance is not
+WTS lock evidence. Hosted checks/publication pending; P01/G1 remains OPEN.
+
+Hosted 0.1.3 source 2cc346e: all three feasibility jobs and baseline PASS
+(run 38076184680 / 38076184710). Raw stream/browser and Windows records are
+archived. Real 1 GB SW attachment/picker/hash, partial cancellation/retry,
+replay/path/marker rejection, recovery and exact cleanup PASS. Windows 106
+routine plus explicit C-header ABI PASS; full existing 663-primitive/native/
+Node/network/browser/fault suite PASS. Freeze these verified EXE/ZIP bytes for
+v0.1.3-p01-device-kit; Actions publisher revalidates runtime/source/receipts
+and actual downloads. Publication execution is recorded in PR #8/release.
+Actual iOS PWA/Safari and selected Windows lock require owner testing; G1 OPEN.
+
+0.1.3 was published from the verified source. A further lifecycle fix is now
+prepared as 0.1.4: store short-lived synthetic download tickets durably in a
+dedicated path-scoped IndexedDB table, so idle SW termination does not erase
+a prepared URL. Transactions atomically consume tokens; bounded expiry/client
+replacement keep the registry small. No export bytes or vault keys are persisted.
+Hosted regression stops the real SW after preparation before the 1 GB download.
+New validation/publication pending; prior release assets remain immutable.
+
+0.1.4 hosted source 566ec84: all three jobs plus baseline PASS. Real SW stop
+followed by exact 1 GB attachment/picker/hash and replay/cancel/recovery checks
+PASS; 106 Windows tests plus separate ABI and full 663-primitive/network/fault
+suite PASS. Exact raw records and frozen SHA-256 values are archived. Publish
+these verified bytes as a new v0.1.4-p01-device-kit tag through Actions; do not
+overwrite 0.1.3. Final publication/download evidence is in PR #8/release.
+Actual installed-iPhone stream/Files/memory and selected Windows lock still
+need owner records; earlier Windows positive findings are preserved.

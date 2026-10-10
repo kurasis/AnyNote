@@ -33,7 +33,8 @@
   17 Pro / iOS 26.7.1. Exact builds/providers are uninspected; the required older
   or lower-memory iPhone remains unspecified. The working passkeylocal source
   is now adapted into a built/tested native synthetic AnyNote probe; its physical
-  PRF/TPM operations remain unrun. Hosted Windows reports API 7, below the API 9
+  positive PRF/TPM operations now have owner-supplied fresh-process evidence;
+  complete physical acceptance remains open. Hosted Windows reports API 7, below the API 9
   route requirement, and creates no native objects.
 - Production signing, release publishing, deployment and clean-host backup
   restoration have not been performed or authorized by the push/merge preference.
@@ -76,3 +77,21 @@
 - Same-origin prior-report migration reads only the documented v011 sibling
   key. A different path/origin, eviction or separate browser/PWA storage may
   prevent recovery. Retry does not turn a mismatched file into a success.
+
+- Owner 0.1.2 Windows run has zero lifecycle events and HELLO_CANCELLED at the
+  lock step: NOT PROVEN, consistent with the absent screen. Positive unlock,
+  cancellation and cleanup retain their separate scope. Earlier lock observations
+  are separate runs. API request acceptance is not lock/pending-prompt proof.
+- Owner confirms iPhone 0.1.2 restart at 1 GB Web Share. 0.1.3 defaults to an
+  experimental SW attachment stream; actual PWA/Safari download and device
+  memory remain OPEN. The OS may terminate SW work, deny downloads or require
+  Safari. No background guarantee or mobile acceptance follows from host tests.
+- Retain generated synthetic exports until selection verification or a new
+  trial's exact marked cleanup. Dynamic streams are never cached; expired or
+  replayed tickets cannot resume. Other site data/old reports are preserved.
+  No network/backend or production plaintext-stream path is added.
+
+- 0.1.4 addresses loss of prepared tickets when an idle SW is terminated;
+  an actively streaming SW can still be stopped by the OS. Transactional
+  metadata storage is small and contains no bytes/vault keys. Denied ticket
+  storage blocks the download; expired/consumed tickets do not resume.

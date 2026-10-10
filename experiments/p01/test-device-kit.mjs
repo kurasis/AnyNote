@@ -4,6 +4,8 @@ import {readFile,mkdtemp,rm,mkdir,writeFile} from 'node:fs/promises';
 import {join,resolve} from 'node:path';
 import {tmpdir} from 'node:os';
 import {chromium} from 'playwright-core';
+import {createHash} from 'node:crypto';
+import {createReadStream} from 'node:fs';
 import './package-device-kit.mjs';
 
 const assets=resolve('dist/device-kit'),scratch=await mkdtemp(join(tmpdir(),'anynote-device-kit-'));
@@ -59,7 +61,7 @@ try{
   assert.equal(automatic.checks.filter(item=>item.name.startsWith('second-part')).length,3);
   assert.equal(automatic.physical_acceptance,false);
   await page.evaluate(()=>sessionStorage.setItem('kill-after-share','yes'));
-  await page.locator('#start').click();
+  await page.locator('#legacy-share').click();
   await page.waitForFunction(()=>globalThis.mockedCopyReady===true,null,{timeout:120000});
   // Destroy the real page while its OS-share promise is still pending: iOS-like loss of all JS state.
   await page.reload();
@@ -84,20 +86,65 @@ try{
   assert.deepEqual(wrongSelection.files,automatic.files);
   await page.reload();await page.waitForFunction(()=>deviceP01.stage==='verify');
   assert.equal((await page.evaluate(()=>deviceP01.report)).files_destination.status,'FAIL');
-  await page.evaluate(async()=>{
-    const worker=new Worker('./test-share-worker.js',{type:'module'});
-    const file=await new Promise((resolve,reject)=>{
-      worker.onmessage=({data})=>{worker.terminate();data.error?reject(new Error(data.error)):resolve(data.file);};
-      worker.onerror=()=>reject(new Error('Saved mock Files output unavailable'));worker.postMessage({kind:'read-saved'});
-    });
-    const input=document.querySelector('#saved-file'),files=new DataTransfer();
-    files.items.add(file);input.files=files.files;input.dispatchEvent(new Event('change'));
+  // Reject arbitrary owner/name and a purpose-marker mismatch without touching other data.
+  const exportRef=await page.evaluate(()=>deviceP01.report.pending_export);
+  const rejected=await page.evaluate(async(ref)=>{
+    const request=data=>new Promise(resolve=>{const channel=new MessageChannel();channel.port1.onmessage=({data})=>{channel.port1.close();resolve(data);};navigator.serviceWorker.controller.postMessage({kind:'prepare-download',...data},[channel.port2]);});
+    const traversal=await request({owner_id:ref.owner_id,name:'../purpose.marker'});
+    const root=await navigator.storage.getDirectory(),id='anynote-p01-device-'+ 'e'.repeat(32);
+    const directory=await root.getDirectoryHandle(id,{create:true});
+    const writer=await(await directory.getFileHandle('purpose.marker',{create:true})).createWritable();await writer.write('not this kit');await writer.close();
+    let wrongMarker;try{wrongMarker=await request({owner_id:id,name:ref.name});}finally{await root.removeEntry(id,{recursive:true});}
+    return {traversal,wrongMarker};
+  },exportRef);
+  assert.match(rejected.traversal.error,/Invalid synthetic export/);
+  assert.match(rejected.wrongMarker.error,/purpose marker mismatch/);
+  // Cancel a real partial SW response; the next request must get the released trial lock.
+  await page.evaluate(()=>{deviceP01.report.stream_download={status:'REQUESTED_OUTCOME_UNKNOWN',method:'SCOPED_SERVICE_WORKER_DISK_STREAM',physical_acceptance:false};});
+  const cancelUrl=await page.locator('#download-sample').getAttribute('href');
+  const cancellation=await page.evaluate(async(url)=>{
+    const response=await fetch(url),reader=response.body.getReader();
+    const first=await reader.read();await reader.cancel();
+    return {status:response.status,chunk:first.value.length,cache:response.headers.get('Cache-Control')};
+  },cancelUrl);
+  assert.equal(cancellation.status,200);assert.equal(cancellation.cache,'no-store');
+  assert.ok(cancellation.chunk>0&&cancellation.chunk<=262144);
+  await page.waitForFunction(async()=>deviceP01.report.stream_download?.status==='CANCELLED'
+    &&!(await navigator.locks.query()).held.some(lock=>lock.name==='anynote-p01-device-kit'));
+  await page.waitForFunction(url=>document.querySelector('#download-sample').href!==url,cancelUrl);
+  // Stop the real service worker after it prepared a ticket: lose all of its JS state.
+  const cdp=await context.newCDPSession(page);
+  await cdp.send('ServiceWorker.enable');await cdp.send('ServiceWorker.stopAllWorkers');await cdp.detach();
+  // Download through the restarted actual service worker/network stack. No OS Share mock here.
+  const streamPromise=page.waitForEvent('download');await page.locator('#download-sample').click();
+  const streamed=await streamPromise;
+  assert.match(streamed.suggestedFilename(),/^synthetic-export-[0-9a-f-]{36}\.bin$/);
+  const streamedPath=join(scratch,'actual-streamed.bin');await streamed.saveAs(streamedPath);
+  const digest=createHash('sha256');let total=0;
+  for await(const bytes of createReadStream(streamedPath)){digest.update(bytes);total+=bytes.length;}
+  assert.equal(total,1000000000);assert.equal(digest.digest('hex'),automatic.files.at(-1).sha256);
+  await page.waitForFunction(()=>deviceP01.report.stream_download?.status==='STREAM_SENT_NOT_FILES_VERIFIED');
+  // Download alone must not erase the prior failed selection or fabricate a Files pass.
+  assert.equal((await page.evaluate(()=>deviceP01.report)).files_destination.status,'FAIL');
+  const replay=await page.evaluate(async(url)=>(await fetch(url)).status,streamed.url());
+  assert.equal(replay,410);
+  const invalid=await page.evaluate(async()=>{
+    const response=await fetch(new URL('download/'+ '0'.repeat(32),location.href));return {status:response.status,cache:response.headers.get('Cache-Control')};
   });
+  assert.deepEqual(invalid,{status:410,cache:'no-store'});
+  const rejectedPath=await page.evaluate(async()=>{
+    const response=await fetch(new URL('download/../arbitrary-file',location.href));return response.status;
+  });
+  assert.equal(rejectedPath,404);
+  // Real user-activated picker receives the actual browser-downloaded disk file.
+  const correctChooser=page.waitForEvent('filechooser');await page.locator('#start').click();
+  await(await correctChooser).setFiles(streamedPath);
   await page.waitForFunction(()=>deviceP01.stage==='report',null,{timeout:120000});
   const result=await page.evaluate(()=>deviceP01.report);
   assert.equal(result.files_destination.status,'PASS_SELECTED_OUTPUT_HASH',JSON.stringify(result));
   assert.equal(result.files_destination.sha256,result.files.at(-1).sha256);
   assert.equal(result.temporary_export_cleanup,'PASS');
+  assert.equal(result.retained_export,'REOPENED_AND_HASH_VERIFIED');
   assert.equal(result.physical_acceptance,false);
   const directories=await page.evaluate(async()=>{
     const names=[];for await(const[name]of(await navigator.storage.getDirectory()).entries())names.push(name);return names;
@@ -147,12 +194,19 @@ try{
   Object.assign(record,{status:'PASS',browser:context.browser().version(),automatic_and_mocked_share_result:result,
     pending_share_page_destroyed_and_report_restored:true,restored_selected_output_hash:true,
     report_download_restart_retained:true,failed_report_retained:true,interrupted_run_not_restarted:true,
+    real_service_worker_stream_download:true,streamed_download_bytes:total,
+    prepared_ticket_survives_actual_service_worker_stop:true,
+    stream_download_selected_hash:true,unknown_download_token_rejected:true,
+    cancelled_stream_releases_lock:true,arbitrary_export_path_rejected:true,unmarked_export_rejected:true,download_replay_rejected:true,
+    retained_staged_export_reopened_and_hashed:true,
     wrong_json_size_recorded:true,wrong_json_retry_after_reload:true,legacy_failed_report_offers_retry:true,
     malformed_checkpoint_rejected:true,denied_checkpoint_blocks_before_work:true,
     wrong_selected_length_rejected:true,downloaded_report_matches:true,owned_export_directories_remaining:0,
     nested_path:'/nested/anynote-p01/',secure_context:'Trustworthy loopback, not a phone HTTPS origin'});
-  console.log('PASS: exact 1 GB kit, activated mocked share with real page destruction/reload, durable report, recovered selected-output hash, denied storage, cleanup.');
-}catch(error){record.status='FAIL';record.error=String(error.stack);throw error;}
+  console.log('PASS: real exact 1 GB service-worker attachment and selected hash, activated mocked share with real page destruction/reload, durable report, recovered selected-output hash, denied storage, cleanup.');
+}catch(error){record.status='FAIL';record.error=String(error.stack);
+  try{record.page_diagnostics=await context.pages()[0].evaluate(()=>({stage:deviceP01?.stage,report:deviceP01?.report,controller:!!navigator.serviceWorker.controller,output:document.querySelector('#status')?.textContent}));}catch{}
+  throw error;}
 finally{
   await mkdir('artifacts',{recursive:true});await writeFile('artifacts/device-kit-report.json',JSON.stringify(record,null,2));
   await context?.close();await new Promise(resolve=>server.close(resolve));await rm(scratch,{recursive:true,force:true});

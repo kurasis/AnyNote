@@ -469,3 +469,84 @@ Publication execution is recorded in [PR #7](https://github.com/kurasis/AnyNote/
 and the [0.1.2 release](https://github.com/kurasis/AnyNote/releases/tag/v0.1.2-p01-device-kit).
 Hosted sharing remains mocked; no production deployment/signing or complete
 physical acceptance is inferred.
+
+## Owner 0.1.2 feedback and 0.1.3 candidate
+
+Raw [Windows report](evidence/p01-owner-windows-v0.1.2.json) preserved byte for
+byte; [receipt](evidence/p01-owner-v0.1.2-receipt.json) records upload checksum,
+source/EXE and owner clarification. Source a225e3f and EXE 434878... match the
+0.1.2 release. Positive enrollment/fresh-process authentication, cancellation,
+cleanup and local checks PASS. Guided lock: HELLO_CANCELLED, all event counters
+zero, NOT PROVEN. No new phone JSON; reported Share restart is an owner
+observation, not host-derived cause or Files acceptance.
+
+Local 77 portable tests PASS, including actual owner cancelled/zero-event
+regression and refusal to classify OS-request acceptance as lock proof. Strict
+Clippy PASS. Static kit builds; hosted real attachment/replay/recovery/picker/hash,
+Windows compilation/ABI and release publication are pending.
+
+Hosted candidate 2cc346e: static kit and Windows jobs PASS in [run
+38076184680](https://github.com/kurasis/AnyNote/actions/runs/38076184680).
+[Raw browser](evidence/p01-stream-download-hosted-browser.json) and
+[raw Windows](evidence/p01-stream-download-hosted-windows.json) are archived.
+Chrome 154.0.8037.97 uses its actual sandbox and download stack: exact 1 GB
+streaming attachment, independent Node disk SHA-256 and activated picker match;
+partial stream cancellation releases the lock, replay/unknown token/arbitrary
+path/wrong-purpose marker are rejected. Retained synthetic output reopens and
+rehashes after page destruction/reload; wrong JSON retry and previous diagnostic
+migration pass. Owned export directories remaining: zero. Optional OS Share
+alone remains explicitly mocked. The initial fcee8b3 candidate failed when a
+download attribute cancelled the new attachment; navigating to the scoped SW
+attachment fixes that route. No failed run is counted as acceptance.
+
+Windows: 106 routine tests PASS; one ABI test initially ignored is explicitly
+run separately and PASS against the Microsoft C-header measurements. Strict
+Clippy, 51 native crypto/KDF, exact 1 GB/120 chunks, cleanup and system-only PE
+imports PASS; hosted API 7 creates no Hello objects and requests no system lock.
+
+Frozen candidate asset SHA-256:
+
+- EXE: `1a3dbdd9b62965a00d2a36a46ddc63a849ba8205c411e1f8c7a94ad3603db85e`
+- ZIP: `01670435db6fa4f08078cc41ec7ffa009aa3787640cb90032cb7e6325e995e50`
+
+ZIP CRC, exact source/version and all static asset receipts PASS locally.
+Source baseline [38076184710](https://github.com/kurasis/AnyNote/actions/runs/38076184710)
+PASS. Full Linux native/Node/network/browser job also PASS: 663 primitive checks,
+public Argon2id vectors, real storage, exact 1 GB selected upload/download/export,
+corrupt/truncated/expanded response, late-lock/exclusive-sink/orphan cleanup.
+All three source feasibility jobs PASS; publication execution remains pending
+and is recorded on PR #8/release after it runs. Physical iOS stream/Files/memory and selected Windows lock
+remain OPEN; these reports do not close G1.
+
+0.1.3 publication run 38076628838 PASS; independently downloaded EXE/ZIP
+match recorded hashes, ZIP source/version/receipts and exact source tag.
+0.1.4 adds durable single-use synthetic ticket metadata and a real CDP worker
+stop before attachment request; new source run pending. The earlier test
+release remains unchanged, not overwritten with unverified bytes.
+
+0.1.4 source 566ec84: all three [feasibility jobs
+38076947436](https://github.com/kurasis/AnyNote/actions/runs/38076947436) and
+[baseline 38076947435](https://github.com/kurasis/AnyNote/actions/runs/38076947435)
+PASS. [Durable-link browser report](evidence/p01-durable-download-hosted-browser.json)
+and [Windows report](evidence/p01-durable-download-hosted-windows.json) retain
+exact source and scope. CDP stops the real service worker after ticket
+preparation; its restarted worker streams a full 1 GB browser download, whose
+independent Node disk digest and real picker/hash match. Cancellation releases
+the trial lock; replay, unknown token, arbitrary path and wrong marker reject;
+recovery, wrong JSON retry, diagnostics and zero owned export directories PASS.
+Optional Share remains a mock, and device memory/physical acceptance false.
+Windows 106 routine plus explicit C-header ABI, 51 crypto/KDF/exact 1 GB and
+cleanup PASS; no native objects or lock request in hosted mode. Existing full
+663-check native/Node/Chromium/network/export/fault suite also PASS.
+
+Frozen 0.1.4 artifacts:
+
+- EXE SHA-256: `ee8327e9fc83a491ccca89bf6104fd7d374d4bb1bae1e9357f8177ccb52d6555`
+- ZIP SHA-256: `28f081e40ff831f1ea558d6942efbe0966d5653c7778e6961b0cb10779ae5d52`
+
+ZIP CRC/source/version/all-asset receipts and EXE runtime-reported hash PASS.
+The publisher freezes that successful run and requires the actual worker-stop
+regression flag as well as previous download/negative gates. Publication
+execution and independently downloaded release bytes are recorded on PR #8
+and the 0.1.4 release, not assumed from configuration. Both original physical
+owner limitations remain OPEN; no complete G1 result.

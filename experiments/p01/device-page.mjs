@@ -1,11 +1,12 @@
 import {checkpointKey,saveCheckpoint,readCheckpoint,savedOutputExpected} from './device-checkpoint.mjs';
 const button=document.querySelector('#start'),output=document.querySelector('#status'),input=document.querySelector('#saved-file');
 const saveButton=document.querySelector('#save-report'),newButton=document.querySelector('#new-trial'),reportText=document.querySelector('#report-text');
+const downloadLink=document.querySelector('#download-sample'),legacyShare=document.querySelector('#legacy-share');
 const worker=new Worker(new URL('./device-worker.js',import.meta.url),{type:'module'});
-let pending,stage='run',report,prepared,sharing=false,releaseSession,lastPhase,writable=true;
+let pending,stage='run',report,prepared,sharing=false,releaseSession,lastPhase,writable=true,downloadActive=false;
 const BUILD=__DEVICE_BUILD__,KEY=checkpointKey(location.pathname);
 // Upgrade recovery reads only the documented sibling kit's diagnostic key, never other site data.
-const PREVIOUS_KEY=checkpointKey(new URL('../anynote-p01-v011/',location.href).pathname);
+const PREVIOUS_KEYS=['v012','v011'].map(version=>checkpointKey(new URL(`../anynote-p01-${version}/`,location.href).pathname));
 function show(text){output.textContent=text;}
 function renderReport(){saveButton.hidden=!report;reportText.value=report?JSON.stringify(report,null,2):'';}
 function checkpoint(next=sharing?'handoff':stage){
@@ -60,18 +61,16 @@ async function run(){
     try{
       const result=await call({kind:'run'});report=attachEnvironment(result.report);prepared=result;
       report.synthetic_export_name=result.file.name;
-      if(!navigator.share||!navigator.canShare?.({files:[result.file]})){
-        report.files_destination='BLOCKED: Web Share of the verified disk File unavailable';
-        await call({kind:'cleanup'});prepared=null;
-        finish('Automatic local checks passed. This browser cannot share the verified 1 GB disk file. Save the report.');
-      }else{
-        stage='share';
-        if(!checkpoint())throw new Error('Cannot safely open Files without a saved diagnostic checkpoint');
-        button.disabled=false;button.textContent='Save 1 GB to Files';
-        show(`Automatic local checks passed. Report saved on this device.\nTap the same button, choose “Save to Files”, and save ${report.synthetic_export_name} (1 GB).\nNext choose that .bin sample, not the JSON report.\nIf the app restarts, reopen it to verify the saved sample or save the report.`);
-      }
+      report.pending_export={owner_id:result.owner_id,name:result.file.name};
+      stage='share';
+      if(!checkpoint())throw new Error('Cannot safely download without a saved diagnostic checkpoint');
+      await prepareDownload();
+      button.disabled=false;button.textContent='Download 1 GB sample';
+      legacyShare.hidden=!navigator.share||!navigator.canShare?.({files:[result.file]});
+      show('Automatic local checks passed. Tap the same button to download the verified 1 GB sample as a stream. Open the browser Downloads/Files destination, then select that .bin here. System Share is optional and may restart this PWA.');
     }catch(error){
-      if(prepared){try{await call({kind:'cleanup'});report.temporary_export_cleanup='PASS';}
+      report.stream_download={status:'BLOCKED',error:error.message,physical_acceptance:false};
+      if(prepared){try{await call({kind:'cleanup'});delete report.pending_export;report.temporary_export_cleanup='PASS';}
         catch{report.temporary_export_cleanup='FAIL: reopen to clean marked files';}prepared=null;}
       if(report.status==='IN PROGRESS')report={...report,status:'FAIL',error:String(error.message)};
       finish(`${report.status}: ${error.message}\nSave the report and send it back.`);
@@ -79,8 +78,47 @@ async function run(){
     await held;
   });
 }
+async function prepareDownload(){
+  await new Promise((resolve,reject)=>{
+    const timer=setTimeout(()=>reject(new Error('Download service worker unavailable')),10000);
+    navigator.serviceWorker.ready.then(value=>{clearTimeout(timer);resolve(value);},error=>{clearTimeout(timer);reject(error);});
+  });
+  if(!navigator.serviceWorker.controller)await new Promise((resolve,reject)=>{
+    const timer=setTimeout(()=>reject(new Error('Download worker did not take control; reopen this page')),10000);
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{clearTimeout(timer);resolve();},{once:true});
+  });
+  const result=await new Promise((resolve,reject)=>{
+    const channel=new MessageChannel(),timer=setTimeout(()=>{channel.port1.close();reject(new Error('Download worker unavailable'));},10000);
+    channel.port1.onmessage=({data})=>{clearTimeout(timer);channel.port1.close();data.error?reject(new Error(data.error)):resolve(data);};
+    navigator.serviceWorker.controller.postMessage({kind:'prepare-download',...report.pending_export},[channel.port2]);
+  });
+  const url=new URL(result.url);
+  if(url.origin!==location.origin||!url.pathname.startsWith(new URL('download/',location.href).pathname))throw new Error('Invalid synthetic download destination');
+  downloadLink.href=url.href;downloadLink.hidden=false;
+}
+downloadLink.addEventListener('click',event=>{
+  if(!prepared||!writable||downloadActive){event.preventDefault();return;}
+  report.stream_download={status:'REQUESTED_OUTCOME_UNKNOWN',bytes:0,expected_bytes:1000000000,
+    method:'SCOPED_SERVICE_WORKER_DISK_STREAM',physical_acceptance:false};
+  if(!checkpoint('handoff')){event.preventDefault();return;}
+  downloadActive=true;legacyShare.hidden=true;
+  // Transfer the trial lock to the service worker before the browser requests its attachment.
+  releaseSession?.();releaseSession=null;
+  offerVerification('Download requested. If this app closes, reopen it: the report and staged synthetic output can be restored. After downloading, choose the 1 GB .bin from Files. A sent stream alone is not proof of saved bytes.');
+});
+navigator.serviceWorker?.addEventListener('message',({data})=>{
+  if(data?.kind!=='stream-download'||!report?.stream_download)return;
+  report.stream_download={...report.stream_download,status:data.status,bytes:data.bytes};checkpoint();
+  if(data.status!=='STARTED'){downloadActive=false;prepareDownload().catch(()=>{downloadLink.hidden=true;});}
+});
 button.addEventListener('click',async()=>{
   if(stage==='run'){await run();return;}
+  if(stage==='share'){downloadLink.click();
+  }else if(stage==='verify'){
+    if(!checkpoint())return;input.click();
+  }else if(stage==='report')downloadReport();
+});
+legacyShare.addEventListener('click',async()=>{
   if(stage==='share'){
     // Synchronous durable write and readback before the OS handoff preserves real activation.
     report.share='OUTCOME_UNKNOWN: system handoff requested; verify selected saved bytes';
@@ -96,16 +134,15 @@ button.addEventListener('click',async()=>{
       checkpoint(shared?'verify':'report');
       try{await call({kind:'cleanup'});report.temporary_export_cleanup='PASS';}
       catch{report.temporary_export_cleanup='FAIL: reopen to clean marked files';}
-      prepared=null;sharing=false;
+      prepared=null;delete report.pending_export;sharing=false;downloadLink.hidden=true;
       if(shared){offerVerification('Choose the saved synthetic-export-….bin sample (1 GB), NOT the JSON report. The page compares its exact size and SHA-256. You can choose again if you select the wrong file.');releaseSession?.();releaseSession=null;}
       else finish(shareError);
     }
-  }else if(stage==='verify'){
-    if(!checkpoint())return;input.click();
-  }else if(stage==='report')downloadReport();
+
+  }
 });
 saveButton.addEventListener('click',downloadReport);
-newButton.addEventListener('click',()=>{if(!pending&&!sharing)run();});
+newButton.addEventListener('click',()=>{if(!pending&&!sharing&&!downloadActive)run();});
 input.addEventListener('change',async()=>{
   const file=input.files[0];if(!file)return;
   button.disabled=true;stage='verifying';
@@ -116,7 +153,11 @@ input.addEventListener('change',async()=>{
     const {result}=await call({kind:'verify-file',file});
     if(result.sha256!==expected.sha256)throw new Error('Saved Files output digest mismatch');
     report.files_destination={status:'PASS_SELECTED_OUTPUT_HASH',...result,selected_bytes:file.size,expected_bytes:1000000000,
-      limitation:'Owner selected a file after sharing; destination provenance and device memory need physical review'};
+      limitation:'Owner selected a file after download/share; destination provenance and device memory need physical review'};
+    if(report.pending_export){
+      await navigator.locks.request('anynote-p01-device-kit',async()=>{await call({kind:'restore-export',...report.pending_export,sha256:expected.sha256});await call({kind:'cleanup'});});
+      delete report.pending_export;prepared=null;downloadLink.hidden=true;report.temporary_export_cleanup='PASS';
+    }
     finish('Saved output: exact 1 GB size and SHA-256 match.\nTap “Save report” and send the JSON back. Physical acceptance remains open.');
   }catch(error){report.files_destination={status:'FAIL',error:error.message,selected_bytes:file.size,expected_bytes:1000000000};
     offerVerification(`Selected file: ${file.size.toLocaleString('en-US')} bytes. Expected: 1,000,000,000 bytes.\nVerification failed: ${error.message}\nChoose the saved synthetic-export-….bin sample, not anynote-p01-device-report.json. Tap again to select the right file; no automatic rerun is needed. You can save the current report below.`);}
@@ -124,7 +165,7 @@ input.addEventListener('change',async()=>{
 });
 function hide(){
   if(sharing)return;worker.postMessage({kind:'lock'});
-  if(prepared){prepared=null;report.files_destination='BLOCKED: lifecycle interruption before explicit share';
+  if(prepared&&!downloadActive&&stage==='share'){prepared=null;delete report.pending_export;report.files_destination='BLOCKED: lifecycle interruption before explicit share';
     // pagehide cannot wait for worker cleanup. Save diagnostics synchronously first.
     stage='report';checkpoint();
     call({kind:'cleanup'}).catch(()=>{}).finally(()=>finish('The test locked when this page left the foreground. Save the report; start a new trial when ready.'));
@@ -134,19 +175,26 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)hide();});
 addEventListener('pagehide',hide);
 async function recover(){
   button.disabled=true;
-  let stored,previousPath=false;
+  let stored,previousPath=null;
   try{stored=readCheckpoint(localStorage,KEY);
-    if(!stored&&PREVIOUS_KEY!==KEY){stored=readCheckpoint(localStorage,PREVIOUS_KEY);previousPath=!!stored;}}
+    for(const key of PREVIOUS_KEYS)if(!stored&&key!==KEY){stored=readCheckpoint(localStorage,key);if(stored)previousPath=key.split(':').slice(1).join(':');}}
   catch{show('Saved diagnostics cannot be read. No automatic test was restarted. Start a new trial when ready.');button.disabled=false;return;}
   if(!stored){button.disabled=false;return;}
   report=stored.report;renderReport();
   report.recovery={status:'RESTORED_DIAGNOSTICS_ONLY',previous_stage:stored.stage,
     loaded_build:BUILD,restored_at:new Date().toISOString(),keys_restored:false,
-    previous_kit_path:previousPath?'Documented sibling anynote-p01-v011/':null};
+    previous_kit_path:previousPath?`Documented sibling ${previousPath.split('/').filter(Boolean).at(-1)}/`:null};
   if(!navigator.locks){finish('Retained report restored. Automatic cleanup unavailable; save the report.');return;}
   await navigator.locks.request('anynote-p01-device-kit',{ifAvailable:true},async(lock)=>{
     if(!lock){writable=false;stage='report';button.disabled=false;button.textContent='Save report';show('Retained report shown. Another tab owns the active trial; close it and reopen to recover safely.');return;}
-    try{await call({kind:'cleanup-orphans'});report.temporary_export_cleanup='PASS';}
+    if(report.pending_export&&savedOutputExpected(report)){
+      try{
+        prepared=await call({kind:'restore-export',...report.pending_export,sha256:savedOutputExpected(report).sha256});
+        await prepareDownload();
+        report.retained_export='REOPENED_AND_HASH_VERIFIED';
+      }catch(error){prepared=null;delete report.pending_export;report.retained_export=`UNAVAILABLE: ${error.message}`;downloadLink.hidden=true;}
+    }
+    try{if(!prepared){await call({kind:'cleanup-orphans'});report.temporary_export_cleanup='PASS';}}
     catch{report.temporary_export_cleanup='FAIL: marked cleanup unavailable';}
     if((['handoff','verify','verifying'].includes(stored.stage)
       ||stored.stage==='report'&&report.files_destination?.status==='FAIL')&&savedOutputExpected(report)){
@@ -154,6 +202,7 @@ async function recover(){
       offerVerification('Previous report restored.\nSelect the saved synthetic-export-….bin sample (1 GB), not the JSON report. You can select again after a mistake, or save the current report below. No automatic 1 GB rerun is needed.');
     }else{
       if(stored.stage==='run'){report.status='INTERRUPTED';report.error='Page restarted during automatic checks; no active keys or operation resumed';}
+      if(stored.stage==='share'&&prepared){stage='share';checkpoint();button.disabled=false;button.textContent='Download 1 GB sample';show('Verified staged sample restored. Tap to download it; no new automatic trial is needed.');return;}
       if(stored.stage==='share')report.files_destination='NOT RUN: page restarted before a recorded OS handoff';
       finish('Previous report restored. Save it below. Start a new trial only when you want to repeat the automatic checks.');
     }

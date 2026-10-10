@@ -296,3 +296,28 @@ never enumerate arbitrary application storage or restore keys/handles. Safari
 and installed-PWA results remain distinct; private origin is redacted before
 archiving an owner-supplied report. No protocol/dependency/version-resolution
 change or broader physical acceptance follows.
+
+ADR-006 third owner-feedback addendum (0.1.3): avoid the reported physical
+1 GB Share restart by default. Stream only a marked exact-size synthetic output
+via a single-use five-minute random capability in this kit's SW scope. Validate
+client/owner/name/marker/size, reject ranges/replay/arbitrary paths, never cache
+exports, and hold the exclusive kit lock through stream completion/cancellation.
+No vault keys, generic filesystem or production plaintext route. Retain only
+nonsecret generated metadata; recovery rechecks the disk hash without keys
+and preserves other site data. Real WebKit/Files/memory acceptance stays OPEN.
+
+Replace the failed keyboard trial with an explicitly selected, disclosed
+one-shot OS lock request. Arm only unlock-lock-trial while unlock is pending;
+remove its timer on completion/close, never retry automatically. Record OS
+accepted/denied/not-requested separately. Only WTS lock plus STALE is a lock
+PASS; prompt timing still needs owner observation. No Hello/TPM reset or
+policy change, production deployment or crypto change.
+
+ADR-006 0.1.4 lifecycle correction: an in-memory SW ticket registry cannot
+guarantee that a prepared attachment remains available after the browser stops
+that worker. Persist only generated synthetic ticket metadata in a dedicated
+path-scoped IndexedDB table. Issue prunes expired/same-client records and caps
+retained tickets at 64; consume atomically removes before use. Keep five-minute
+expiry, strict synthetic owner/name/marker checks and no runtime export cache.
+Test actual SW termination before consuming the prepared URL, not a JS mock.
+This does not resume an interrupted stream or guarantee background survival.

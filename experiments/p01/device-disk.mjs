@@ -14,10 +14,20 @@ export async function removeTrial(id) {
   try{await(await navigator.storage.getDirectory()).removeEntry(id,{recursive:true});}
   catch(error){if(error.name!=='NotFoundError')throw error;}
 }
-export async function removeTrialOrphans() {
+export async function openTrialOutput(id,name) {
+  if(!/^anynote-p01-device-[0-9a-f]{32}$/.test(id)
+    ||!/^synthetic-export-[0-9a-f-]{36}\.bin$/.test(name))throw new Error('Invalid synthetic export');
+  const directory=await(await navigator.storage.getDirectory()).getDirectoryHandle(id);
+  const marker=await(await directory.getFileHandle('purpose.marker')).getFile();
+  if(marker.size>128||await marker.text()!==MARKER)throw new Error('Synthetic purpose marker mismatch');
+  const file=await(await directory.getFileHandle(name)).getFile();
+  if(file.size!==1000000000)throw new Error('Synthetic export must be exactly 1 GB');
+  return file;
+}
+export async function removeTrialOrphans(retain) {
   const root=await navigator.storage.getDirectory();let removed=0;
   for await(const [id,handle]of root.entries()){
-    if(handle.kind!=='directory'||!/^anynote-p01-device-[0-9a-f]{32}$/.test(id))continue;
+    if(id===retain||handle.kind!=='directory'||!/^anynote-p01-device-[0-9a-f]{32}$/.test(id))continue;
     try{const file=await(await handle.getFileHandle('purpose.marker')).getFile();
       if(file.size>128||await file.text()!==MARKER)continue;
     }catch(error){if(error.name==='NotFoundError')continue;throw error;}

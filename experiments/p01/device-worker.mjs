@@ -2,7 +2,7 @@ import {sodium,verifyFixture} from './crypto.mjs';
 import {derive,invalidProfiles,validateProfile} from './local-unlock.mjs';
 import {capabilities,writeStorage,inspectStorage,cleanupStorage,deniedWrite} from './storage.mjs';
 import {upload,exportFile,locked} from './physical-worker.mjs';
-import {createTrial,removeTrial,removeTrialOrphans,writeBytes,diskSink} from './device-disk.mjs';
+import {createTrial,removeTrial,removeTrialOrphans,openTrialOutput,writeBytes,diskSink} from './device-disk.mjs';
 import rustFixture from './fixtures/rust.json';
 import nodeFixture from './fixtures/node.json';
 import browserFixture from './fixtures/browser-worker.json';
@@ -149,6 +149,12 @@ self.onmessage=async({data})=>{
     if(data.kind==='run'){
       const prepared=await suite(report,run);current(run);report.status='PASS_AUTOMATED_LOCAL_CHECKS';
       report.completed_at=new Date().toISOString();postMessage({kind:'result',report,...prepared});
+    }else if(data.kind==='restore-export'){
+      const file=await openTrialOutput(data.owner_id,data.name);owned=data.owner_id;
+      await sodium.ready;
+      if(await hashFile(file,run)!==data.sha256)throw new Error('Retained synthetic export digest mismatch');
+      await removeTrialOrphans(owned);
+      postMessage({kind:'result',file,owner_id:owned});
     }else if(data.kind==='verify-file'){
       if(!(data.file instanceof Blob)||data.file.size!==MAX)throw new Error('Saved Files output must be exactly 1,000,000,000 bytes');
       await sodium.ready;postMessage({kind:'result',result:{bytes:data.file.size,sha256:await hashFile(data.file,run)}});
@@ -161,7 +167,7 @@ self.onmessage=async({data})=>{
     }else throw new Error('Unknown device operation');
   }catch(error){
     locked();transport=null;
-    if(owned){try{await removeTrial(owned);owned=null;}catch{report.cleanup='FAILED: restart and clean marked trial';}}
+    if(owned&&data.kind!=='verify-file'){try{await removeTrial(owned);owned=null;}catch{report.cleanup='FAILED: restart and clean marked trial';}}
     report.status=String(error.message).startsWith('BLOCKED')?'BLOCKED':'FAIL';
     report.error=String(error.message);report.completed_at=new Date().toISOString();
     postMessage({kind:'error',message:String(error.message),...(data.kind==='run'?{report}:{})});
