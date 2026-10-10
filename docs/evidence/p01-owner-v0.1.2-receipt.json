@@ -1,0 +1,12 @@
+{
+  "kind": "OWNER_SUPPLIED_NOT_HOSTED",
+  "source_commit": "a225e3f099551b95aa1893f941de522f543e8f44",
+  "upload_sha256": "68561aa48dabe0b1f57334888bada378a1f4df12ada15af3a8b0d1c5f2ad852d",
+  "executable_matches_release": true,
+  "redactions": [],
+  "owner_clarifications": {
+    "windows": "Lock screen did not appear after Win+L in this run",
+    "iphone": "Test kit 0.1.2 restarts on Save 1 GB to Files; no new phone JSON supplied"
+  },
+  "physical_acceptance": false
+}

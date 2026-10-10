@@ -76,3 +76,16 @@
 - Same-origin prior-report migration reads only the documented v011 sibling
   key. A different path/origin, eviction or separate browser/PWA storage may
   prevent recovery. Retry does not turn a mismatched file into a success.
+
+- Owner 0.1.2 Windows run has zero lifecycle events and HELLO_CANCELLED at the
+  lock step: NOT PROVEN, consistent with the absent screen. Positive unlock,
+  cancellation and cleanup retain their separate scope. Earlier lock observations
+  are separate runs. API request acceptance is not lock/pending-prompt proof.
+- Owner confirms iPhone 0.1.2 restart at 1 GB Web Share. 0.1.3 defaults to an
+  experimental SW attachment stream; actual PWA/Safari download and device
+  memory remain OPEN. The OS may terminate SW work, deny downloads or require
+  Safari. No background guarantee or mobile acceptance follows from host tests.
+- Retain generated synthetic exports until selection verification or a new
+  trial's exact marked cleanup. Dynamic streams are never cached; expired or
+  replayed tickets cannot resume. Other site data/old reports are preserved.
+  No network/backend or production plaintext-stream path is added.

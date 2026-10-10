@@ -162,10 +162,11 @@ pub fn main() -> Result<(), &'static str> {
                     "physical_cancel_classification":"Only explicit HELLO_CANCELLED is cancellation"});
                 operations.push(cancel);
             }
-            if authenticated && dialog("Next: lock while authorization is pending.\n\nAfter the NEXT Hello prompt opens, press Win+L. You must see the Windows lock/sign-in screen. Signing back into WINDOWS may ask for your fingerprint or PIN; that is expected. The old TEST request must be cancelled and rejected as STALE.\n\nIf no lock screen appears, cancel the test prompt; cancellation alone is not a lock pass. The report records the actual Windows lock event.\n\nPress OK to start, or Cancel to leave this physical test NOT RUN.", true) {
-                let locked=observe_or_failure("unlock");
+            if authenticated && dialog("Next: test an actual Windows session lock.\n\nPress OK to let this test request Windows lock automatically after 8 seconds. On the NEXT Hello prompt, do not touch the fingerprint sensor or confirm/cancel it; wait for the lock screen. Win+L is not required.\n\nSigning back into WINDOWS may ask for your fingerprint or PIN. The old TEST request must be rejected as STALE. If Windows does not lock, cancel the prompt and send the report: it records whether the OS request was accepted and whether a WTS lock event actually arrived.\n\nPress Cancel to skip. The timer is removed when the test finishes; no delayed lock follows a completed prompt.", true) {
+                let locked=observe_or_failure("unlock-lock-trial");
                 record["guided_lock"]=json!({"status":if crate::trial_lifecycle::lock_observed_and_rejected(&locked) { "PASS_NATIVE_LOCK_EVENT_STALE_REJECTED" } else { "NOT_PROVEN: require a native lock event and STALE rejection" },
-                    "limitation":"Lock/suspend/close counters describe this fresh subprocess; owner must observe that the Hello prompt was pending"});
+                    "lock_request":locked["report"]["lock_request"],
+                    "limitation":"One-shot LockWorkStation requested only after explicit owner selection; API acceptance alone is not a lock event or proof that the prompt was pending"});
                 operations.push(locked);
             }
         }

@@ -57,14 +57,24 @@ impl Events {
     }
 }
 pub fn lock_observed_and_rejected(operation: &Value) -> bool {
-    operation["operation"] == "unlock"
-        && operation["exit_code"] == 1
+    matches!(
+        operation["operation"].as_str(),
+        Some("unlock" | "unlock-lock-trial")
+    ) && operation["exit_code"] == 1
         && operation["report"]["status"] == "FAIL_OR_UNAVAILABLE"
         && operation["report"]["code"] == "STALE"
         && operation["report"]["actual_vault_authenticated"] != true
         && operation["report"]["lifecycle"]["wts_session_lock"]
             .as_u64()
             .is_some_and(|count| count > 0)
+}
+pub fn lock_request_status(value: u32) -> &'static str {
+    match value {
+        0 => "NOT_REQUESTED",
+        1 => "OS_REQUEST_ACCEPTED_NOT_LOCK_PROOF",
+        2 => "OS_REQUEST_DENIED",
+        _ => "TIMER_UNAVAILABLE",
+    }
 }
 
 #[cfg(test)]
@@ -113,5 +123,22 @@ mod tests {
         assert!(Event::Suspend.invalidates());
         assert!(Event::OwnerClose.invalidates());
         assert!(!Event::Unlock.invalidates());
+    }
+    #[test]
+    fn owner_cancelled_012_trial_and_accepted_os_request_are_not_lock_proof() {
+        let report: Value = serde_json::from_str(include_str!(
+            "../../../../docs/evidence/p01-owner-windows-v0.1.2.json"
+        ))
+        .unwrap();
+        let mut operation = report["operations"][3].clone();
+        assert!(!lock_observed_and_rejected(&operation));
+        operation["operation"] = json!("unlock-lock-trial");
+        operation["report"]["lock_request"] = json!(lock_request_status(1));
+        assert!(!lock_observed_and_rejected(&operation));
+        operation["report"]["code"] = json!("STALE");
+        operation["report"]["lifecycle"]["wts_session_lock"] = json!(1);
+        assert!(lock_observed_and_rejected(&operation));
+        assert_eq!(lock_request_status(0), "NOT_REQUESTED");
+        assert_eq!(lock_request_status(2), "OS_REQUEST_DENIED");
     }
 }

@@ -205,3 +205,22 @@ retry/reload/migration and exact 1 GB output/hash/cleanup PASS. Actual hosted
 records are archived in docs/evidence. The publisher selects this frozen source
 for v0.1.2-p01-device-kit; execution/availability is recorded on PR #7/release.
 Remaining phone Files hash/installed-PWA and full G1 gates remain OPEN.
+
+## P01 owner 0.1.2 feedback — stream download and selected OS lock
+
+The new owner Windows upload matches the exact 0.1.2 source/EXE. Local 51
+crypto/KDF, exact 1 GB, enrollment, fresh-process actual-vault authentication,
+explicit cancellation and exact cleanup PASS. Lock-step HELLO_CANCELLED with
+all four counters zero is NOT PROVEN; owner confirms no lock screen this time.
+Keep the earlier 0.1.1 screen/STALE observation as a different run. Owner reports
+iPhone 0.1.2 restarts at Save 1 GB to Files; no updated phone JSON was supplied.
+
+0.1.3 adds a scoped single-use service-worker attachment stream from the marked
+verified synthetic disk output (256 KiB reads), replacing default 1 GB Web Share.
+Retain nonsecret generated owner/name metadata; recovery rechecks size/hash
+under the exclusive trial lock, without keys or persisted handles. The stream
+holds that lock through completion/cancellation and is never cached. Only
+selected size/hash determines saved-file evidence. Windows adds an explicitly
+selected one-shot LockWorkStation request after 8 seconds while unlock remains
+pending. Ordinary/hosted operations never request lock. API acceptance is not
+WTS lock evidence. Hosted checks/publication pending; P01/G1 remains OPEN.

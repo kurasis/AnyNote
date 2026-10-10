@@ -469,3 +469,18 @@ Publication execution is recorded in [PR #7](https://github.com/kurasis/AnyNote/
 and the [0.1.2 release](https://github.com/kurasis/AnyNote/releases/tag/v0.1.2-p01-device-kit).
 Hosted sharing remains mocked; no production deployment/signing or complete
 physical acceptance is inferred.
+
+## Owner 0.1.2 feedback and 0.1.3 candidate
+
+Raw [Windows report](evidence/p01-owner-windows-v0.1.2.json) preserved byte for
+byte; [receipt](evidence/p01-owner-v0.1.2-receipt.json) records upload checksum,
+source/EXE and owner clarification. Source a225e3f and EXE 434878... match the
+0.1.2 release. Positive enrollment/fresh-process authentication, cancellation,
+cleanup and local checks PASS. Guided lock: HELLO_CANCELLED, all event counters
+zero, NOT PROVEN. No new phone JSON; reported Share restart is an owner
+observation, not host-derived cause or Files acceptance.
+
+Local 77 portable tests PASS, including actual owner cancelled/zero-event
+regression and refusal to classify OS-request acceptance as lock proof. Strict
+Clippy PASS. Static kit builds; hosted real attachment/replay/recovery/picker/hash,
+Windows compilation/ABI and release publication are pending.

@@ -16,6 +16,11 @@ and the unfilled template are in P01_OWNER_TRIALS.md. The static ZIP requires
 only a trusted existing HTTPS web directory, not Node/PHP or a new certificate. No repeated OS/model
 questions, remote access, device actions or HTTPS deployment are assumed.
 
+Latest 0.1.2 owner run: lock HELLO_CANCELLED/zero events, no Windows lock
+screen; phone restarts at 1 GB Share, no new JSON. 0.1.3 adds a scoped stream
+download and explicitly selected one-shot OS lock. Hosted checks/publication
+are pending; actual Files/lock acceptance remains OPEN.
+
 Read AGENTS.md, progress, decisions, limitations, dependency inventory and
 specification 02/08/13/14/15. Preserve supplied spec bytes, existing experiments,
 reference archives and unrelated changes. This task starts the independently

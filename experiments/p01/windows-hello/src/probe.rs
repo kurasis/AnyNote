@@ -27,7 +27,11 @@ use zeroize::Zeroizing;
 static ACTIVE: AtomicBool = AtomicBool::new(true);
 static GENERATION: AtomicU64 = AtomicU64::new(0);
 static EVENTS: crate::trial_lifecycle::Events = crate::trial_lifecycle::Events::new();
+static LOCK_REQUEST: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
+static LOCK_TRIAL_PENDING: AtomicBool = AtomicBool::new(false);
 const FINISHED: u32 = WM_APP + 1;
+const ARM_LOCK: u32 = WM_APP + 2;
+const LOCK_TIMER: usize = 1;
 const MARKER: &[u8] = b"AnyNote P01 authenticated synthetic local vault";
 const AAD: &[u8] = b"AnyNote.P01.SyntheticLocalVault.v1";
 
@@ -176,8 +180,18 @@ fn run(hwnd: usize, command: &str) -> Result<Value> {
         }
     }
     let expected = binding(&root)?;
+    if command == "unlock-lock-trial" {
+        // Only this explicitly selected synthetic command arms the one-shot OS lock.
+        LOCK_TRIAL_PENDING.store(true, Ordering::Release);
+        if unsafe { PostMessageW(hwnd as HWND, ARM_LOCK, 0, 0) } == 0 {
+            LOCK_TRIAL_PENDING.store(false, Ordering::Release);
+            return Err(Error::new("LOCK_TIMER_UNAVAILABLE"));
+        }
+    }
     let result = (|| {
-        let reply = manager.run(&root, hwnd, &current, &context, &Action::Unlock {})?;
+        let reply = manager.run(&root, hwnd, &current, &context, &Action::Unlock {});
+        LOCK_TRIAL_PENDING.store(false, Ordering::Release);
+        let reply = reply?;
         let local_key = reply
             .local_key
             .as_ref()
@@ -217,6 +231,23 @@ fn lifecycle_event(message: u32, wp: WPARAM) -> Option<crate::trial_lifecycle::E
     }
 }
 unsafe extern "system" fn window_proc(hwnd: HWND, message: u32, wp: WPARAM, lp: LPARAM) -> LRESULT {
+    if message == ARM_LOCK {
+        if unsafe { SetTimer(hwnd, LOCK_TIMER, 8000, None) } == 0 {
+            LOCK_REQUEST.store(3, Ordering::Release);
+        }
+        return 0;
+    }
+    if message == WM_TIMER && wp == LOCK_TIMER {
+        unsafe { KillTimer(hwnd, LOCK_TIMER) };
+        if ACTIVE.load(Ordering::Acquire)
+            && LOCK_TRIAL_PENDING.load(Ordering::Acquire)
+            && EVENTS.snapshot().wts_session_lock == 0
+        {
+            let accepted = unsafe { windows_sys::Win32::System::Shutdown::LockWorkStation() } != 0;
+            LOCK_REQUEST.store(if accepted { 1 } else { 2 }, Ordering::Release);
+        }
+        return 0;
+    }
     if let Some(event) = lifecycle_event(message, wp) {
         EVENTS.record(event);
         if event.invalidates() {
@@ -224,6 +255,7 @@ unsafe extern "system" fn window_proc(hwnd: HWND, message: u32, wp: WPARAM, lp: 
         }
     }
     if message == WM_CLOSE || message == FINISHED {
+        unsafe { KillTimer(hwnd, LOCK_TIMER) };
         ACTIVE.store(false, Ordering::Release);
         if message == FINISHED {
             GENERATION.fetch_add(1, Ordering::AcqRel);
@@ -242,11 +274,11 @@ pub fn main() -> std::result::Result<(), &'static str> {
     if args.len() != 2
         || !matches!(
             args[1].as_str(),
-            "capabilities" | "roundtrip" | "enroll" | "unlock" | "cleanup"
+            "capabilities" | "roundtrip" | "enroll" | "unlock" | "unlock-lock-trial" | "cleanup"
         )
     {
         return Err(
-            "usage: anynote-p01-windows-hello capabilities|roundtrip|enroll|unlock|cleanup",
+            "usage: anynote-p01-windows-hello capabilities|roundtrip|enroll|unlock|unlock-lock-trial|cleanup",
         );
     }
     if args[1] == "capabilities" {
@@ -307,6 +339,9 @@ pub fn main() -> std::result::Result<(), &'static str> {
         match task.join().map_err(|_| "native probe thread failed")? {
             Ok(mut report) => {
                 report["lifecycle"] = json!(EVENTS.snapshot());
+                report["lock_request"] = json!(crate::trial_lifecycle::lock_request_status(
+                    LOCK_REQUEST.load(Ordering::Acquire)
+                ));
                 println!("{report}");
                 Ok(())
             }
@@ -315,6 +350,7 @@ pub fn main() -> std::result::Result<(), &'static str> {
                     "{}",
                     json!({"status":"FAIL_OR_UNAVAILABLE","code":error.code,
                 "physical_acceptance":false,"lifecycle":EVENTS.snapshot(),
+                "lock_request":crate::trial_lifecycle::lock_request_status(LOCK_REQUEST.load(Ordering::Acquire)),
                 "cleanup":"Run cleanup; a retained journal must not be discarded"})
                 );
                 Err("native probe did not pass")
