@@ -1,57 +1,55 @@
 # Next bounded task
 
-## P01-LOCAL-UNLOCK — local wrapper and storage feasibility probes
+## P01-PHYSICAL-TRIALS — platform memory, export sink and fault evidence
 
-Prerequisite: P01-CRYPTO-INTEROP host/CI evidence recorded. Read progress,
-decisions, limitations, current Git state and specification 04, 05, 10, 11 and
-13. Preserve the original spec and unrelated work. This remains P01; do not
-claim its physical G1 gate complete or start production key custody prematurely.
+Prerequisite: P01-CRYPTO-INTEROP and P01-LOCAL-UNLOCK host reports recorded.
+Read AGENTS.md, progress, decisions, limitations, P01_PLATFORM_TEST_PLAN.md,
+experiments/p01/PHYSICAL_HARNESS.md and windows-hello/README.md. Preserve
+original specification bytes and unrelated changes. This remains P01; G1 is open.
 
-Objective: evaluate supported local unlock/key wrappers and PWA storage/export
-capabilities with synthetic keys/files before choosing production adapters.
+Objective: establish which prepared native/PWA paths work on the actual supplied
+platforms, improve bounded export/fault handling from measured evidence and
+record the exact remaining platform constraints.
 
-Scope:
+1. Continue independent host work: measure actual selected-file export process
+   memory separately from generated-stream RSS; add meaningful interruption,
+   corrupt/truncated download, export abort and orphan-cleanup checks where the
+   changed implementation needs them. Do not infer a 64 MiB iPhone pass from WASM
+   heap or a desktop aggregate metric. Preserve exact 1,000,000,000-byte trials.
+2. Verify the compiled Windows probe source/hash and actual capability report.
+   Target Windows 11 Pro 25H2 with Hello planned (already supplied). On the
+   existing physical account, use only disposable native objects: roundtrip;
+   cancellation/lock; explicit enroll -> new-process unlock -> cleanup; verify
+   the real synthetic vault and exact ownership deletion. Capture actual build,
+   API/provider and prompt observations. Hosted API 7 is expected BLOCKED, not
+   permission for fallback. No reset/policy changes or repeated upstream trials.
+3. Prepare a trusted private HTTPS test host when its access/certificate are
+   available; do not publish an unauthenticated test server publicly or deploy
+   production. The manifest/worker/server and runbook already exist. No cloud
+   localhost preview or TLS verification bypass. Synthetic data only.
+4. Target iPhone 17 Pro / iOS 26.7.1 (already supplied, owner-reported) installed
+   from Safari. Capture actual capabilities/KDF/storage and device memory.
+   Evaluate the bounded verified disk File -> separate Web Share candidate or
+   another supported sink. Independently inspect the actual Files output and
+   hash/length; canShare, a share completion or OPFS file alone is insufficient.
+   Test small sizes before the exact 1 GB file; no whole-file buffer/Blob fallback.
+5. Run I01–I03 lifecycle/low-space/source-reselect procedures as implemented.
+   Current backgrounding locks and requires fresh session/keys; matching source
+   is not resume. Do not claim production manifests/recipient trust or recovered
+   progress before those parts exist. Clear only owned marked test export state.
+6. The older/lower-memory second iPhone remains unspecified. Complete independent
+   host checks while physical access/target/HTTPS prerequisites are absent; do not
+   request already supplied OS/model strings again. Mark precise parts NOT RUN
+   or BLOCKED. If a real iOS sink/1 GB trial fails, present measured options
+   before changing the agreed scope. P03 tooling is an independent permitted
+   track after P00 and may proceed when physical work has no executable next step.
+7. Record actual reports, exact sources, limitations and next bounded task;
+   run checks, push and merge tested completed work automatically as authorized.
 
-1. Add an isolated native/browser Argon2id v1.3 probe using exact libsodium
-   opslimit/memlimit/salt semantics. Start at 64 MiB / opslimit 3; reject bounds
-   before allocation and serialize KDF jobs. Measure genuine browser latency
-   without silently lowering the cost. Verify cross-binding outputs and wrong
-   phrase behavior; use public synthetic fixtures only.
-2. Add Chrome/browser OPFS and IndexedDB capability/quota/persistence probes and
-   ciphertext-only durability inspection. Record denial/exhaustion accurately.
-   Actual iPhone behavior remains a separate physical test.
-3. Read the preserved passkeylocal handoff/source in
-   docs/reference/passkeylocal; verify its SHA256SUMS before extraction. The
-   working installer-source reference is c18894e..., current handoff is 15f54f00...;
-   exact SHAs are in PROVENANCE.json. Use ADR-003's native PRF + separately
-   verified Platform KSP TPM design to protect independent synthetic random L.
-   Reuse the tested PRF creation input, generated ABI/independent-header checks,
-   exact per-key TPM proof and lifecycle invariants with fresh AnyNote namespaces.
-   Do not port KDBX password-component semantics or upstream native objects.
-   Build a minimal real-provider Windows probe; no raw-key frontend API or silent
-   DPAPI/consent/software fallback. Hosted Windows can check MSVC/ABI and failure
-   handling but cannot stand in for physical Hello. Retain licensing/notices when
-   importing source and record that choice before packaging.
-4. Prepare the controlled-HTTPS physical PWA harness for selected-file source
-   and bounded explicit export, plus lifecycle/reselect tests. Do not mistake
-   OPFS or a desktop download for saving 1 GB into iOS Files. Keep it isolated
-   from future production auth, protocol and app bundles.
-5. Target the supplied Windows 11 Pro 25H2 with Hello planned and iPhone 17 Pro
-   / iOS 26.7.1 (owner-reported, not inspected). Capture actual build/provider
-   during physical trials; do not ask for already supplied strings again.
-   Physical Windows and at least two iPhone targets are required to close P01/G1;
-   the older/lower-memory iPhone remains unspecified. Continue the
-   independent probes if devices are unavailable; report exact blocked parts.
-6. Update evidence, ADRs, risks, limitations and next task; run meaningful checks,
-   then push and merge automatically as authorized.
+Invariants: no real secrets/user vaults, key-bearing frontend/native replies,
+plaintext server, silent software/DPAPI fallback, verification/sandbox bypass,
+permission/protection bypass or fabricated hardware/audit evidence.
 
-Invariants: synthetic data, real crypto/provider operations, exact agreed 1 GB
-limit, no plaintext server fallback, no verification/sandbox bypass and no
-invented physical-platform success. Application wire contracts await P02;
-qualified review remains an external production gate.
-
-Exit: reproducible wrapper/storage feasibility evidence and concrete platform
-constraints. P01 remains IN PROGRESS/BLOCKED until the complete physical
-acceptance path is evidenced. If a genuine iOS export failure requires changing
-scope/platform, present tested options for owner decision. P03 tooling is an
-independent permitted track after P00, but cannot replace these gates.
+Exit: reviewable platform/fault evidence and concrete supported/blocked sink
+constraints. P01/G1 remains open until physical acceptance is actually recorded;
+qualified review and production protocol/release gates are not replaced by CI.

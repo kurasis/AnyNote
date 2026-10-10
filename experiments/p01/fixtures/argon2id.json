@@ -1,0 +1,38 @@
+{
+  "warning": "PUBLIC SYNTHETIC KDF VECTORS; NEVER USE THESE KEYS",
+  "cases": [
+    {
+      "request": {
+        "profile_version": 1,
+        "algorithm": "argon2id13",
+        "phrase": "public synthetic strong phrase alpha",
+        "salt_hex": "000102030405060708090a0b0c0d0e0f",
+        "opslimit": 3,
+        "memlimit": 67108864
+      },
+      "derived_hex": "be156a953b70cd567b24e5cd78256d24d457c53a4a5250137468028ffae763b4"
+    },
+    {
+      "request": {
+        "profile_version": 1,
+        "algorithm": "argon2id13",
+        "phrase": "Public UTF-8 café 🗝️\u0000tail remains",
+        "salt_hex": "000102030405060708090a0b0c0d0e0f",
+        "opslimit": 3,
+        "memlimit": 67108864
+      },
+      "derived_hex": "757f265fc7dcf20dde5239ba6dc2e1c3c722f2e18d37c41e8a7ea6dccfcf8553"
+    },
+    {
+      "request": {
+        "profile_version": 1,
+        "algorithm": "argon2id13",
+        "phrase": "public synthetic strong phrase alpha",
+        "salt_hex": "101112131415161718191a1b1c1d1e1f",
+        "opslimit": 3,
+        "memlimit": 67108864
+      },
+      "derived_hex": "d9c6096e67314c63de5613f503bc6f796241621556060e58cb57dbe4ed612c28"
+    }
+  ]
+}

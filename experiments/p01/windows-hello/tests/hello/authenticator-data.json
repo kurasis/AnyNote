@@ -1,0 +1,8 @@
+{
+  "provenance": "Public synthetic W3C-layout data with a NIST P-256 generator point; no key creation, signature, PRF or hardware observation.",
+  "rpId": "p01.anynote.desktop.invalid",
+  "authenticatorData": "eu7agpzhFj7fDXKsxvtu85Smt1/nVoK/bnGHEq24cP9FAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAABAgMEBQYHCAkKCwwNDg+lAQIDJiABIVggaxfR8uEsQkf4vOblY6RA8ncDfYEt6zOg9KE5RdiYwpYiWCBP40Li/hp/m47n60p8D54WK84zV2sxXs7LtkBoN79R9Q==",
+  "credentialId": "AAECAwQFBgcICQoLDA0ODw==",
+  "credentialPublicKey": "pQECAyYgASFYIGsX0fLhLEJH+Lzm5WOkQPJ3A32BLeszoPShOUXYmMKWIlggT+NC4v4af5uO5+tKfA+eFivOM1drMV7Oy7ZAaDe/UfU=",
+  "assertionData": "eu7agpzhFj7fDXKsxvtu85Smt1/nVoK/bnGHEq24cP8FAAAAAA=="
+}

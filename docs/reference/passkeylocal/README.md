@@ -22,8 +22,9 @@ and original Windows evidence documentation. The current archive also preserves
 the random-root File Safe coordinator and documentation. These are selected
 source snapshots, not full independently buildable checkouts or installers.
 Build the upstream project from its exact Git revision when complete context
-is needed. Nothing in these archives is imported into the PWA or compiled by
-the AnyNote experiment.
+is needed. The archives remain unchanged. P01-LOCAL-UNLOCK adapts selected
+native source into the separately GPL-3.0-only experiment at
+experiments/p01/windows-hello; no native code enters the PWA bundle.
 
 Verify before extracting into a disposable directory:
 
@@ -42,7 +43,7 @@ test is not assigned as a prerequisite here.
 
 ## How AnyNote will use the working design
 
-The Windows P01 probe will follow native WebAuthn PRF plus a separately verified
+The Windows P01 probe follows native WebAuthn PRF plus a separately verified
 Platform KSP TPM RSA-2048 OAEP/SHA-256 inner envelope. Creation supplies both
 PRF enablement and creation-time evaluation; every unlock requires fresh user
 verification and PRF output. The adapter validates the exact credential, route,

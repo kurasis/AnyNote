@@ -1,4 +1,6 @@
 import { sodium, emitFixture, verifyFixture } from './crypto.mjs';
+import { derive } from './local-unlock.mjs';
+import { capabilities, persistRequest, writeStorage, inspectStorage, cleanupStorage, deniedWrite, quotaTrial } from './storage.mjs';
 
 const CHUNK = 8388608, MAX_FILE = 1000000000;
 async function roundtrip(length) {
@@ -65,6 +67,22 @@ self.onmessage = async ({ data }) => {
     if (data.kind === 'interop') {
       const checks = await verifyFixture(data.fixture);
       postMessage({ kind: 'result', checks, fixture: await emitFixture('browser-worker') });
+    } else if (data.kind === 'kdf') {
+      postMessage({ kind: 'result', result: await derive(data.request) });
+    } else if (data.kind === 'storage-capabilities') {
+      postMessage({ kind: 'result', result: await capabilities() });
+    } else if (data.kind === 'storage-persist') {
+      postMessage({ kind: 'result', result: await persistRequest() });
+    } else if (data.kind === 'storage-write') {
+      postMessage({ kind: 'result', result: await writeStorage() });
+    } else if (data.kind === 'storage-inspect') {
+      postMessage({ kind: 'result', result: await inspectStorage(data.expected) });
+    } else if (data.kind === 'storage-cleanup') {
+      await cleanupStorage(data.id); postMessage({ kind: 'result', result: {status:'PASS'} });
+    } else if (data.kind === 'storage-denied') {
+      postMessage({ kind: 'result', result: await deniedWrite() });
+    } else if (data.kind === 'storage-quota') {
+      postMessage({ kind: 'result', result: await quotaTrial() });
     } else if (data.kind === 'roundtrip') {
       postMessage({ kind: 'result', result: await roundtrip(data.length) });
     } else throw new Error('Unknown experiment command');

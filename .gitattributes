@@ -1,6 +1,2 @@
-* text=auto
-*.py text eol=lf
-*.yml text eol=lf
-*.json text eol=lf
-# Preserve the exact bytes covered by the original specification checksums.
-docs/spec/* -text whitespace=-blank-at-eol
+# Preserve exact upstream API-header bytes for SHA-256 and independent ABI checks.
+experiments/p01/windows-hello/tests/hello/vendor/webauthn.h -text

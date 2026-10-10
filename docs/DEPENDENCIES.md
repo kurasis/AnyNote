@@ -47,7 +47,10 @@ dependency/legal review. P03/P17 still own complete app scanning and release rev
 Owner-requested passkeylocal source/document snapshots retain their upstream
 GPL-3.0-only license; the Microsoft ABI test header retains its own MIT notice.
 Exact revisions, selected-file hashes and unchanged license copies are in
-[reference provenance](reference/passkeylocal/PROVENANCE.json). These archives
-are not compiled or bundled into AnyNote. A future source import must preserve
-notices and make compatible distribution choices. AnyNote's own release license
-remains unselected; reference capture does not assign it GPL automatically.
+[reference provenance](reference/passkeylocal/PROVENANCE.json). The archives remain unchanged. Selected source is now adapted into the
+separate GPL-3.0-only experiments/p01/windows-hello crate, with its modifications
+and original license notices retained; no native code is bundled in the PWA.
+The experiment adds 108 resolved Cargo metadata package records, including the
+private GPL-3.0-only root, in the inventory under windows_hello_rust_packages.
+This is not a release distribution assessment. The rest of AnyNote's release
+license remains unselected.

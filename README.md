@@ -5,8 +5,10 @@ An invite-only, end-to-end encrypted notes and files service for Windows
 Nginx and PHP-FPM.
 
 **Current state:** P00 complete; P01 isolated synthetic feasibility in progress. Rust/Node/Chromium
-cryptographic interoperability and synthetic 1 GB host pipelines pass; physical
-Windows/iPhone acceptance remains open. No application or backend service is
+cryptographic interoperability, Argon2id, ciphertext storage and selected 1 GB
+disk export host pipelines pass. A scoped native Windows PRF/TPM probe and
+private HTTPS PWA trial harness are prepared; physical Windows/iPhone acceptance
+remains open. No application or backend service is
 implemented yet. Do not store
 real secrets or user data in this repository's future experimental builds.
 

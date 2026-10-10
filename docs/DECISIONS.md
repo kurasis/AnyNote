@@ -156,3 +156,42 @@ No migration or production key-custody change occurs in this task. Reference
 copies retain GPL-3.0-only and MIT-header notices; compatible source import and
 release license choices must precede packaging. No Hello/TPM reset, policy changes
 or repeated unchanged upstream owner diagnostics are required.
+
+## ADR-004 — Bounded local-unlock and export feasibility adapters
+
+Date: 2026-10-10. Status: ACCEPTED for isolated synthetic probes only.
+
+Freeze the measured fallback vector profile as libsodium Argon2id13, 32-byte
+output, 16-byte salt, opslimit 3, memlimit 67,108,864. Profile v1 rejects costs
+outside opslimit 3–10 / 64–256 MiB before hashing. Use exact UTF-8 bytes including
+NUL, with no hidden normalization or cheaper retry. A sole worker serializes
+KDF work. Other application worker/process concurrency awaits production design.
+Desktop latency is not a slow-iPhone cost selection or proof of phrase strength.
+
+Port selected source from the preserved c18894e... installer into the separately
+GPL-3.0-only Windows probe, retaining licenses and exact original/adapted source
+hashes. Protect random L, use independent RP/domain/key/journal namespaces, and
+remove serialization from the secret-bearing native reply. Reuse atomic/ACL/link
+protections, native generated FFI and independently measured Microsoft-header
+ABI. Portable doubles check lifecycle policy; hosted capability-only results
+create no objects and cannot establish physical user verification/TPM evidence.
+The rest of AnyNote's license and production release remain undecided.
+
+Browser storage tests use ciphertext-only normal records. Origin quota failure
+is injected in a separate context. Large selected-file export uses a fresh
+disk-backed persistent profile; initial incognito/post-injection quota failure
+is retained as failure evidence, not attributed to an iPhone. Never enlarge the
+physical product limit or claim an estimate guarantees available space.
+
+Explicit exports are the sole test plaintext-disk exception: stream one bounded
+part into a writable sink, verify the full output, and remove owned test output
+afterward. Prepare an existing verified OPFS disk File for a separate user-click
+Web Share candidate; no concatenated full-file Blob or plaintext server. Shares
+may background/lock crypto while finishing an already authorized explicit export.
+A resolved share/canShare is not Files acceptance or a mobile memory measurement.
+Marked orphan test exports have explicit cleanup; no secure-erasure claim.
+
+P01/G1 remains open for physical Windows and at least two iPhones, tested Files
+output and low-space/lifecycle/resume. The prepared harness has no production
+auth, sender/recipient trust, signed manifest, durable key/transfer recovery or
+remote deployment. Application key custody/contracts still await P02/P07.
