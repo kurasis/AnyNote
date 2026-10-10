@@ -27,7 +27,7 @@ const results = { experiment: 'P01-CRYPTO-INTEROP', date: new Date().toISOString
 
 function nativeJson(args, input) {
   return JSON.parse(execFileSync(native, args, { input: input === undefined ? undefined : JSON.stringify(input),
-    encoding: 'utf8', maxBuffer: 1024 * 1024 }));
+    encoding: 'utf8', maxBuffer: 1024 * 1024, timeout: 300000 }));
 }
 function passed(result, label) {
   assert.equal(result.status, 'PASS');
@@ -114,7 +114,9 @@ try {
   const node = await emitFixture('node');
   passed(nativeJson(['verify'], node), 'Node -> Rust');
   passed(await verifyFixture(node), 'Node -> Node');
-  const changed = structuredClone(rust); changed.aead[0].ciphertext = `00${changed.aead[0].ciphertext.slice(2)}`;
+  const changed = structuredClone(rust);
+  const changedFirstByte = (Number.parseInt(changed.aead[0].ciphertext.slice(0, 2), 16) ^ 1).toString(16).padStart(2, '0');
+  changed.aead[0].ciphertext = changedFirstByte + changed.aead[0].ciphertext.slice(2);
   const rejected = spawnSync(native, ['verify'], { input: JSON.stringify(changed), encoding: 'utf8' });
   assert.equal(rejected.status, 1, 'Rust must reject corrupted fixture, preserving nonzero exit');
   await assert.rejects(verifyFixture(changed));

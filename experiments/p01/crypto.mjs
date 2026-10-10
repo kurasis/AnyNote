@@ -11,7 +11,7 @@ function bytes(text) {
   return sodium.from_hex(text);
 }
 function equal(a, b) { return a.length === b.length && sodium.memcmp(a, b); }
-function altered(a) { const b = new Uint8Array(a); b[0] ^= 1; return b; }
+function altered(a) { const b = a.length ? new Uint8Array(a) : new Uint8Array(1); b[0] ^= 1; return b; }
 function exactKeys(object, names) {
   if (!object || Object.keys(object).sort().join(',') !== names.sort().join(',')) {
     throw new Error('Unknown or missing experimental fixture fields');

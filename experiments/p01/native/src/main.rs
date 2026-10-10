@@ -68,6 +68,9 @@ fn bytes(s: &str) -> Result<Vec<u8>> {
     Ok(hex::decode(s)?)
 }
 fn altered(s: &[u8]) -> Vec<u8> {
+    if s.is_empty() {
+        return vec![1];
+    }
     let mut v = s.to_vec();
     v[0] ^= 1;
     v
