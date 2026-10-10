@@ -1,10 +1,10 @@
 # AnyNote P01 iPhone test kit
 
 Unzip **the contents of this ZIP** into your trusted HTTPS site's web directory:
-`<web-root>/anynote-p01/`. The result must include
-`<web-root>/anynote-p01/index.html`, not an extra nested folder.
+`<web-root>/anynote-p01-v012/`. The result must include
+`<web-root>/anynote-p01-v012/index.html`, not an extra nested folder.
 
-Open `https://YOUR-TEST-SITE/anynote-p01/` in Safari on the iPhone. For the
+Open `https://YOUR-TEST-SITE/anynote-p01-v012/` in Safari on the iPhone. For the
 installed PWA trial, use Share -> Add to Home Screen and open that app.
 Tap **Run all automatic tests** and keep it in the foreground. No Node.js,
 PHP, database, external libraries, certificates to generate, or accounts needed.
@@ -44,28 +44,40 @@ when testing is finished. Assets contain no server endpoints or test secrets.
 BUILD.json identifies source; SHA256SUMS.txt covers packaged assets. Sodium
 redistribution notices are included; no native GPL Hello code is in this ZIP.
 
-## Recovery and updating from 0.1.0
+## Retained diagnostics
 
-For an existing 0.1.0 installation, upload this ZIP into a **new directory**,
-`<web-root>/anynote-p01-v011/`, and open
-`https://YOUR-TEST-SITE/anynote-p01-v011/`. Add that address to Home Screen and
-open the new app. Its page displays **Test kit 0.1.1**. This avoids the old
-installed service-worker cache; no site-data deletion is required. All assets
-and manifest paths also work at this new location.
+The kit saves a small diagnostic report before the system Files handoff. Reopen
+the same app/address after a restart to verify the sample already saved, or use
+**Save report now**. Copyable report text is also available. A terminated 0.1.0
+memory-only report cannot be reconstructed. Clearing/evicting site storage still
+removes diagnostics. **Run a new trial** explicitly replaces the last record.
 
-A 0.1.0 report lost on page termination was never persisted and cannot be
-reconstructed. Repeat the automatic trial once with 0.1.1. The new kit saves
-only a small diagnostic report before opening Files. If the app restarts,
-reopen the **same new app/address**: it offers verification of the sample already
-saved in Files, without another 1 GB automatic run. The share outcome after
-termination is UNKNOWN until selected bytes are checked; no keys or file handles
-are restored. Marked temporary files are cleaned under an exclusive trial lock.
+## 0.1.2: lock evidence and wrong-file retry
 
-**Save report now** is available on intermediate/failure/recovered steps.
-The report text is also shown for selection/copy if the system download UI is
-unavailable. Saving the report can restart the PWA without losing that retained
-report. **Run a new trial** explicitly replaces the last diagnostic record.
-Storage eviction/site-data clearing still removes it; denied storage blocks a
-new automatic trial before opening any system sheet. Keep the same site/path
-and installation while recovering a report. Other physical lifecycle/transfer
-acceptance remains open.
+Use `<web-root>/anynote-p01-v012/` for this update and open its URL. The page
+must show **Test kit 0.1.2**. Add/open that address from Home Screen for the
+installed-PWA trial; a Safari-tab report with `installed_pwa=false` remains a
+browser result. Keep the earlier report and sample; no site-data clearing.
+
+When checking Files, choose **synthetic-export-….bin**, exactly
+1,000,000,000 bytes. Do not choose `anynote-p01-device-report.json`: that small
+file is the log to send back. A wrong size/hash remains FAIL, but the primary
+button allows another selection without regenerating the sample. The report
+records selected and expected sizes, never the selected personal filename.
+
+If the earlier report was retained in the documented sibling
+`anynote-p01-v011/` on the **same origin/browser storage**, 0.1.2 copies that
+one known diagnostic checkpoint to its own path and offers another sample
+selection, including old report-stage failures. The old checkpoint is preserved.
+Other site storage keys are never scanned. Different origins, cleared/evicted
+storage or separate Safari/PWA stores cannot supply that record; run a fresh
+trial only when no report is restored. No live keys/file handles are restored.
+
+Windows Win+L should show the Windows lock/sign-in screen. A fingerprint/PIN
+request for **Windows sign-in** is expected after locking. The old test request
+must be rejected as STALE. The newer EXE records native WTS lock/unlock, suspend
+and owner-window-close counters. Guided lock PASS now requires the actual
+recorded WTS lock event plus failed STALE unlock, rather than STALE alone. The
+owner still needs to observe that the prompt was pending; no full negative
+matrix or physical acceptance is inferred. The 0.1.1 owner already confirmed
+the lock screen appeared; its positive Hello/cancel/cleanup findings are retained.

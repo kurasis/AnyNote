@@ -1,0 +1,15 @@
+{
+  "kind": "OWNER_SUPPLIED_NOT_HOSTED",
+  "source_commit": "f92dcb4eda58c6ce164728a378699f93adef572b",
+  "windows_original_sha256": "89f0c096988b4802d7dc98107528d4627bbd9a43f1918c88cb78657a6393dbf2",
+  "iphone_original_sha256": "283927a267301774363907382941342565683eb6f54fad57bc4aceb2ebd654f2",
+  "redactions": {
+    "iphone": "Private origin replaced by REDACTED_PRIVATE_TEST_ORIGIN; remaining report fields preserved",
+    "windows": "None"
+  },
+  "owner_clarifications": {
+    "windows": "Windows lock screen appeared after Win+L; subsequent fingerprint waiting was observed",
+    "iphone": "JSON or another file was selected instead of the synthetic 1 GB sample"
+  },
+  "physical_acceptance": false
+}

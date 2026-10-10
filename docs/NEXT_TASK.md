@@ -4,10 +4,14 @@
 
 Prerequisite: P00 VERIFIED; P01 host crypto/KDF/storage/export/fault findings
 recorded. P01/G1 physical Windows/iPhone acceptance is OPEN and must remain
-separate. The owner has now run the iPhone installed PWA and supplied a Windows
-0.1.0 report. Kit 0.1.1 recovery/admission fixes passed hosted checks; an updated
-owner run is needed for real Hello and iPhone Files/hash/restart acceptance.
-P03 proceeds independently; no complete P01/G1 result is inferred. Single-EXE/static-ZIP device runbooks
+separate. Owner supplied 0.1.1 Windows and physical Safari logs: positive
+Hello/fresh-process authentication/cancellation/cleanup PASS, and owner-confirmed
+Windows lock screen with STALE rejection. Native event attribution is added in
+0.1.2. Phone local checks and diagnostic recovery PASS; the owner selected JSON/
+another file, so actual .bin Files hash and installed-PWA acceptance stay OPEN.
+0.1.2 improves selection/retry and previous-report recovery; no repeated full
+trial is required when that diagnostic record is available. P03 proceeds
+independently; no complete P01/G1 result is inferred. Single-EXE/static-ZIP device runbooks
 and the unfilled template are in P01_OWNER_TRIALS.md. The static ZIP requires
 only a trusted existing HTTPS web directory, not Node/PHP or a new certificate. No repeated OS/model
 questions, remote access, device actions or HTTPS deployment are assumed.

@@ -112,3 +112,14 @@ stays false until security gates are resolved. The owner's 0.1.0 API 9/build
 proofs are changed or inferred from route availability. Hosted mode still never
 enrolls/unlocks; actual enrollment and fresh-process authenticated unlock retain
 all native checks, original errors and exact journal-based cleanup.
+
+### Session-lock interpretation (0.1.2)
+
+A Windows sign-in fingerprint/PIN prompt after Win+L is expected. Native test
+STALE rejects the old authorization, but timeout/window close/suspend can also
+produce STALE. New operation reports include lifecycle WTS lock/unlock, suspend
+and owner-close counts; guided lock PASS requires a lock event plus failed
+STALE unlock. The internal FINISHED window teardown is not an owner-close or
+lock event. Prompt timing is still observed by the owner; all provider/security
+checks and native cancellation watcher are preserved. Older 0.1.1 owner results
+and clarifications are archived with their actual scope.

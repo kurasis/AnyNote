@@ -1,0 +1,148 @@
+{
+  "capability": {
+    "exit_code": 0,
+    "operation": "capabilities",
+    "report": {
+      "native_objects_created": false,
+      "physical_acceptance": false,
+      "report": {
+        "algorithm": "webauthn-prf-aes256gcm",
+        "checks": [
+          {
+            "status": "passed",
+            "test": "webauthn-load"
+          },
+          {
+            "status": "passed",
+            "test": "webauthn-api"
+          },
+          {
+            "status": "passed",
+            "test": "hello-platform"
+          },
+          {
+            "status": "passed",
+            "test": "hello-route"
+          }
+        ],
+        "eligible": false,
+        "enrolled": false,
+        "outcome": "webauthn-capability-observed",
+        "purpose": "webauthn-prf-capability",
+        "remaining": [
+          "per-key-tpm-proof",
+          "fresh-authorization-proof",
+          "fresh-process-proof",
+          "account-machine-copy-proof"
+        ],
+        "unlocked": false,
+        "version": 1,
+        "webauthn": {
+          "apiVersion": 9,
+          "helloCandidates": 1,
+          "helloLocked": false,
+          "osBuild": 26200,
+          "platformAvailable": true,
+          "routing": "display-name-candidate",
+          "tpmBinding": "not-verified"
+        }
+      },
+      "source_commit": "f92dcb4eda58c6ce164728a378699f93adef572b",
+      "status": "CAPABILITY_ONLY",
+      "trial_route_available": true
+    }
+  },
+  "environment_kind": "owner_device",
+  "executable_sha256": "8aca6b9184d18a228a292ac44c3616568caff4d57d009526bd269d210b0bf218",
+  "guided_cancel": {
+    "instruction": "Owner requested to cancel the next prompt",
+    "physical_cancel_classification": "Only explicit HELLO_CANCELLED is cancellation",
+    "status": "PASS_NATIVE_CANCELLED"
+  },
+  "guided_lock": {
+    "status": "PASS_STALE_REJECTED"
+  },
+  "license": "GPL-3.0-only; corresponding source and license accompany the GitHub test release",
+  "local_checks": {
+    "cleaned_orphans": 0,
+    "crypto": {
+      "checks": 51,
+      "scope": "Frozen XChaCha20-Poly1305 corpora and three public 64 MiB Argon2id vectors",
+      "status": "PASS"
+    },
+    "file": {
+      "bytes": 1000000000,
+      "chunks": 120,
+      "memory": "NOT MEASURED",
+      "sha256": "86c83d5e1bbcc0f9a8591d2e0c0345dd2dded2e31239b160dc01cf89c49dc6f7",
+      "status": "PASS",
+      "transport": "Local disk ciphertext only; network and WebView2 not tested"
+    },
+    "status": "PASS",
+    "synthetic_disk_cleanup": "PASS"
+  },
+  "operations": [
+    {
+      "exit_code": 0,
+      "operation": "enroll",
+      "report": {
+        "fresh_unlock": "NOT RUN; use a new process with unlock",
+        "mode": "remember6",
+        "physical_acceptance": false,
+        "status": "PASS_SYNTHETIC_ENROLLMENT"
+      }
+    },
+    {
+      "exit_code": 0,
+      "operation": "unlock",
+      "report": {
+        "actual_vault_authenticated": true,
+        "fresh_prf_and_exact_tpm_reopen": true,
+        "physical_acceptance": false,
+        "status": "PASS_SYNTHETIC_UNLOCK"
+      }
+    },
+    {
+      "exit_code": 1,
+      "operation": "unlock",
+      "report": {
+        "cleanup": "Run cleanup; a retained journal must not be discarded",
+        "code": "HELLO_CANCELLED",
+        "physical_acceptance": false,
+        "status": "FAIL_OR_UNAVAILABLE"
+      }
+    },
+    {
+      "exit_code": 1,
+      "operation": "unlock",
+      "report": {
+        "cleanup": "Run cleanup; a retained journal must not be discarded",
+        "code": "STALE",
+        "physical_acceptance": false,
+        "status": "FAIL_OR_UNAVAILABLE"
+      }
+    },
+    {
+      "exit_code": 0,
+      "operation": "cleanup",
+      "report": {
+        "exact_owned_objects_deleted": true,
+        "physical_acceptance": false,
+        "status": "PASS"
+      }
+    }
+  ],
+  "physical_acceptance": false,
+  "purpose": "AnyNote P01 synthetic device kit",
+  "remaining": [
+    "Real lock/suspend with a pending prompt",
+    "TPM/provider changes",
+    "Other-account denial",
+    "Windows file/memory/WebView2 integration"
+  ],
+  "source_commit": "f92dcb4eda58c6ce164728a378699f93adef572b",
+  "status": "PASS_SYNTHETIC_FRESH_PROCESS_UNLOCK",
+  "timestamp_unix_ms": 1791654198357,
+  "trial_route_available": true,
+  "version": 1
+}

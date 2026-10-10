@@ -279,3 +279,20 @@ trials. Recovery cleanup requires an exclusive Web Lock and exact purpose marker
 Use a new static subdirectory when replacing an old installed kit to avoid its
 service-worker cache without clearing retained site evidence. No production
 unlocked/transfer resume or physical durability guarantee follows.
+
+ADR-006 second owner-feedback addendum (0.1.2): distinguish Windows OS sign-in
+from the cancelled old test authorization. STALE can also mean timeout/close/
+suspend and alone is insufficient evidence for a session-lock PASS. Record
+content-free WTS and owned-window events in each fresh subprocess; require an
+observed WTS lock plus failed STALE unlock. Keep owner-confirmed earlier results
+separate from new instrumentation. Native cancellation/security imports stay
+unchanged; no automatic system locking, policy changes or Hello reset is added.
+
+Treat wrong selected Files bytes as a retryable diagnostic failure. Show .bin
+sample versus .json log explicitly and retain source checks/digest. Record sizes,
+not selected personal names. Permit recovery from the single documented sibling
+0.1.1 diagnostic key on the same origin/storage; preserve that original key,
+never enumerate arbitrary application storage or restore keys/handles. Safari
+and installed-PWA results remain distinct; private origin is redacted before
+archiving an owner-supplied report. No protocol/dependency/version-resolution
+change or broader physical acceptance follows.

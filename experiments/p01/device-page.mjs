@@ -4,6 +4,8 @@ const saveButton=document.querySelector('#save-report'),newButton=document.query
 const worker=new Worker(new URL('./device-worker.js',import.meta.url),{type:'module'});
 let pending,stage='run',report,prepared,sharing=false,releaseSession,lastPhase,writable=true;
 const BUILD=__DEVICE_BUILD__,KEY=checkpointKey(location.pathname);
+// Upgrade recovery reads only the documented sibling kit's diagnostic key, never other site data.
+const PREVIOUS_KEY=checkpointKey(new URL('../anynote-p01-v011/',location.href).pathname);
 function show(text){output.textContent=text;}
 function renderReport(){saveButton.hidden=!report;reportText.value=report?JSON.stringify(report,null,2):'';}
 function checkpoint(next=sharing?'handoff':stage){
@@ -57,6 +59,7 @@ async function run(){
     const held=new Promise(resolve=>{releaseSession=resolve;});
     try{
       const result=await call({kind:'run'});report=attachEnvironment(result.report);prepared=result;
+      report.synthetic_export_name=result.file.name;
       if(!navigator.share||!navigator.canShare?.({files:[result.file]})){
         report.files_destination='BLOCKED: Web Share of the verified disk File unavailable';
         await call({kind:'cleanup'});prepared=null;
@@ -65,7 +68,7 @@ async function run(){
         stage='share';
         if(!checkpoint())throw new Error('Cannot safely open Files without a saved diagnostic checkpoint');
         button.disabled=false;button.textContent='Save 1 GB to Files';
-        show('Automatic local checks passed. Report saved on this device.\nTap the same button, choose “Save to Files”, and save the sample.\nIf the app restarts, reopen it to verify the saved sample or save the report.');
+        show(`Automatic local checks passed. Report saved on this device.\nTap the same button, choose “Save to Files”, and save ${report.synthetic_export_name} (1 GB).\nNext choose that .bin sample, not the JSON report.\nIf the app restarts, reopen it to verify the saved sample or save the report.`);
       }
     }catch(error){
       if(prepared){try{await call({kind:'cleanup'});report.temporary_export_cleanup='PASS';}
@@ -94,7 +97,7 @@ button.addEventListener('click',async()=>{
       try{await call({kind:'cleanup'});report.temporary_export_cleanup='PASS';}
       catch{report.temporary_export_cleanup='FAIL: reopen to clean marked files';}
       prepared=null;sharing=false;
-      if(shared){offerVerification('Choose the exact sample you saved in Files. The page reads it in 8 MiB parts and compares size and SHA-256.');releaseSession?.();releaseSession=null;}
+      if(shared){offerVerification('Choose the saved synthetic-export-….bin sample (1 GB), NOT the JSON report. The page compares its exact size and SHA-256. You can choose again if you select the wrong file.');releaseSession?.();releaseSession=null;}
       else finish(shareError);
     }
   }else if(stage==='verify'){
@@ -105,16 +108,18 @@ saveButton.addEventListener('click',downloadReport);
 newButton.addEventListener('click',()=>{if(!pending&&!sharing)run();});
 input.addEventListener('change',async()=>{
   const file=input.files[0];if(!file)return;
-  button.disabled=true;stage='verifying';checkpoint();
+  button.disabled=true;stage='verifying';
+  report.files_destination={status:'IN PROGRESS',selected_bytes:file.size,expected_bytes:1000000000};checkpoint();
   try{
     const expected=savedOutputExpected(report);
     if(!expected)throw new Error('No verified synthetic output digest in the retained report');
     const {result}=await call({kind:'verify-file',file});
     if(result.sha256!==expected.sha256)throw new Error('Saved Files output digest mismatch');
-    report.files_destination={status:'PASS_SELECTED_OUTPUT_HASH',...result,
+    report.files_destination={status:'PASS_SELECTED_OUTPUT_HASH',...result,selected_bytes:file.size,expected_bytes:1000000000,
       limitation:'Owner selected a file after sharing; destination provenance and device memory need physical review'};
     finish('Saved output: exact 1 GB size and SHA-256 match.\nTap “Save report” and send the JSON back. Physical acceptance remains open.');
-  }catch(error){report.files_destination={status:'FAIL',error:error.message};finish(`Files verification failed: ${error.message}\nSave the report.`);}
+  }catch(error){report.files_destination={status:'FAIL',error:error.message,selected_bytes:file.size,expected_bytes:1000000000};
+    offerVerification(`Selected file: ${file.size.toLocaleString('en-US')} bytes. Expected: 1,000,000,000 bytes.\nVerification failed: ${error.message}\nChoose the saved synthetic-export-….bin sample, not anynote-p01-device-report.json. Tap again to select the right file; no automatic rerun is needed. You can save the current report below.`);}
   finally{input.value='';}
 });
 function hide(){
@@ -129,21 +134,24 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)hide();});
 addEventListener('pagehide',hide);
 async function recover(){
   button.disabled=true;
-  let stored;
-  try{stored=readCheckpoint(localStorage,KEY);}
+  let stored,previousPath=false;
+  try{stored=readCheckpoint(localStorage,KEY);
+    if(!stored&&PREVIOUS_KEY!==KEY){stored=readCheckpoint(localStorage,PREVIOUS_KEY);previousPath=!!stored;}}
   catch{show('Saved diagnostics cannot be read. No automatic test was restarted. Start a new trial when ready.');button.disabled=false;return;}
   if(!stored){button.disabled=false;return;}
   report=stored.report;renderReport();
   report.recovery={status:'RESTORED_DIAGNOSTICS_ONLY',previous_stage:stored.stage,
-    loaded_build:BUILD,restored_at:new Date().toISOString(),keys_restored:false};
+    loaded_build:BUILD,restored_at:new Date().toISOString(),keys_restored:false,
+    previous_kit_path:previousPath?'Documented sibling anynote-p01-v011/':null};
   if(!navigator.locks){finish('Retained report restored. Automatic cleanup unavailable; save the report.');return;}
   await navigator.locks.request('anynote-p01-device-kit',{ifAvailable:true},async(lock)=>{
     if(!lock){writable=false;stage='report';button.disabled=false;button.textContent='Save report';show('Retained report shown. Another tab owns the active trial; close it and reopen to recover safely.');return;}
     try{await call({kind:'cleanup-orphans'});report.temporary_export_cleanup='PASS';}
     catch{report.temporary_export_cleanup='FAIL: marked cleanup unavailable';}
-    if(['handoff','verify','verifying'].includes(stored.stage)&&savedOutputExpected(report)){
+    if((['handoff','verify','verifying'].includes(stored.stage)
+      ||stored.stage==='report'&&report.files_destination?.status==='FAIL')&&savedOutputExpected(report)){
       if(stored.stage==='handoff')report.share='OUTCOME_UNKNOWN_AFTER_RESTART: verify the saved file; no share success inferred';
-      offerVerification('Previous report restored after the app restarted.\nSelect the sample already saved in Files to verify it. You can also save the report now. No automatic 1 GB rerun is needed.');
+      offerVerification('Previous report restored.\nSelect the saved synthetic-export-….bin sample (1 GB), not the JSON report. You can select again after a mistake, or save the current report below. No automatic 1 GB rerun is needed.');
     }else{
       if(stored.stage==='run'){report.status='INTERRUPTED';report.error='Page restarted during automatic checks; no active keys or operation resumed';}
       if(stored.stage==='share')report.files_destination='NOT RUN: page restarted before a recorded OS handoff';

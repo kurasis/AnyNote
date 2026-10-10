@@ -1,13 +1,13 @@
 # One-file owner device trials
 
 The owner requested one Windows executable and one ready-to-upload iPhone ZIP.
-Use the [P01 test release](https://github.com/kurasis/AnyNote/releases/tag/v0.1.1-p01-device-kit).
+Use the [P01 test release](https://github.com/kurasis/AnyNote/releases/tag/v0.1.2-p01-device-kit).
 These are unsigned synthetic experiments, not a production release or installer.
 No real accounts, secrets, passwords, vaults or administrator access are needed.
 
 ## Windows
 
-Download [AnyNote-P01-Windows-x64.exe](https://github.com/kurasis/AnyNote/releases/download/v0.1.1-p01-device-kit/AnyNote-P01-Windows-x64.exe) and double-click it.
+Download [AnyNote-P01-Windows-x64.exe](https://github.com/kurasis/AnyNote/releases/download/v0.1.2-p01-device-kit/AnyNote-P01-Windows-x64.exe) and double-click it.
 Press OK to start. Crypto, public 64 MiB Argon2id and an exact 1 GB local disk
 round-trip run automatically. Keep about 3.1 GB free on the system drive.
 
@@ -36,10 +36,10 @@ links exact corresponding source. Advanced developer commands remain in the
 
 ## iPhone
 
-Download [AnyNote-P01-iPhone.zip](https://github.com/kurasis/AnyNote/releases/download/v0.1.1-p01-device-kit/AnyNote-P01-iPhone.zip).
-Unzip its **contents** into the test site's web root under `anynote-p01/`:
-`<web-root>/anynote-p01/index.html` must exist. No extra nested ZIP directory.
-Open `https://YOUR-TEST-SITE/anynote-p01/` in Safari on the iPhone. The existing
+Download [AnyNote-P01-iPhone.zip](https://github.com/kurasis/AnyNote/releases/download/v0.1.2-p01-device-kit/AnyNote-P01-iPhone.zip).
+Unzip its **contents** into the test site's web root under `anynote-p01-v012/`:
+`<web-root>/anynote-p01-v012/index.html` must exist. No extra nested ZIP directory.
+Open `https://YOUR-TEST-SITE/anynote-p01-v012/` in Safari on the iPhone. The existing
 HTTPS certificate must already be trusted by that phone. No Node.js, PHP,
 database, external libraries or new certificate setup is required.
 
@@ -79,28 +79,40 @@ Share mocks are UI integration evidence only. No kit result automatically
 closes P01/G1 or establishes production acceptance. The original
 [physical template](evidence/p01-physical-template.json) remains unfilled.
 
-## Recovery and updating from 0.1.0
+## Retained diagnostics
 
-For an existing 0.1.0 installation, upload this ZIP into a **new directory**,
-`<web-root>/anynote-p01-v011/`, and open
-`https://YOUR-TEST-SITE/anynote-p01-v011/`. Add that address to Home Screen and
-open the new app. Its page displays **Test kit 0.1.1**. This avoids the old
-installed service-worker cache; no site-data deletion is required. All assets
-and manifest paths also work at this new location.
+The kit saves a small diagnostic report before the system Files handoff. Reopen
+the same app/address after a restart to verify the sample already saved, or use
+**Save report now**. Copyable report text is also available. A terminated 0.1.0
+memory-only report cannot be reconstructed. Clearing/evicting site storage still
+removes diagnostics. **Run a new trial** explicitly replaces the last record.
 
-A 0.1.0 report lost on page termination was never persisted and cannot be
-reconstructed. Repeat the automatic trial once with 0.1.1. The new kit saves
-only a small diagnostic report before opening Files. If the app restarts,
-reopen the **same new app/address**: it offers verification of the sample already
-saved in Files, without another 1 GB automatic run. The share outcome after
-termination is UNKNOWN until selected bytes are checked; no keys or file handles
-are restored. Marked temporary files are cleaned under an exclusive trial lock.
+## 0.1.2: lock evidence and wrong-file retry
 
-**Save report now** is available on intermediate/failure/recovered steps.
-The report text is also shown for selection/copy if the system download UI is
-unavailable. Saving the report can restart the PWA without losing that retained
-report. **Run a new trial** explicitly replaces the last diagnostic record.
-Storage eviction/site-data clearing still removes it; denied storage blocks a
-new automatic trial before opening any system sheet. Keep the same site/path
-and installation while recovering a report. Other physical lifecycle/transfer
-acceptance remains open.
+Use `<web-root>/anynote-p01-v012/` for this update and open its URL. The page
+must show **Test kit 0.1.2**. Add/open that address from Home Screen for the
+installed-PWA trial; a Safari-tab report with `installed_pwa=false` remains a
+browser result. Keep the earlier report and sample; no site-data clearing.
+
+When checking Files, choose **synthetic-export-….bin**, exactly
+1,000,000,000 bytes. Do not choose `anynote-p01-device-report.json`: that small
+file is the log to send back. A wrong size/hash remains FAIL, but the primary
+button allows another selection without regenerating the sample. The report
+records selected and expected sizes, never the selected personal filename.
+
+If the earlier report was retained in the documented sibling
+`anynote-p01-v011/` on the **same origin/browser storage**, 0.1.2 copies that
+one known diagnostic checkpoint to its own path and offers another sample
+selection, including old report-stage failures. The old checkpoint is preserved.
+Other site storage keys are never scanned. Different origins, cleared/evicted
+storage or separate Safari/PWA stores cannot supply that record; run a fresh
+trial only when no report is restored. No live keys/file handles are restored.
+
+Windows Win+L should show the Windows lock/sign-in screen. A fingerprint/PIN
+request for **Windows sign-in** is expected after locking. The old test request
+must be rejected as STALE. The newer EXE records native WTS lock/unlock, suspend
+and owner-window-close counters. Guided lock PASS now requires the actual
+recorded WTS lock event plus failed STALE unlock, rather than STALE alone. The
+owner still needs to observe that the prompt was pending; no full negative
+matrix or physical acceptance is inferred. The 0.1.1 owner already confirmed
+the lock screen appeared; its positive Hello/cancel/cleanup findings are retained.

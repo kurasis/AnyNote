@@ -74,6 +74,16 @@ try{
   assert.deepEqual(JSON.parse(await readFile(join(scratch,'recovered-report.json'),'utf8')),recovered);
   // Saving the diagnostic report must also survive the next app reopening.
   await page.reload();await page.waitForFunction(()=>deviceP01.stage==='verify');
+  // Use the real activated picker path, choose a tiny JSON, then recover and retry the same output.
+  const chooserPromise=page.waitForEvent('filechooser');await page.locator('#start').click();
+  await(await chooserPromise).setFiles({name:'wrong-report.json',mimeType:'application/json',buffer:Buffer.from('wrong')});
+  await page.waitForFunction(()=>deviceP01.stage==='verify'&&deviceP01.report.files_destination?.status==='FAIL');
+  const wrongSelection=await page.evaluate(()=>deviceP01.report);
+  assert.equal(wrongSelection.files_destination.selected_bytes,5);
+  assert.equal(wrongSelection.files_destination.expected_bytes,1000000000);
+  assert.deepEqual(wrongSelection.files,automatic.files);
+  await page.reload();await page.waitForFunction(()=>deviceP01.stage==='verify');
+  assert.equal((await page.evaluate(()=>deviceP01.report)).files_destination.status,'FAIL');
   await page.evaluate(async()=>{
     const worker=new Worker('./test-share-worker.js',{type:'module'});
     const file=await new Promise((resolve,reject)=>{
@@ -98,15 +108,18 @@ try{
   assert.deepEqual(JSON.parse(await readFile(join(scratch,'report.json'),'utf8')),result);
   await page.reload();await page.waitForFunction(()=>deviceP01.stage==='report');
   assert.equal((await page.evaluate(()=>deviceP01.report)).files_destination.status,'PASS_SELECTED_OUTPUT_HASH');
-  await page.evaluate(()=>{
-    const input=document.querySelector('#saved-file'),files=new DataTransfer();
-    files.items.add(new File(['wrong'],'small-synthetic.bin'));input.files=files.files;input.dispatchEvent(new Event('change'));
-  });
-  await page.waitForFunction(()=>deviceP01.report.files_destination.status==='FAIL');
-  await page.reload();await page.waitForFunction(()=>deviceP01.stage==='report');
+  // Reproduce the owner's legacy 0.1.1 report-stage failure and migrate its exact known key.
+  await page.evaluate((report)=>{
+    const key=`anynote-p01-report-v1:${location.pathname}`;
+    const old=`anynote-p01-report-v1:${new URL('../anynote-p01-v011/',location.href).pathname}`;
+    localStorage.setItem(old,JSON.stringify({version:1,stage:'report',report}));localStorage.removeItem(key);
+  },wrongSelection);
+  await page.reload();await page.waitForFunction(()=>deviceP01.stage==='verify');
   const failed=await page.evaluate(()=>deviceP01.report);
   assert.equal(failed.files_destination.status,'FAIL');
   assert.deepEqual(failed.files,automatic.files);
+  assert.equal(failed.recovery.previous_stage,'report');
+  assert.equal(failed.recovery.previous_kit_path,'Documented sibling anynote-p01-v011/');
   // An interrupted automatic run has diagnostics, never an implicit 1 GB restart or unlocked resume.
   await page.evaluate(()=>{
     const key=`anynote-p01-report-v1:${location.pathname}`,value=JSON.parse(localStorage.getItem(key));
@@ -118,7 +131,10 @@ try{
   await page.evaluate(()=>localStorage.setItem(`anynote-p01-report-v1:${location.pathname}`,'{bad'));
   await page.reload();await page.waitForFunction(()=>!document.querySelector('#start').disabled);
   assert.equal(await page.evaluate(()=>deviceP01.report),undefined);
-  await page.evaluate(()=>localStorage.removeItem(`anynote-p01-report-v1:${location.pathname}`));
+  await page.evaluate(()=>{
+    localStorage.removeItem(`anynote-p01-report-v1:${location.pathname}`);
+    localStorage.removeItem(`anynote-p01-report-v1:${new URL('../anynote-p01-v011/',location.href).pathname}`);
+  });
   await page.addInitScript(()=>{
     const original=Storage.prototype.setItem;
     Storage.prototype.setItem=function(key,value){if(key.startsWith('anynote-p01-report-v1:'))throw new DOMException('Denied','QuotaExceededError');return original.call(this,key,value);};
@@ -131,6 +147,7 @@ try{
   Object.assign(record,{status:'PASS',browser:context.browser().version(),automatic_and_mocked_share_result:result,
     pending_share_page_destroyed_and_report_restored:true,restored_selected_output_hash:true,
     report_download_restart_retained:true,failed_report_retained:true,interrupted_run_not_restarted:true,
+    wrong_json_size_recorded:true,wrong_json_retry_after_reload:true,legacy_failed_report_offers_retry:true,
     malformed_checkpoint_rejected:true,denied_checkpoint_blocks_before_work:true,
     wrong_selected_length_rejected:true,downloaded_report_matches:true,owned_export_directories_remaining:0,
     nested_path:'/nested/anynote-p01/',secure_context:'Trustworthy loopback, not a phone HTTPS origin'});

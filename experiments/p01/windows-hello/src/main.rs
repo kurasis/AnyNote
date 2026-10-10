@@ -11,6 +11,8 @@ mod local_checks;
 mod probe;
 mod storage;
 #[cfg_attr(not(windows), allow(dead_code))]
+mod trial_lifecycle;
+#[cfg_attr(not(windows), allow(dead_code))]
 mod trial_route;
 
 fn main() {

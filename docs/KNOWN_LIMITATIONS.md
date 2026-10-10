@@ -63,3 +63,16 @@
   0.1.1 persists diagnostics before handoff and survives hosted page destruction,
   but origin eviction/clearing or denied storage can still remove/prevent them.
   Real updated iPhone Files/hash/restart and process-memory acceptance remain OPEN.
+
+- Owner 0.1.1 Windows report now supplies positive enrollment/fresh-process
+  authenticated PRF/TPM unlock, native cancellation and cleanup. Win+L lock
+  screen is owner-confirmed with native STALE rejection, but the old report
+  cannot attribute STALE using actual event counters. New instrumentation
+  requires a WTS lock event as well; prompt timing still needs observation.
+- Owner 0.1.1 iPhone report confirms physical Safari local checks and diagnostic
+  recovery, not installed-PWA or actual Files byte/hash acceptance. Wrong
+  selected size is explained by the owner's JSON/other-file selection; the .bin
+  was not verified. Do not infer corruption or an OS save failure from this.
+- Same-origin prior-report migration reads only the documented v011 sibling
+  key. A different path/origin, eviction or separate browser/PWA storage may
+  prevent recovery. Retry does not turn a mismatched file into a success.
