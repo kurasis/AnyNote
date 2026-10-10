@@ -10,6 +10,10 @@ on:
         description: Generate initial public synthetic fixtures for review
         type: boolean
         default: false
+      publish_device_kit:
+        description: Publish the already verified P01 device kit (no rebuild or production deployment)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -19,7 +23,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  publish-device-kit:
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_device_kit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: kurasis/AnyNote
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - name: Verify source, successful CI and downloaded asset receipts, then publish test artifacts
+        run: python3 scripts/publish-p01-device-kit.py
+
   static-device-kit:
+    if: github.event_name != 'workflow_dispatch' || !inputs.publish_device_kit
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     env:
@@ -54,6 +76,7 @@ jobs:
           retention-days: 14
 
   linux-native-browser:
+    if: github.event_name != 'workflow_dispatch' || !inputs.publish_device_kit
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -102,6 +125,7 @@ jobs:
           retention-days: 14
 
   windows-provider:
+    if: github.event_name != 'workflow_dispatch' || !inputs.publish_device_kit
     runs-on: windows-2025
     timeout-minutes: 15
     env:

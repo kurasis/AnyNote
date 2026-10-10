@@ -257,3 +257,11 @@ Physical acceptance stays false; host mocks, public KDF heap measurements and
 selected-output hashes retain their exact scope. Test artifacts may be
 published as an unsigned GitHub prerelease with exact corresponding source,
 asset receipts and scoped licenses; this is not production release/deployment.
+
+ADR-006 publication transport addendum: the cloud's injected GitHub credential
+received HTTP 401 at uploads.github.com after successful repository API/merge
+actions. Use a workflow_dispatch-only publication job with contents:write and
+actions:read instead of requesting an owner's secret or retrying unchanged
+credentials. Publish only frozen already successful synthetic artifacts;
+revalidate source/runtime/hash/ZIP receipts and downloaded release bytes.
+Refuse existing-release overwrite and preserve the exact build-source tag.

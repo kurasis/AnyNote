@@ -323,3 +323,24 @@ share cleanup still held the worker request. The overall run was subsequently
 cancelled by the next push, not counted as a full pass. The corrected UI keeps
 the action disabled until cleanup finishes; the repeat at 4629afe passed.
 No assertion was weakened and no browser sandbox was disabled.
+
+### Final kit verification and publication transport
+
+Final source `5a09852b15f863de297a1ac4965c417d580df80d` passed all three
+feasibility jobs in
+[run 38068299281](https://github.com/kurasis/AnyNote/actions/runs/38068299281)
+and baseline
+[run 38068299240](https://github.com/kurasis/AnyNote/actions/runs/38068299240).
+PR #4 merged to `4dd38864787ecf30c3758de0b300a0b8967c7c75`; its source tree
+was compared equal to the tested head. Final downloaded Windows EXE SHA-256:
+`6e4902fdcee70ae55808b85afc3e96330f5c5a8a87f286bc915b9f6c5d462975`;
+iPhone ZIP:
+`e0d35cd1111bd9a6f1995bc47e2e6be367bbdbfc4ba68e6b0f1f227e84942d7a`.
+Runtime source/hash, ZIP CRC and all asset receipts matched after download.
+Microsoft dumpbin observed only system DLLs, no VC runtime or sodium DLL.
+
+The cloud release-upload attempt failed with HTTP 401 at uploads.github.com;
+subsequent API listing confirmed no retained release or tag. This was not a
+CI/build/physical failure. A guarded Actions publisher now uses its own job
+token and verifies actual published bytes/tag. Its execution is pending in
+this initial source snapshot; no upload success is inferred from preparation.
