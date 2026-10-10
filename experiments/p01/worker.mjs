@@ -9,23 +9,30 @@ async function roundtrip(length) {
   const count = Math.ceil(length / CHUNK);
   const inputHash = sodium.crypto_hash_sha256_init(), outputHash = sodium.crypto_hash_sha256_init();
   let transferred = 0;
+  const timings = { random_ms: 0, crypto_ms: 0, upload_ms: 0, download_ms: 0, verify_ms: 0 };
   for (let index = 0; index < count; index++) {
     const part = Math.min(CHUNK, length - index * CHUNK);
+    let before = performance.now();
     const source = sodium.randombytes_buf(part); // CSPRNG-generated incompressible synthetic stream.
+    timings.random_ms += performance.now() - before; before = performance.now();
     sodium.crypto_hash_sha256_update(inputHash, source);
     const nonce = new Uint8Array(24); nonce.set(prefix); new DataView(nonce.buffer).setBigUint64(16, BigInt(index), true);
     const aad = sodium.from_string(`anynote/p01/browser-file-only/${index}/${count}/${part}`);
     const encrypted = sodium.crypto_aead_xchacha20poly1305_ietf_encrypt(source, aad, null, nonce, key);
     const digest = sodium.crypto_hash_sha256(encrypted);
+    timings.crypto_ms += performance.now() - before; before = performance.now();
     const uploaded = await fetch(`/ciphertext/${index}`, { method: 'PUT', body: encrypted });
     if (!uploaded.ok) throw new Error(`Upload failed: ${uploaded.status}`);
+    timings.upload_ms += performance.now() - before; before = performance.now();
     const downloaded = await fetch(`/ciphertext/${index}`, { cache: 'no-store' });
     if (!downloaded.ok) throw new Error(`Download failed: ${downloaded.status}`);
     const ciphertext = new Uint8Array(await downloaded.arrayBuffer()); // One bounded chunk, never the full file.
+    timings.download_ms += performance.now() - before; before = performance.now();
     if (ciphertext.length !== part + 16 || !sodium.memcmp(sodium.crypto_hash_sha256(ciphertext), digest)) throw new Error('Ciphertext inventory mismatch');
     const plaintext = sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null, ciphertext, aad, nonce, key);
     if (!sodium.memcmp(plaintext, source)) throw new Error('Decrypted chunk mismatch');
     sodium.crypto_hash_sha256_update(outputHash, plaintext);
+    timings.verify_ms += performance.now() - before;
     transferred += encrypted.length;
     postMessage({ kind: 'progress', index, count });
   }
@@ -35,6 +42,7 @@ async function roundtrip(length) {
   return { mode: 'chromium-worker-loopback-roundtrip', plaintext_bytes: length, chunks: count,
     ciphertext_bytes: transferred, sha256: sodium.to_hex(sourceHash), elapsed_ms: Math.round(performance.now() - started),
     sodium_version: sodium.sodium_version_string(),
+    timings_ms: Object.fromEntries(Object.entries(timings).map(([name, value]) => [name, Math.round(value)])),
     limitation: 'synthetic generated stream through local ciphertext-only HTTP; no iPhone, file picker, manifest, resume or Files export acceptance' };
 }
 

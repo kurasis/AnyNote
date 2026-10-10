@@ -163,10 +163,11 @@ try {
   browser = await chromium.launch({ executablePath: await executable(), headless: true, chromiumSandbox: true });
   results.browser_version = browser.version();
   const context = await browser.newContext();
-  await context.route('**/*', async (route) => {
-    if (new URL(route.request().url()).origin !== transport.origin) {
-      externalRequests.push(route.request().url()); await route.abort();
-    } else await route.continue();
+  // Do not intercept binary PUT bodies through CDP: it creates large artificial
+  // copies and distorts the bounded-transfer experiment. CSP restricts all
+  // script/worker/connect sources to this origin; observe URLs without body reads.
+  context.on('request', (request) => {
+    if (new URL(request.url()).origin !== transport.origin) externalRequests.push(request.url());
   });
   const page = await context.newPage();
   page.on('pageerror', (error) => pageErrors.push(String(error)));

@@ -49,7 +49,7 @@ jobs:
           source scripts/runtime-env.sh
           cd experiments/p01
           if [[ "$RECORD_FIXTURES" == true ]]; then
-            node run.mjs --large --write-fixtures
+            node run.mjs --write-fixtures
           else
             npm run test:large
           fi
