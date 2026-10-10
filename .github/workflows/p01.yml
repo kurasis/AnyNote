@@ -42,6 +42,9 @@ jobs:
           cargo fmt --manifest-path experiments/p01/native/Cargo.toml --check
           cargo clippy --manifest-path experiments/p01/native/Cargo.toml --locked --release -j 4 -- -D warnings
           cargo test --manifest-path experiments/p01/native/Cargo.toml --locked --release -j 4
+          cargo fmt --manifest-path experiments/p01/windows-hello/Cargo.toml --check
+          cargo clippy --manifest-path experiments/p01/windows-hello/Cargo.toml --locked --all-targets -j 4 -- -D warnings
+          cargo test --manifest-path experiments/p01/windows-hello/Cargo.toml --locked -j 4
       - name: Rust / Node / real Chromium worker and decimal 1 GB
         env:
           RECORD_FIXTURES: ${{ inputs.record_fixtures || false }}
@@ -61,5 +64,52 @@ jobs:
           path: |
             experiments/p01/artifacts/*.json
             experiments/p01/fixtures/*.json
+          if-no-files-found: error
+          retention-days: 14
+
+  windows-provider:
+    runs-on: windows-2025
+    timeout-minutes: 15
+    env:
+      ANYNOTE_PROBE_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+    defaults:
+      run:
+        working-directory: experiments/p01/windows-hello
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+      - name: Install pinned MSVC Rust toolchain
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal --component clippy,rustfmt
+          rustup override set 1.99.0
+      - name: Independent Microsoft C-header ABI measurements
+        run: ./tests/hello/webauthn-layout.ps1
+      - name: Build native provider, regression tests and explicit ABI gate
+        run: |
+          cargo fmt --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo clippy --locked --all-targets -- -D warnings
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --locked
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --locked generated_layout_matches_the_pinned_microsoft_c_header -- --ignored
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo build --locked --release
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Capability-only runtime observation (no native objects created)
+        run: |
+          New-Item -ItemType Directory -Force artifacts | Out-Null
+          & ./target/release/anynote-p01-windows-hello.exe capabilities | Out-File artifacts/capabilities.json -Encoding utf8
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Get-FileHash target/release/anynote-p01-windows-hello.exe -Algorithm SHA256 | Format-List | Out-File artifacts/executable-sha256.txt
+      - name: Preserve unsigned synthetic probe and actual capability evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: p01-windows-synthetic-probe
+          path: |
+            experiments/p01/windows-hello/target/release/anynote-p01-windows-hello.exe
+            experiments/p01/windows-hello/artifacts/*
           if-no-files-found: error
           retention-days: 14

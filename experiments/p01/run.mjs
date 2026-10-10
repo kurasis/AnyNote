@@ -1,16 +1,15 @@
 // Runs real native/Node/browser-worker adapters. No production data or service.
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { createServer } from 'node:http';
-import { createReadStream, createWriteStream } from 'node:fs';
 import { access, mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { resolve, join } from 'node:path';
-import { pipeline } from 'node:stream/promises';
-import { Transform } from 'node:stream';
 import { chromium } from 'playwright-core';
 import { emitFixture, verifyFixture, sodium } from './crypto.mjs';
 import './build.mjs';
+import { checkLocalUnlock } from './unlock-checks.mjs';
+import { serve } from './transport.mjs';
+import { checkSelectedFiles } from './physical-checks.mjs';
 
 const large = process.argv.includes('--large');
 const updateFixtures = process.argv.includes('--write-fixtures');
@@ -44,50 +43,6 @@ async function executable() {
     '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].filter(Boolean);
   for (const path of candidates) { try { await access(path); return path; } catch {} }
   throw new Error('A real Chromium/Chrome executable is required; set CHROMIUM_EXECUTABLE');
-}
-
-async function serve() {
-  const directory = join(scratch, 'ciphertext'); await mkdir(directory);
-  let uploadedBytes = 0, downloadedBytes = 0;
-  const assets = new Map([['/', ['index.html', 'text/html']], ['/page.js', ['page.js', 'text/javascript']], ['/worker.js', ['worker.js', 'text/javascript']]]);
-  const server = createServer((req, res) => {
-    res.setHeader('Cache-Control', 'no-store');
-    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-    res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
-    res.setHeader('Content-Security-Policy', "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'");
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    (async () => {
-      if (req.method === 'GET' && assets.has(req.url)) {
-        const [name, type] = assets.get(req.url);
-        res.setHeader('Content-Type', type); await pipeline(createReadStream(join('dist', name)), res); return;
-      }
-      const match = /^\/ciphertext\/(0|[1-9][0-9]{0,2})$/.exec(req.url);
-      if (!match || Number(match[1]) >= 120) { res.writeHead(404).end(); return; }
-      const path = join(directory, `${match[1]}.bin`);
-      if (req.method === 'PUT') {
-        const declared = Number(req.headers['content-length']);
-        if (!Number.isSafeInteger(declared) || declared < 16 || declared > 8388624) { res.writeHead(413).end(); return; }
-        let length = 0;
-        const bounded = new Transform({ transform(chunk, _encoding, callback) {
-          length += chunk.length;
-          callback(length > declared ? new Error('Chunk exceeds declared bound') : null, chunk);
-        } });
-        await pipeline(req, bounded, createWriteStream(path, { flags: 'wx' }));
-        if (length !== declared) throw new Error('Truncated upload');
-        uploadedBytes += length; res.writeHead(204).end(); return;
-      }
-      if (req.method === 'GET') {
-        const metadata = await stat(path);
-        res.setHeader('Content-Type', 'application/octet-stream'); res.setHeader('Content-Length', metadata.size);
-        await pipeline(createReadStream(path), res); downloadedBytes += metadata.size; return;
-      }
-      res.writeHead(405).end();
-    })().catch((error) => { if (!res.headersSent) res.writeHead(error.code === 'ENOENT' ? 404 : 500); res.end(); });
-  });
-  await new Promise((done) => server.listen(0, '127.0.0.1', done));
-  return { server, origin: `http://127.0.0.1:${server.address().port}`,
-    counts: () => ({ uploaded_bytes: uploadedBytes, downloaded_bytes: downloadedBytes }),
-    reset: async () => { await rm(directory, { recursive: true }); await mkdir(directory); uploadedBytes = 0; downloadedBytes = 0; } };
 }
 
 // CDP enumerates browser processes; Linux /proc samples actual RSS (not JS heap).
@@ -138,6 +93,7 @@ try {
   await assert.rejects(access(oversizePath));
 
   if (nativeOnly) {
+    results.local_unlock = await checkLocalUnlock(native, null);
     if (updateFixtures) {
       await mkdir('fixtures', { recursive: true });
       for (const [name, fixture] of [['rust', rust], ['node', node]]) {
@@ -156,7 +112,7 @@ try {
     console.log('PASS: native/Node slice; browser not run in this invocation');
   } else {
 
-  transport = await serve();
+  transport = await serve({ scratch });
   const externalRequests = [], pageErrors = [];
   // Keep Chromium's sandbox enabled. Any container-specific exception requires
   // an explicitly isolated runner override documented in the resulting evidence.
@@ -225,6 +181,10 @@ try {
       passed((await page.evaluate((data) => globalThis.p01({ kind: 'interop', fixture: data }), fixture)).checks, `committed ${name} fixture -> Chromium worker`);
     }
   }
+  results.local_unlock = await checkLocalUnlock(native, page);
+  results.selected_file_export = await checkSelectedFiles(page, transport, scratch, large);
+  assert.equal(externalRequests.length, 0, 'No external requests including the physical trial page');
+  assert.equal(pageErrors.length, 0, 'No hidden browser errors including the physical trial page');
   results.status = 'PASS';
   await mkdir('artifacts', { recursive: true });
   await writeFile(`artifacts/${large ? 'large' : 'small'}-report.json`, JSON.stringify(results, null, 2) + '\n');

@@ -4,6 +4,8 @@
 !.env.example
 node_modules/
 vendor/
+!experiments/p01/windows-hello/tests/hello/vendor/
+!experiments/p01/windows-hello/tests/hello/vendor/**
 target/
 dist/
 coverage/

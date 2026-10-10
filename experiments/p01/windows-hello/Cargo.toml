@@ -1,0 +1,27 @@
+[package]
+name = "anynote-p01-windows-hello"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.99"
+license = "GPL-3.0-only"
+publish = false
+description = "Synthetic native PRF/TPM probe adapted from the preserved working reference"
+
+[dependencies]
+libsodium-rs = "=0.2.5"
+hkdf = "=0.12.4"
+base64 = "=0.22.1"
+zeroize = { version = "=1.9.0", features = ["derive"] }
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.151"
+sha2 = "=0.10.9"
+uuid = { version = "=1.27.0", features = ["v4"] }
+
+[dev-dependencies]
+tempfile = "=3.27.0"
+
+[target.'cfg(windows)'.dependencies]
+windows-core = "=0.62.2"
+windows = { version = "=0.62.2", features = ["Security_Credentials_UI", "Win32_System_WinRT", "Win32_Security_Cryptography"] }
+windows-future = "=0.3.2"
+windows-sys = { version = "=0.61.2", features = ["Win32_Foundation", "Win32_System_LibraryLoader", "Win32_System_RemoteDesktop", "Win32_System_Power", "Win32_System_TpmBaseServices", "Win32_UI_WindowsAndMessaging", "Win32_System_SystemServices", "Win32_Storage_FileSystem", "Win32_Security", "Win32_Security_Authorization", "Win32_System_Threading", "Win32_Graphics_Gdi"] }

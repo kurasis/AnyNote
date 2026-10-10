@@ -1,5 +1,6 @@
 //! Isolated P01 experiment. All emitted fixture keys are PUBLIC/NONSECRET.
 //! This is not AnyNote's application protocol, authorization or key custody.
+mod kdf;
 use libsodium_rs::{
     crypto_aead::xchacha20poly1305 as aead, crypto_box, crypto_hash::sha256, crypto_sign,
     ensure_init, random, version,
@@ -396,6 +397,15 @@ fn run() -> Result<()> {
                 "{}",
                 json!({"status":"PASS","checks":checks,"sodium_version":version::version_string()})
             );
+        }
+        Some("kdf") if args.len() == 2 => {
+            let mut input = Vec::new();
+            std::io::stdin().take(4097).read_to_end(&mut input)?;
+            if input.len() > 4096 {
+                return Err("KDF input too large".into());
+            }
+            let request: kdf::Request = serde_json::from_slice(&input)?;
+            println!("{}", request.derive()?);
         }
         Some("file-roundtrip") if args.len() == 4 => {
             println!("{}", file_roundtrip(Path::new(&args[2]), args[3].parse()?)?);
