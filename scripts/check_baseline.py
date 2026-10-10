@@ -141,7 +141,7 @@ def main() -> int:
         return 1
     print("PASS: 21 original specification checksums, UTF-8/local links/fences, tracking records")
     print("PASS: locked scope; 120 chunks; final part 1755648 bytes; data ciphertext 1000001920 bytes")
-    print("Scope: P00 repository integrity only; application/platform/security tests have not run")
+    print("Scope: repository integrity only; this command does not run application/platform/security tests")
     return 0
 
 
