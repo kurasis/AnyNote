@@ -983,3 +983,10 @@ Final generator cleanup removed an extra generated-PHP EOF blank line after the
 local evidence snapshot. Generated drift negatives, native PHP syntax, strict TS
 and git diff whitespace checks were rerun and passed; the unchanged install/start
 scripts retain their two-run evidence. Hosted CI validates the final complete tree.
+
+The first P03 hosted foundation run 38142798498 stopped before Node installation
+because the cloud-default /workspace toolchain directory is not writable on a
+GitHub runner. Use the existing installer's supported ANYNOTE_TOOLCHAINS override
+pointing to /tmp/anynote-p03-toolchains. This is a CI configuration correction,
+not a source test PASS or a signature/checksum/TLS bypass. All final checks must
+pass again on the updated head; prior-head successes do not approve the new tree.
