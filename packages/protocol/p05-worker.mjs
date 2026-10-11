@@ -43,11 +43,17 @@ async function large(f, size) {
       timings.encrypt_ms += performance.now() - before;
       before = performance.now();
       const handle = await dir.getFileHandle(String(parts), { create: true }),
-        out = await handle.createWritable();
+        io = await handle.createSyncAccessHandle();
       try {
-        await out.write(encrypted);
+        let offset = 0;
+        while (offset < encrypted.length) {
+          const n = io.write(encrypted.subarray(offset), { at: offset });
+          if (n <= 0) throw Error("INCOMPLETE_STORAGE_WRITE");
+          offset += n;
+        }
+        io.flush();
       } finally {
-        await out.close();
+        io.close();
       }
       parts++;
       timings.persist_ms += performance.now() - before;
@@ -64,8 +70,19 @@ async function large(f, size) {
     for (let n = 0; n < parts; n++) {
       const before = performance.now();
       const handle = await dir.getFileHandle(String(n)),
-        file = await handle.getFile(),
-        cipher = new Uint8Array(await file.arrayBuffer());
+        io = await handle.createSyncAccessHandle();
+      const cipher = new Uint8Array(Math.min(chunk, size - n * chunk) + 16);
+      try {
+        if (io.getSize() !== cipher.length) throw Error("INVALID_CHUNK_LENGTH");
+        let offset = 0;
+        while (offset < cipher.length) {
+          const read = io.read(cipher.subarray(offset), { at: offset });
+          if (read <= 0) throw Error("INCOMPLETE_STORAGE_READ");
+          offset += read;
+        }
+      } finally {
+        io.close();
+      }
       const plain = reader.decryptNext(cipher);
       sodium.memzero(plain);
       timings.decrypt_verify_ms += performance.now() - before;
@@ -82,7 +99,8 @@ async function large(f, size) {
       timings_ms: Object.fromEntries(
         Object.entries(timings).map(([key, value]) => [key, Math.round(value)]),
       ),
-      storage: "owned OPFS ciphertext only",
+      storage:
+        "owned OPFS ciphertext only; bounded sync access, no Blob/File accumulation",
       wasm_heap_bytes: sodium.libsodium?.HEAPU8?.buffer.byteLength ?? null,
       physical_acceptance: false,
     };
