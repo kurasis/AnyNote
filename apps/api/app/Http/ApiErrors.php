@@ -7,6 +7,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Session\TokenMismatchException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
@@ -27,6 +28,7 @@ final class ApiErrors
     {
         $code = match (true) {
             $exception instanceof ApiException => $exception->errorCode,
+            $exception instanceof TokenMismatchException => 'INVALID_REQUEST',
             $exception instanceof AuthenticationException => 'AUTH_REQUIRED',
             $exception instanceof AuthorizationException => 'NOT_FOUND',
             $exception instanceof HttpExceptionInterface && in_array($exception->getStatusCode(), [403, 404, 405], true) => 'NOT_FOUND',

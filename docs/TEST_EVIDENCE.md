@@ -1209,3 +1209,36 @@ durable file source/resume and maximum-scale history indexes remain P08/P10,
 P07, P12 and P11 respectively. Qualified G2/G3 review remains unassigned/unbooked/
 NOT_RUN; production release/deployment are not complete. No new owner-device
 action is required for P05. The next full batch is P06 authentication/sessions.
+
+## P06 local implementation checks (hosted acceptance pending)
+
+Local actual TLS Nginx -> Laravel -> owned MariaDB authentication passes 175
+checks. Both eight-request registration and refresh races have one winner and
+seven denials; refresh reuse revokes the family. Rate admission: 64 requests
+in eight concurrent waves, exactly 60 admitted/four typed denials; expired
+window reset PASS. Expired-cookie login, CSRF regeneration after logout,
+cross-account isolation, admin invite/disable, all-session revocation and
+bounded expiry cleanup preserving roots/devices/rosters PASS. The real Rust oauth2 adapter
+uses the PHP League server over verified HTTPS, real TCP callback, state/PKCE
+and refresh/reuse, with metadata-only output. Four native tests execute IPv4/
+IPv6 callbacks, attacker substitutions, one-use/deadline and maintained PKCE.
+P04 regression: 21 tests/322 assertions and actual SQL/rollback/concurrency PASS.
+The auth compatibility gate preserves 103 old records plus 23 reviewed additions
+and rejects four real tampered-lock cases even with recomputed current checksum.
+P06 static/API/session readiness is repeatable on the current restored instance.
+The local sandboxed browser attempt is BLOCKED; hosted strict-CSP UI/WebAuthn
+and Windows/MSVC jobs remain mandatory. These local outputs describe a dirty
+development tree based on 129cd63, not a clean hosted acceptance commit.
+
+P05 saved setup publication and a fresh-task restoration are now observed: the
+owner published the prior draft and this P06 task restored exact tools/packages
+and owned service readiness. This does not publish a later P06 configuration.
+
+The first parallel local P03/P06 attempt was invalidated by P03's deliberate
+shared database outage; sequential P03 rerun passed. Real concurrent admission
+then exposed MariaDB ER_CHECKREAD (1020) after a nonlocking rate-bucket snapshot.
+The corrected implementation locks the current bucket first and retries bounded
+first-insertion deadlocks. All 175 checks, strict one-winner races and the exact
+64-request rate bound passed after that correction. No error assertion or
+verification control was weakened; temporary metadata-only diagnostics were
+removed from application source before commit.

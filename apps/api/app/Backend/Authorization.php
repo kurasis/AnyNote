@@ -2,6 +2,7 @@
 
 namespace App\Backend;
 
+use App\Auth\Proof;
 use App\Crypto\PublicProtocol as P;
 use App\Http\ApiException;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,7 @@ final class Authorization
         if ($lock && DB::transactionLevel() < 1) {
             throw new \LogicException('Transaction required');
         }
-        if (! P::isBinary($secret, 32)) {
+        if (strlen($secret) > 8192 || (! P::isBinary($secret, 32) && ! preg_match('/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/D', $secret))) {
             throw new ApiException('AUTH_REQUIRED');
         }
         $session = DB::table('auth_sessions')->where('secret_hash', hash('sha256', $secret))->first();
@@ -30,7 +31,7 @@ final class Authorization
         $identity = ($lock ? $q->lockForUpdate() : $q)->first();
         $q = DB::table('auth_sessions')->where('id', $session->id);
         $session = ($lock ? $q->lockForUpdate() : $q)->first();
-        if (! $user || $user->status !== 'active' || ! $session || $session->account_id !== $user->id || ! hash_equals($session->secret_hash, hash('sha256', $secret)) || $session->state === 'revoked' || $session->expires_at <= now()->format('Y-m-d H:i:s')) {
+        if (! $user || $user->status !== 'active' || ! $session || $session->account_id !== $user->id || ! hash_equals($session->secret_hash, hash('sha256', $secret)) || $session->state === 'revoked' || $session->expires_at <= now()->format('Y-m-d H:i:s') || (isset($session->absolute_expires_at) && $session->absolute_expires_at <= now()->format('Y-m-d H:i:s'))) {
             throw new ApiException('SESSION_EXPIRED');
         }
         if ($session->state !== 'trusted') {
@@ -53,6 +54,9 @@ final class Authorization
         }
         P::verify('p02-identity-c1', 'account-root-identity', $root->body, $root->signature, $root->body->root_signing_key);
         $cert = $this->certificate($device, $identity, $root, []);
+        if (isset($session->device_commitment) && $session->device_commitment !== Proof::commitment(Proof::device($cert))) {
+            throw new ApiException('DEVICE_REVOKED');
+        }
 
         return new Actor($user->id, $device->id, $session->id, $identity->root_fingerprint, (string) $identity->recovery_generation, (string) $identity->roster_sequence, $identity->roster_digest, $cert->body->device_signing_key, $device->can_sign_content && in_array('sign-content', $cert->body->capabilities, true), (bool) $user->is_admin, $session->authenticated_at >= now()->subMinutes(5)->format('Y-m-d H:i:s'));
     }
@@ -91,6 +95,27 @@ final class Authorization
         P::verify('p02-identity-c1', 'provisional-device-certificate', $b, $cert->signature, $key);
 
         return $cert;
+    }
+
+    /** Validate the active certified device before issuing a session-bound possession challenge. */
+    public function certifiedDevice(string $account, string $device): array
+    {
+        if (DB::transactionLevel() < 1) {
+            throw new \LogicException('Transaction required');
+        }
+        $identity = DB::table('account_identities')->where('account_id', $account)->lockForUpdate()->first();
+        $d = DB::table('devices')->where('account_id', $account)->where('id', $device)->lockForUpdate()->first();
+        if (! $identity || ! $d || $d->status !== 'active' || (string) $d->recovery_generation !== (string) $identity->recovery_generation) {
+            throw new ApiException('DEVICE_NOT_TRUSTED');
+        }
+        $root = $this->protocol->decode('p02-identity-c1', 'identity', $identity->identity_record);
+        if ($root->body->account_id !== $account || $root->body->service_id !== config('api.service_id') || P::digest('p02-identity-c1', 'account-root-identity', $root->body) !== $identity->root_fingerprint) {
+            throw new ApiException('INVALID_SIGNATURE');
+        }
+        P::verify('p02-identity-c1', 'account-root-identity', $root->body, $root->signature, $root->body->root_signing_key);
+        $cert = $this->certificate($d, $identity, $root, []);
+
+        return [$identity, $d, $cert];
     }
 
     public function group(Actor $actor, string $id, string $permission = 'read', bool $lock = true): stdClass

@@ -2429,3 +2429,465 @@ final readonly class P04ApiInviteResult implements \JsonSerializable
         return $values;
     }
 }
+
+final readonly class P06AuthCredential implements \JsonSerializable
+{
+    public function __construct(
+        public string $id,
+        public string $rawId,
+        public string $type,
+        public array $response,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthOptionsRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $ceremony,
+        public string|null $invitation = null,
+        public string|null $handle = null,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        if ($values['invitation'] === null) { unset($values['invitation']); }
+        if ($values['handle'] === null) { unset($values['handle']); }
+        return $values;
+    }
+}
+
+final readonly class P06AuthVerifyRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $challenge_id,
+        public array $credential,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthRegistrationPrepareRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $registration_id,
+        public array $identity,
+        public array $device,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthRegisterRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $registration_id,
+        public string $operation_id,
+        public array $identity,
+        public array $roster,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthDeviceChallengeRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $device_id,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthDeviceProofRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $challenge_id,
+        public array $proof,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthRecoveryRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $code,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthNativeAuthorizeRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $client_id,
+        public string $redirect_uri,
+        public string $state,
+        public string $code_challenge,
+        public string $code_challenge_method,
+        public string $device_commitment,
+        public string|null $response_type = null,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        if ($values['response_type'] === null) { unset($values['response_type']); }
+        return $values;
+    }
+}
+
+final readonly class P06AuthNativeApproveRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $authorization_id,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthSession implements \JsonSerializable
+{
+    public function __construct(
+        public string $id,
+        public string $account_id,
+        public null|string $device_id,
+        public string $state,
+        public string $generation,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthCsrfResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $csrf_token,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthAuthResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $session,
+        public string|null $csrf_token = null,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        if ($values['csrf_token'] === null) { unset($values['csrf_token']); }
+        return $values;
+    }
+}
+
+final readonly class P06AuthVerifiedRegistration implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $registration_id,
+        public string $account_id,
+        public bool $verified,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthMeResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $session,
+        public null|string $root_fingerprint,
+        public bool $recent_auth,
+        public bool $is_admin,
+        public bool $content_access,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthChallengeResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $challenge,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthRegisterResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $session,
+        public string $csrf_token,
+        public array $receipt,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthRecoveryCodesResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $codes,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthNativeAuthorizationResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $authorization_id,
+        public string $consent_url,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthNativeConsentResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $authorization_id,
+        public string $redirect_uri,
+        public string $device_commitment,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthNativeApproveResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $redirect_uri,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthNativeTokenResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $access_token,
+        public string $refresh_token,
+        public string $token_type,
+        public int $expires_in,
+        public string $issuer,
+        public array $session,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthOptionsResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $challenge_id,
+        public string $ceremony,
+        public array $publicKey,
+        public string $csrf_token,
+        public string|null $registration_id = null,
+        public string|null $account_id = null,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        if ($values['registration_id'] === null) { unset($values['registration_id']); }
+        if ($values['account_id'] === null) { unset($values['account_id']); }
+        return $values;
+    }
+}
+
+final readonly class P06AuthPasskey implements \JsonSerializable
+{
+    public function __construct(
+        public string $id,
+        public string $created_at,
+        public bool $backup_eligible,
+        public bool $backup_status,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthPasskeysResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $passkeys,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthSessionListItem implements \JsonSerializable
+{
+    public function __construct(
+        public string $id,
+        public bool $current,
+        public string $state,
+        public null|string $device_id,
+        public string $transport,
+        public string $created_at,
+        public string $expires_at,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthSessionsResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $sessions,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthEmptyRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P06AuthOkResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $status,
+        public string|null $csrf_token = null,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        if ($values['csrf_token'] === null) { unset($values['csrf_token']); }
+        return $values;
+    }
+}

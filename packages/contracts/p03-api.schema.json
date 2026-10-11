@@ -43,7 +43,7 @@
           "type": "object",
           "properties": {
             "account_authentication": {
-              "const": false
+              "type": "boolean"
             },
             "device_activation": {
               "const": false

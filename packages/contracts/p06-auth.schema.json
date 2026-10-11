@@ -1,0 +1,1189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:anynote:p06:auth:v1",
+  "$defs": {
+    "credential": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "rawId",
+        "type",
+        "response"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "base64url-variable",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "rawId": {
+          "type": "string",
+          "format": "base64url-variable",
+          "minLength": 1,
+          "maxLength": 2048
+        },
+        "type": {
+          "const": "public-key"
+        },
+        "response": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "clientDataJSON",
+                "attestationObject"
+              ],
+              "properties": {
+                "clientDataJSON": {
+                  "type": "string",
+                  "format": "base64url-variable",
+                  "maxLength": 16384
+                },
+                "attestationObject": {
+                  "type": "string",
+                  "format": "base64url-variable",
+                  "maxLength": 174764
+                },
+                "transports": {
+                  "type": "array",
+                  "maxItems": 8,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "usb",
+                      "nfc",
+                      "ble",
+                      "internal",
+                      "hybrid",
+                      "smart-card"
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "clientDataJSON",
+                "authenticatorData",
+                "signature",
+                "userHandle"
+              ],
+              "properties": {
+                "clientDataJSON": {
+                  "type": "string",
+                  "format": "base64url-variable",
+                  "maxLength": 16384
+                },
+                "authenticatorData": {
+                  "type": "string",
+                  "format": "base64url-variable",
+                  "maxLength": 16384
+                },
+                "signature": {
+                  "type": "string",
+                  "format": "base64url-variable",
+                  "maxLength": 8192
+                },
+                "userHandle": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "format": "base64url-variable",
+                      "maxLength": 86
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "options-request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "ceremony"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "ceremony": {
+          "enum": [
+            "register",
+            "login",
+            "reauth",
+            "add"
+          ]
+        },
+        "invitation": {
+          "type": "string",
+          "format": "base64url-32"
+        },
+        "handle": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128,
+          "pattern": "^[a-z0-9][a-z0-9._-]*$"
+        }
+      }
+    },
+    "verify-request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "challenge_id",
+        "credential"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "challenge_id": {
+          "type": "string",
+          "format": "base64url-16"
+        },
+        "credential": {
+          "$ref": "#/$defs/credential"
+        }
+      }
+    },
+    "registration-prepare-request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "registration_id",
+        "identity",
+        "device"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "registration_id": {
+          "type": "string",
+          "format": "base64url-16"
+        },
+        "identity": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/identity"
+        },
+        "device": {
+          "$ref": "urn:anynote:p02:state-contract:c1#/$defs/device"
+        }
+      }
+    },
+    "register-request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "registration_id",
+        "operation_id",
+        "identity",
+        "roster"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "registration_id": {
+          "type": "string",
+          "format": "base64url-16"
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "base64url-16"
+        },
+        "identity": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/identity"
+        },
+        "roster": {
+          "$ref": "urn:anynote:p02:state-contract:c1#/$defs/event"
+        }
+      }
+    },
+    "device-challenge-request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "device_id"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "device_id": {
+          "type": "string",
+          "format": "base64url-16"
+        }
+      }
+    },
+    "device-proof-request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "challenge_id",
+        "proof"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "challenge_id": {
+          "type": "string",
+          "format": "base64url-16"
+        },
+        "proof": {
+          "$ref": "urn:anynote:p02:state-contract:c1#/$defs/possession"
+        }
+      }
+    },
+    "recovery-request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "code"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "code": {
+          "type": "string",
+          "format": "base64url-32"
+        }
+      }
+    },
+    "native-authorize-request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "client_id",
+        "redirect_uri",
+        "state",
+        "code_challenge",
+        "code_challenge_method",
+        "device_commitment"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "client_id": {
+          "const": "anynote-windows"
+        },
+        "redirect_uri": {
+          "type": "string",
+          "maxLength": 2048
+        },
+        "state": {
+          "type": "string",
+          "format": "base64url-32"
+        },
+        "code_challenge": {
+          "type": "string",
+          "format": "base64url-32"
+        },
+        "code_challenge_method": {
+          "const": "S256"
+        },
+        "device_commitment": {
+          "type": "string",
+          "format": "base64url-32"
+        },
+        "response_type": {
+          "const": "code"
+        }
+      }
+    },
+    "native-approve-request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "authorization_id"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "authorization_id": {
+          "type": "string",
+          "format": "base64url-16"
+        }
+      }
+    },
+    "native-token-request": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "grant_type",
+            "client_id",
+            "issuer",
+            "authorization_id",
+            "redirect_uri",
+            "code",
+            "code_verifier"
+          ],
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "grant_type": {
+              "const": "authorization_code"
+            },
+            "client_id": {
+              "const": "anynote-windows"
+            },
+            "issuer": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "authorization_id": {
+              "type": "string",
+              "format": "base64url-16"
+            },
+            "redirect_uri": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "code": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 8192
+            },
+            "code_verifier": {
+              "type": "string",
+              "minLength": 43,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9._~-]+$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "version",
+            "grant_type",
+            "client_id",
+            "issuer",
+            "refresh_token"
+          ],
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "grant_type": {
+              "const": "refresh_token"
+            },
+            "client_id": {
+              "const": "anynote-windows"
+            },
+            "issuer": {
+              "type": "string",
+              "maxLength": 2048
+            },
+            "refresh_token": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 8192
+            }
+          }
+        }
+      ]
+    },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "account_id",
+        "device_id",
+        "state",
+        "generation"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "base64url-16"
+        },
+        "account_id": {
+          "type": "string",
+          "format": "base64url-16"
+        },
+        "device_id": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "base64url-16"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "enum": [
+            "restricted",
+            "trusted"
+          ]
+        },
+        "generation": {
+          "type": "string",
+          "format": "decimal-u63"
+        }
+      }
+    },
+    "csrf-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "csrf_token"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "csrf_token": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 64
+        }
+      }
+    },
+    "auth-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "session"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "session": {
+          "$ref": "#/$defs/session"
+        },
+        "csrf_token": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 64
+        }
+      }
+    },
+    "verified-registration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "registration_id",
+        "account_id",
+        "verified"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "registration_id": {
+          "type": "string",
+          "format": "base64url-16"
+        },
+        "account_id": {
+          "type": "string",
+          "format": "base64url-16"
+        },
+        "verified": {
+          "const": true
+        }
+      }
+    },
+    "verify-result": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/auth-result"
+        },
+        {
+          "$ref": "#/$defs/verified-registration"
+        },
+        {
+          "$ref": "#/$defs/ok-result"
+        }
+      ]
+    },
+    "me-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "session",
+        "root_fingerprint",
+        "recent_auth",
+        "is_admin",
+        "content_access"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "session": {
+          "$ref": "#/$defs/session"
+        },
+        "root_fingerprint": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "base64url-32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "recent_auth": {
+          "type": "boolean"
+        },
+        "is_admin": {
+          "type": "boolean"
+        },
+        "content_access": {
+          "type": "boolean"
+        }
+      }
+    },
+    "challenge-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "challenge"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "challenge": {
+          "$ref": "urn:anynote:p02:state-contract:c1#/$defs/challenge"
+        }
+      }
+    },
+    "register-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "session",
+        "csrf_token",
+        "receipt"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "session": {
+          "$ref": "#/$defs/session"
+        },
+        "csrf_token": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 64
+        },
+        "receipt": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "operation_id",
+            "account_id",
+            "root_fingerprint",
+            "roster_digest"
+          ],
+          "properties": {
+            "operation_id": {
+              "type": "string",
+              "format": "base64url-16"
+            },
+            "account_id": {
+              "type": "string",
+              "format": "base64url-16"
+            },
+            "root_fingerprint": {
+              "type": "string",
+              "format": "base64url-32"
+            },
+            "roster_digest": {
+              "type": "string",
+              "format": "base64url-32"
+            }
+          }
+        }
+      }
+    },
+    "recovery-codes-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "codes"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "codes": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "type": "string",
+            "format": "base64url-32"
+          }
+        }
+      }
+    },
+    "native-authorization-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "authorization_id",
+        "consent_url"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "authorization_id": {
+          "type": "string",
+          "format": "base64url-16"
+        },
+        "consent_url": {
+          "type": "string",
+          "maxLength": 4096
+        }
+      }
+    },
+    "native-consent-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "authorization_id",
+        "redirect_uri",
+        "device_commitment"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "authorization_id": {
+          "type": "string",
+          "format": "base64url-16"
+        },
+        "redirect_uri": {
+          "type": "string",
+          "maxLength": 2048
+        },
+        "device_commitment": {
+          "type": "string",
+          "format": "base64url-32"
+        }
+      }
+    },
+    "native-approve-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "redirect_uri"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "redirect_uri": {
+          "type": "string",
+          "maxLength": 16384
+        }
+      }
+    },
+    "native-token-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "access_token",
+        "refresh_token",
+        "token_type",
+        "expires_in",
+        "issuer",
+        "session"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "access_token": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8192
+        },
+        "refresh_token": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8192
+        },
+        "token_type": {
+          "const": "Bearer"
+        },
+        "expires_in": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 900
+        },
+        "issuer": {
+          "type": "string",
+          "maxLength": 2048
+        },
+        "session": {
+          "$ref": "#/$defs/session"
+        }
+      }
+    },
+    "options-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "challenge_id",
+        "ceremony",
+        "publicKey",
+        "csrf_token"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "challenge_id": {
+          "type": "string",
+          "format": "base64url-16"
+        },
+        "ceremony": {
+          "enum": [
+            "register",
+            "login",
+            "reauth",
+            "add"
+          ]
+        },
+        "publicKey": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "rp",
+                "user",
+                "challenge",
+                "pubKeyCredParams",
+                "authenticatorSelection",
+                "attestation",
+                "excludeCredentials",
+                "timeout"
+              ],
+              "properties": {
+                "rp": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "name"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "maxLength": 128
+                    },
+                    "name": {
+                      "type": "string",
+                      "maxLength": 128
+                    }
+                  }
+                },
+                "user": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "id",
+                    "name",
+                    "displayName"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "base64url-variable",
+                      "maxLength": 2048
+                    },
+                    "name": {
+                      "type": "string",
+                      "maxLength": 128
+                    },
+                    "displayName": {
+                      "type": "string",
+                      "maxLength": 128
+                    }
+                  }
+                },
+                "challenge": {
+                  "type": "string",
+                  "format": "base64url-variable",
+                  "maxLength": 2048
+                },
+                "pubKeyCredParams": {
+                  "type": "array",
+                  "maxItems": 2,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "alg"
+                    ],
+                    "properties": {
+                      "type": {
+                        "const": "public-key"
+                      },
+                      "alg": {
+                        "enum": [
+                          -7,
+                          -257
+                        ]
+                      }
+                    }
+                  }
+                },
+                "authenticatorSelection": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "userVerification",
+                    "residentKey"
+                  ],
+                  "properties": {
+                    "authenticatorAttachment": {
+                      "enum": [
+                        "platform",
+                        "cross-platform",
+                        null
+                      ]
+                    },
+                    "userVerification": {
+                      "const": "required"
+                    },
+                    "residentKey": {
+                      "const": "required"
+                    },
+                    "requireResidentKey": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "attestation": {
+                  "const": "none"
+                },
+                "excludeCredentials": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "type"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "base64url-variable",
+                        "maxLength": 2048
+                      },
+                      "type": {
+                        "const": "public-key"
+                      },
+                      "transports": {
+                        "type": "array",
+                        "maxItems": 8,
+                        "items": {
+                          "enum": [
+                            "usb",
+                            "nfc",
+                            "ble",
+                            "internal",
+                            "hybrid",
+                            "smart-card"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "timeout": {
+                  "const": 120000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "challenge",
+                "rpId",
+                "allowCredentials",
+                "userVerification",
+                "timeout"
+              ],
+              "properties": {
+                "challenge": {
+                  "type": "string",
+                  "format": "base64url-variable",
+                  "maxLength": 2048
+                },
+                "rpId": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "allowCredentials": {
+                  "type": "array",
+                  "maxItems": 0,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "id",
+                      "type"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "base64url-variable",
+                        "maxLength": 2048
+                      },
+                      "type": {
+                        "const": "public-key"
+                      },
+                      "transports": {
+                        "type": "array",
+                        "maxItems": 8,
+                        "items": {
+                          "enum": [
+                            "usb",
+                            "nfc",
+                            "ble",
+                            "internal",
+                            "hybrid",
+                            "smart-card"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "userVerification": {
+                  "const": "required"
+                },
+                "timeout": {
+                  "const": 120000
+                }
+              }
+            }
+          ]
+        },
+        "registration_id": {
+          "type": "string",
+          "format": "base64url-16"
+        },
+        "account_id": {
+          "type": "string",
+          "format": "base64url-16"
+        },
+        "csrf_token": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 64
+        }
+      }
+    },
+    "passkey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "created_at",
+        "backup_eligible",
+        "backup_status"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "base64url-16"
+        },
+        "created_at": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "backup_eligible": {
+          "type": "boolean"
+        },
+        "backup_status": {
+          "type": "boolean"
+        }
+      }
+    },
+    "passkeys-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "passkeys"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "passkeys": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "$ref": "#/$defs/passkey"
+          }
+        }
+      }
+    },
+    "session-list-item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "current",
+        "state",
+        "device_id",
+        "transport",
+        "created_at",
+        "expires_at"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "base64url-16"
+        },
+        "current": {
+          "type": "boolean"
+        },
+        "state": {
+          "enum": [
+            "restricted",
+            "trusted",
+            "revoked"
+          ]
+        },
+        "device_id": {
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "base64url-16"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "transport": {
+          "enum": [
+            "pwa",
+            "native",
+            "legacy"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "expires_at": {
+          "type": "string",
+          "maxLength": 128
+        }
+      }
+    },
+    "sessions-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "sessions"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "sessions": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/$defs/session-list-item"
+          }
+        }
+      }
+    },
+    "empty-request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        }
+      }
+    },
+    "ok-result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "status"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "status": {
+          "const": "ok"
+        },
+        "csrf_token": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 64
+        }
+      }
+    }
+  }
+}

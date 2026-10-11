@@ -10,6 +10,9 @@ def verify(root: Path):
     assert receipt['version']==1 and receipt['phase']=='P04' and receipt['path']=='apps/api/composer.lock'
     assert receipt['baseline_path']=='docs/reference/p02/composer-p02.lock'
     baseline=root/receipt['baseline_path'];current=root/receipt['path']
+    if (root/'packages/contracts/p06-compatibility.json').is_file():
+        from p06_compatibility import verify as p06_verify
+        current=p06_verify(root)
     assert hashlib.sha256(baseline.read_bytes()).hexdigest()==receipt['baseline_sha256']
     registry=json.loads((root/'packages/contracts/p02-v1.registry.json').read_text())
     row=next(r for r in registry['frozen_inputs'] if r['path']==receipt['path'])

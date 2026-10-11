@@ -1,9 +1,9 @@
 <?php
 
-// No guard/provider/password reset is selected until the P02 identity contract.
+// Laravel's database session handler needs a defined metadata guard. Product authentication
+// exclusively uses P06 passkey/session authority; no password/login/reset routes are registered.
 return [
-    'defaults' => ['guard' => null, 'passwords' => null],
-    'guards' => [],
-    'providers' => [],
-    'passwords' => [],
+    'defaults' => ['guard' => 'web'],
+    'guards' => ['web' => ['driver' => 'session', 'provider' => 'users']],
+    'providers' => ['users' => ['driver' => 'database', 'table' => 'users']],
 ];

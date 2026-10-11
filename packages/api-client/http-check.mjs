@@ -93,8 +93,8 @@ const failures = [
       body: '{"credential":"synthetic"}',
       headers: { "Content-Type": "application/json" },
     },
-    404,
-    "NOT_FOUND",
+    400,
+    "INVALID_REQUEST",
   ],
   [
     "/api/v1/groups",

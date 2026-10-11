@@ -12,7 +12,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P03 | VERIFIED | 79 initial OpenAPI operations / 157 schema-derived types; strict errors/request IDs/content-free logs; frozen setup, drift negatives and actual owned HTTP/SQL integration verified; product operations remain phase-owned |
 | P04 | VERIFIED | 21 tests/322 assertions, 578 actual SQL checks, eight-process concurrency/fault recovery and supervised restart; Rust/Node/sandboxed Chromium/PHP public-signature corpus PASS |
 | P05 | VERIFIED | Full native/browser core; 146 frozen frames, general RFC8785, fresh two-way Worker/Rust bytes and PHP public signatures; all eight hosted jobs PASS, actual native/Worker 1 GB measurements retained; physical memory and independent review remain open |
-| P06 | NOT STARTED | P04 |
+| P06 | IMPLEMENTED / UNVERIFIED | Full auth/session/UI/native implementation; local actual HTTPS/SQL and Rust gates pass; mandatory hosted browser/Windows and final CI pending |
 | P07 | NOT STARTED | P05/P06 |
 | P08 | NOT STARTED | P05–P07 |
 | P09 | NOT STARTED | P04/P07/P08 |
@@ -488,3 +488,20 @@ files; saved draft revision 13 is not publication or future-task restoration.
 Final tracking changes require fresh CI before ordinary automatic merge.
 Rollback: ordinary source revert; no production data or format migration.
 Next full batch: P06 account authentication and session lifecycle.
+
+## P06 implementation awaiting hosted acceptance
+
+Maintained WebAuthn and League OAuth2, strict PWA cookie/CSRF, atomic invite/root/
+first-device registration, restricted/trusted sessions, recovery, account security
+UI and maintained Rust native PKCE/loopback/rotation adapter are implemented.
+Local actual HTTPS/SQL: 175 checks, eight-request registration/refresh races and
+actual Rust-to-PHP OAuth transport PASS. Rust: four tests, fmt/clippy PASS. P04:
+21 tests/322 assertions and actual SQL concurrency PASS. Local Chromium remains
+BLOCKED; hosted sandboxed UI/WebAuthn and Windows/MSVC gates are mandatory.
+See P06_AUTHENTICATION.md. G2/G3/physical P01 remain open. No production migration,
+deployment, release, new owner trial or reviewer contact occurred.
+
+The previously saved P05 setup was published by the owner and restored into
+this fresh task: pinned runtimes, dependencies and owned service readiness PASS.
+This establishes the prior draft publication/restore separately from any P06
+configuration draft still to be saved. Next phase after acceptance: full P07.

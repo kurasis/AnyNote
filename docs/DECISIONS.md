@@ -687,3 +687,23 @@ Use bounded direct sync OPFS handles for ciphertext to avoid Blob/File queues.
 Record the actual high whole-suite Chromium RSS without inferring a hard/mobile
 memory pass; the still-open P01 physical matrix retains that gate. No corpus,
 chunk/file limit, integrity check or browser sandbox is weakened for acceptance.
+
+## ADR-016 — maintained authentication, explicit session tiers and fixed native issuer
+
+P06 uses maintained WebAuthn 5.3.9/League OAuth2 9.4.1 and Rust oauth2 5.0.0;
+23 explicit Composer additions preserve all 103 P04 records and all older locks.
+Initial registration includes atomic public root/first-roster possession as
+required by chapter 05; broader P08 enrollment/reset and private-group genesis
+retain their ownership. Passkey/auth-code login is restricted. PWA uses encrypted
+Laravel SQL sessions, exact sibling HTTPS origins, host-only Strict cookies and
+mandatory synchronizer CSRF, including Laravel 13's same-origin metadata case.
+Native code/state/PKCE/issuer/redirect/device commitment resolve to a separate
+restricted session. Both-key current-device proof is required; rotation alone
+may preserve already proven current device state until absolute expiry. Old
+refresh reuse commits whole-family revocation outside failed-grant savepoints.
+Expired cookies can restart login and logout is idempotent. Typed UI validators
+are maintained Ajv standalone output so strict CSP does not permit JS eval.
+Test-only owned DB/network helpers exercise actual verifiers/transport and never
+issue generic product auth tokens. Physical Hello/TPM, persistent key custody and
+qualified review are separate gates. See P06_AUTHENTICATION.md for exact domains,
+commands, failure/lifecycle/retention rules and deployment boundaries.

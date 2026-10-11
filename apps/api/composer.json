@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "anynote/api",
     "type": "project",
-    "description": "AnyNote development foundation; protocol and authentication are pending P02.",
+    "description": "AnyNote API backend and passkey/session authentication",
     "license": "proprietary",
     "require": {
         "php": "~8.4.0",
@@ -13,14 +13,24 @@
         "ext-zip": "*",
         "laravel/framework": "~13.35.0",
         "opis/json-schema": "~2.6.0",
-        "truschery/kanon": "~1.0.1"
+        "truschery/kanon": "~1.0.1",
+        "web-auth/webauthn-lib": "~5.3.9",
+        "league/oauth2-server": "~9.4.1"
     },
     "require-dev": {
         "laravel/pint": "^1.27",
         "phpunit/phpunit": "^12.5.12"
     },
-    "autoload": {"psr-4": {"App\\": "app/"}},
-    "autoload-dev": {"psr-4": {"Tests\\": "tests/"}},
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

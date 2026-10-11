@@ -356,8 +356,11 @@
       "summary": "Consume invite and attach public identity",
       "authorization": "Invite, verified auth enrollment, root-signed identity proof",
       "operation_id": "post_accounts_register",
-      "phase": "P08",
-      "implemented": false
+      "phase": "P06",
+      "implemented": true,
+      "response": "p06-auth/register-result",
+      "request": "p06-auth/register-request",
+      "security": []
     },
     {
       "method": "GET",
@@ -383,8 +386,14 @@
       "summary": "Create invite",
       "authorization": "Service admin, recent auth",
       "operation_id": "post_admin_account_invitations",
-      "phase": "P04",
-      "implemented": false
+      "phase": "P06",
+      "implemented": true,
+      "response": "p04-api/invite-result",
+      "request": "p04-api/invite-request",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "POST",
@@ -392,8 +401,14 @@
       "summary": "Disable service access",
       "authorization": "Service admin; no cryptographic ownership gain",
       "operation_id": "post_admin_accounts_id_disable",
-      "phase": "P04",
-      "implemented": false
+      "phase": "P06",
+      "implemented": true,
+      "response": "p06-auth/ok-result",
+      "request": "p06-auth/empty-request",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "GET",
@@ -411,7 +426,9 @@
       "authorization": "See original chapter 08; no implicit public data access",
       "operation_id": "get_auth_csrf",
       "phase": "P06",
-      "implemented": false
+      "implemented": true,
+      "response": "p06-auth/csrf-result",
+      "security": []
     },
     {
       "method": "POST",
@@ -420,7 +437,13 @@
       "authorization": "See original chapter 08; no implicit public data access",
       "operation_id": "post_auth_device_challenge",
       "phase": "P06",
-      "implemented": false
+      "implemented": true,
+      "response": "p06-auth/challenge-result",
+      "request": "p06-auth/device-challenge-request",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "POST",
@@ -429,7 +452,13 @@
       "authorization": "See original chapter 08; no implicit public data access",
       "operation_id": "post_auth_device_proof",
       "phase": "P06",
-      "implemented": false
+      "implemented": true,
+      "response": "p06-auth/auth-result",
+      "request": "p06-auth/device-proof-request",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "POST",
@@ -438,7 +467,13 @@
       "authorization": "Session + CSRF for cookie clients",
       "operation_id": "post_auth_logout",
       "phase": "P06",
-      "implemented": false
+      "implemented": true,
+      "response": "p06-auth/ok-result",
+      "request": "p06-auth/empty-request",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "POST",
@@ -447,7 +482,13 @@
       "authorization": "Authenticated browser session, CSRF, validated authorization request",
       "operation_id": "post_auth_native_approve",
       "phase": "P06",
-      "implemented": false
+      "implemented": true,
+      "response": "p06-auth/native-approve-result",
+      "request": "p06-auth/native-approve-request",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "GET",
@@ -456,7 +497,9 @@
       "authorization": "Registered client, fixed issuer, redirect policy, state/PKCE",
       "operation_id": "get_auth_native_authorize",
       "phase": "P06",
-      "implemented": false
+      "implemented": true,
+      "response": "p06-auth/native-authorization-result",
+      "security": []
     },
     {
       "method": "POST",
@@ -465,7 +508,10 @@
       "authorization": "Single-use code or valid rotation credential",
       "operation_id": "post_auth_native_token",
       "phase": "P06",
-      "implemented": false
+      "implemented": true,
+      "response": "p06-auth/native-token-result",
+      "request": "p06-auth/native-token-request",
+      "security": []
     },
     {
       "method": "POST",
@@ -474,7 +520,10 @@
       "authorization": "Invitation/active session for registration; bounded public sign-in challenge",
       "operation_id": "post_auth_passkeys_options",
       "phase": "P06",
-      "implemented": false
+      "implemented": true,
+      "response": "p06-auth/options-result",
+      "request": "p06-auth/options-request",
+      "security": []
     },
     {
       "method": "POST",
@@ -483,7 +532,10 @@
       "authorization": "Strict WebAuthn verifier, origin/RP/challenge checks",
       "operation_id": "post_auth_passkeys_verify",
       "phase": "P06",
-      "implemented": false
+      "implemented": true,
+      "response": "p06-auth/verify-result",
+      "request": "p06-auth/verify-request",
+      "security": []
     },
     {
       "method": "POST",
@@ -492,7 +544,10 @@
       "authorization": "One-time code, strong rate limits; not content unlock",
       "operation_id": "post_auth_recovery_code",
       "phase": "P06",
-      "implemented": false
+      "implemented": true,
+      "response": "p06-auth/auth-result",
+      "request": "p06-auth/recovery-request",
+      "security": []
     },
     {
       "method": "GET",
@@ -740,7 +795,12 @@
       "authorization": "Authenticated account",
       "operation_id": "get_me",
       "phase": "P06",
-      "implemented": false
+      "implemented": true,
+      "response": "p06-auth/me-result",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "GET",
@@ -830,7 +890,12 @@
       "authorization": "Same account, recent auth; prevent accidental last-method lockout",
       "operation_id": "get_me_passkeys",
       "phase": "P06",
-      "implemented": false
+      "implemented": true,
+      "response": "p06-auth/passkeys-result",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "POST",
@@ -839,7 +904,13 @@
       "authorization": "Same account, recent auth; prevent accidental last-method lockout",
       "operation_id": "post_me_passkeys",
       "phase": "P06",
-      "implemented": false
+      "implemented": true,
+      "request": "p06-auth/verify-request",
+      "response": "p06-auth/verify-result",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "DELETE",
@@ -848,7 +919,13 @@
       "authorization": "Same account, recent auth; prevent accidental last-method lockout",
       "operation_id": "delete_me_passkeys_id",
       "phase": "P06",
-      "implemented": false
+      "implemented": true,
+      "response": "p06-auth/ok-result",
+      "request": "p06-auth/empty-request",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "POST",
@@ -875,7 +952,13 @@
       "authorization": "Same account; recent auth for revoke-all",
       "operation_id": "delete_me_sessions",
       "phase": "P06",
-      "implemented": false
+      "implemented": true,
+      "request": "p06-auth/empty-request",
+      "response": "p06-auth/ok-result",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "GET",
@@ -884,7 +967,12 @@
       "authorization": "Same account; recent auth for revoke-all",
       "operation_id": "get_me_sessions",
       "phase": "P06",
-      "implemented": false
+      "implemented": true,
+      "response": "p06-auth/sessions-result",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "DELETE",
@@ -893,7 +981,13 @@
       "authorization": "Same account; recent auth for revoke-all",
       "operation_id": "delete_me_sessions_id",
       "phase": "P06",
-      "implemented": false
+      "implemented": true,
+      "response": "p06-auth/ok-result",
+      "request": "p06-auth/empty-request",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "GET",
@@ -1082,6 +1176,47 @@
       "implemented": true,
       "response": "p04-api/readiness",
       "security": [
+        "NativeBearer"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/accounts/registration-challenge",
+      "summary": "accounts registration challenge",
+      "authorization": "P06 exact origin, session/CSRF or scoped native public-client grant",
+      "operation_id": "post_accounts_registration_challenge",
+      "phase": "P06",
+      "implemented": true,
+      "response": "p06-auth/challenge-result",
+      "request": "p06-auth/registration-prepare-request",
+      "security": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/me/recovery-codes",
+      "summary": "me recovery codes",
+      "authorization": "P06 exact origin, session/CSRF or scoped native public-client grant",
+      "operation_id": "post_me_recovery_codes",
+      "phase": "P06",
+      "implemented": true,
+      "response": "p06-auth/recovery-codes-result",
+      "request": "p06-auth/empty-request",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/native/authorizations/{id}",
+      "summary": "auth native authorizations {id}",
+      "authorization": "P06 exact origin, session/CSRF or scoped native public-client grant",
+      "operation_id": "get_auth_native_authorizations_id",
+      "phase": "P06",
+      "implemented": true,
+      "response": "p06-auth/native-consent-result",
+      "security": [
+        "CookieSession",
         "NativeBearer"
       ]
     }

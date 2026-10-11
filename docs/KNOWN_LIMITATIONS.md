@@ -293,5 +293,22 @@ but did not materially lower aggregate RSS. The 8 MiB plaintext-chunk bound and
 67,371,008-byte Wasm heap do not constrain the browser's entire allocator/process
 footprint. Mobile memory acceptance remains explicitly unresolved; do not infer
 it from desktop completion or compare this whole-suite metric directly with
-P01's incremental transfer metric. Setup draft publication/fresh-task restore
-remain NOT_RUN; Review/Save -> Publish is still required in environment settings.
+P01's incremental transfer metric. The prior P05 draft was published and restored in the fresh P06 task; actual
+pinned tools and owned services passed readiness. A new P06 draft, when saved,
+remains separate from its future publication/restore.
+
+## P06 boundary
+
+P06_AUTHENTICATION.md supersedes the earlier future-authentication placeholders.
+Full authentication/session implementation and local HTTPS/SQL/native checks are
+present; hosted browser/Windows acceptance is pending until recorded. Persistent
+local token/device-key custody, local-vault locking and multi-window fencing are
+P07. Root reset, authenticated pairing and general roster transitions are P08;
+private preference-group genesis must precede preference writes in P08/P09.
+PWA registration exports a small R kit explicitly and does not persist plaintext
+device keys. Reopening that page does not silently restore a trusted device.
+Native SDK completion/rotation never makes an unproven installation trusted.
+Real owner Hello/TPM/browser/iPhone and full P01 memory/network acceptance remain
+separate from software/synthetic fixtures; G2/G3 review is unassigned/unbooked/
+NOT_RUN. Production certificate/origin configuration and deployment/release
+acceptance remain P16/P17. No owner action is required for independent P06 CI.
