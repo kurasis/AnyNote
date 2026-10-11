@@ -1242,3 +1242,10 @@ first-insertion deadlocks. All 175 checks, strict one-winner races and the exact
 64-request rate bound passed after that correction. No error assertion or
 verification control was weakened; temporary metadata-only diagnostics were
 removed from application source before commit.
+
+The initial P06 Windows workflow stopped during setup before running Rust:
+CPython 3.12.14 has no Windows x64 build in the maintained Actions manifest.
+The Windows-only helper runtime is pinned to maintained CPython 3.14.8, verified
+against the primary actions/python-versions manifest. Linux/cloud remain at
+3.12.14. This does not alter any cryptographic dependency or weaken an assertion.
+The source receipt records the actual helper Python version and platform.

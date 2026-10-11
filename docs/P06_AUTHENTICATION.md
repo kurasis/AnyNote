@@ -192,7 +192,9 @@ Run the P03 outage suite and P06 HTTP suite sequentially: P03 deliberately stops
 their shared, owned MariaDB service.
 
 Acceptance evidence is in TEST_EVIDENCE.md. Local sandbox BLOCKED is never a
-browser pass. Windows/MSVC callback tests are hosted software tests, not a new
+browser pass. The Windows-only stdlib evidence helpers use maintained CPython 3.14.8 because
+3.12.14 has no maintained Windows x64 artifact; cloud/Linux remain 3.12.14.
+Windows/MSVC callback tests are hosted software tests, not a new
 owner-device Hello trial. Full P01 physical/memory/network and independent G2/G3
 review remain open. No production migration/deployment, release or outreach is
 authorized/performed by this phase. Production rollback needs a data-preserving

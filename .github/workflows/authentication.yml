@@ -90,7 +90,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
         with:
-          python-version: '3.12.14'
+          python-version: '3.14.8'
       - name: Install exact Rust
         run: |
           rustup toolchain install 1.99.0 --profile minimal --component clippy,rustfmt
