@@ -20,7 +20,8 @@
     "state:check": "node state-fixtures.mjs",
     "state:write": "node state-fixtures.mjs --write",
     "group:check": "node group-fixtures.mjs",
-    "group:write": "node group-fixtures.mjs --write"
+    "group:write": "node group-fixtures.mjs --write",
+    "complete:check": "node complete-fixtures.mjs && node schema-vectors.mjs && python3 ../../scripts/check-p02-design.py"
   },
   "dependencies": {
     "@scure/base": "2.4.0",

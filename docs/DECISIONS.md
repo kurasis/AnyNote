@@ -541,3 +541,45 @@ fixture values plus one complete field and one complete exact PUBLIC scanner fra
 (random substring/chunk location heuristics); no arbitrary hashes/partial ciphertext/path exemption. Seven fake
 PAT paths and twelve changed key/digest negatives and a full-fixture mutation must reject. Rollback: ordinary
 revert, no production migrations/data. P02/G2 and physical/audit/product gates stay open.
+
+## ADR-012 — complete P02 design profile and honest phase boundary
+
+Freeze p02-v1 over unchanged file/identity/state c1 components and separate group
+c2. c2 resolves the original default of twenty members, related-account proof
+budget 200 and theoretical full retained-epoch coverage 660,000 grants, while
+keeping aggregate reference bounds; it never silently upgrades c1 signatures.
+Shared profile factories preserve legacy vectors and private WeakMap proofs.
+Actual authenticated twenty-account / twenty-epoch / 800-grant pagination tests
+exercise the greedy-byte-limit correction rather than only placeholder schemas.
+
+Use locked libsodium XChaCha/Ed25519, Node maintained HKDF/AES-GCM and existing
+native PHP sodium/OpenSSL for the new bounded references. Freeze exact note,
+metadata/trash/local/outbox/sync/snapshot/restore/error/negotiation schemas,
+contexts and typed domains. Native wrapper bytes explicitly require future
+verified real provider/TPM/lock-generation admission; no platform boolean or
+renderer's PRF bytes constitute a trusted unlock. Everyday records exclude R.
+
+Select maintained Rust age 0.12.1/rage 0.12.1 and independent Go age 1.3.2, pinned
+official release SHA-256 and inspected tagged licenses. Standard age v1 wraps
+strict USTAR, selected DEKs, original ciphertext, complete source pages and all
+cross-account public author/history evidence. Independently preserved kit and
+signed footer/EOF/inventory precede live import. Generated opaque paths and
+117,179,869,184 observed archive-byte cap permit 100 GB plus explicit bounded
+framing; full product throughput/space/staging utility remains P13. No new
+product npm/Composer/Cargo dependency or lock, invented crypto or GPL import.
+
+Original P02 §5 requires review scheduled/tracked; production adapters, custody,
+full utility and release review belong to P05/P07/P13/P17. Finish P02 design and
+track qualified review as unassigned/unbooked/NOT_RUN rather than falsely
+performing it or repeatedly deferring design completion behind later phases.
+G2/G3 and security-sensitive production use remain blocked pending real review
+and remediation. Reproducible subsets do not claim general cross-platform parser
+or actual SQL/session/hardware acceptance. No reviewer outreach was performed.
+
+Source scanner exceptions are only complete exact known PUBLIC fixture values,
+including the intentionally published test age identity; encoded byte blocks
+keep whole JSON values below decoded scanner chunk boundaries. Existing frozen
+fragment exceptions stay unchanged; no new partial-field/hash/path suppression.
+Changed-key/encoded-field, fake-token and alternate-age-key negatives still fail.
+Rollback is a normal revert without production data/format migration. Frozen
+setup reads/rechecks; deliberate writers never run in setup or Actions.

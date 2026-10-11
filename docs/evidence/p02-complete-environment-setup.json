@@ -1,0 +1,27 @@
+{
+  "runs": [
+    {
+      "run": 1,
+      "exit_code": 0,
+      "seconds": 146.85,
+      "git_visible_files": 449,
+      "changed_paths": []
+    },
+    {
+      "run": 2,
+      "exit_code": 0,
+      "seconds": 138.96,
+      "git_visible_files": 449,
+      "changed_paths": []
+    }
+  ],
+  "install_script_sha256": "79d35528cd8c8321e4b42896fa5fb7bccbb1e1e3dd1c5ba780bac391196a0dc2",
+  "start_skill_sha256": "c4db9a584ff57ca47726e6674b30b300b2431f76631a3c4fa2088eafa2c8a028",
+  "status": "PASS",
+  "source_commit": "cdd6c84ae66670cd0a1422a0474183d6045d1b11",
+  "source_tree_dirty": true,
+  "scope": "COMPLETE_SAVED_INSTALL_EXECUTED_TWICE_GIT_VISIBLE_BYTES_UNCHANGED",
+  "publication": "NOT_PERFORMED",
+  "future_task_restoration": "NOT_RUN",
+  "scripts_contain_fixture_writers": false
+}

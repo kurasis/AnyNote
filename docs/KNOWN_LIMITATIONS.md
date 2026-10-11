@@ -196,3 +196,34 @@
   qualified composition/security review remain NOT RUN; P02/G2 stays open.
 - No new owner physical trial or kit release is required here. Environment draft
   save/readback is separate from publication and untested future-task restoration.
+
+## P02 completion boundary (supersedes earlier missing-format/phase statements)
+
+- P02 design deliverables are verified separately from G2/G3. Qualified review
+  is tracked, unassigned/unbooked/NOT_RUN; no production release is approved.
+- Exact new note/local/native/sync/snapshot/restore/age contracts and independent
+  PUBLIC byte/crypto/author-decision subsets exist. PHP/Python serializers are
+  restricted ASCII-key fixture references, not general production RFC8785 or
+  strict arbitrary schema/roster verifiers. Full Rust/browser/platform adapters
+  and production interoperability remain P05/P07/P14/P15.
+- Actual new native AES-GCM bytes are independently reproduced, but real Windows
+  provider eligibility/TPM/name/fresh-auth/process/lock/IPC coupling and PWA PRF
+  are separate gates. P01 owner findings stay scoped; no new physical pass.
+- Sync/receipt/CAS/fences are deterministic in-memory models. SQL durability,
+  account/device-bound auth/recent-auth, references/quota/GC, transaction races,
+  lease renewal/restore reconciliation and crash-safe import are later product
+  work. A snapshot/receipt/server restore flag cannot prove global freshness.
+- Strict age/USTAR/source-inventory/footer/independent-pin offline note/file
+  recovery works in the bounded PUBLIC reference. Its 16 MiB collection and
+  64 KiB file cap are evaluation limits, not reductions to agreed 1 GB file or
+  100 GB service/archive scope. Full utility/staging/disk-space/performance and
+  clean physical-machine recovery are P13/P16; JavaScript erasure is best effort.
+- A group checkpoint is still the bounded candidate inventory construction;
+  aggregate evaluation budgets are smaller than theoretical record/grant
+  ceilings. General large-history streaming/indexing must retain exact hashes
+  and completeness/authority checks before product acceptance. No hidden Merkle
+  inclusion claim, trusted timestamp, recall of disclosed keys or forward secrecy.
+- New PUBLIC age secrets/keys are test-only and deliberately committed. Exact
+  source-scanner exceptions never allow another identity/changed field/fake PAT.
+  No actual server, origin deployment, kit release, production migration or
+  environment publication/future-task restoration is completed by these checks.

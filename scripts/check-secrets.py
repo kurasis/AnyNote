@@ -39,7 +39,9 @@ def main():
                      'fixtures/protocol/p02/vectors.json',
                      'fixtures/protocol/p02/identity-vectors.json',
                      'fixtures/protocol/p02/state-vectors.json',
-                     'fixtures/protocol/p02/group-vectors.json']:
+                     'fixtures/protocol/p02/group-vectors.json',
+                     'fixtures/protocol/p02/v1/crypto.json',
+                     'fixtures/protocol/p02/v1/bytes/header-0000.hex']:
         with tempfile.TemporaryDirectory(prefix='anynote-scanner-negative-') as name:
             # Recognizable synthetic PAT shape; no credential is used or committed.
             token = 'ghp_' + ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(36))
@@ -79,7 +81,20 @@ def main():
         sentinel.write_text(original.replace(known, mutation))
         if scan(name) != 1:
             raise RuntimeError('Scanner hid a changed full field inside the frozen public fragment')
-    print('PASS: Git-visible source scan; 7 fake-token path negatives and 12 changed key/digest fixture negatives plus full-fixture fragment mutation')
+    for relative, field in [('crypto.json','device_signing_key'),('crypto.json','local_key_hex'),('bytes/header-0000.hex','key_wrap_digest')]:
+        with tempfile.TemporaryDirectory(prefix='anynote-v1-scanner-negative-') as name:
+            sentinel=Path(name)/'fixtures/protocol/p02/v1'/relative;sentinel.parent.mkdir(parents=True)
+            value=base64.urlsafe_b64encode(bytes((i*7+13)%256 for i in range(32))).decode().rstrip('=')
+            content='{"'+field+'": "'+value+'"}'
+            sentinel.write_text(content.encode().hex() if relative.endswith('.hex') else content)
+            if scan(name)!=1:raise RuntimeError('Scanner hid changed v1 PUBLIC field')
+    with tempfile.TemporaryDirectory(prefix='anynote-v1-age-negative-') as name:
+        result=subprocess.run([str(ROOT/'.local/p02-tools/age-keygen')],check=True,text=True,capture_output=True)
+        value=next(line for line in result.stdout.splitlines() if line.startswith('AGE-SECRET-KEY-'))
+        sentinel=Path(name)/'fixtures/protocol/p02/v1/crypto.json';sentinel.parent.mkdir(parents=True)
+        sentinel.write_text('{"export_identity": "'+value+'"}')
+        if scan(name)!=1:raise RuntimeError('Scanner hid a different synthetic age private identity')
+    print('PASS: Git-visible source scan; 9 fake-token paths, 15 changed key/digest negatives, exact old fragment mutation and alternate age identity')
 
 
 if __name__ == '__main__':

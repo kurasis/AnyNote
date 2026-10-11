@@ -1,0 +1,14 @@
+{
+  "contract": "p02-group-c2",
+  "schema": "p02-group-c2.schema.json",
+  "status": "P02_DESIGN_REFERENCE_NOT_PRODUCT_APPROVAL",
+  "maximum_members": 20,
+  "maximum_related_account_proofs": 200,
+  "maximum_retained_epochs": 1000,
+  "maximum_theoretical_grants": 660000,
+  "aggregate_evaluation_bytes": 16777216,
+  "domain": "AnyNote/p02-group-c2/{family}/{purpose}\u0000",
+  "reference": "../protocol/src/group-state.mjs",
+  "builders": "../protocol/src/group-builders.mjs",
+  "full_registry": "p02-v1.registry.json"
+}

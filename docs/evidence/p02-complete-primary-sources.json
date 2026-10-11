@@ -1,0 +1,28 @@
+{
+  "status": "VERIFIED_UPSTREAM_METADATA_LICENSES_AND_SHA256_NOT_SIGNATURE_OR_ANYNOTE_AUDIT",
+  "license_sources": [
+    {
+      "source": "https://github.com/str4d/rage/blob/v0.12.1/Cargo.toml",
+      "retrieved_utc": "2026-10-11",
+      "sha256": "fbf02dab5dc9b03633c2cbf5eec125e15d3a3579d5a392a195ad94fed57d69a5"
+    },
+    {
+      "source": "https://github.com/str4d/rage/blob/v0.12.1/LICENSE-MIT",
+      "retrieved_utc": "2026-10-11",
+      "sha256": "fe56c030c2d8c3404a37fe711cebb27ebea13d0aacf7e3524db4198335ad8cd1"
+    },
+    {
+      "source": "https://github.com/FiloSottile/age/blob/v1.3.2/LICENSE",
+      "retrieved_utc": "2026-10-11",
+      "sha256": "c5d65279d02955c0fc2294ae417c3add650d228f4f5c82bd6d531fc26c89cd96"
+    }
+  ],
+  "release_asset_pins": "../../packages/contracts/p02-export-tools.json",
+  "native_library": "Rust age 0.12.1, MIT OR Apache-2.0",
+  "interop": "Go age 1.3.2, BSD-3-Clause",
+  "standards": [
+    "https://www.rfc-editor.org/rfc/rfc8785",
+    "https://github.com/C2SP/C2SP/blob/main/age.md"
+  ],
+  "qualified_review": "TRACKED_NOT_BOOKED_NOT_RUN"
+}

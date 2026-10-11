@@ -1,0 +1,26 @@
+<?php
+// Independent native crypto and ASCII-key JCS PUBLIC fixture subset only.
+declare(strict_types=1);
+$checks=0;
+function must(bool $ok):void{global $checks;++$checks;if(!$ok)throw new RuntimeException('PUBLIC_V1_FIXTURE_MISMATCH');}
+function b64(string $v):string{return rtrim(strtr(base64_encode($v),'+/','-_'),'=');}
+function un64(string $v):string{$b=base64_decode(strtr($v,'-_','+/'),true);must($b!==false&&b64($b)===$v);return $b;}
+function canonical(mixed $v):string{if(is_object($v)){$p=get_object_vars($v);foreach(array_keys($p)as$k)must(preg_match('/^[\x20-\x7e]+$/D',$k)===1);ksort($p,SORT_STRING);$out=[];foreach($p as$k=>$value)$out[]=json_encode($k,JSON_THROW_ON_ERROR).':'.canonical($value);return '{'.implode(',',$out).'}';}if(is_array($v))return '['.implode(',',array_map('canonical',$v)).']';must(!is_float($v));return json_encode($v,JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);}
+function domain(string $family,string $purpose):string{return "AnyNote/p02-v1/$family/$purpose\0";}
+function aad(string $purpose,mixed $v):string{return domain('aad',$purpose).canonical($v);}
+function decrypt(string $cipher,string $a,string $nonce,string $key):string{$p=sodium_crypto_aead_xchacha20poly1305_ietf_decrypt($cipher,$a,$nonce,$key);must($p!==false);$bad=$cipher;$bad[strlen($bad)-1]=chr(ord($bad[strlen($bad)-1])^1);must(sodium_crypto_aead_xchacha20poly1305_ietf_decrypt($bad,$a,$nonce,$key)===false);must(sodium_crypto_aead_xchacha20poly1305_ietf_decrypt($cipher,$a.'changed',$nonce,$key)===false);return $p;}
+$f=json_decode(file_get_contents($argv[1]),false,32,JSON_THROW_ON_ERROR);$x=$f->inputs;$o=$f->objects;$b=$o->bundle;$h=$b->envelope->header;$context=(object)['context'=>$h->context];
+$pub=hex2bin($x->signing_public_hex);$secret=hex2bin($x->signing_secret_hex);$sign=domain('sign','object-revision').canonical($h);
+must(sodium_crypto_sign_verify_detached(un64($b->envelope->signature),$sign,$pub));must(b64(sodium_crypto_sign_detached($sign,$secret))===$b->envelope->signature);
+must(b64(hash('sha256',un64($b->ciphertext),true))===$h->ciphertext_digest);must(b64(hash('sha256',domain('hash','wrap').canonical($b->wrap),true))===$h->key_wrap_digest);
+$dek=decrypt(un64($b->wrap->ciphertext),aad('object-key-wrap',$context),un64($b->wrap->nonce),hex2bin($x->group_key_hex));must(bin2hex($dek)===$x->object_key_hex);
+$plain=decrypt(un64($b->ciphertext),aad('object-payload',$context),un64($h->nonce),$dek);must(bin2hex($plain)===$f->expected->payload_hex);
+must(sodium_crypto_aead_xchacha20poly1305_ietf_encrypt(canonical($o->payload),aad('object-payload',$context),un64($h->nonce),$dek)===un64($b->ciphertext));
+$l=$o->local_cipher;$local=decrypt(un64($l->ciphertext),aad('local-record',$l->context),un64($l->nonce),hex2bin($x->local_key_hex));must(bin2hex($local)===$f->expected->local_plain_hex);
+$parameters=$o->parameters;$phraseKek=sodium_crypto_pwhash(32,$x->phrase,un64($parameters->salt),$parameters->opslimit,$parameters->memlimit,SODIUM_CRYPTO_PWHASH_ALG_ARGON2ID13);must(bin2hex($phraseKek)===$f->expected->phrase_kek_hex);
+$prf=$o->prf_descriptor;$info="AnyNote/p02-v1/hkdf/local-prf-kek\0".canonical((object)['context'=>$prf->context,'credential_id'=>$prf->credential_id]);$prfKek=hash_hkdf('sha256',hex2bin($x->prf_result_hex),32,$info,un64($prf->prf_salt));must(bin2hex($prfKek)===$f->expected->prf_kek_hex);
+foreach(['phrase','prf']as$kind){$w=$o->{$kind.'_wrapper'};$descriptor=$o->{$kind.'_descriptor'};$kek=$kind==='phrase'?$phraseKek:$prfKek;must(bin2hex(decrypt(un64($w->ciphertext),aad('local-unlock',$descriptor),un64($w->nonce),$kek))===$x->local_key_hex);}
+$native=$o->native_descriptor;$nativeKek=hash_hkdf('sha256',hex2bin($x->prf_result_hex),32,"AnyNote/p02-v1/hkdf/windows-prf-kek\0".canonical($native),un64($native->prf_salt));must(bin2hex($nativeKek)===$f->expected->native_kek_hex);$w=$o->native_wrapper;$cipher=un64($w->ciphertext);$plain=openssl_decrypt(substr($cipher,0,-16),'aes-256-gcm',$nativeKek,OPENSSL_RAW_DATA,un64($w->nonce),substr($cipher,-16),aad('local-unlock',$native));must(bin2hex($plain)===$x->local_key_hex);must(openssl_decrypt(substr($cipher,0,-16),'aes-256-gcm',$nativeKek,OPENSSL_RAW_DATA,un64($w->nonce),substr($cipher,-16),aad('local-unlock',$native).'changed')===false);
+$footer=$o->footer;must(sodium_crypto_sign_verify_detached(un64($footer->signature),domain('sign','export-footer').canonical($footer->body),un64($o->evidence->accounts[0]->events[0]->body->payload->certificate->body->device_signing_key)));
+$all=json_decode(file_get_contents($argv[2]),false,32,JSON_THROW_ON_ERROR);$structures=0;foreach($all as$kind=>$v){$frozen='';foreach($v->byte_blocks as$name){must(preg_match('/^bytes\/[a-z0-9-]+-[0-9]{4}\.hex$/D',$name)===1);$frozen.=hex2bin(trim(file_get_contents(dirname($argv[2]).'/'.$name)));}$jcs=canonical(json_decode($frozen,false,32,JSON_THROW_ON_ERROR));must($jcs===$frozen);must(b64(hash('sha256',domain('hash',$kind).$jcs,true))===$v->digest);++$structures;}
+echo json_encode(['status'=>'PASS','scope'=>'PUBLIC_ASCII_KEY_FIXTURE_SUBSET_ONLY','checks'=>$checks,'structures'=>$structures,'php'=>PHP_VERSION,'sodium'=>SODIUM_LIBRARY_VERSION,'actual_platform_SQL_and_general_parser'=>'NOT_IMPLEMENTED'],JSON_THROW_ON_ERROR)."\n";

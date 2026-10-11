@@ -29,6 +29,7 @@ jobs:
           python3 scripts/check_baseline.py
           python3 scripts/api-inventory.py
           python3 scripts/install-p03-tools.py
+          python3 scripts/install-p02-tools.py
           python3 scripts/check-secrets.py
       - name: Install frozen dependencies and build verified images
         run: python3 scripts/dev-stack.py install
@@ -41,6 +42,8 @@ jobs:
           python3 scripts/check-p02-crypto.py
           python3 scripts/check-p02-state.py
           python3 scripts/check-p02-group.py
+          python3 scripts/check-p02-complete.py
+          python3 scripts/check-p02-v1-authority.py
       - name: Preserve content-free foundation evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

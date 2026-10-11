@@ -1,14 +1,19 @@
 # P02 protocol candidates: key custody, identity and file context
 
-Status: **CANDIDATE p02-file-c1 + p02-identity-c1 + p02-state-c1**, synthetic evaluation only.
-The file/checkpoint bytes and [identity/recipient contract](P02_IDENTITY_CONTRACT.md)
-are reviewable slices, not the complete v1 protocol freeze.
-Original specification 1.1.0 remains unchanged. The registry and schema are
-[packages/contracts](../packages/contracts/registry.json); mandatory executable
-predicates are in [the codec](../packages/protocol/src/codec.mjs).
-Independent qualified design review is NOT RUN. No product endpoint consumes
-this package and no migration or production content encryption/key delivery is enabled. The
-separate reference now performs synthetic signature/sealed-box/file crypto.
+Status: **P02 v1 design freeze**, synthetic references and independent PUBLIC
+byte/crypto/authorization subsets; production approval is blocked. The full
+composition is [P02_COMPLETE_CONTRACT.md](P02_COMPLETE_CONTRACT.md), its active
+registry is [p02-v1.registry.json](../packages/contracts/p02-v1.registry.json),
+and review is [tracked, not booked/performed](P02_REVIEW.md). Original chapter
+14 §5 defines P02's design deliverables; P05/P07/P13 implement product adapters,
+custody and offline utility, P17 qualified release review. P02 completion does
+not complete G2/G3, product authorization/SQL, platform custody or deployment.
+
+Earlier file/identity/state/group c1 schemas and vectors stay byte-identical.
+Active profile composes file c1 + identity c1 + state c1 + group **c2** (20-member
+limit and separate domains) + complete p02-v1. Sections below retain the original
+file/identity slice formulas; the complete contract supersedes their old pending
+scope statements. No product endpoint consumes the reference package.
 
 ## Key custody and recovery path
 
@@ -24,7 +29,7 @@ separate reference now performs synthetic signature/sealed-box/file crypto.
 | File-data DEK | Separate fresh random 32 bytes per file version | Encrypt chunks; present only inside encrypted manifest/encrypted local state |
 | L | Random 32 bytes per device/account profile | Encrypt identities, group keys, cache, search, drafts/outbox; never reused as an account/group identity |
 | Unlock KEK/wrapper | OS-gated, credential-verified PRF/HKDF, or strong phrase/libsodium Argon2id | Alternate wrappers of L; weakest enabled path limits protection; no short-PIN-only defense |
-| Export identity | Fresh independent age X25519 identity per export | Selected DEKs only inside encrypted age stream; exact archive profile pending |
+| Export identity | Fresh independent age X25519 identity per export | Selected DEKs only inside standard age v1; exact USTAR/kit/footer profile in P02_COMPLETE_CONTRACT |
 
 The recipient path is device/recovery private key -> authenticated sealed G[e]
 envelope -> G[e] -> manifest-key wrap -> manifest DEK -> encrypted manifest ->

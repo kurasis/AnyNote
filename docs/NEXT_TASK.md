@@ -1,33 +1,28 @@
-# Next bounded task
+# Next implementation batch
 
-## P02-NOTE-LOCAL-EXPORT-CONTRACT (larger batch)
+## Finish P03 contracts, generated types, errors and safe logging
 
-Read tracking, original chapters 04/07/09/10/11/12/13/15/16/19/20, protocol-v1
-and all four candidate registries/contracts. Preserve original spec, previous
-schema/vector bytes, P01 kits/reference/licenses, dependency locks and unrelated
-changes. Chat Russian, repository English. Automatically push/merge a passing
-reviewable PR; respect protection and required checks.
+Read AGENTS.md, progress/decisions/limitations and original chapters 08/14/15/16/20.
+Read protocol-v1.md, P02_COMPLETE_CONTRACT.md, P02_REVIEW.md and active
+packages/contracts/p02-v1.registry.json. Chat Russian, repository English. Use
+the current checkout; automatically push/merge passing normal PRs as authorized.
 
-1. Freeze typed encrypted note revisions, note/group metadata, trash/tombstone and
-   conflict/parent closure using existing standard authenticated crypto/signature
-   and pinned group-authority candidates. Distinguish plaintext local inspection,
-   opaque server bytes, valid signature, current writer and historical acceptance.
-2. Freeze local encrypted vault/session/offline state and backup/export/import
-   candidate formats, exact key paths/AAD/domain/version/limits and corruption
-   behavior. Root/recovery custody and export disclosure must be explicit; no
-   server plaintext fallback or fake OS-keystore/physical-memory claim.
-3. Add synthetic bounded streaming/export/import and crash/partial/stale/conflict
-   rejection fixtures; demonstrate key unwrap through note/file payload paths
-   without uploader keys. Preserve independent history ambiguity and recovery
-   roster/rekey gates, including reader denial and historical tombstone closure.
-4. Extend frozen public vectors, meaningful adversarial tests, independent PHP
-   subset/CI and read-only saved setup; update decisions, evidence, limitations
-   and traceability. Prepare a complete P02 remaining review checklist before
-   P03 generated types/errors or product P04/P08/P09 work.
+1. Complete P03 against the frozen five-component protocol: API/OpenAPI DTOs and
+   generated client/backend types, exact transport error mapping and version
+   negotiation. Fail CI on generated/schema/predicate/fixture drift; generation
+   is an explicit development command, never an install/setup mutation.
+2. Add bounded safe structured request errors/logging/redaction/request IDs to
+   the existing Laravel foundation; validate unauthorized existence concealment,
+   no ciphertext/plaintext/credential/key/SQL/path/stack logs and content limits.
+3. Verify owned MariaDB/FPM/Nginx/Laravel integration, strict generated-client
+   parsing and source/dependency checks. Preserve all original specification,
+   prior schema/vector/lock/P01/reference/release bytes and exact PUBLIC exceptions.
+4. Update evidence/handoff and saved read-only setup; run relevant CI, push/merge
+   with all required checks and exact tested tree evidence. Do not deploy/release
+   or declare product P04/P05/P07/P13 or independent review complete.
 
-Exit: reproducible note/local/export bytes and key paths, complete parser/resource
-bounds and safely rejected corruption/partial import/conflicts. P02/G2 remains
-IN PROGRESS until full required formats/interoperability and qualified review are
-complete. Do not fabricate native OS custody, production SQL/auth/session or an
-independent security audit. No new owner device action, deployment or kit release
-is needed for this synthetic batch.
+P02 design deliverables VERIFIED; qualified review TRACKED_NOT_BOOKED / NOT_RUN,
+G2/G3 production release remains blocked. An actual qualified reviewer booking
+and report/remediation is an owner/external action, not a self-review or CI pass.
+P01 full physical/memory/network/provider matrix stays independently open. No
+new owner device trial is needed for this P03 batch.

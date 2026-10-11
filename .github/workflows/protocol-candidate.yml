@@ -33,6 +33,8 @@ jobs:
         run: |
           source scripts/runtime-env.sh
           npm --prefix packages/protocol ci --ignore-scripts --cache "$NPM_CONFIG_CACHE" --no-audit --no-fund
+      - name: Install checksum-pinned independent age engines
+        run: python3 scripts/install-p02-tools.py
       - name: Validate candidate parser, context, fixture and dependency drift
         run: |
           source scripts/runtime-env.sh
@@ -41,6 +43,8 @@ jobs:
           npm --prefix packages/protocol run crypto:check
           npm --prefix packages/protocol run state:check
           npm --prefix packages/protocol run group:check
+          npm --prefix packages/protocol run complete:check
+          python3 scripts/check-p02-portability.py
           npm --prefix packages/protocol run inventory:check
           npm --prefix packages/protocol audit --cache "$NPM_CONFIG_CACHE" --audit-level=low
           python3 scripts/check-p02-fixtures.py

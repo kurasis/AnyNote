@@ -124,3 +124,14 @@ of this OS version as a future production crypto baseline. Scure README names
 external review of 1.0.0 and self-review of 2.2.0; neither is review evidence for
 selected 2.4.0 or this candidate. No signature/provenance verification or full
 OS license SBOM is claimed from registry SRI and inspected notices.
+
+## P02 complete export reference tooling
+
+Rust age 0.12.1/rage 0.12.1 (MIT OR Apache-2.0), independent Go age 1.3.2
+(BSD-3-Clause). Actual tagged workspace/license and official GitHub release
+asset digest metadata verified on 2026-10-11; exact public Linux artifact pins
+in packages/contracts/p02-export-tools.json. Ignored synthetic tools only,
+no product dependency/lock change or release SBOM/signature/Sigsum claim.
+Existing Node crypto/libsodium and pinned native PHP sodium/OpenSSL reproduce
+new note/local/PRF/Argon/AES-GCM bytes. A transient Prettier 3.6.2 formatting
+invocation changes source formatting only; it is not a product/setup dependency.

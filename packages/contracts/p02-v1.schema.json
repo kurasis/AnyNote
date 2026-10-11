@@ -1,0 +1,2311 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:anynote:p02:complete-contract:v1",
+  "title": "AnyNote complete P02 v1 design profile; synthetic reference, pending external review",
+  "$defs": {
+    "common": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version"
+      ],
+      "additionalProperties": false
+    },
+    "attachment": {
+      "type": "object",
+      "properties": {
+        "file_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "file_version_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "envelope_digest": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        }
+      },
+      "required": [
+        "file_id",
+        "file_version_id",
+        "envelope_digest"
+      ],
+      "additionalProperties": false
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "object-context"
+        },
+        "service_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "group_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "object_kind": {
+          "enum": [
+            "group-metadata",
+            "thread",
+            "entry"
+          ]
+        },
+        "object_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "revision_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "operation_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "thread_id": {
+          "anyOf": [
+            {
+              "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "action": {
+          "enum": [
+            "create",
+            "update",
+            "soft-delete",
+            "restore"
+          ]
+        },
+        "author": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/author"
+        },
+        "policy": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/policy"
+        },
+        "parents": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/parent"
+          },
+          "maxItems": 32
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/attachment"
+          },
+          "maxItems": 100
+        },
+        "payload_schema": {
+          "const": 1
+        },
+        "archived": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "service_id",
+        "group_id",
+        "object_kind",
+        "object_id",
+        "revision_id",
+        "operation_id",
+        "thread_id",
+        "action",
+        "author",
+        "policy",
+        "parents",
+        "attachments",
+        "payload_schema",
+        "archived"
+      ],
+      "additionalProperties": false
+    },
+    "checklist-item": {
+      "type": "object",
+      "properties": {
+        "item_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "checked": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "item_id",
+        "text",
+        "checked"
+      ],
+      "additionalProperties": false
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "object-plaintext"
+        },
+        "context": {
+          "$ref": "#/$defs/context"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "maxItems": 50,
+          "uniqueItems": true
+        },
+        "markdown": {
+          "type": "string",
+          "maxLength": 2097152
+        },
+        "checklist": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/checklist-item"
+          },
+          "maxItems": 10000
+        },
+        "summary_entry_id": {
+          "anyOf": [
+            {
+              "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata_kind": {
+          "enum": [
+            "content",
+            "account-preferences"
+          ]
+        },
+        "preferences": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "enum": [
+                  "favorite",
+                  "group-order",
+                  "thread-order",
+                  "read-marker"
+                ]
+              },
+              "target_id": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+              },
+              "value": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+              }
+            },
+            "required": [
+              "key",
+              "target_id",
+              "value"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "context",
+        "title",
+        "tags",
+        "markdown",
+        "checklist",
+        "summary_entry_id",
+        "metadata_kind",
+        "preferences"
+      ],
+      "additionalProperties": false
+    },
+    "wrap": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "object-key-wrap"
+        },
+        "context": {
+          "$ref": "#/$defs/context"
+        },
+        "nonce": {
+          "type": "string",
+          "format": "base64url-24"
+        },
+        "ciphertext": {
+          "type": "string",
+          "format": "base64url-48"
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "context",
+        "nonce",
+        "ciphertext"
+      ],
+      "additionalProperties": false
+    },
+    "header": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "object-revision"
+        },
+        "context": {
+          "$ref": "#/$defs/context"
+        },
+        "nonce": {
+          "type": "string",
+          "format": "base64url-24"
+        },
+        "ciphertext_bytes": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        },
+        "ciphertext_digest": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        },
+        "key_wrap_digest": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "context",
+        "nonce",
+        "ciphertext_bytes",
+        "ciphertext_digest",
+        "key_wrap_digest"
+      ],
+      "additionalProperties": false
+    },
+    "envelope": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "$ref": "#/$defs/header"
+        },
+        "signature": {
+          "type": "string",
+          "format": "base64url-64"
+        }
+      },
+      "required": [
+        "header",
+        "signature"
+      ],
+      "additionalProperties": false
+    },
+    "bundle": {
+      "type": "object",
+      "properties": {
+        "envelope": {
+          "$ref": "#/$defs/envelope"
+        },
+        "wrap": {
+          "$ref": "#/$defs/wrap"
+        },
+        "ciphertext": {
+          "type": "string",
+          "format": "base64url-variable",
+          "minLength": 22,
+          "maxLength": 2796235
+        }
+      },
+      "required": [
+        "envelope",
+        "wrap",
+        "ciphertext"
+      ],
+      "additionalProperties": false
+    },
+    "local-context": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "local-record"
+        },
+        "service_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "device_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "profile_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "record_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "record_kind": {
+          "enum": [
+            "vault-secrets",
+            "cache",
+            "search",
+            "draft",
+            "outbox",
+            "transfer",
+            "session"
+          ]
+        },
+        "local_schema": {
+          "const": 1
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "service_id",
+        "account_id",
+        "device_id",
+        "profile_id",
+        "record_id",
+        "record_kind",
+        "local_schema"
+      ],
+      "additionalProperties": false
+    },
+    "local-envelope": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/local-context"
+        },
+        "nonce": {
+          "type": "string",
+          "format": "base64url-24"
+        },
+        "ciphertext": {
+          "type": "string",
+          "format": "base64url-variable",
+          "minLength": 22,
+          "maxLength": 5592427
+        }
+      },
+      "required": [
+        "context",
+        "nonce",
+        "ciphertext"
+      ],
+      "additionalProperties": false
+    },
+    "vault-secrets": {
+      "type": "object",
+      "properties": {
+        "device_signing_secret": {
+          "type": "string",
+          "format": "base64url-64"
+        },
+        "device_encryption_secret": {
+          "type": "string",
+          "format": "base64url-32"
+        },
+        "group_keys": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "service_id": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+              },
+              "group_id": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+              },
+              "key_epoch": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+              },
+              "epoch_digest": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+              },
+              "group_secret": {
+                "type": "string",
+                "format": "base64url-32"
+              }
+            },
+            "required": [
+              "service_id",
+              "group_id",
+              "key_epoch",
+              "epoch_digest",
+              "group_secret"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 660
+        }
+      },
+      "required": [
+        "device_signing_secret",
+        "device_encryption_secret",
+        "group_keys"
+      ],
+      "additionalProperties": false
+    },
+    "outbox": {
+      "type": "object",
+      "properties": {
+        "draft_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "attempt_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "revision_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "state": {
+          "enum": [
+            "QUEUED",
+            "SENT_UNKNOWN",
+            "CONFLICT",
+            "REKEY_REQUIRED",
+            "ACCESS_LOST",
+            "COMMITTED"
+          ]
+        },
+        "bundle": {
+          "$ref": "#/$defs/bundle"
+        },
+        "attempt_digest": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/receipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "draft_id",
+        "attempt_id",
+        "revision_id",
+        "state",
+        "bundle",
+        "attempt_digest",
+        "receipt"
+      ],
+      "additionalProperties": false
+    },
+    "draft": {
+      "type": "object",
+      "properties": {
+        "draft_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "context": {
+          "$ref": "#/$defs/context"
+        },
+        "payload": {
+          "$ref": "#/$defs/payload"
+        }
+      },
+      "required": [
+        "draft_id",
+        "context",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "session-secret": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "access_credential": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "refresh_credential": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "expires_at": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        }
+      },
+      "required": [
+        "session_id",
+        "access_credential",
+        "refresh_credential",
+        "expires_at"
+      ],
+      "additionalProperties": false
+    },
+    "local-plaintext": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "local-record-plaintext"
+        },
+        "context": {
+          "$ref": "#/$defs/local-context"
+        },
+        "data": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/vault-secrets"
+            },
+            {
+              "$ref": "#/$defs/outbox"
+            },
+            {
+              "$ref": "#/$defs/draft"
+            },
+            {
+              "$ref": "#/$defs/session-secret"
+            },
+            {
+              "$ref": "#/$defs/cache"
+            },
+            {
+              "$ref": "#/$defs/search"
+            },
+            {
+              "$ref": "#/$defs/transfer"
+            }
+          ]
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "context",
+        "data"
+      ],
+      "additionalProperties": false
+    },
+    "argon2-parameters": {
+      "type": "object",
+      "properties": {
+        "algorithm": {
+          "const": "argon2id13"
+        },
+        "salt": {
+          "type": "string",
+          "format": "base64url-16"
+        },
+        "opslimit": {
+          "type": "integer",
+          "minimum": 3,
+          "maximum": 10
+        },
+        "memlimit": {
+          "type": "integer",
+          "minimum": 67108864,
+          "maximum": 268435456
+        }
+      },
+      "required": [
+        "algorithm",
+        "salt",
+        "opslimit",
+        "memlimit"
+      ],
+      "additionalProperties": false
+    },
+    "unlock-context": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "local-unlock"
+        },
+        "service_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "device_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "profile_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "wrapper_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "method": {
+          "enum": [
+            "argon2id13",
+            "webauthn-prf",
+            "windows-webauthn-prf"
+          ]
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "service_id",
+        "account_id",
+        "device_id",
+        "profile_id",
+        "wrapper_id",
+        "method"
+      ],
+      "additionalProperties": false
+    },
+    "phrase-wrapper": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/unlock-context"
+        },
+        "parameters": {
+          "$ref": "#/$defs/argon2-parameters"
+        },
+        "nonce": {
+          "type": "string",
+          "format": "base64url-24"
+        },
+        "ciphertext": {
+          "type": "string",
+          "format": "base64url-48"
+        }
+      },
+      "required": [
+        "context",
+        "parameters",
+        "nonce",
+        "ciphertext"
+      ],
+      "additionalProperties": false
+    },
+    "prf-wrapper": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/unlock-context"
+        },
+        "credential_id": {
+          "type": "string",
+          "format": "base64url-variable",
+          "minLength": 1,
+          "maxLength": 1366
+        },
+        "prf_salt": {
+          "type": "string",
+          "format": "base64url-32"
+        },
+        "nonce": {
+          "type": "string",
+          "format": "base64url-24"
+        },
+        "ciphertext": {
+          "type": "string",
+          "format": "base64url-48"
+        }
+      },
+      "required": [
+        "context",
+        "credential_id",
+        "prf_salt",
+        "nonce",
+        "ciphertext"
+      ],
+      "additionalProperties": false
+    },
+    "native-wrapper": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/unlock-context"
+        },
+        "provider": {
+          "const": "windows-hello-webauthn-prf-tpm"
+        },
+        "provider_format": {
+          "const": 1
+        },
+        "credential_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1366,
+          "format": "base64url-variable"
+        },
+        "prf_salt": {
+          "$ref": "#/$defs/digest"
+        },
+        "tpm_name": {
+          "type": "string",
+          "minLength": 46,
+          "maxLength": 46,
+          "format": "base64url-variable"
+        },
+        "tpm_public_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "machine_binding_id": {
+          "$ref": "#/$defs/id"
+        },
+        "nonce": {
+          "type": "string",
+          "format": "base64url-12"
+        },
+        "ciphertext": {
+          "$ref": "#/$defs/cipher48"
+        }
+      },
+      "required": [
+        "context",
+        "provider",
+        "provider_format",
+        "credential_id",
+        "prf_salt",
+        "tpm_name",
+        "tpm_public_sha256",
+        "machine_binding_id",
+        "nonce",
+        "ciphertext"
+      ],
+      "additionalProperties": false
+    },
+    "cursor": {
+      "type": "object",
+      "properties": {
+        "generation": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "sequence": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        }
+      },
+      "required": [
+        "generation",
+        "sequence"
+      ],
+      "additionalProperties": false
+    },
+    "receipt": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "mutation-receipt"
+        },
+        "operation_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "revision_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "envelope_digest": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        },
+        "status": {
+          "const": "COMMITTED"
+        },
+        "cursor": {
+          "$ref": "#/$defs/cursor"
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "operation_id",
+        "revision_id",
+        "envelope_digest",
+        "status",
+        "cursor"
+      ],
+      "additionalProperties": false
+    },
+    "event": {
+      "type": "object",
+      "properties": {
+        "event_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "sequence": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        },
+        "group_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "object_kind": {
+          "enum": [
+            "group-metadata",
+            "thread",
+            "entry",
+            "file-manifest",
+            "membership",
+            "roster",
+            "epoch",
+            "removal-notice"
+          ]
+        },
+        "object_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "revision_id": {
+          "anyOf": [
+            {
+              "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "digest": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        }
+      },
+      "required": [
+        "event_id",
+        "sequence",
+        "group_id",
+        "object_kind",
+        "object_id",
+        "revision_id",
+        "digest"
+      ],
+      "additionalProperties": false
+    },
+    "sync-page": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "sync-page"
+        },
+        "from_cursor": {
+          "$ref": "#/$defs/cursor"
+        },
+        "next_cursor": {
+          "$ref": "#/$defs/cursor"
+        },
+        "watermark": {
+          "$ref": "#/$defs/cursor"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/event"
+          },
+          "maxItems": 1000
+        },
+        "complete": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "from_cursor",
+        "next_cursor",
+        "watermark",
+        "events",
+        "complete"
+      ],
+      "additionalProperties": false
+    },
+    "snapshot-item": {
+      "type": "object",
+      "properties": {
+        "group_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "object_kind": {
+          "enum": [
+            "group-metadata",
+            "thread",
+            "entry",
+            "file-manifest"
+          ]
+        },
+        "object_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "revision_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "envelope_digest": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        },
+        "payload_status": {
+          "enum": [
+            "retained",
+            "pruned",
+            "tombstone"
+          ]
+        }
+      },
+      "required": [
+        "group_id",
+        "object_kind",
+        "object_id",
+        "revision_id",
+        "envelope_digest",
+        "payload_status"
+      ],
+      "additionalProperties": false
+    },
+    "snapshot-page": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "snapshot-page"
+        },
+        "snapshot_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "page_index": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/snapshot-item"
+          },
+          "maxItems": 500
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "snapshot_id",
+        "page_index",
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "snapshot-descriptor": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "snapshot-descriptor"
+        },
+        "snapshot_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "device_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "snapshot_purpose": {
+          "enum": [
+            "resync",
+            "export"
+          ]
+        },
+        "watermark": {
+          "$ref": "#/$defs/cursor"
+        },
+        "created_at": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        },
+        "expires_at": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        },
+        "page_count": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        },
+        "item_count": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        },
+        "inventory_digest": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "snapshot_id",
+        "account_id",
+        "device_id",
+        "snapshot_purpose",
+        "watermark",
+        "created_at",
+        "expires_at",
+        "page_count",
+        "item_count",
+        "inventory_digest"
+      ],
+      "additionalProperties": false
+    },
+    "restore-state": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "restore-state"
+        },
+        "transport_generation": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "state": {
+          "enum": [
+            "RECOVERY_ONLY",
+            "RESTORE_QUARANTINE",
+            "RECONCILED"
+          ]
+        },
+        "security_heads": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "group_id": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+              },
+              "policy": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/head"
+              },
+              "epoch": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/head"
+              },
+              "history": {
+                "anyOf": [
+                  {
+                    "$ref": "urn:anynote:p02:file-contract:c1#/$defs/head"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "group_id",
+              "policy",
+              "epoch",
+              "history"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 200
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "transport_generation",
+        "state",
+        "security_heads"
+      ],
+      "additionalProperties": false
+    },
+    "error": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "enum": [
+                "ACCESS_REVOKED",
+                "AUTH_REQUIRED",
+                "DEVICE_NOT_TRUSTED",
+                "DEVICE_REVOKED",
+                "ENROLLMENT_EXPIRED",
+                "EXPORT_INTEGRITY_FAILURE",
+                "EXPORT_TRUNCATED",
+                "FILE_LIMIT_EXCEEDED",
+                "HISTORY_CLOSURE_REQUIRED",
+                "IDEMPOTENCY_MISMATCH",
+                "INSUFFICIENT_STORAGE",
+                "INTEGRITY_FAILURE",
+                "INVALID_CHUNK",
+                "INVALID_REQUEST",
+                "INVALID_SIGNATURE",
+                "KEYS_PENDING",
+                "MALFORMED_ENVELOPE",
+                "NOT_FOUND",
+                "POLICY_CHANGED",
+                "QUOTA_EXCEEDED",
+                "RATE_LIMITED",
+                "RECOVERY_GENERATION_CONFLICT",
+                "REKEY_REQUIRED",
+                "REKEY_RESTART_REQUIRED",
+                "REQUEST_TOO_LARGE",
+                "RESOURCE_LIMIT",
+                "RESTORE_QUARANTINE",
+                "REVISION_ID_CONFLICT",
+                "ROLE_FORBIDDEN",
+                "ROSTER_CHANGED",
+                "SESSION_DEVICE_PROOF_REQUIRED",
+                "SESSION_EXPIRED",
+                "SNAPSHOT_EXPIRED",
+                "STALE_MEMBERSHIP",
+                "STALE_REVISION",
+                "STORAGE_UNAVAILABLE",
+                "SYNC_CURSOR_EXPIRED",
+                "TEMPORARY_UNAVAILABLE",
+                "TRANSITION_EXPIRED",
+                "UNANCHORED_HISTORY",
+                "UNSUPPORTED_SCHEMA",
+                "UPLOAD_EXPIRED"
+              ]
+            },
+            "message_key": {
+              "type": "string",
+              "maxLength": 128
+            },
+            "request_id": {
+              "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+            },
+            "retryable": {
+              "type": "boolean"
+            },
+            "details": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "enum": [
+                      "expected_head",
+                      "current_head",
+                      "retry_after_ms",
+                      "required_bytes",
+                      "available_bytes"
+                    ]
+                  },
+                  "value": {
+                    "type": "string",
+                    "maxLength": 256
+                  }
+                },
+                "required": [
+                  "key",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 32
+            }
+          },
+          "required": [
+            "code",
+            "message_key",
+            "request_id",
+            "retryable",
+            "details"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    "negotiation": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "protocol-negotiation"
+        },
+        "profile": {
+          "const": "p02-v1"
+        },
+        "api_version": {
+          "const": 1
+        },
+        "wire_version": {
+          "const": 1
+        },
+        "payload_version": {
+          "const": 1
+        },
+        "local_schema": {
+          "const": 1
+        },
+        "export_version": {
+          "const": 1
+        },
+        "minimum_reader": {
+          "const": 1
+        },
+        "minimum_writer": {
+          "const": 1
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "maxItems": 8
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "profile",
+        "api_version",
+        "wire_version",
+        "payload_version",
+        "local_schema",
+        "export_version",
+        "minimum_reader",
+        "minimum_writer",
+        "components"
+      ],
+      "additionalProperties": false
+    },
+    "export-selection": {
+      "type": "object",
+      "properties": {
+        "include_history": {
+          "type": "boolean"
+        },
+        "include_trash": {
+          "type": "boolean"
+        },
+        "group_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "maxItems": 200,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "include_history",
+        "include_trash",
+        "group_ids"
+      ],
+      "additionalProperties": false
+    },
+    "export-header": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "export-header"
+        },
+        "export_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "service_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "root_fingerprint": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        },
+        "snapshot": {
+          "$ref": "#/$defs/snapshot-descriptor"
+        },
+        "selection": {
+          "$ref": "#/$defs/export-selection"
+        },
+        "created_at": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        },
+        "outer_format": {
+          "const": "age-v1-X25519"
+        },
+        "archive_format": {
+          "const": "ustar-anynote-v1"
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "export_id",
+        "service_id",
+        "account_id",
+        "root_fingerprint",
+        "snapshot",
+        "selection",
+        "created_at",
+        "outer_format",
+        "archive_format"
+      ],
+      "additionalProperties": false
+    },
+    "export-item": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "maxLength": 100
+        },
+        "kind": {
+          "enum": [
+            "identity",
+            "record",
+            "chunk",
+            "key",
+            "source-snapshot"
+          ]
+        },
+        "size": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        },
+        "digest": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        }
+      },
+      "required": [
+        "path",
+        "kind",
+        "size",
+        "digest"
+      ],
+      "additionalProperties": false
+    },
+    "export-page": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "export-inventory-page"
+        },
+        "export_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "page_index": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/export-item"
+          },
+          "maxItems": 500
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "export_id",
+        "page_index",
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "export-footer-body": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "export-footer"
+        },
+        "export_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "header_digest": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        },
+        "page_count": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        },
+        "item_count": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        },
+        "total_item_bytes": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        },
+        "inventory_digest": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        },
+        "signer": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/author"
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "export_id",
+        "header_digest",
+        "page_count",
+        "item_count",
+        "total_item_bytes",
+        "inventory_digest",
+        "signer"
+      ],
+      "additionalProperties": false
+    },
+    "export-footer": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/export-footer-body"
+        },
+        "signature": {
+          "type": "string",
+          "format": "base64url-64"
+        }
+      },
+      "required": [
+        "body",
+        "signature"
+      ],
+      "additionalProperties": false
+    },
+    "export-key": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "export-selected-key"
+        },
+        "service_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "group_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "object_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "revision_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "key_kind": {
+          "enum": [
+            "object-dek",
+            "manifest-and-file-deks"
+          ]
+        },
+        "object_dek": {
+          "type": "string",
+          "format": "base64url-32"
+        },
+        "file_data_dek": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "base64url-32"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "service_id",
+        "group_id",
+        "object_id",
+        "revision_id",
+        "key_kind",
+        "object_dek",
+        "file_data_dek"
+      ],
+      "additionalProperties": false
+    },
+    "export-kit": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p02-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "export-recovery-document"
+        },
+        "export_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "archive_sha256": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        },
+        "export_identity": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "exporter_root_fingerprint": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        },
+        "exporter_roster": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/head"
+        },
+        "independent_group_pins": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "group_id": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+              },
+              "genesis_digest": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+              },
+              "policy": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/head"
+              },
+              "epoch": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/head"
+              },
+              "history": {
+                "anyOf": [
+                  {
+                    "$ref": "urn:anynote:p02:file-contract:c1#/$defs/head"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "group_id",
+              "genesis_digest",
+              "policy",
+              "epoch",
+              "history"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 200
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "export_id",
+        "archive_sha256",
+        "export_identity",
+        "exporter_root_fingerprint",
+        "exporter_roster",
+        "independent_group_pins"
+      ],
+      "additionalProperties": false
+    },
+    "error-response": {
+      "$ref": "#/$defs/error"
+    },
+    "contact-card": {
+      "type": "object",
+      "properties": {
+        "service_id": {
+          "$ref": "#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "#/$defs/id"
+        },
+        "root_fingerprint": {
+          "$ref": "#/$defs/digest"
+        },
+        "identity": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/identity"
+        }
+      },
+      "required": [
+        "service_id",
+        "account_id",
+        "root_fingerprint",
+        "identity"
+      ],
+      "additionalProperties": false
+    },
+    "id": {
+      "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+    },
+    "digest": {
+      "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+    },
+    "cipher48": {
+      "type": "string",
+      "format": "base64url-48"
+    },
+    "export-account-evidence": {
+      "type": "object",
+      "properties": {
+        "identity": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/identity"
+        },
+        "pin": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/identity-pin"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:anynote:p02:state-contract:c1#/$defs/event"
+          },
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "identity",
+        "pin",
+        "events"
+      ],
+      "additionalProperties": false
+    },
+    "export-epoch-evidence": {
+      "type": "object",
+      "properties": {
+        "record": {
+          "$ref": "urn:anynote:p02:group-contract:c2#/$defs/epoch-commit"
+        },
+        "pages": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:anynote:p02:group-contract:c2#/$defs/grant-page"
+          },
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "record",
+        "pages"
+      ],
+      "additionalProperties": false
+    },
+    "export-group-evidence": {
+      "type": "object",
+      "properties": {
+        "genesis": {
+          "$ref": "urn:anynote:p02:group-contract:c2#/$defs/policy"
+        },
+        "genesis_pin": {
+          "$ref": "urn:anynote:p02:group-contract:c2#/$defs/genesis-pin"
+        },
+        "transitions": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "const": "epoch"
+                  },
+                  "value": {
+                    "$ref": "#/$defs/export-epoch-evidence"
+                  }
+                },
+                "required": [
+                  "kind",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "const": "policy"
+                  },
+                  "value": {
+                    "$ref": "urn:anynote:p02:group-contract:c2#/$defs/policy"
+                  }
+                },
+                "required": [
+                  "kind",
+                  "value"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "maxItems": 1000
+        },
+        "history": {
+          "$ref": "urn:anynote:p02:group-contract:c2#/$defs/history"
+        },
+        "history_pages": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/checkpoint-page"
+          },
+          "maxItems": 200
+        }
+      },
+      "required": [
+        "genesis",
+        "genesis_pin",
+        "transitions",
+        "history",
+        "history_pages"
+      ],
+      "additionalProperties": false
+    },
+    "export-evidence": {
+      "type": "object",
+      "properties": {
+        "accounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/export-account-evidence"
+          },
+          "maxItems": 200
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/export-group-evidence"
+          },
+          "maxItems": 200
+        }
+      },
+      "required": [
+        "accounts",
+        "groups"
+      ],
+      "additionalProperties": false
+    },
+    "export-file-record": {
+      "type": "object",
+      "properties": {
+        "record_kind": {
+          "const": "file-manifest"
+        },
+        "envelope": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/envelope"
+        },
+        "wrap": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/wrap"
+        },
+        "manifest_ciphertext": {
+          "type": "string",
+          "format": "base64url-variable",
+          "minLength": 22,
+          "maxLength": 87382
+        }
+      },
+      "required": [
+        "record_kind",
+        "envelope",
+        "wrap",
+        "manifest_ciphertext"
+      ],
+      "additionalProperties": false
+    },
+    "export-pruned-record": {
+      "type": "object",
+      "properties": {
+        "record_kind": {
+          "enum": [
+            "entry",
+            "thread",
+            "group-metadata",
+            "file-manifest"
+          ]
+        },
+        "payload_status": {
+          "const": "pruned"
+        },
+        "envelope": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/envelope"
+            },
+            {
+              "$ref": "urn:anynote:p02:file-contract:c1#/$defs/envelope"
+            }
+          ]
+        }
+      },
+      "required": [
+        "record_kind",
+        "payload_status",
+        "envelope"
+      ],
+      "additionalProperties": false
+    },
+    "export-public-group": {
+      "type": "object",
+      "properties": {
+        "genesis": {
+          "$ref": "urn:anynote:p02:group-contract:c2#/$defs/policy"
+        },
+        "genesis_pin": {
+          "$ref": "urn:anynote:p02:group-contract:c2#/$defs/genesis-pin"
+        }
+      },
+      "required": [
+        "genesis",
+        "genesis_pin"
+      ],
+      "additionalProperties": false
+    },
+    "export-public-event": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "policy"
+            },
+            "record": {
+              "$ref": "urn:anynote:p02:group-contract:c2#/$defs/policy"
+            }
+          },
+          "required": [
+            "kind",
+            "record"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "epoch"
+            },
+            "record": {
+              "$ref": "urn:anynote:p02:group-contract:c2#/$defs/epoch-commit"
+            }
+          },
+          "required": [
+            "kind",
+            "record"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "cache": {
+      "type": "object",
+      "properties": {
+        "cached_kind": {
+          "enum": [
+            "object-bundle",
+            "file-record",
+            "public-evidence"
+          ]
+        },
+        "record_bytes": {
+          "type": "string",
+          "format": "base64url-variable",
+          "maxLength": 5592406
+        }
+      },
+      "required": [
+        "cached_kind",
+        "record_bytes"
+      ],
+      "additionalProperties": false
+    },
+    "search": {
+      "type": "object",
+      "properties": {
+        "index_schema": {
+          "const": 1
+        },
+        "documents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "group_id": {
+                "$ref": "#/$defs/id"
+              },
+              "object_kind": {
+                "enum": [
+                  "group-metadata",
+                  "thread",
+                  "entry",
+                  "file-manifest"
+                ]
+              },
+              "object_id": {
+                "$ref": "#/$defs/id"
+              },
+              "revision_id": {
+                "$ref": "#/$defs/id"
+              },
+              "envelope_digest": {
+                "$ref": "#/$defs/digest"
+              },
+              "tokens": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 128
+                },
+                "maxItems": 1000
+              }
+            },
+            "required": [
+              "group_id",
+              "object_kind",
+              "object_id",
+              "revision_id",
+              "envelope_digest",
+              "tokens"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "index_schema",
+        "documents"
+      ],
+      "additionalProperties": false
+    },
+    "transfer": {
+      "type": "object",
+      "properties": {
+        "transfer_id": {
+          "$ref": "#/$defs/id"
+        },
+        "direction": {
+          "enum": [
+            "upload",
+            "download",
+            "export"
+          ]
+        },
+        "group_id": {
+          "$ref": "#/$defs/id"
+        },
+        "file_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "file_version_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "upload_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "enum": [
+            "QUEUED",
+            "ACTIVE",
+            "PAUSED",
+            "SENT_UNKNOWN",
+            "DONE",
+            "CANCELLED"
+          ]
+        },
+        "source_bytes": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        },
+        "source_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "progress_bytes": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        },
+        "parts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "index": {
+                "type": "string",
+                "format": "decimal-119"
+              },
+              "ciphertext_bytes": {
+                "type": "string",
+                "format": "decimal-8388624"
+              },
+              "ciphertext_digest": {
+                "$ref": "#/$defs/digest"
+              },
+              "verified": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "index",
+              "ciphertext_bytes",
+              "ciphertext_digest",
+              "verified"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 120
+        },
+        "keys": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "manifest_dek": {
+                  "$ref": "#/$defs/digest"
+                },
+                "file_data_dek": {
+                  "$ref": "#/$defs/digest"
+                },
+                "nonce_prefix": {
+                  "type": "string",
+                  "format": "base64url-16"
+                }
+              },
+              "required": [
+                "manifest_dek",
+                "file_data_dek",
+                "nonce_prefix"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "transfer_id",
+        "direction",
+        "group_id",
+        "file_id",
+        "file_version_id",
+        "upload_id",
+        "state",
+        "source_bytes",
+        "source_sha256",
+        "progress_bytes",
+        "parts",
+        "keys"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
