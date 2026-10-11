@@ -293,6 +293,8 @@ try {
     join(out, "browser-peer.json"),
     JSON.stringify(result.suite.peer),
   );
+  if (result.ui.ticks === 0 || aggregateRss === 0)
+    throw Error("WORKER_RESOURCES_NOT_MEASURED");
   const fromBrowser = exec(["--peer", join(out, "browser-peer.json")]);
   report.browser = {
     status: "PASS",

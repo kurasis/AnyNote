@@ -16,14 +16,32 @@ async function large(f, size) {
       Buffer.from(id.input.device_signing_seed_hex, "hex"),
     );
   const w = new FileWriter(ctx, size);
+  const timings = {
+    source_ms: 0,
+    encrypt_ms: 0,
+    persist_ms: 0,
+    decrypt_verify_ms: 0,
+  };
   let reader,
     parts = 0;
   try {
     for (let at = 0; at < size; at += chunk) {
-      let plain = sodium.randombytes_buf(Math.min(chunk, size - at));
+      let before = performance.now();
+      // P01 measured the wrapper's per-byte entropy bridge: use maintained
+      // Web Crypto in <=64 KiB requests for bulk PUBLIC test source only.
+      // Content keys/nonces continue to use libsodium's CSPRNG factories.
+      let plain = new Uint8Array(Math.min(chunk, size - at));
+      for (let offset = 0; offset < plain.length; offset += 65536)
+        crypto.getRandomValues(
+          plain.subarray(offset, Math.min(offset + 65536, plain.length)),
+        );
+      timings.source_ms += performance.now() - before;
+      before = performance.now();
       const encrypted = w.encryptNext(plain);
       sodium.memzero(plain);
       plain = null;
+      timings.encrypt_ms += performance.now() - before;
+      before = performance.now();
       const handle = await dir.getFileHandle(String(parts), { create: true }),
         out = await handle.createWritable();
       try {
@@ -32,6 +50,9 @@ async function large(f, size) {
         await out.close();
       }
       parts++;
+      timings.persist_ms += performance.now() - before;
+      if (parts % 30 === 0)
+        postMessage({ status: "PROGRESS", stage: "encrypted", chunks: parts });
     }
     const record = w.finish(
       "PUBLIC synthetic.bin",
@@ -41,11 +62,15 @@ async function large(f, size) {
     );
     reader = new FileReader(wire(record), key, issuer.publicKey, ctx);
     for (let n = 0; n < parts; n++) {
+      const before = performance.now();
       const handle = await dir.getFileHandle(String(n)),
         file = await handle.getFile(),
         cipher = new Uint8Array(await file.arrayBuffer());
       const plain = reader.decryptNext(cipher);
       sodium.memzero(plain);
+      timings.decrypt_verify_ms += performance.now() - before;
+      if ((n + 1) % 30 === 0)
+        postMessage({ status: "PROGRESS", stage: "verified", chunks: n + 1 });
     }
     if (!reader.finish().complete) throw Error("INCOMPLETE_FILE");
     return {
@@ -54,6 +79,9 @@ async function large(f, size) {
       chunks: parts,
       max_plain_chunk_bytes: chunk,
       elapsed_ms: Math.round(performance.now() - started),
+      timings_ms: Object.fromEntries(
+        Object.entries(timings).map(([key, value]) => [key, Math.round(value)]),
+      ),
       storage: "owned OPFS ciphertext only",
       wasm_heap_bytes: sodium.libsodium?.HEAPU8?.buffer.byteLength ?? null,
       physical_acceptance: false,
