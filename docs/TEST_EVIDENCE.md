@@ -727,3 +727,25 @@ the workflow used the cloud default /workspace toolchain path, unavailable to a
 hosted runner user. Corrected only that workflow to explicit owned /tmp toolchain
 and npm-cache paths as existing P01 jobs do. No permission, checksum, TLS, test
 or sandbox bypass. That failed run is not counted; final-head CI must pass.
+
+### Hosted candidate source receipt
+
+[PR 11](https://github.com/kurasis/AnyNote/pull/11) and
+[hosted receipt](evidence/p02-hosted-receipt.json) record actual successful
+candidate run [38121514437](https://github.com/kurasis/AnyNote/actions/runs/38121514437),
+baseline 38121514433 and foundation 38121514438 at corrected source 0e19c86.
+Candidate log confirms Node 24.21.0, 69 tests/zero fail/skip, six fixtures/125
+nonce-AAD pairs, independent rejection mutations, seven-package inventory,
+zero advisories, unchanged working tree and baseline PASS. Actual Actions checkout
+6813b0b is a merge of main 29102ae and that head; its entire tree equals the head,
+verified independently from Git. Keep the actual checkout stamp, not a replacement
+PR-head claim. The prior dirty local receipt differs only in the documented
+hosted path correction; all core/schema/fixture/document hashes still match.
+
+P01 Windows job on that attempt failed in unchanged libsodium dependency download
+with OS error 11002 / DNS resolution, before native tests. Other P01 jobs were
+still running at this capture. This is not passed regression or physical-device
+evidence. A fresh final-head run must pass every applicable candidate/foundation/
+baseline/P01 check before automatic merge. Final exact-head outcomes are recorded
+on PR 11; this receipt documents its earlier functional source, not a fabricated
+future outcome. Production/full P02/G1/qualified review gates remain open.
