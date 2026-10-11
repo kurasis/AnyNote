@@ -36,7 +36,7 @@ export function authBytes(kind, bytes) { return authValue(kind,strictJson(bytes,
 export class AuthClient {
   #csrf;
   #csrfPromise;
-  constructor(issuer, fetcher=globalThis.fetch) {
+  constructor(issuer, fetcher=globalThis.fetch.bind(globalThis)) {
     const url=new URL(issuer);
     if(url.protocol!=='https:'||url.origin!==issuer||url.username||url.password) throw Error('INVALID_ISSUER');
     this.issuer=issuer;this.fetcher=fetcher;

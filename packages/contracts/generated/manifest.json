@@ -220,7 +220,7 @@
     },
     {
       "path": "packages/protocol/auth-client.mjs",
-      "sha256": "7f9099e01dee1917cfeade049a01981db992d5e3955df274fe9b841132f6d15e"
+      "sha256": "ec1142a42d7a80c0e0e43a75f60a5aa474ab6dff956fc24effd766b8294d2f94"
     },
     {
       "path": "packages/protocol/auth-formats.mjs",

@@ -1261,3 +1261,11 @@ strict-CSP static app but account-service bootstrap failed, so WebAuthn acceptan
 was not claimed. The harness now waits for completed SDK bootstrap and retains
 bounded public pre-credential network/runtime diagnostics instead of timing out
 on a generic status. Subsequent hosted acceptance remains required.
+
+Hosted Windows/MSVC acceptance passed at 28a5581: actual IPv4/IPv6 callback,
+one-use/deadline, attack matrix and maintained PKCE tests all executed. The
+hosted browser's completed bootstrap returned a TypeError without a network
+failure; the SDK default fetch must retain its Window/Worker receiver. Its
+default is now bound to globalThis. Node's fetch ignores that receiver, so the
+previous Node-only transport result did not expose the browser-specific issue.
+The real sandboxed browser gate remains mandatory after the correction.
