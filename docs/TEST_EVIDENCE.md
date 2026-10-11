@@ -978,3 +978,8 @@ mutation handling, fixed before claiming negative PASS. Generator syntax and
 finite/depth cases were corrected and required checks rerun. Initial failures are
 not passes. Local Chromium/hardware/production TLS/SQL authorization/general PHP
 crypto validation/independent qualified review are not certified by P03.
+
+Final generator cleanup removed an extra generated-PHP EOF blank line after the
+local evidence snapshot. Generated drift negatives, native PHP syntax, strict TS
+and git diff whitespace checks were rerun and passed; the unchanged install/start
+scripts retain their two-run evidence. Hosted CI validates the final complete tree.

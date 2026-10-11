@@ -4,7 +4,7 @@
   "inputs": [
     {
       "path": "scripts/p03-contracts.py",
-      "sha256": "d202c52e9be6917f2d90de09bae5f5fe0c272f1df5ecba683b45a8de797135cc"
+      "sha256": "3d905261535c9c833f92adc310b4b9a5215e2fb7ef936261d75816ed93a225b3"
     },
     {
       "path": "packages/api-client/package.json",
@@ -102,7 +102,7 @@
     },
     {
       "path": "apps/api/app/Generated/Dtos.php",
-      "sha256": "bf8f98d1dc875c123cf969e272f2cdd54978a6fae99c0720c67eb94a7ba0c802"
+      "sha256": "0ff8478c68aa761c0b59f8dba8c024fc5bb61598d51d7cc54d43aa960e93f0a0"
     },
     {
       "path": "apps/api/app/Generated/catalogue.json",
