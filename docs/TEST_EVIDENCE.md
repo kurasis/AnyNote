@@ -749,3 +749,53 @@ evidence. A fresh final-head run must pass every applicable candidate/foundation
 baseline/P01 check before automatic merge. Final exact-head outcomes are recorded
 on PR 11; this receipt documents its earlier functional source, not a fabricated
 future outcome. Production/full P02/G1/qualified review gates remain open.
+
+## P02-IDENTITY-CERTIFICATE-RECIPIENT — larger candidate crypto batch
+
+2026-10-11, Linux cloud Node 24.21.0/npm 11.19.0 and owned pinned PHP 8.4.26.
+[Local source/result receipt](evidence/p02-identity-local.json),
+[primary metadata/standards/notices](evidence/p02-identity-primary-sources.json),
+[actual setup/save receipt](evidence/p02-identity-environment-setup.json).
+Local source stamp is existing main 30cc8b2 plus hashed dirty candidate inputs,
+not a substituted future PR commit. No product keys, routes or acceptance.
+
+| Check | Command / actual outcome | Status |
+| --- | --- | --- |
+| Strict identity/kit/cert/recipient/crypto negatives + old tests | npm --prefix packages/protocol test: 145 executed/passed, zero failure/skip | PASS |
+| External primitive/encoding expectations | RFC 5869 case 1 exact OKM; BIP 350 checksum and wrong variant | PASS |
+| Fixed public root/kit/cert/file vectors | crypto:check reproduces derivation/keys/signatures/context/file; sealed boxes frozen as inputs, no RNG patch | PASS |
+| Fresh synthetic recipient paths | Both device and recovery key -> G -> manifest DEK -> manifest/file-data key -> exact 79 public bytes; no uploader DEK receiver input | PASS |
+| Independent PHP native reference | check-p02-crypto.py: PHP 8.4.26/sodium 1.0.18 HKDF/seed keys/signatures/JCS fixture subset/sealed/AEAD plus wrong signature/tag/AAD negatives | PASS |
+| Known context/pin/recipient changes | Root substitution, checksum/Unicode/bounds, cert issuer/context/capability, unexpected sender, inner/outer mismatch, missing/duplicate/extra/changed roster/epoch recipients, wrong key and file corruption | PASS for evaluation scope |
+| Existing serialization/reference drift | fixtures:check + check-p02-fixtures.py: six cases/125 nonce-AAD pairs/two bad outputs; original p02-file-c1 schema/vector bytes unchanged | PASS |
+| Exact dependency inventory/advisories | inventory:check ten locked packages; npm audit --audit-level=low reports zero at execution | PASS |
+| Source scanner + negative policy | Current Git-visible source, five fake PAT paths and five changed key/digest negatives; ten complete public values narrowly excepted | PASS |
+| Complete setup and repeat | Saved complete install executed twice, both exit 0; repeated run preserves every Git-visible source/fixture/lock byte | PASS |
+| Original/P01 preservation | Baseline all 21 checksums; no original spec/P01 source change | PASS |
+| Saved setup/start readback | Draft revision 7 exact fields, same network/repository membership, requires_publish=true | PASS save only |
+| Pairing, current roster/policy/roles/reset/session authority, full R01 application | Explicit NOT_EVALUATED; no production endpoints | NOT RUN |
+| Full native Rust/browser/general PHP strict contract, new physical/memory, qualified review | No reviewer booked or audit performed | NOT RUN |
+
+PHP assertion count includes serializer ASCII-field preconditions; do not present
+it as thousands of independent crypto tests. The fixture-only serializer is not
+a production RFC 8785/parser/schema implementation. Native PHP sodium 1.0.18 is
+the existing image's OS dependency, not a changed production baseline. Both
+signature proof tokens and exact coverage explicitly retain NOT_EVALUATED
+current authority; decryptability never grants writer permission.
+
+Initial readiness failed after snapshot because services were stopped; explicit
+owned up recovered actual Nginx/FPM/Laravel/MariaDB. First npm metadata query
+without writable cache failed, then explicit owned cache succeeded. GitBook
+libsodium docs returned proxy tunnel 502; verified the same official primary
+source repository over TLS instead. None of these failures is relabelled PASS.
+Sixteen scanner findings were exactly ten complete known public fixture values;
+a later receipt path containing check-secrets was misread as a key assignment.
+Use explicit path/hash records (independently recomputed), no new scanner exemption;
+changed-key/PAT negatives still reject. No arbitrary hash/whole-path/partial
+encoded-value exemption, TLS/signature/checksum or browser sandbox bypass.
+
+Full frozen setup/start instructions are saved and exact readback confirmed.
+Review/save/publish in environment settings remains product-owned; save is not
+publication or future-task acceptance. No new secret/network/owner physical
+action is required by this candidate. Final fresh hosted checks and exact tested
+head/source-tree proof are recorded on the review PR before automatic merge.

@@ -1,0 +1,28 @@
+{
+  "saved_status": "saved",
+  "draft_id": "06e641e5-588c-4150-8c32-487c9910c0b2~cecfgdraft_6acb46857724819f8546ae752e19b115",
+  "revision": 7,
+  "exact_install_readback": true,
+  "exact_start_readback": true,
+  "preserved_network": true,
+  "preserved_repository_membership": true,
+  "requires_publish": true,
+  "publication": "NOT_RUN",
+  "future_task_restoration": "NOT_RUN",
+  "captured_at_utc": "2026-10-11T08:21:52.597711+00:00",
+  "complete_install_script_execution": {
+    "command": "bash /tmp/anynote-p02-identity-install.sh",
+    "status": "PASS",
+    "exit_code": 0,
+    "log_sha256_base64url": "s8QNYN19pxFzosXPmBrapvdHn5LDAMNszPM9xjpWNcA"
+  },
+  "complete_repeated_install_execution": {
+    "status": "PASS",
+    "exit_code": 0,
+    "all_git_visible_source_fixture_lock_bytes_preserved": true,
+    "log_sha256_base64url": "DaHXBrcruepfoSpvJGzMSkA-W5pYLuwQVjxUrYgmM3E"
+  },
+  "install_script_sha256_base64url": "8pfgFIW9e_wh64lafXcGSXz243_lBiqL2HPTBFyIgR0",
+  "owned_development_readiness": "PASS after explicit up; initial check failed because snapshot processes were stopped",
+  "not_publication_or_new_task_acceptance": true
+}

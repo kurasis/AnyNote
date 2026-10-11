@@ -36,7 +36,8 @@ def main():
             raise RuntimeError('Source secret scan failed; findings are redacted')
     for relative in ['sentinel.txt', 'docs/reference/passkeylocal/PROVENANCE.json',
                      'docs/evidence/p03-foundation-local.json',
-                     'fixtures/protocol/p02/vectors.json']:
+                     'fixtures/protocol/p02/vectors.json',
+                     'fixtures/protocol/p02/identity-vectors.json']:
         with tempfile.TemporaryDirectory(prefix='anynote-scanner-negative-') as name:
             # Recognizable synthetic PAT shape; no credential is used or committed.
             token = 'ghp_' + ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(36))
@@ -45,15 +46,18 @@ def main():
             sentinel.write_text('github_token = "' + token + '"\n')
             if scan(name) != 1:
                 raise RuntimeError('Scanner did not reject the disposable fake-token sentinel')
-    for field in ['file_data_key', 'key_wrap_digest']:
+    for relative, field in [('vectors.json', 'file_data_key'), ('vectors.json', 'key_wrap_digest'),
+                            ('identity-vectors.json', 'root_signing_key'),
+                            ('identity-vectors.json', 'recovery_encryption_key'),
+                            ('identity-vectors.json', 'device_encryption_key')]:
         with tempfile.TemporaryDirectory(prefix='anynote-scanner-negative-') as name:
-            sentinel = Path(name) / 'fixtures/protocol/p02/vectors.json'
+            sentinel = Path(name) / 'fixtures/protocol/p02' / relative
             sentinel.parent.mkdir(parents=True)
             value = base64.urlsafe_b64encode(secrets.token_bytes(32)).decode().rstrip('=')
             sentinel.write_text('{"' + field + '": "' + value + '"}\n')
             if scan(name) != 1:
                 raise RuntimeError('Scanner did not reject a changed key/digest-shaped fixture sentinel')
-    print('PASS: Git-visible source scan; 4 fake-token path negatives and 2 changed key/digest fixture negatives')
+    print('PASS: Git-visible source scan; 5 fake-token path negatives and 5 changed key/digest fixture negatives')
 
 
 if __name__ == '__main__':

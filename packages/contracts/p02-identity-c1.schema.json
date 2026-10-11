@@ -1,0 +1,556 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:anynote:p02:identity-contract:c1",
+  "title": "P02 candidate identity, provisional certificate and recipient records; authorization external",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "format": "base64url-16"
+    },
+    "digest": {
+      "type": "string",
+      "format": "base64url-32"
+    },
+    "signature": {
+      "type": "string",
+      "format": "base64url-64"
+    },
+    "counter": {
+      "type": "string",
+      "format": "decimal-u63"
+    },
+    "head": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "digest"
+      ],
+      "properties": {
+        "version": {
+          "$ref": "#/$defs/counter"
+        },
+        "digest": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "identity-pin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "service_id",
+        "account_id",
+        "root_fingerprint"
+      ],
+      "properties": {
+        "service_id": {
+          "$ref": "#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "#/$defs/id"
+        },
+        "root_fingerprint": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "derivation-context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "contract",
+        "protocol",
+        "protocol_version",
+        "service_id",
+        "account_id"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "account-root-derivation"
+        },
+        "contract": {
+          "const": "p02-identity-c1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "service_id": {
+          "$ref": "#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "identity-body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "contract",
+        "protocol",
+        "protocol_version",
+        "derivation",
+        "service_id",
+        "account_id",
+        "root_signing_key",
+        "recovery_encryption_key"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "account-root-identity"
+        },
+        "contract": {
+          "const": "p02-identity-c1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "derivation": {
+          "const": "hkdf-sha256-c1"
+        },
+        "service_id": {
+          "$ref": "#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "#/$defs/id"
+        },
+        "root_signing_key": {
+          "$ref": "#/$defs/digest"
+        },
+        "recovery_encryption_key": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "body",
+        "signature"
+      ],
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/identity-body"
+        },
+        "signature": {
+          "$ref": "#/$defs/signature"
+        }
+      }
+    },
+    "kit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "contract",
+        "protocol",
+        "protocol_version",
+        "service_id",
+        "account_id",
+        "root_fingerprint",
+        "recovery_secret",
+        "identity"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "account-recovery-kit"
+        },
+        "contract": {
+          "const": "p02-identity-c1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "service_id": {
+          "$ref": "#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "#/$defs/id"
+        },
+        "root_fingerprint": {
+          "$ref": "#/$defs/digest"
+        },
+        "recovery_secret": {
+          "type": "string",
+          "minLength": 63,
+          "maxLength": 63,
+          "pattern": "^anr1[023456789acdefghjklmnpqrstuvwxyz]{59}$"
+        },
+        "identity": {
+          "$ref": "#/$defs/identity"
+        }
+      }
+    },
+    "issuer": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "root_fingerprint"
+          ],
+          "properties": {
+            "kind": {
+              "const": "root"
+            },
+            "root_fingerprint": {
+              "$ref": "#/$defs/digest"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "device_id",
+            "certificate_digest"
+          ],
+          "properties": {
+            "kind": {
+              "const": "device"
+            },
+            "device_id": {
+              "$ref": "#/$defs/id"
+            },
+            "certificate_digest": {
+              "$ref": "#/$defs/digest"
+            }
+          }
+        }
+      ]
+    },
+    "certificate-body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "contract",
+        "protocol",
+        "protocol_version",
+        "service_id",
+        "account_id",
+        "root_fingerprint",
+        "recovery_generation",
+        "predecessor_roster",
+        "issuer",
+        "device_id",
+        "device_signing_key",
+        "device_encryption_key",
+        "capabilities",
+        "pairing_transcript_digest"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "provisional-device-certificate"
+        },
+        "contract": {
+          "const": "p02-identity-c1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "service_id": {
+          "$ref": "#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "#/$defs/id"
+        },
+        "root_fingerprint": {
+          "$ref": "#/$defs/digest"
+        },
+        "recovery_generation": {
+          "$ref": "#/$defs/counter"
+        },
+        "predecessor_roster": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/head"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "issuer": {
+          "$ref": "#/$defs/issuer"
+        },
+        "device_id": {
+          "$ref": "#/$defs/id"
+        },
+        "device_signing_key": {
+          "$ref": "#/$defs/digest"
+        },
+        "device_encryption_key": {
+          "$ref": "#/$defs/digest"
+        },
+        "capabilities": {
+          "type": "array",
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "delegate-device",
+              "distribute-group-key",
+              "receive-group-key",
+              "sign-content"
+            ]
+          }
+        },
+        "pairing_transcript_digest": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "certificate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "body",
+        "signature"
+      ],
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/certificate-body"
+        },
+        "signature": {
+          "$ref": "#/$defs/signature"
+        }
+      }
+    },
+    "sender": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "account_id",
+        "device_id",
+        "root_fingerprint",
+        "recovery_generation",
+        "roster_head",
+        "certificate_digest"
+      ],
+      "properties": {
+        "account_id": {
+          "$ref": "#/$defs/id"
+        },
+        "device_id": {
+          "$ref": "#/$defs/id"
+        },
+        "root_fingerprint": {
+          "$ref": "#/$defs/digest"
+        },
+        "recovery_generation": {
+          "$ref": "#/$defs/counter"
+        },
+        "roster_head": {
+          "$ref": "#/$defs/head"
+        },
+        "certificate_digest": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "recipient": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "account_id",
+            "root_fingerprint",
+            "recovery_generation",
+            "roster_head",
+            "encryption_key_fingerprint",
+            "device_id",
+            "certificate_digest"
+          ],
+          "properties": {
+            "kind": {
+              "const": "device"
+            },
+            "account_id": {
+              "$ref": "#/$defs/id"
+            },
+            "root_fingerprint": {
+              "$ref": "#/$defs/digest"
+            },
+            "recovery_generation": {
+              "$ref": "#/$defs/counter"
+            },
+            "roster_head": {
+              "$ref": "#/$defs/head"
+            },
+            "encryption_key_fingerprint": {
+              "$ref": "#/$defs/digest"
+            },
+            "device_id": {
+              "$ref": "#/$defs/id"
+            },
+            "certificate_digest": {
+              "$ref": "#/$defs/digest"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "account_id",
+            "root_fingerprint",
+            "recovery_generation",
+            "roster_head",
+            "encryption_key_fingerprint"
+          ],
+          "properties": {
+            "kind": {
+              "const": "account-recovery"
+            },
+            "account_id": {
+              "$ref": "#/$defs/id"
+            },
+            "root_fingerprint": {
+              "$ref": "#/$defs/digest"
+            },
+            "recovery_generation": {
+              "$ref": "#/$defs/counter"
+            },
+            "roster_head": {
+              "$ref": "#/$defs/head"
+            },
+            "encryption_key_fingerprint": {
+              "$ref": "#/$defs/digest"
+            }
+          }
+        }
+      ]
+    },
+    "grant-context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "contract",
+        "protocol",
+        "protocol_version",
+        "service_id",
+        "group_id",
+        "key_epoch",
+        "epoch_digest",
+        "membership_head",
+        "operation_id",
+        "issuer",
+        "recipient"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "group-key-distribution"
+        },
+        "contract": {
+          "const": "p02-identity-c1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "service_id": {
+          "$ref": "#/$defs/id"
+        },
+        "group_id": {
+          "$ref": "#/$defs/id"
+        },
+        "key_epoch": {
+          "$ref": "#/$defs/counter"
+        },
+        "epoch_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "membership_head": {
+          "$ref": "#/$defs/head"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/id"
+        },
+        "issuer": {
+          "$ref": "#/$defs/sender"
+        },
+        "recipient": {
+          "$ref": "#/$defs/recipient"
+        }
+      }
+    },
+    "grant-plaintext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "context",
+        "group_key"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "group-key-plaintext"
+        },
+        "context": {
+          "$ref": "#/$defs/grant-context"
+        },
+        "group_key": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "grant-body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "sealed_ciphertext"
+      ],
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/grant-context"
+        },
+        "sealed_ciphertext": {
+          "type": "string",
+          "format": "base64url-sealed"
+        }
+      }
+    },
+    "grant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "body",
+        "signature"
+      ],
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/grant-body"
+        },
+        "signature": {
+          "$ref": "#/$defs/signature"
+        }
+      }
+    }
+  }
+}

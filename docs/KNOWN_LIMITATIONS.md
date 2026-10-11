@@ -135,3 +135,22 @@
   Current reference codec materializes the inventory; this is not mobile memory
   evidence or a production storage/index implementation. No independent global
   freshness, timestamp trust or single-page/Merkle inclusion guarantee.
+
+- P02 p02-identity-c1 now implements candidate root/kit/identity, provisional
+  certificate signatures and signed sealed recipient records/coverage. This
+  supersedes their previous missing wire/crypto scope above, not any product
+  acceptance. Signature proofs explicitly say authorization=NOT_EVALUATED;
+  pairing, current roster/delegation/revoke/reset/session and group policy/epoch
+  authority are unimplemented. A caller cannot derive trusted expected contexts
+  from unchecked server state or treat a valid certificate as an active device.
+- The linked fresh device/recovery file path uses 79 public bytes and a 64 KiB
+  in-memory evaluator cap. PHP uses native sodium 1.0.18 in existing pinned image
+  and a fixture-only ASCII-key/string serializer; no general RFC 8785/duplicate
+  parser or full native/browser contract acceptance follows. P01 large-file and
+  physical evidence remains separately scoped. R01 product gate is incomplete.
+- Recovery kit is secret offline material; checksum is error detection only.
+  Independent identity pin and separate login/atomic reset are still required.
+  R compromise is not solved by generation reset. JS/WASM/GC copies prevent
+  guaranteed memory erasure; no real root/kit is entrusted to this reference.
+  Scure's historical upstream audits/self-review do not audit selected 2.4.0
+  or AnyNote; qualified protocol review remains not performed/booked.

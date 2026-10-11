@@ -1,19 +1,21 @@
-# P02 protocol candidate: key custody and file context
+# P02 protocol candidates: key custody, identity and file context
 
-Status: **CANDIDATE p02-file-c1**, synthetic evaluation only. This is the
-reviewable P02-KEY-AND-FILE-CONTRACT slice, not the complete v1 protocol freeze.
+Status: **CANDIDATE p02-file-c1 + p02-identity-c1**, synthetic evaluation only.
+The file/checkpoint bytes and [identity/recipient contract](P02_IDENTITY_CONTRACT.md)
+are reviewable slices, not the complete v1 protocol freeze.
 Original specification 1.1.0 remains unchanged. The registry and schema are
 [packages/contracts](../packages/contracts/registry.json); mandatory executable
 predicates are in [the codec](../packages/protocol/src/codec.mjs).
 Independent qualified design review is NOT RUN. No product endpoint consumes
-this package and no migration, content encryption or key delivery is enabled.
+this package and no migration or production content encryption/key delivery is enabled. The
+separate reference now performs synthetic signature/sealed-box/file crypto.
 
 ## Key custody and recovery path
 
 | Material | Creation / custody | Use and boundary |
 | --- | --- | --- |
 | R | Locally generated random 32 bytes; offline checksummed kit | Recovery authority; never server/login password or everyday stored secret |
-| Root signing seed/key | HKDF-SHA-256 from R with distinct account/service/version/purpose context | Identity anchor and root recovery reset; clear practical memory after use; exact derivation/kit encoding pending next slice |
+| Root signing seed/key | HKDF-SHA-256 from R with distinct account/service/version/purpose context | Identity anchor and root recovery reset; clear practical memory after use; exact candidate derivation/kit in P02_IDENTITY_CONTRACT.md |
 | Recovery encryption seed/keypair | Independent HKDF label from R; library seed-keypair API | Public key on server, private key only in deliberate recovery; separate from root signing |
 | Device Ed25519 identity | Independently random on this device | Sign within certified current/historical authority; never clone to another device |
 | Device X25519 encryption identity | Independently random, distinct from signing key | Recipient sealed boxes; certificate binds both public keys |
@@ -28,8 +30,8 @@ The recipient path is device/recovery private key -> authenticated sealed G[e]
 envelope -> G[e] -> manifest-key wrap -> manifest DEK -> encrypted manifest ->
 file-data DEK -> chunks. A sealed box does not identify its sender. Require its
 issuer signature, exact authorized recipient coverage and matching sealed inner
-context before using G[e]. Those distribution/identity wire schemas are pending;
-this slice takes a **previously verified** group epoch as a prerequisite, not
+context before using G[e]. Candidate distribution/identity wire schemas and synthetic crypto now exist;
+current policy/roster authorization still takes a **previously verified** group epoch as a prerequisite, not
 an unchecked SQL recipient array. No universal administrator recovery recipient.
 
 Everyday clients keep R/root/recovery private keys out of ordinary vault storage.
@@ -229,7 +231,7 @@ from these checks alone. Exceptions never contain input values.
 Review checklist (all independent-review answers outstanding):
 
 - Are key isolation, recovery/public-recipient boundaries and eventual exact
-  HKDF/kit/PRF contexts sufficient and compatible across sodium APIs?
+  candidate HKDF/kit and eventual PRF contexts sufficient and compatible across sodium APIs?
 - Are domain bytes, candidate versioning, payload limits and fixed framing
   unambiguous in Rust/TS/PHP and resistant to invalid Unicode/number handling?
 - Does manifest-only key delivery cover fresh recipients without uploader cache,
@@ -240,12 +242,13 @@ Review checklist (all independent-review answers outstanding):
 - Do later transitions bind exact certified recipients/roles/generations and
   expected heads without recursive digests or a reader privilege escalation?
 
-No reviewer is booked and no audit is claimed. Authenticated pairing, exact
-root/recovery derivation, recipient sealed payload/distribution signatures,
-roster/policy/epoch/reset/session operations, local wrappers, age archive,
-production protocol freeze and Rust/browser/PHP crypto interoperability remain
-subsequent tasks. R01/R14/R19 here have serialization/framing/design evidence
-only, not the complete application regressions in original chapter 13.
+No reviewer is booked and no audit is claimed. Exact candidate root derivation/kit,
+identity/certificate signatures and sealed recipient records now have linked
+small-file Node/PHP crypto evidence. Authenticated pairing, roster/policy/epoch/
+reset/session authority, local wrappers, age archive, production protocol freeze
+and full Rust/browser/PHP contract interoperability remain subsequent tasks.
+R01 gains a 79-byte synthetic recipient path, not full application acceptance;
+R14/R19 retain serialization/framing/design scope until authority is implemented.
 
 ## Reproduction, evidence and rollback
 

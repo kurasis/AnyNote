@@ -1,8 +1,15 @@
 {
   "status": "DEVELOPMENT_CANDIDATE",
   "root_release_license": "UNSELECTED",
-  "lock_sha256": "dkN96b0SyNyQJpY36SaG8wxLJZ1vEbJCzf5tLzaoolw",
+  "lock_sha256": "bnKGKGsP4nlzEMV6j7TXaMTa4r7FP1j3iLjQyDD6-38",
   "packages": [
+    {
+      "path": "node_modules/@scure/base",
+      "version": "2.4.0",
+      "license": "MIT",
+      "resolved": "https://registry.npmjs.org/@scure/base/-/base-2.4.0.tgz",
+      "integrity": "sha512-thZ1TuJwFwBblOhgsjDKvvGirBxNp+wSvY/DR6tJBJOTDhdAAcHJ8Vbr2eFnqaxeca4+t0i9KBf+uHYGWwZORg=="
+    },
     {
       "path": "node_modules/ajv",
       "version": "8.20.0",
@@ -44,6 +51,20 @@
       "license": "MIT",
       "resolved": "https://registry.npmjs.org/jsonc-parser/-/jsonc-parser-3.3.1.tgz",
       "integrity": "sha512-HUgH65KyejrUFPvHFPbqOY0rsFip3Bo5wb4ngvdi1EpCYWUQDC5V+Y7mZws+DLkr4M//zQJoanu1SP+87Dv1oQ=="
+    },
+    {
+      "path": "node_modules/libsodium-sumo",
+      "version": "0.8.4",
+      "license": "ISC",
+      "resolved": "https://registry.npmjs.org/libsodium-sumo/-/libsodium-sumo-0.8.4.tgz",
+      "integrity": "sha512-TMtHShQfVVsaxDygyapvUC3o7YsPgXa/hRWeIgzyFz6w5k/1hirGptCxp1U7XwW3rCskaTTYKgV10v86UiGgNw=="
+    },
+    {
+      "path": "node_modules/libsodium-wrappers-sumo",
+      "version": "0.8.4",
+      "license": "ISC",
+      "resolved": "https://registry.npmjs.org/libsodium-wrappers-sumo/-/libsodium-wrappers-sumo-0.8.4.tgz",
+      "integrity": "sha512-ql7hcgulKZ3ekfa2DGAogcCKsWU0diA/0nArz1CFzh93WQdb46/Kj18ka/Hifq6uA3Ush34Pc6vU/6HXeRwUkg=="
     },
     {
       "path": "node_modules/require-from-string",
