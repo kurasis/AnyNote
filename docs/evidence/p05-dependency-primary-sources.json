@@ -1,0 +1,215 @@
+{
+  "purpose": "P05 exact direct crate primary metadata and inspected license notices; not qualified cryptographic audit or authenticated release SBOM",
+  "verified_utc": "2026-10-11",
+  "project_release_license": "UNSELECTED",
+  "cargo_lock_sha256": "8163882cc5f603820dd938bd6ecb18bd0319bff3a1b71f1c0eb35bef62c48961",
+  "sources": [
+    {
+      "name": "libsodium-rs",
+      "version": "0.2.5",
+      "license": "MIT",
+      "repository": "https://github.com/jedisct1/libsodium-rs",
+      "primary_metadata": "https://crates.io/crates/libsodium-rs/0.2.5",
+      "documentation": "https://docs.rs/libsodium-rs",
+      "license_files": [
+        {
+          "name": "LICENSE",
+          "sha256": "405e1ca299b02a9e9bbd9047b9234e5751456cf1381457f12daa2cabf4b5b8fa"
+        }
+      ]
+    },
+    {
+      "name": "serde",
+      "version": "1.0.228",
+      "license": "MIT OR Apache-2.0",
+      "repository": "https://github.com/serde-rs/serde",
+      "primary_metadata": "https://crates.io/crates/serde/1.0.228",
+      "documentation": "https://docs.rs/serde",
+      "license_files": [
+        {
+          "name": "LICENSE-APACHE",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        },
+        {
+          "name": "LICENSE-MIT",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        }
+      ]
+    },
+    {
+      "name": "serde_json",
+      "version": "1.0.151",
+      "license": "MIT OR Apache-2.0",
+      "repository": "https://github.com/serde-rs/json",
+      "primary_metadata": "https://crates.io/crates/serde_json/1.0.151",
+      "documentation": "https://docs.rs/serde_json",
+      "license_files": [
+        {
+          "name": "LICENSE-APACHE",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        },
+        {
+          "name": "LICENSE-MIT",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        }
+      ]
+    },
+    {
+      "name": "serde_json_canonicalizer",
+      "version": "0.3.2",
+      "license": "MIT",
+      "repository": "https://github.com/evik42/serde-json-canonicalizer",
+      "primary_metadata": "https://crates.io/crates/serde_json_canonicalizer/0.3.2",
+      "documentation": "https://docs.rs/serde_json_canonicalizer/",
+      "license_files": [
+        {
+          "name": "LICENSE",
+          "sha256": "b68d86a60d3619bfd55b89a322e8464d3f9ca1c7e2409cc6035ea290435831e0"
+        }
+      ]
+    },
+    {
+      "name": "jsonschema",
+      "version": "0.58.6",
+      "license": "MIT",
+      "repository": "https://github.com/Stranger6667/jsonschema",
+      "primary_metadata": "https://crates.io/crates/jsonschema/0.58.6",
+      "documentation": null,
+      "license_files": [
+        {
+          "name": "LICENSE",
+          "sha256": "117829c3ca21efb132d81a44b55363d395ab8eea18526873bc828da4c0e5f038"
+        }
+      ]
+    },
+    {
+      "name": "base64",
+      "version": "0.23.1",
+      "license": "MIT OR Apache-2.0",
+      "repository": "https://github.com/marshallpierce/rust-base64",
+      "primary_metadata": "https://crates.io/crates/base64/0.23.1",
+      "documentation": "https://docs.rs/base64",
+      "license_files": [
+        {
+          "name": "LICENSE-APACHE",
+          "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+        },
+        {
+          "name": "LICENSE-MIT",
+          "sha256": "ab499c75a0f0da8e0fe83bf9ba3a27e5c39705310f07107c6c66b69958d2401c"
+        }
+      ]
+    },
+    {
+      "name": "hex",
+      "version": "0.4.3",
+      "license": "MIT OR Apache-2.0",
+      "repository": "https://github.com/KokaKiwi/rust-hex",
+      "primary_metadata": "https://crates.io/crates/hex/0.4.3",
+      "documentation": "https://docs.rs/hex/",
+      "license_files": [
+        {
+          "name": "LICENSE-APACHE",
+          "sha256": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08"
+        },
+        {
+          "name": "LICENSE-MIT",
+          "sha256": "f7bdb3426d045cd50efd4953026e3eb5a83d0199f458a075602611b9344da5b9"
+        }
+      ]
+    },
+    {
+      "name": "hkdf",
+      "version": "0.13.0",
+      "license": "MIT OR Apache-2.0",
+      "repository": "https://github.com/RustCrypto/KDFs/",
+      "primary_metadata": "https://crates.io/crates/hkdf/0.13.0",
+      "documentation": null,
+      "license_files": [
+        {
+          "name": "LICENSE-APACHE",
+          "sha256": "59013a5c8d3a19c26a457579105915a5d51bb0c09d579f8cdedf12e4203c3018"
+        },
+        {
+          "name": "LICENSE-MIT",
+          "sha256": "d288f9c9b4590446ec18c22ead8f8b5a12a3d4025b68f62dc9015063eb9cca69"
+        }
+      ]
+    },
+    {
+      "name": "sha2",
+      "version": "0.11.0",
+      "license": "MIT OR Apache-2.0",
+      "repository": "https://github.com/RustCrypto/hashes",
+      "primary_metadata": "https://crates.io/crates/sha2/0.11.0",
+      "documentation": "https://docs.rs/sha2",
+      "license_files": [
+        {
+          "name": "LICENSE-APACHE",
+          "sha256": "a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5"
+        },
+        {
+          "name": "LICENSE-MIT",
+          "sha256": "831e0f43ad0bf014c1c4fec5767aae470434c1d66d6e671be2d823e729063e25"
+        }
+      ]
+    },
+    {
+      "name": "bech32",
+      "version": "0.12.0",
+      "license": "MIT",
+      "repository": "https://github.com/rust-bitcoin/rust-bech32",
+      "primary_metadata": "https://crates.io/crates/bech32/0.12.0",
+      "documentation": "https://docs.rs/bech32/",
+      "license_files": [
+        {
+          "name": "LICENSE-MIT",
+          "sha256": "9877c7b48cde1462f4e8688263aa96f3f1bd9717250718d3d2d9ebb031414fb9"
+        }
+      ]
+    },
+    {
+      "name": "aes-gcm",
+      "version": "0.11.1",
+      "license": "Apache-2.0 OR MIT",
+      "repository": "https://github.com/RustCrypto/AEADs",
+      "primary_metadata": "https://crates.io/crates/aes-gcm/0.11.1",
+      "documentation": "https://docs.rs/aes-gcm",
+      "license_files": [
+        {
+          "name": "LICENSE-APACHE",
+          "sha256": "a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5"
+        },
+        {
+          "name": "LICENSE-MIT",
+          "sha256": "b8c6939380a400f53e11923d50fcc4dd2fa1ba8339fd9d04cda38a0251b6c9b0"
+        }
+      ]
+    },
+    {
+      "name": "zeroize",
+      "version": "1.9.1",
+      "license": "Apache-2.0 OR MIT",
+      "repository": "https://github.com/RustCrypto/utils",
+      "primary_metadata": "https://crates.io/crates/zeroize/1.9.1",
+      "documentation": "https://docs.rs/zeroize",
+      "license_files": [
+        {
+          "name": "LICENSE-APACHE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        },
+        {
+          "name": "LICENSE-MIT",
+          "sha256": "8c7516d4b27b1e495be5e38b612298b63de48d05f49cdac94f70f3cd70f8864b"
+        }
+      ]
+    }
+  ],
+  "browser_dependencies": "unchanged packages/protocol/package-lock.json and dependency-inventory.json; existing primary receipts retained",
+  "rfc8785": "https://www.rfc-editor.org/rfc/rfc8785",
+  "limitations": [
+    "Crate checksum/license metadata and installed notices do not authenticate author signing identity",
+    "Upstream library self-review is not an independent review of this version or AnyNote",
+    "No GPL Windows adapter code imported into this crate"
+  ]
+}

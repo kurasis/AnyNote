@@ -155,3 +155,18 @@ The separate unpublished native public-signature crate has its own frozen Cargo
 inventory and reuses libsodium-rs 0.2.5. Browser dependencies reuse the existing
 P02 lock. Root/project release license remains UNSELECTED; no GPL adapter import
 or independent library review is claimed. See P04_BACKEND.md.
+
+## P05 maintained client core
+
+The separate unpublished `packages/crypto-core` crate pins 12 direct packages and
+156 exact resolved lock records, including the private core. libsodium-rs 0.2.5
+handles sodium primitives; serde_json_canonicalizer 0.3.2/ryu-js and jsonschema
+0.58.6 handle native general JCS/offline validation. RustCrypto hkdf 0.13.0, sha2
+0.11.0, aes-gcm 0.11.1 and zeroize 1.9.1 provide maintained adapters. bech32 0.12.0,
+base64 0.22.1, hex 0.4.3, serde 1.0.228 and serde_json 1.0.151 complete the exact
+selection. Installed upstream notices/metadata are recorded in
+[evidence](evidence/p05-dependency-primary-sources.json). Default native inventory
+checking is read-only. No prior lock changed and no GPL adapter code is imported.
+Browser dependencies reuse the exact P02 lock and upstream license receipts.
+Project release license remains UNSELECTED. Checksums, self-tests and upstream
+claims are not author-signature verification, a release SBOM or qualified audit.

@@ -1,0 +1,90 @@
+{
+  "status": "PASS",
+  "kind": "ACTUAL_CLEAN_HOSTED_P05_SOURCE_GATE",
+  "candidate_commit": "1ac93efa0cf7bee9b5a3b8be5f22c54a3a28e80e",
+  "actual_checkout": "38c5e3766b0837d0437213c4bffb75b0e1a67b95",
+  "actual_checkout_parents": [
+    "89bdefd515ff2fda8047de3ce0aba63b6cb0ea0e",
+    "1ac93efa0cf7bee9b5a3b8be5f22c54a3a28e80e"
+  ],
+  "candidate_and_checkout_tree": "78785f7ff5ad46e19000c91c87c3c34483108c9b",
+  "source_tree_dirty": false,
+  "core_input_hashes_verified_against_candidate": 63,
+  "core_fixture_hashes_verified_against_candidate": 7,
+  "windows_fixture_hashes_verified_against_candidate": 7,
+  "windows_fixture_hash_method": "SHA-256 of Git LF bytes after ordinary Windows checkout LF-to-CRLF conversion; all seven raw report hashes matched. Same JSON and expected hex bytes; no corpus regeneration.",
+  "checks": [
+    {
+      "name": "publish-device-kit",
+      "status": "completed",
+      "conclusion": "skipped",
+      "url": "https://github.com/kurasis/AnyNote/actions/runs/38157942001/job/114524734943"
+    },
+    {
+      "name": "windows-provider",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/kurasis/AnyNote/actions/runs/38157942001/job/114524734306"
+    },
+    {
+      "name": "static-device-kit",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/kurasis/AnyNote/actions/runs/38157942001/job/114524734253"
+    },
+    {
+      "name": "linux-native-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/kurasis/AnyNote/actions/runs/38157942001/job/114524734219"
+    },
+    {
+      "name": "crypto-linux-browser-php",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/kurasis/AnyNote/actions/runs/38157941999/job/114524718719"
+    },
+    {
+      "name": "crypto-windows-native",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/kurasis/AnyNote/actions/runs/38157941999/job/114524718455"
+    },
+    {
+      "name": "foundation",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/kurasis/AnyNote/actions/runs/38157942002/job/114524688444"
+    },
+    {
+      "name": "baseline",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/kurasis/AnyNote/actions/runs/38157941991/job/114524680826"
+    },
+    {
+      "name": "file-contract",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/kurasis/AnyNote/actions/runs/38157942000/job/114524680761"
+    }
+  ],
+  "reports": [
+    {
+      "path": "docs/evidence/p05-core-hosted.json",
+      "sha256": "4fd1a5d07a6570a55f0c3bb5b3f2163761f31184db0b160b04f57e893589a50b"
+    },
+    {
+      "path": "docs/evidence/p05-php-hosted.json",
+      "sha256": "8d9556bbe467e90b50dae09424852d2965cedab08dd6ebbd37e79551e32754d2"
+    },
+    {
+      "path": "docs/evidence/p05-windows-hosted.json",
+      "sha256": "a0c10c35d01ba38c3875a2b8fd8713dae6b2fbea4afe6e48306de60a6cb31ebc"
+    }
+  ],
+  "physical_acceptance": false,
+  "qualified_review": "NOT_RUN",
+  "publication": "NOT_RUN",
+  "final_tracking_head": "Requires fresh CI; final head and exact-tree merge verification recorded in PR #18"
+}

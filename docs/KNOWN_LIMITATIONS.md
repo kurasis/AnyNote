@@ -263,3 +263,35 @@ native strict JSON and AEAD/local wrappers are P05/P07 work. Metadata/self-tests
 are not a qualified audit. SQL durability settings are not a power-loss/PITR proof.
 The 256 MiB security reserve is unreachable by ordinary writes and awaits verified
 P08/P10 maintenance admission; no arbitrary payload can consume it today.
+
+## P05 implementation boundary
+
+The full native/browser crypto adapters and strict general client JCS now exist;
+P05 replaces the P04-only slice limitation above. Hosted two-way bytes, public PHP
+signatures and bounded desktop 1 GB evidence passed; see TEST_EVIDENCE.md.
+PHP remains public-only; no master key/decrypted payload fallback is added.
+
+Crypto operations require independently trusted caller context/issuer/recipient/
+checkpoint pins. They do not establish P08/P10 current roles or freshness. The
+collected checkpoint helper has an explicit 32 MiB/200-page resource cap; P11
+must build maximum-scale streaming/persistent indexes. Native/browser factories
+prevent reencryption at an owned file index; durable new-version/source identity,
+resending identical ciphertext and crash reconciliation are P12. Full persistent
+vault custody/lock-generation/multi-window cancellation are P07. Best-effort byte
+wiping cannot erase all parsed JSON/immutable strings/GC/register copies.
+
+Desktop process RSS/UI measurements are scoped to synthetic hosted Chromium and
+native runs. They do not satisfy the physical iPhone/WebView2/P01 memory/network
+matrix, qualified G2/G3 review or production release gates. No new owner trial,
+EXE/ZIP release, reviewer contact or production mutation is performed here.
+
+The full browser suite sampled 1,312,508 KiB aggregate Chromium RSS, including
+two workers and all corpus/KDF/file operations. This sum may double-count shared
+pages and miss transient peaks; it is not incremental file-only RSS or a hard
+memory ceiling. Direct bounded OPFS sync access improved the measured 1 GB time
+but did not materially lower aggregate RSS. The 8 MiB plaintext-chunk bound and
+67,371,008-byte Wasm heap do not constrain the browser's entire allocator/process
+footprint. Mobile memory acceptance remains explicitly unresolved; do not infer
+it from desktop completion or compare this whole-suite metric directly with
+P01's incremental transfer metric. Setup draft publication/fresh-task restore
+remain NOT_RUN; Review/Save -> Publish is still required in environment settings.

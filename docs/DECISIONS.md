@@ -649,3 +649,41 @@ identical package records and precisely four named/versioned additions. Four
 real tamper negatives (including recomputing the new current hash) reject an
 altered baseline, changed existing record, new version or extra package. This
 is an explicit backend dependency evolution, not relaxed general drift checking.
+
+## ADR-015 — maintained P05 client core and independently supplied authority
+
+Add a separate unpublished Rust core with its own exact Cargo lock/inventory;
+preserve all old frozen inputs/locks. Maintain portable browser versions of the
+frozen codec predicates with a read-only source-equivalence gate. Use existing
+locked browser JCS/Ajv/sodium and native maintained RFC8785/JSON-schema/sodium/
+RustCrypto libraries rather than invent primitives or extend PHP to plaintext.
+RFC8785 independent IEEE754/Unicode expected bytes and frozen P02 frames are the
+oracles, with actual two-way fresh ciphertexts and relevant PHP public signatures.
+
+Require trusted context/issuer/recipient/checkpoint pins at crypto entry points.
+Crypto-valid data does not become an evaluation handle, current SQL permission,
+active roster or universally fresh history. Full inventory inclusion/ancestry
+rejects freshly backdated signatures without independent witnessed evidence;
+metadata timestamps alone do not. Maximum-size persisted history indexing is P11.
+
+Make nonce/key ownership explicit: random fresh object/file keys, random local/
+wrapper nonces and sequential owned file preparations. No exposed reencryption
+index or caller-chosen encryption nonce. Changed-source durable version/resume
+coordination remains P12; no plaintext or hardware/software eligibility fallback.
+Enforce KDF bounds before allocation and one active native/worker job, then
+measure actual desktop Worker/1 GB behavior. RAM/GC erasure, P07 generation
+fencing and the P01 physical/mobile matrix retain their explicit limits. Ordinary
+CI creates only synthetic owned resources and metadata artifacts, not a release,
+production rollout, device trial or qualified review.
+
+ADR-015 measured acceptance addendum: require actual two-way fresh Rust/Worker
+bytes, Windows/MSVC and PHP public-signature verification, not a cloud sandbox
+BLOCKED result. Public PHP projection includes all 21 signable types and fresh
+note/file/grant outputs from each runtime; private fixture inputs never enter
+that verifier. Keep startup/pending RPC deadlines and identical ECMAScript
+phrase-word semantics across clients. Fill PUBLIC bulk experiment source via
+WebCrypto in 64 KiB calls, as already measured in P01; keys/nonces remain sodium.
+Use bounded direct sync OPFS handles for ciphertext to avoid Blob/File queues.
+Record the actual high whole-suite Chromium RSS without inferring a hard/mobile
+memory pass; the still-open P01 physical matrix retains that gate. No corpus,
+chunk/file limit, integrity check or browser sandbox is weakened for acceptance.

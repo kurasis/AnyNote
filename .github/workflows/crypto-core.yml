@@ -1,0 +1,114 @@
+name: P05 cryptographic core
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crypto-core-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  crypto-linux-browser-php:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      ANYNOTE_TOOLCHAINS: /tmp/anynote-p05-toolchains
+      CHROMIUM_EXECUTABLE: /usr/bin/google-chrome
+      P05_PROFILE: release
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.12.14'
+      - name: Install verified tools and existing frozen browser dependencies
+        run: |
+          bash scripts/install-p01-toolchains.sh
+          source scripts/runtime-env.sh
+          npm --prefix packages/protocol ci --ignore-scripts --cache /tmp/p05-npm --no-audit --no-fund
+          npm --prefix experiments/p01 ci --cache /tmp/p05-npm --no-audit --no-fund
+      - name: Strict native core, actual concurrent KDF and read-only drift gates
+        run: |
+          source scripts/runtime-env.sh
+          cargo fmt --manifest-path packages/crypto-core/Cargo.toml --check
+          cargo clippy --manifest-path packages/crypto-core/Cargo.toml --locked --all-targets -j 4 -- -D warnings
+          cargo test --manifest-path packages/crypto-core/Cargo.toml --locked -j 4
+          python3 scripts/p05-native-inventory.py
+          python3 scripts/p05-port-codecs.py
+          python3 scripts/check-p04-compatibility.py
+          python3 scripts/p03-contracts.py
+          cargo build --manifest-path packages/crypto-core/Cargo.toml --locked --release -j 4
+      - name: Rust to real sandboxed Worker, Worker to Rust, exact 1 GB and chunk boundaries
+        run: |
+          source scripts/runtime-env.sh
+          node experiments/p01/p05-crypto.mjs --large
+      - name: Owned PHP public signature acceptance from all three actual runtimes
+        run: |
+          source scripts/runtime-env.sh
+          python3 scripts/dev-stack.py install
+          python3 scripts/dev-stack.py up
+          python3 scripts/check-p05-php.py
+          python3 scripts/dev-stack.py check
+          git diff --exit-code
+      - name: Preserve metadata-only core evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: p05-linux-crypto-report
+          path: |
+            artifacts/p05/crypto-report.json
+            artifacts/p05/php-report.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Stop only this checkout's owned services
+        if: always()
+        run: python3 scripts/dev-stack.py stop
+
+  crypto-windows-native:
+    runs-on: windows-2025
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - name: Install exact Rust and Node versions
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal --component clippy,rustfmt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          rustup override set 1.99.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.21.0'
+      - name: Strict MSVC core and public cross-runtime corpus
+        run: |
+          npm --prefix packages/protocol ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo fmt --manifest-path packages/crypto-core/Cargo.toml --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo clippy --manifest-path packages/crypto-core/Cargo.toml --locked --all-targets -- -D warnings
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --manifest-path packages/crypto-core/Cargo.toml --locked
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo build --manifest-path packages/crypto-core/Cargo.toml --locked
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node packages/protocol/p05-native-node.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Preserve metadata-only MSVC evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: p05-windows-crypto-report
+          path: artifacts/p05/windows-report.json
+          if-no-files-found: error
+          retention-days: 14
