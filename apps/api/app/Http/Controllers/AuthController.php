@@ -154,7 +154,7 @@ final class AuthController
                 throw new ApiException('NOT_FOUND');
             }
             DB::table('users')->where('id', $id)->update(['status' => 'disabled']);
-            foreach (DB::table('auth_sessions')->where('account_id', $id)->pluck('id') as $s) {
+            foreach (DB::table('auth_sessions')->where('account_id', $id)->lockForUpdate()->get()->pluck('id') as $s) {
                 Sessions::revoke($s);
             }
 

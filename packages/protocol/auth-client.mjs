@@ -60,7 +60,9 @@ export class AuthClient {
     if(p.authenticatorSelection?.authenticatorAttachment===null)delete p.authenticatorSelection.authenticatorAttachment;
     if(p.user)p.user.id=un64(p.user.id);
     for(const d of [...(p.allowCredentials??[]),...(p.excludeCredentials??[])])d.id=un64(d.id);
-    const c=await navigator.credentials[ceremony==='register'||ceremony==='add'?'create':'get']({publicKey:p});
+    let c;
+    try{c=await navigator.credentials[ceremony==='register'||ceremony==='add'?'create':'get']({publicKey:p});}
+    catch(e){throw Error(e.name==='InvalidStateError'?'PASSKEY_ALREADY_PRESENT': ['NotAllowedError','AbortError'].includes(e.name)?'PASSKEY_CANCELLED':'PASSKEY_UNAVAILABLE');}
     if(!c)throw Error('PASSKEY_CANCELLED');
     const r=c.response;
     const response={clientDataJSON:b64(new Uint8Array(r.clientDataJSON)),...(r.attestationObject?{attestationObject:b64(new Uint8Array(r.attestationObject)),transports:r.getTransports?.()??[]}:{authenticatorData:b64(new Uint8Array(r.authenticatorData)),signature:b64(new Uint8Array(r.signature)),userHandle:r.userHandle===null?null:b64(new Uint8Array(r.userHandle))})};

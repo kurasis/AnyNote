@@ -27,6 +27,23 @@ final class Sessions
             });
     }
 
+    /** Current-row count under the caller's account lock, including refreshable families. */
+    public static function liveCount(string $account): int
+    {
+        if (DB::transactionLevel() < 1) {
+            throw new \LogicException('Transaction required');
+        }
+
+        return DB::table('auth_sessions as s')->leftJoin('refresh_tokens as f', function ($q) {
+            $q->on('f.family_id', '=', 's.family_id')->where('f.state', 'active')->where('f.expires_at', '>', now());
+        })->where('s.account_id', $account)->where('s.state', '!=', 'revoked')
+            ->where(function ($q) {
+                $q->where('s.expires_at', '>', now())->orWhere(function ($q) {
+                    $q->where('s.transport', 'native')->where('s.absolute_expires_at', '>', now())->whereNotNull('f.id');
+                });
+            })->select('s.id')->distinct()->lockForUpdate()->limit(100)->get()->count();
+    }
+
     public static function binding(Request $r): string
     {
         if (! $r->session()->has('auth_binding')) {
@@ -120,7 +137,7 @@ final class Sessions
         $secret = P::b64(random_bytes(32));
         $identity = DB::table('account_identities')->where('account_id', $account)->first();
         $id ??= P::b64(random_bytes(16));
-        if (self::live($account)->count() >= 100) {
+        if (self::liveCount($account) >= 100) {
             throw new ApiException('RESOURCE_LIMIT');
         }
         DB::table('auth_sessions')->insert(['id' => $id, 'account_id' => $account, 'device_id' => $device, 'secret_hash' => hash('sha256', $secret), 'recovery_generation' => $identity?->recovery_generation ?? 0, 'state' => $device === null ? 'restricted' : 'trusted', 'expires_at' => now()->addMinutes(30), 'absolute_expires_at' => now()->addDays(30), 'authenticated_at' => now(), 'last_seen_at' => now(), 'transport' => 'pwa']);
@@ -136,7 +153,10 @@ final class Sessions
 
     public static function revoke(string $id): void
     {
-        $s = DB::table('auth_sessions')->where('id', $id)->first();
+        if (DB::transactionLevel() < 1) {
+            throw new \LogicException('Transaction required');
+        }
+        $s = DB::table('auth_sessions')->where('id', $id)->lockForUpdate()->first();
         if (! $s) {
             return;
         }

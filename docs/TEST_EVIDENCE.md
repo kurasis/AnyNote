@@ -1212,7 +1212,7 @@ action is required for P05. The next full batch is P06 authentication/sessions.
 
 ## P06 local implementation checks (hosted acceptance pending)
 
-Local actual TLS Nginx -> Laravel -> owned MariaDB authentication passes 176
+Local actual TLS Nginx -> Laravel -> owned MariaDB authentication passes 215
 checks. Both eight-request registration and refresh races have one winner and
 seven denials; refresh reuse revokes the family. Rate admission: 64 requests
 in eight concurrent waves, exactly 60 admitted/four typed denials; expired
@@ -1238,7 +1238,7 @@ The first parallel local P03/P06 attempt was invalidated by P03's deliberate
 shared database outage; sequential P03 rerun passed. Real concurrent admission
 then exposed MariaDB ER_CHECKREAD (1020) after a nonlocking rate-bucket snapshot.
 The corrected implementation locks the current bucket first and retries bounded
-first-insertion deadlocks. All 176 checks, strict one-winner races and the exact
+first-insertion deadlocks. All 215 checks, strict one-winner races and the exact
 64-request rate bound passed after that correction. No error assertion or
 verification control was weakened; temporary metadata-only diagnostics were
 removed from application source before commit.
@@ -1269,3 +1269,16 @@ failure; the SDK default fetch must retain its Window/Worker receiver. Its
 default is now bound to globalThis. Node's fetch ignores that receiver, so the
 previous Node-only transport result did not expose the browser-specific issue.
 The real sandboxed browser gate remains mandatory after the correction.
+
+The browser fetch correction passed real bootstrap, attestation, offline kit
+export, root/device registration and cookie checks. The next failure was a test
+provider choice: adding a passkey on the same authenticator correctly rejects
+its already enrolled credential through excludeCredentials. The harness now
+uses two independent resident UV providers and keeps production exclusion
+checks unchanged. It then logs in with the second provider.
+
+The HTTP matrix also includes eight parallel code redemptions (one grant and
+one access/refresh row), and eight assertions with the same nonzero counter
+(one grant). Current-row locking avoids old REPEATABLE READ snapshots for OAuth
+revocation, account status, admission caps and all-session revocation. The
+maintained verifier's existing current credential counter read remains intact.

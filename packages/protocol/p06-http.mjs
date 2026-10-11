@@ -100,6 +100,11 @@ async function main(){
     const local=u=>new Promise((done,reject)=>{const r=http.get(u,s=>{s.resume();done(s.statusCode);});r.setTimeout(5000,()=>r.destroy(Error('CALLBACK_TIMEOUT')));r.on('error',reject);});
     check(await local(rejected)===400,'NATIVE_SDK_WRONG_STATE');check(await local(callback)===200,'NATIVE_SDK_ACTUAL_TCP_CALLBACK');
     const finish=await iterator.next();check(!finish.done&&JSON.parse(finish.value).status==='PASS'&&!sdkError,'NATIVE_SDK_HTTPS_PKCE_REFRESH_REUSE');report.native_sdk_transport='actual maintained Rust OAuth2 to PHP League through HTTPS, loopback TCP and refresh/reuse';
+    const parallelCode=await native();const codeBefore=control('counts');control('clear-rates');
+    const redemptions=await Promise.all(Array.from({length:8},()=>request('/auth/native/token',{body:parallelCode,origin:null})));
+    check(redemptions.filter(x=>x.status===200).length===1&&redemptions.filter(x=>x.status===401).length===7,'CODE_RACE_ONE_WINNER:'+JSON.stringify(redemptions.map(x=>({status:x.status,code:x.json?.error?.code}))));
+    const codeAfter=control('counts');check(codeAfter.refresh_tokens===codeBefore.refresh_tokens+1&&codeAfter.oauth_access===codeBefore.oauth_access+1,'CODE_RACE_NO_PARTIAL_DUPLICATE_TOKENS');
+    report.code_concurrency={requests:8,configured_php_workers:8,winners:1,denials:7,token_rows_added:1};
     const grant=await native();
     check((await request('/auth/native/token',{body:{...grant,issuer:'https://wrong.invalid'},origin:null})).status===401,'NATIVE_ISSUER');
     check((await request('/auth/native/token',{body:{...grant,code_verifier:b64(randomBytes(32))},origin:null})).status===401,'PKCE_REQUIRED');
@@ -147,6 +152,11 @@ async function main(){
       check((await bob.call('/auth/logout',{version:1})).status===200,'DISABLED_LOGOUT');
     }finally{bobRoot.dispose();}
     check((await a.call('/me/sessions',{version:1},'DELETE')).status===200,'REVOKE_ALL');check((await a.call('/me')).status===401&&(await b.call('/me')).status===401,'ALL_PWA_SESSIONS_REVOKED');
+    control('clear-rates');const counterBrowsers=Array.from({length:8},()=>new Browser());await Promise.all(counterBrowsers.map(x=>x.start()));
+    const counterOptions=await Promise.all(counterBrowsers.map(x=>options(x,'login')));
+    const counterResults=await Promise.all(counterBrowsers.map((x,i)=>verify(x,counterOptions[i],second.get(counterOptions[i].publicKey,{count:1}))));
+    check(counterResults.filter(x=>x.status===200).length===1&&counterResults.filter(x=>x.status===401).length===7,'COUNTER_RACE_CURRENT_CREDENTIAL:'+JSON.stringify(counterResults.map(x=>({status:x.status,code:x.json?.error?.code}))));
+    report.counter_concurrency={requests:8,winners:1,denials:7,same_nonzero_counter:1};
     const cleanup=control('prune-expired');check(cleanup.expired_challenges>0&&cleanup.remaining_challenges===0&&cleanup.removed>=cleanup.expired_challenges,'BOUNDED_AUTH_EXPIRY_CLEANUP');check(cleanup.users===2&&cleanup.devices===2&&cleanup.rosters===2,'CLEANUP_PRESERVES_ROOT_DEVICES');
     control('clear-rates');const rate=new Browser();await rate.start();let limited=false;for(let i=0;i<25;i++){const x=await rate.call('/auth/recovery-code',{version:1,code:b64(randomBytes(32))});if(x.status===429){limited=true;break;}check(x.status===401,'INVALID_CODES_CONCEALED');}check(limited,'RATE_PERSISTS_DENIAL');
     control('clear-rates');const admission=[];

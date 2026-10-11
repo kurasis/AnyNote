@@ -70,7 +70,7 @@ final class Repository implements AccessTokenRepositoryInterface, AuthCodeReposi
 
     public function isAccessTokenRevoked(string $tokenId): bool
     {
-        return ! DB::table('oauth_access')->where('id', $tokenId)->where('session_id', $this->session->id)->where('revoked', false)->where('expires_at', '>', now())->exists();
+        return DB::table('oauth_access')->where('id', $tokenId)->where('session_id', $this->session->id)->where('revoked', false)->where('expires_at', '>', now())->lockForUpdate()->first() === null;
     }
 
     public function getNewAuthCode(): AuthCodeEntityInterface
@@ -90,7 +90,7 @@ final class Repository implements AccessTokenRepositoryInterface, AuthCodeReposi
 
     public function isAuthCodeRevoked(string $codeId): bool
     {
-        return ! DB::table('oauth_codes')->where('id', $codeId)->where('session_id', $this->session->id)->where('authorization_id', $this->authorization->id)->where('revoked', false)->where('expires_at', '>', now())->exists();
+        return DB::table('oauth_codes')->where('id', $codeId)->where('session_id', $this->session->id)->where('authorization_id', $this->authorization->id)->where('revoked', false)->where('expires_at', '>', now())->lockForUpdate()->first() === null;
     }
 
     public function getNewRefreshToken(): ?RefreshTokenEntityInterface
@@ -112,6 +112,6 @@ final class Repository implements AccessTokenRepositoryInterface, AuthCodeReposi
 
     public function isRefreshTokenRevoked(string $tokenId): bool
     {
-        return ! DB::table('refresh_tokens')->where('oauth_identifier', $tokenId)->where('family_id', $this->session->family_id)->where('state', 'active')->where('expires_at', '>', now())->exists();
+        return DB::table('refresh_tokens')->where('oauth_identifier', $tokenId)->where('family_id', $this->session->family_id)->where('state', 'active')->where('expires_at', '>', now())->lockForUpdate()->first() === null;
     }
 }

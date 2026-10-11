@@ -79,7 +79,7 @@ final class Native
             if (($d->consent_binding ?? null) !== Sessions::binding($r)) {
                 throw new ApiException('AUTH_REQUIRED');
             }
-            if (Sessions::live($browser->account_id)->count() >= 100) {
+            if (Sessions::liveCount($browser->account_id) >= 100) {
                 throw new ApiException('RESOURCE_LIMIT');
             }
             $session = P::b64(random_bytes(16));

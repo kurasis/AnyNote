@@ -126,7 +126,7 @@ final class Passkeys
 
                         return ['version' => 1, 'registration_id' => $reg->id, 'account_id' => $reg->account_id, 'verified' => true];
                     }
-                    $user = DB::table('users')->where('id', $account)->first();
+                    $user = DB::table('users')->where('id', $account)->lockForUpdate()->first();
                     if (! $user || $user->status !== 'active') {
                         throw new ApiException('AUTH_REQUIRED');
                     }
@@ -143,6 +143,9 @@ final class Passkeys
                         $this->persist($account, $record);
 
                         return ['version' => 1, 'status' => 'ok'];
+                    }
+                    if ($credential !== null && $credential->account_id !== $account) {
+                        throw new ApiException('AUTH_REQUIRED');
                     }
                     $credential = DB::table('passkey_credentials')->where('credential_digest', hash('sha256', P::binary($body->credential->id)))->lockForUpdate()->first();
                     if (! $credential || $credential->account_id !== $account || ($ch->account_id !== null && $ch->account_id !== $credential->account_id)) {
@@ -175,7 +178,7 @@ final class Passkeys
 
     public function persist(string $account, CredentialRecord $record): void
     {
-        if (DB::table('passkey_credentials')->where('account_id', $account)->count() >= 20 || DB::table('passkey_credentials')->where('credential_digest', hash('sha256', $record->publicKeyCredentialId))->exists()) {
+        if (DB::table('passkey_credentials')->where('account_id', $account)->lockForUpdate()->limit(20)->get()->count() >= 20 || DB::table('passkey_credentials')->where('credential_digest', hash('sha256', $record->publicKeyCredentialId))->exists()) {
             throw new ApiException('RESOURCE_LIMIT');
         }
         DB::table('passkey_credentials')->insert(['id' => P::b64(random_bytes(16)), 'account_id' => $account, 'credential_digest' => hash('sha256', $record->publicKeyCredentialId), 'credential_id' => P::b64($record->publicKeyCredentialId), 'public_key' => $record->credentialPublicKey, 'counter' => $record->counter, 'flags' => $this->verifier->serialize($record)]);

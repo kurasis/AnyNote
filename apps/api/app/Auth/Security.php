@@ -74,7 +74,7 @@ final class Security
         return DB::transaction(function () use ($r, $id) {
             $s = $this->sessions->current($r, true);
             Sessions::recent($s);
-            $k = DB::table('passkey_credentials')->where('id', $id)->where('account_id', $s->account_id)->first();
+            $k = DB::table('passkey_credentials')->where('id', $id)->where('account_id', $s->account_id)->lockForUpdate()->first();
             if (! $k) {
                 throw new ApiException('NOT_FOUND');
             }
@@ -94,7 +94,7 @@ final class Security
             if ($id !== null && $id !== $s->id) {
                 Sessions::recent($s);
             }
-            $target = DB::table('auth_sessions')->where('id', $id ?? $s->id)->where('account_id', $s->account_id)->first();
+            $target = DB::table('auth_sessions')->where('id', $id ?? $s->id)->where('account_id', $s->account_id)->lockForUpdate()->first();
             if (! $target) {
                 throw new ApiException('NOT_FOUND');
             }
@@ -113,7 +113,7 @@ final class Security
         return DB::transaction(function () use ($r) {
             $s = $this->sessions->current($r, true);
             Sessions::recent($s);
-            foreach (DB::table('auth_sessions')->where('account_id', $s->account_id)->where('state', '!=', 'revoked')->pluck('id') as $id) {
+            foreach (DB::table('auth_sessions')->where('account_id', $s->account_id)->where('state', '!=', 'revoked')->lockForUpdate()->get()->pluck('id') as $id) {
                 Sessions::revoke($id);
             }
             if ($s->transport === 'pwa') {

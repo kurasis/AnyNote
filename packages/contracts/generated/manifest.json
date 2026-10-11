@@ -180,7 +180,7 @@
     },
     {
       "path": "apps/api/app/Http/Controllers/AuthController.php",
-      "sha256": "fad6e380772a4e0201c5bc8f2f7046d9b84fd04dc94451a6151b1e19e1f89b5f"
+      "sha256": "0c07c2f7c62de16553191b5ec5c315edbe309fb74217fdca91c9c5814d2428f1"
     },
     {
       "path": "apps/api/app/Http/Middleware/AuthSession.php",
@@ -220,7 +220,7 @@
     },
     {
       "path": "packages/protocol/auth-client.mjs",
-      "sha256": "ec1142a42d7a80c0e0e43a75f60a5aa474ab6dff956fc24effd766b8294d2f94"
+      "sha256": "0b249fb56200e6cb0c7e8aba550b47cfd867fc709b7edea005087fa0a3a94fda"
     },
     {
       "path": "packages/protocol/auth-formats.mjs",
@@ -236,7 +236,7 @@
     },
     {
       "path": "apps/api/app/Auth/Native.php",
-      "sha256": "19d1d4317b8e9b653eae3551de9b7fd89bde2bd5e56b2907ac93bf57664fb186"
+      "sha256": "31a5e56f061beadaf51ac8dab4796f36651bd9112d94d9afa197cf86ef9d1abb"
     },
     {
       "path": "apps/api/app/Auth/OAuth/Access.php",
@@ -256,7 +256,7 @@
     },
     {
       "path": "apps/api/app/Auth/OAuth/Repository.php",
-      "sha256": "2405e03ae2eabba4fbbdd79dc5a284a23486740d6bc8fac99cf8c4b790b4391a"
+      "sha256": "cfc4a73618076259c3efdbadb63c3d830b824933a1905a6dee4bf9ecfabea1e3"
     },
     {
       "path": "apps/api/app/Auth/OAuth/User.php",
@@ -264,7 +264,7 @@
     },
     {
       "path": "apps/api/app/Auth/Passkeys.php",
-      "sha256": "f078d9387f32f0b0a2cf7246ad39abb8b50a760e77d6e9de1514a461911cedff"
+      "sha256": "bcea8fd9adcf2cf89008321f9d827b48fd59d966e1d948ad0b7241941969d882"
     },
     {
       "path": "apps/api/app/Auth/Policy.php",
@@ -284,11 +284,11 @@
     },
     {
       "path": "apps/api/app/Auth/Security.php",
-      "sha256": "d47119e8054a33435a20feae923f064b4ded1d0d1a7269315480e3f9b0070a5c"
+      "sha256": "a396f26b713bf0ed39cb0c15d70ca7d63f9a4ae2cb24c80842ea8d8c368a6fae"
     },
     {
       "path": "apps/api/app/Auth/Sessions.php",
-      "sha256": "e9c0c705fd644e2915f8cb30e89979e943ab64b7cb70da26d1576caf7b76011f"
+      "sha256": "915de0cf22237b97c619819674b92ca7e868ca3f9c99e8abb19832a9fc5cf1e1"
     },
     {
       "path": "apps/api/app/Auth/WebAuthn.php",

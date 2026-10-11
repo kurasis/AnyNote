@@ -36,7 +36,7 @@ $value = match ($op) {
     })(),
     'counts' => (function () {
         $result = [];
-        foreach (['users', 'account_identities', 'devices', 'account_roster_events', 'passkey_credentials', 'auth_sessions'] as $table) {
+        foreach (['users', 'account_identities', 'devices', 'account_roster_events', 'passkey_credentials', 'auth_sessions', 'oauth_access', 'oauth_codes', 'refresh_tokens'] as $table) {
             $result[$table] = DB::table($table)->count();
         }
 

@@ -134,7 +134,10 @@ construction while matching the strict AnyNote DTO. It performs no redirects.
 
 The listener enforces exact raw path, Host, GET, bounded headers/read/deadline,
 single code/state/iss, expected issuer/state, no bearer/cookie/body/token fields,
-IPv4/IPv6 loopback only and one successful callback. A wrong callback returns a
+IPv4/IPv6 loopback only and one successful callback. Maintained revocation queries read current locked rows rather than an older SQL
+snapshot, so parallel code redemption produces exactly one token set. Account
+status, session/passkey caps and all-session revocation likewise read current
+rows under their account lock. A wrong callback returns a
 static denial without consuming the legitimate attempt. Dropping `Pending`
 closes the listener. The system browser entry point is real; the explicit
 `integration-harness` feature supplies a synthetic network resolver/test CLI,
@@ -158,7 +161,8 @@ The generated PHP/TypeScript/OpenAPI boundary has 83 declared operations,
 content/pairing/reset/policy routes keep their future phase ownership. The
 account-security static UI supports passkey login/register/add/reauth/removal,
 one-use authentication recovery, session list/revoke/logout and native consent.
-DOM output uses text nodes. Maintained Ajv standalone compilation runs at build
+DOM output uses text nodes. Excluded-provider/cancelled ceremonies have explicit
+actions, and revoking the current session clears the signed-in display. Maintained Ajv standalone compilation runs at build
 time; the shipped strict CSP needs neither inline scripts nor JavaScript eval.
 Wasm compilation alone is enabled for maintained sodium. Static hosting never
 executes PHP, exposes SQL/private paths or receives native bearer tokens.
@@ -185,10 +189,10 @@ CSRF and hostile-origin denial and preserve an already owned database. Only
 explicit `reset` replaces the marked `anynote_p06_tests` database. Test CA and
 OAuth keys live in ignored, owner-marked directories with private files mode
 0600. HTTP tests use maintained Node P-256 fixtures and the actual PHP verifier;
-the mandatory browser gate uses resident UV CDP credentials in the real shipped
+the mandatory browser gate uses two independent resident UV CDP providers in the real shipped
 UI. The native integration traverses maintained Rust OAuth2, real HTTPS, PHP
 League, a real TCP callback and refresh/reuse. Reports contain metadata only.
-Eight-request registration/refresh races use eight actual PHP-FPM workers.
+Eight-request registration/code/refresh/counter races use eight actual PHP-FPM workers.
 Rate admission reads the current bucket under an exclusive lock before mutation,
 with bounded transaction retry for concurrent first insertion and expired windows reset
 under that lock and expired-bucket cleanup in maintenance. A 64-request test in
