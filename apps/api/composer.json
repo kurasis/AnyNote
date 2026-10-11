@@ -1,0 +1,39 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "anynote/api",
+    "type": "project",
+    "description": "AnyNote development foundation; protocol and authentication are pending P02.",
+    "license": "proprietary",
+    "require": {
+        "php": "~8.4.0",
+        "ext-intl": "*",
+        "ext-mbstring": "*",
+        "ext-pdo_mysql": "*",
+        "ext-sodium": "*",
+        "ext-zip": "*",
+        "laravel/framework": "~13.35.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.27",
+        "phpunit/phpunit": "^12.5.12"
+    },
+    "autoload": {"psr-4": {"App\\": "app/"}},
+    "autoload-dev": {"psr-4": {"Tests\\": "tests/"}},
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "test": "@php -d display_errors=stderr vendor/bin/phpunit",
+        "lint": "@php vendor/bin/pint --test"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": false,
+        "secure-http": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

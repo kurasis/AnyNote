@@ -9,7 +9,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P00 | VERIFIED | Local baseline and four negative cases passed; scope/version/inventory deliverables complete; remote bootstrap and clean-clone verification passed; both baseline Actions runs verified |
 | P01 | IN PROGRESS | Host crypto/KDF/storage/export/fault evidence VERIFIED; owner 0.1.4 fresh-process Hello authentication, WTS lock/STALE, installed-iPhone-PWA selected 1 GB hash and diagnostic recovery PASS; full physical G1/memory/network matrix remains open |
 | P02 | NOT STARTED | Depends on P00/P01 findings; qualified review remains external |
-| P03 | NOT STARTED | Tooling may begin after P00; final contracts follow P02 |
+| P03 | IN PROGRESS | Laravel/MariaDB/FPM/Nginx tooling and synthetic integration implemented; final contracts/generated types/errors/logging follow P02; evidence below |
 | P04 | NOT STARTED | P02/P03; signature acceptance also needs P05 fixtures |
 | P05 | NOT STARTED | P01/P02/P03 |
 | P06 | NOT STARTED | P04 |
@@ -275,3 +275,36 @@ Process memory, older-phone, network/resume/low-space, passkeys, PWA update and
 remaining Windows matrix keep P01/G1 OPEN. P03 tooling remains the next bounded
 independent task. No application/source-format/migration change in this slice.
 Rollback: revert only this evidence/tracking addition; preserve prior reports.
+
+## Completed slice: P03-TOOLING-FOUNDATION
+
+Minimal apps/api Laravel scaffold, frozen 99-package Composer lock/license
+inventory, digest-pinned PHP/FPM/MariaDB/Nginx Compose environment and one-command
+owned lifecycle/check tooling. No default auth model/user/password/migration,
+product endpoint/schema, content crypto, queue/scheduler or application UI.
+Framework APP_KEY and database credentials are disposable ignored local state.
+Existing P01 experiments/references/device kit and original specification remain
+unchanged. P03 final contracts/types/errors/logging depend on P02, so P03 remains
+IN PROGRESS rather than a completed product/API gate.
+
+Local real MariaDB commit/rollback/temporary cleanup and Nginx/FPM/Laravel DB
+request PASS. Three PHPUnit tests / seven assertions, strict Composer validation,
+native extensions, 20-file Pint and advisory audit PASS. Loopback bindings,
+non-root FPM/Nginx, static/API and path/host denial, actual DB outage 503 and
+restart recovery PASS. Gitleaks source scan and three fake-token negatives PASS;
+only rule/file/checksum-shaped reference/source-input false positives are allowed.
+Repeated frozen install and full stop/start/readiness are verified; actual
+source-stamped hosted fresh-checkout results are recorded on the foundation PR.
+Saved environment fields and exact evidence are recorded in TEST_EVIDENCE.md.
+
+Rollback: revert these foundation additions, stop only the marked synthetic
+Compose project and preserve its disposable volume/state. No production data or
+protocol-format migration exists. Next: P02-KEY-AND-FILE-CONTRACT; complete P01
+physical/memory/network matrix and qualified review remain separate open gates.
+
+Hosted source 76860c8: foundation 38119399644, baseline 38119399647 and all three
+P01 jobs 38119399652 PASS. Actual checkout merge ref 1405c76 has the same complete
+tree; raw report/source receipts archived, clean tree and no generated cache
+tracked. Cloud install_script/start_skill save confirmed; publication/future-task
+restoration NOT RUN. This final evidence addition leaves foundation/P01 code
+unchanged; final PR-head checks must pass before automatic merge.

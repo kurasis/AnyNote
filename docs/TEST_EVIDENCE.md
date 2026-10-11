@@ -600,3 +600,81 @@ phone JSON equals its original after the single origin replacement. Repository
 baseline/checks are recorded on the evidence PR. No application code, dependency,
 original specification byte, kit asset or release changes in this slice. P01/G1
 remains IN PROGRESS; no repeat of these specific successful whole trials needed.
+
+## P03 development foundation — real local service evidence
+
+[Primary-source receipt](evidence/p03-primary-sources.json) records current
+upstream metadata and verified official image pulls.
+[Local report](evidence/p03-foundation-local.json) is an actual cloud-host
+synthetic integration report, not physical-device or production acceptance.
+It records the then-current commit plus dirty=true and exact foundation source
+SHA-256 receipts; uncommitted development is not misrepresented as that commit.
+Hosted clean-checkout evidence and exact tested head are recorded on the PR.
+
+Local commands: scripts/dev-stack.py install/up/test, then stop/up/check;
+strict Composer validation/platform/native extensions, audit (zero advisories
+at execution), 20-file Pint, PHPUnit 3 tests/7 assertions PASS. Actual MariaDB
+11.8.9 InnoDB temporary commit/rollback/drop leaves no product tables. Real
+Nginx 1.30.5 -> FPM/PHP 8.4.26 -> Laravel 13.35.0 -> MariaDB request PASS.
+Composer runtime 2.10.3; 99 exact dependency/license/source records PASS.
+
+Actual container inspection confirms loopback-only Nginx and no DB/FPM host
+ports; FPM/Nginx run non-root. Static app host cannot serve API/PHP; unknown
+hosts and private/arbitrary-PHP/traversal paths fail with 400/403/404. Response
+cache-control includes no-store across duplicate headers, no X-Powered-By.
+Stopping only the owned DB yields generic 503; restart restores readiness.
+Production environment refuses the tooling route/command. Native extension
+loading is checked explicitly, not inferred from Composer polyfill satisfaction.
+
+Gitleaks 8.30.1 official archive SHA-256 verified. Complete Git-visible source
+scan PASS; three disposable random fake PAT negatives reject normally and in
+both allowlisted receipt paths. Twelve existing reference hashes and three
+generated source-input hashes were reviewed false positives. A global allowlist
+failed the inventory-path negative case and was replaced with a rule-scoped AND
+file/checksum-shape allowlist. Ignored state/vendor and all Git history are outside
+this scan; no complete secret-absence/security audit claim. Scanner values redact.
+
+Initial Docker build failed on read-only builder state, then on missing egress
+proxy/CA trust; final build uses owned writable config, injected proxy and the
+provided public trust anchor with TLS and signed Debian checks still enabled.
+Initial FPM config was root-readable only; explicit COPY chmod fixes non-root
+startup. The static root initially missed directory/index routing; direct HTTP
+now verifies it. Laravel CLI tests use actual Artisan/DB execution rather than
+requiring Mockery; missing .env warnings are resolved by preserving-or-creating
+the nonsecret example. No failed attempt is counted as a passed gate.
+
+The complete saved install script preserves existing P01 tooling and appends
+frozen P03 install/start/readiness; executed locally with required activation.
+install_script/start_skill draft-save result is recorded on the PR/final report.
+Draft save, publication and future-task restoration remain distinct. P03 tooling
+is verified; final contracts/types/errors/logging depend on P02. P01/G1 and
+qualified review stay open. No public deployment, owner device action, native
+reference/license change, production format/schema migration or real secret.
+
+### Hosted fresh-checkout P03 source and existing regression checks
+
+[Raw foundation report](evidence/p03-foundation-hosted.json) and
+[receipt](evidence/p03-hosted-receipt.json) preserve the actual hosted results.
+Foundation [38119399644](https://github.com/kurasis/AnyNote/actions/runs/38119399644),
+baseline [38119399647](https://github.com/kurasis/AnyNote/actions/runs/38119399647)
+and all three P01 [38119399652](https://github.com/kurasis/AnyNote/actions/runs/38119399652)
+jobs PASS for workflow head 76860c8. Actions checkout tested merge ref 1405c76,
+whose parents are main 7656fc2 and head 76860c8; its entire tree equals that head.
+The raw report keeps the actual checkout commit, not a substituted PR-head stamp.
+
+Actual foundation versions match pins; native extensions, InnoDB commit/rollback/
+cleanup, HTTP readiness, DB outage/recovery, static/API/path/host isolation, actual
+loopback bindings/users, production denial and 3 tests/7 assertions PASS. Hosted
+source tree stays clean; generated PHPUnit cache is excluded from Git and input
+receipts. The earlier dirty local capture retains that transient cache's fingerprint
+as historical data, not a committed source assertion. All 43 hosted source-input
+SHA-256 receipts independently match current foundation bytes. Existing native/
+Node/sandboxed-browser/network/1 GB/export/fault and Windows gates also PASS.
+Cancelled initial 6c79236 runs are not counted; they were superseded by the cache
+tracking correction. The publication-only job is intentionally skipped.
+
+[Environment receipt](evidence/p03-environment-setup.json) confirms complete
+install execution, repeated frozen install, full owned stop/start/readiness and
+actual saved install_script/start_skill. Tool returned requires_publish=true:
+review/save/publish in environment settings remains product-owned; no future
+restoration or production deployment is claimed.

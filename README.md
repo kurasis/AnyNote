@@ -8,8 +8,8 @@ Nginx and PHP-FPM.
 cryptographic interoperability, Argon2id, ciphertext storage and selected 1 GB
 disk export host pipelines pass. A scoped native Windows PRF/TPM probe and
 private HTTPS PWA trial harness are prepared; physical Windows/iPhone acceptance
-remains open. No application or backend service is
-implemented yet. Do not store
+remains open. P03 adds a reproducible Laravel/MariaDB/Nginx/PHP-FPM development
+foundation; product API/authentication and protocol contracts are pending. Do not store
 real secrets or user data in this repository's future experimental builds.
 
 ## Start here
@@ -46,3 +46,4 @@ do not grant a license to this project's own source or the supplied specificatio
 
 P01 experiment: [commands and boundaries](experiments/p01/README.md).
 Physical trials: [owner actions and required results](docs/P01_OWNER_TRIALS.md).
+Backend foundation: [commands and boundaries](docs/P03_DEVELOPMENT.md).

@@ -333,3 +333,45 @@ Files folder provenance, prompt visibility at lock, memory bound or complete
 G1 acceptance. Preserve earlier failed/limited runs; successful narrow owner
 results do not require another whole trial or an application change. P03 tooling
 can proceed independently while remaining platform and review gates stay open.
+
+## ADR-007 — containerized P03 foundation without provisional product contracts
+
+Date: 2026-10-11. Status: ACCEPTED for synthetic developer tooling only.
+
+Use the available Docker daemon rather than installing host/system services.
+Primary upstream sources supersede P00 candidates with PHP 8.4.26 security
+release, Composer 2.10.3, MariaDB 11.8.9 LTS and stable Nginx 1.30.5. Preserve
+verified official image manifest digests and exact Composer lock; Laravel stays
+13.35.0. Pin selected signed Debian compiler libraries, retain HTTPS/package
+verification and document that indirect OS packages are repository-resolved.
+Cloud builds reuse the provided proxy/trust anchor in an ignored local image
+copy; do not disable verification or change host trust. Docker builder state
+uses a writable owned path; no existing credentials are copied or replaced.
+
+Create only the needed apps/api and infra/dev areas. Omit default users/auth/
+password recovery/migrations/UI/Tinker and product OpenAPI/generated types until
+P02 authoritative contracts exist. A local/testing-only readiness route reads
+MariaDB; a CLI temporary InnoDB table proves commit/rollback/cleanup. Both refuse
+production environment. APP_KEY is a generated framework key, never content
+encryption. Composer proprietary describes absent redistribution permission,
+not an owner decision on the future release license; upstream notices remain.
+
+Expose only a loopback Nginx port; DB/FPM have no host port. Static and API hosts
+route separately; FPM cannot mount/write the static source. Use non-root FPM/
+Nginx, dropped capabilities, owned marked runtime state and generated disposable
+credentials excluded from Git/evidence. Stop only this checkout's project and
+preserve its volume; no global prune or automatic product migration. Disable
+content logging; actual production logging/request-ID/error contracts remain
+pending. No public exposure, production deployment or physical gate change.
+
+Use the checksum-verified upstream Gitleaks CLI against all Git-visible current
+source. Review the 12 generic-key false positives as upstream file SHA-256 entries;
+allow only that rule/file/checksum shape; the three new source-receipt checksum
+false positives use the same bounded policy in the generated evidence files.
+A global path allowlist was rejected
+when its negative case skipped the file; the final rule-scoped AND allowlist
+must reject fake PATs normally and at both allowlisted receipt paths. No all-history
+scan/audit claim follows. Frozen-lock inventory drift and meaningful real DB/
+HTTP/outage/production-denial tests run locally and in a fresh hosted checkout.
+P03 tooling can be verified while contracts remain incomplete; P02 key/file
+contract is the next bounded task, with qualified review and P01/G1 still open.

@@ -17,20 +17,23 @@ needed for baseline verification. The command validates specification hashes,
 local document links, tracking records and exact size/framing arithmetic. It
 does not validate encryption, platform compatibility or the future application.
 
-## Planned application tooling
+## Application tooling foundation
 
 Exact selected versions and primary sources are in [decisions](DECISIONS.md).
 The isolated [P01 experiment](../experiments/p01/README.md) has working Rust/Node
-setup, lockfiles, build/test commands and hosted Chromium checks now. P03 creates
-the application/backend manifests and services; `php artisan` is not available yet. Use npm with
+setup, lockfiles, build/test commands and hosted Chromium checks now. P03 adds
+apps/api, frozen Composer dependencies and a disposable container stack; see
+[foundation setup](P03_DEVELOPMENT.md). Artisan runs in the PHP container, not
+a host PHP installation. Use npm with
 `npm ci`, Cargo with `--locked`, and Composer installation from `composer.lock`
 once those files exist. Future installs must keep artifact checksums,
 package-signature and TLS verification enabled.
 
 Backend development will need PHP CLI/FPM extensions including sodium,
 pdo_mysql, mbstring, intl, openssl, fileinfo, DOM/XML and tokenizer, Composer,
-MariaDB, Nginx, queue and scheduler processes. It uses synthetic accounts and
-local private blob storage. Redis/S3 are optional, not baseline requirements.
+MariaDB and Nginx are now prepared for development. Queue/scheduler processes,
+account flows and private blob adapters follow their product contracts; none are
+initialized by the foundation check. Redis/S3 remain optional.
 
 Windows builds need a Windows MSVC Rust toolchain, Microsoft C++ Build Tools
 with Windows SDK, and WebView2. Linux compilation cannot prove DPAPI, Hello,

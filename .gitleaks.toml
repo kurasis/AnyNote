@@ -1,0 +1,21 @@
+title = "AnyNote source secret scan"
+[extend]
+useDefault = true
+
+# Reviewed false positives: exact SHA-256 entries in the preserved reference inventory.
+# Both file and full checksum-line shape must match; tokens in that file still fail.
+[[rules]]
+id = "generic-api-key"
+[[rules.allowlists]]
+description = "Preserved upstream file SHA-256 inventory entries"
+condition = "AND"
+paths = ['''docs/reference/passkeylocal/PROVENANCE\.json$''']
+regexTarget = "line"
+regexes = ['''^\s*"passkeylocal-[^"\n]+": "[0-9a-f]{64}",?\s*$''']
+
+[[rules.allowlists]]
+description = "Generated foundation source-input SHA-256 receipt entries"
+condition = "AND"
+paths = ['''docs/evidence/p03-foundation-(?:local|hosted)\.json$''']
+regexTarget = "line"
+regexes = ['''^\s*"(?:apps/api/[^"\n]+|infra/dev/[^"\n]+|scripts/[^"\n]+|\.gitleaks\.toml|\.github/workflows/foundation\.yml)": "[0-9a-f]{64}",?\s*$''']

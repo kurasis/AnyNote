@@ -1,14 +1,16 @@
 # Known limitations
 
 - P00 is complete; an isolated P01 synthetic native/Node/browser-worker harness
-  exists. No production application authentication, device trust, encrypted vault, Laravel
-  service, manifests or resume is implemented. The isolated selected-file PWA
+  exists. No production authentication, device trust, encrypted vault, product API,
+  manifests or resume is implemented. A Laravel development foundation is now
+  available. The isolated selected-file PWA
   harness now has owner-supplied installed-iPhone-PWA selected 1 GB byte/hash
   evidence. It does not establish complete Files/network/memory acceptance or
   a real recipient/account recovery path.
 - Rust/Cargo 1.99.0 and Node 24.21.0/npm 11.19.0 are installed and activated
   through scripts/runtime-env.sh; experiment dependencies have lockfiles. PHP,
-  Composer, MariaDB and Nginx are still not prepared (P03).
+  Composer, MariaDB and Nginx now run in digest-pinned development containers;
+  no host system installation. See P03_DEVELOPMENT.md.
 - Physical Windows/Hello/WebView2 and iPhone PWA tests cannot run on this Linux
   cloud host. P01 must distinguish host experiments from actual platform evidence.
 - Qualified independent protocol/security review has not taken place. Synthetic
@@ -107,3 +109,17 @@
   cause, observe Windows prompt visibility at lock, or complete the remaining
   provider/account/suspend/WebView2 and phone G1 matrix. Static `remaining` arrays
   in the kit reports are broader checklists, not contradictions of specific PASS.
+
+- P03 tooling is a verified development foundation, not completed P03 contracts
+  or a product service. OpenAPI/types, account authorization, structured request
+  errors/logging, private blob storage and queue/scheduler await P02/P04. Only
+  local/testing readiness and connection-local synthetic CLI operations exist;
+  they refuse production environment. No public deployment/signing was performed.
+- Foundation reproduction is tested on Linux x86_64 with Docker; host PHP is
+  not installed. Digest pins and exact Composer lock do not establish bit-for-bit
+  image rebuilds or full OS dependency/license SBOM. Signed indirect OS packages
+  can change; vanished/security-updated pins require reviewed updates. The secret
+  scanner covers Git-visible current source, not every history/credential format.
+- Services must restart after environment restoration; saved install/start draft
+  is not publication or fresh-task restoration evidence. Generated synthetic DB
+  credentials/state must remain consistent with the owned retained volume.

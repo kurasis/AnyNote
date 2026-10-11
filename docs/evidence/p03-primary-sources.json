@@ -1,0 +1,44 @@
+{
+  "checked_on": "2026-10-11",
+  "kind": "PRIMARY_METADATA_AND_VERIFIED_OFFICIAL_IMAGE_PULLS",
+  "php": {
+    "source": "https://www.php.net/releases/index.php?json&version=8.4",
+    "version": "8.4.26",
+    "release_date": "24 Sep 2026",
+    "release_tags": [
+      "security"
+    ]
+  },
+  "composer": {
+    "source": "https://getcomposer.org/versions",
+    "stable": "2.10.3"
+  },
+  "laravel_framework": {
+    "source": "https://repo.packagist.org/p2/laravel/framework.json",
+    "version": "v13.35.0",
+    "release_time": "2026-10-06T13:52:37+00:00"
+  },
+  "official_image_metadata": {
+    "php": {
+      "git_commit": "79320e28b93fdc720d6f07d150709310cf54e757",
+      "directory": "8.4/trixie/fpm"
+    },
+    "mariadb": {
+      "git_commit": "bdfe641466a5312bb97d06a1a4e1fb411c49e6b6",
+      "directory": "11.8"
+    },
+    "nginx": {
+      "git_commit": "a16f1329e13e7273c4103f75d863ca625b75109e",
+      "directory": "stable/debian"
+    }
+  },
+  "gitleaks": {
+    "source": "https://api.github.com/repos/gitleaks/gitleaks/releases/tags/v8.30.1",
+    "version": "8.30.1",
+    "linux_x64_archive_sha256": "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+  },
+  "limitations": [
+    "Metadata/pull provenance, not platform/product acceptance or independent security review",
+    "Exact image digests preserved in infra/dev/versions.json"
+  ]
+}

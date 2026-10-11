@@ -1,0 +1,25 @@
+{
+  "kind": "ACTUAL_HOSTED_FRESH_CHECKOUT",
+  "workflow_head_commit": "76860c8493e9b68191fa2de8293b365373a40f86",
+  "checkout_merge_commit": "1405c7604397a14ae0897dcefc6527e81ff9b498",
+  "checkout_merge_parents": [
+    "7656fc2b9224f0433ff903ff3124b7b776e14845",
+    "76860c8493e9b68191fa2de8293b365373a40f86"
+  ],
+  "checkout_tree_matches_workflow_head": true,
+  "foundation_run": 38119399644,
+  "foundation_status": "PASS",
+  "baseline_run": 38119399647,
+  "baseline_status": "PASS",
+  "p01_regression_run": 38119399652,
+  "all_three_p01_jobs": "PASS",
+  "publication_job": "SKIPPED as intended; no new release",
+  "source_tree_dirty": false,
+  "source_inputs_match_current": true,
+  "raw_report_sha256": "28b91b8db72c8b85e7cf976cd8bf1d2bde39efe230b912dbb6998174bf78b7e5",
+  "physical_acceptance": false,
+  "limits": [
+    "Hosted Ubuntu foundation only; not physical-device/production acceptance",
+    "Cloud environment draft saved, publication/future-task restoration not run"
+  ]
+}

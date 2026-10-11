@@ -1,75 +1,47 @@
 # Next bounded task
 
-## P03-TOOLING-FOUNDATION — independent developer environment and smoke path
+## P02-KEY-AND-FILE-CONTRACT — key hierarchy and signed file context
 
-Prerequisite: P00 VERIFIED; P01 host crypto/KDF/storage/export/fault findings
-recorded. P01/G1 physical Windows/iPhone acceptance is OPEN and must remain
-separate. Latest owner 0.1.4 reports match released source 566ec84 and the EXE
-hash: positive Hello/fresh-process authentication/cancellation/cleanup PASS;
-one WTS session-lock event plus STALE rejection PASS. Phone installed_pwa=true,
-local 1 GB/120 chunks and selected 1 GB SHA-256 match PASS, with diagnostic
-recovery, key-free retained export reopen/hash and exact cleanup PASS. These
-are owner-supplied records with narrow scope, not complete G1 acceptance.
-No repeated whole trial or kit update is required for those successful checks.
-Process memory, older-phone, network/resume/low-space, passkey and remaining
-Windows/provider/account/WebView2 gates stay OPEN. P03 proceeds
-independently; no complete P01/G1 result is inferred. Single-EXE/static-ZIP device runbooks
-and the unfilled template are in P01_OWNER_TRIALS.md. The static ZIP requires
-only a trusted existing HTTPS web directory, not Node/PHP or a new certificate. No repeated OS/model
-questions, remote access, device actions or HTTPS deployment are assumed.
+Prerequisites: P00 VERIFIED; P01 host/owner findings recorded. P03 development
+foundation is implemented and verified separately; the phase remains IN PROGRESS
+until authoritative contracts/types and their integration exist. P01/G1 remains
+OPEN: owner 0.1.4 positive Hello/lock and installed-PWA selected 1 GB hash/recovery
+PASS, but memory/network/older-phone/provider/account/lifecycle matrix incomplete.
+Do not repeat successful whole owner trials or infer broader platform acceptance.
 
-Earlier 0.1.2 owner run: lock HELLO_CANCELLED/zero events, no Windows lock
-screen; phone restarts at 1 GB Share, no new JSON. 0.1.3 adds a scoped stream
-download and explicitly selected one-shot OS lock. 0.1.4 also persists path-scoped synthetic download tickets with atomic
-consumption; actual SW-stop/restart plus full 1 GB download/hash PASS. All
-three source jobs and baseline PASS at 566ec84 (38076947436/38076947435).
-0.1.4 publication/download evidence is recorded on PR #8/release. Latest physical
-owner results and original-upload/redaction receipts are in TEST_EVIDENCE.md.
-Prompt visibility at the instant of lock and Files folder provenance are not
-directly captured; do not ask for an entire repeat of already successful checks.
+Read AGENTS.md, progress/decisions/limitations/evidence and original specification
+00–06, 08–11, 13–15, 17, 19 and 20. Preserve original specification bytes, existing
+experiments, reference licenses, release assets and unrelated work. Reuse the
+checkout and saved tool activation; no Git worktree. Start foundation through
+scripts/dev-stack.py up/check when needed; stop only owned synthetic services.
 
-Read AGENTS.md, progress, decisions, limitations, dependency inventory and
-specification 02/08/13/14/15. Preserve supplied spec bytes, existing experiments,
-reference archives and unrelated changes. This task starts the independently
-permitted P03 tooling track; it does not declare P01/P02 completed.
+1. Map the specification's account-root/recovery/device/vault/group/file key
+   purposes and custody. Identify unresolved P01 assumptions explicitly,
+   including per-credential PWA PRF; no plaintext server or universal recovery key.
+2. Write a bounded reviewable protocol contract for the file-key path, wrap/AAD
+   domains, exact versioned field types/bounds and signed context. Resolve
+   checkpoint ancestry, epoch/role/recipient binding and circular digest hazards
+   from review findings R01/R14/R19. Do not improvise cryptographic primitives
+   or a six-digit pairing construction. Keep other protocol operations pending.
+3. Define authoritative candidate schemas and deterministic public serialization/
+   context fixtures for this slice only, using an established canonicalization
+   implementation after primary-source/license/version checks. Reject duplicate
+   keys, ambiguous Unicode/nonfinite numbers, missing/extra fields and wrong
+   contexts with meaningful parser/fixture checks. Do not call candidate schemas
+   globally frozen or expose incomplete security transitions as product endpoints.
+4. Record security assumptions, decisions, trust boundaries and review questions.
+   Qualified independent review remains external/unmet; self-review is not audit.
+   No production security claim, content key custody change or migration.
+5. Integrate only relevant reusable schema/fixture validation and drift commands
+   into the prepared P03 foundation. Leave account/session/product APIs and full
+   generated contracts/types for subsequent approved protocol slices.
+6. Run required checks, update tracking/evidence and exact next task, push and
+   automatically merge tested reviewable work as authorized. Respect required
+   checks; never force/admin-bypass or relabel unrun physical/audit results.
 
-1. Inspect the actual cloud runtime, existing tool activation/setup, services,
-   lockfiles and CI. Reuse Rust/Node pins and existing checkout, no worktree.
-   Verify maintained PHP/Composer/MariaDB/Nginx candidates against primary
-   sources before installing; record actual versions and any justified changes.
-   Preserve checksums/signatures/TLS and frozen dependency installs.
-2. Prepare a bounded repository foundation: documented component layout,
-   workspace/check commands and a Laravel development skeleton or equivalent
-   repository-supported initialization. Keep experiments independently runnable.
-   Do not invent/freeze crypto, authentication, authorization or wire schemas
-   while P02 contracts and review are pending. No dummy production auth/crypto.
-3. Start only owned development services on loopback/private synthetic bindings.
-   Exercise a meaningful PHP/Laravel -> MariaDB request/transaction plus Nginx/
-   PHP-FPM routing if supported. Use isolated disposable data, content-free logs
-   and normal configuration, no public exposure or destructive system changes.
-   A listening port or static HTML alone is insufficient readiness evidence.
-4. Add appropriate reproducible checks/CI for changed foundation behavior and
-   dependency/configuration drift. Record exact dependencies/licenses and
-   provide clean-clone commands. Final application contracts follow P02; do not
-   fabricate generated types or security acceptance from a scaffold.
-5. Apply cloud-environment-onboarding:setup to actual setup changes: test required
-   activation/install/start steps and save only necessary complete draft fields.
-   Do not overwrite unknown allowlists or request supplied credentials again.
-   Saved configuration and publication/new-instance verification are separate.
-6. If the owner supplies actual device records, verify their source/hash and
-   report physical outcomes in parallel with this independent work. Windows
-   capability BLOCKED means no fallback; iPhone canShare/OPFS is not Files
-   acceptance. Keep process memory/older-phone/low-space/recipient/resume gates
-   precise. Never claim that prepared instructions were physically executed.
-7. Record progress/decisions/limitations/evidence and the next bounded task.
-   Run relevant checks, push and automatically merge tested completed work as
-   authorized. Do not bypass branch protection or a failing required check.
-
-Invariants: no real user secrets/vaults, production deployment, plaintext server
-content fallback, verification/sandbox/protection bypass, arbitrary native key
-interfaces or fabricated physical/audit evidence. Preserve synthetic cleanup
-journals until their exact owned objects are removed.
-
-Exit: a fresh developer reproduces the prepared tooling and meaningful bounded
-service smoke path, with actual reports and exact remaining prerequisites.
-P01/G1, P02 final contracts/review and all production release gates stay open.
+Exit: an independent implementer can reproduce this candidate key/file context
+serialization and its rejection cases. P02 stays IN PROGRESS until the complete
+protocol/review deliverables exist; P01/P03 and production gates retain their
+precise outstanding scope. No owner actions are currently required for the
+already-successful 0.1.4 device checks; request only specific new physical
+observations when a concrete subsequent test requires them.

@@ -17,7 +17,7 @@ an ADR. Full traceability: [specification chapter 18](spec/18_REQUIREMENTS_TRACE
 | Global 100,000,000,000-byte committed ciphertext quota | P04/P12/P16 | Reservation concurrency, R11–R13/R23 | NOT STARTED |
 | Native Windows Tauri/Rust/WebView2; English/Russian UI | P01/P14 | Actual key gating, IPC, installer and update tests | NOT STARTED |
 | Installed iPhone PWA; honest background/storage limitations | P01/P15 | Physical export, lifecycle, PRF and storage tests | NOT STARTED |
-| Laravel/MariaDB/Nginx/PHP-FPM; private blob storage | P03/P04/P16 | Actual service startup, isolation and deployment tests | NOT STARTED |
+| Laravel/MariaDB/Nginx/PHP-FPM; private blob storage | P03/P04/P16 | Development service startup/isolation implemented; product storage/deployment pending | IN PROGRESS |
 | Encrypted portable export and recovery without original API | P13/P16 | R17, clean-machine offline import/recovery | NOT STARTED |
 | Hardened deployment and consistent backup/restore | P16 | O01–O06, R22/R23 | NOT STARTED |
 | Qualified independent design/security review | P02/P17 | G2/G3, R01–R24 | NOT STARTED |
