@@ -51,6 +51,7 @@ jobs:
           node experiments/p01/p05-crypto.mjs --large
       - name: Owned PHP public signature acceptance from all three actual runtimes
         run: |
+          source scripts/runtime-env.sh
           python3 scripts/dev-stack.py install
           python3 scripts/dev-stack.py up
           python3 scripts/check-p05-php.py
