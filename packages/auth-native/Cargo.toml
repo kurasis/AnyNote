@@ -1,0 +1,27 @@
+[package]
+name = "anynote-auth-native"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.99"
+publish = false
+description = "Fixed-issuer system-browser PKCE authentication and literal loopback callback"
+
+[features]
+integration-harness = []
+
+[[bin]]
+name = "p06-integration"
+path = "src/bin/p06-integration.rs"
+required-features = ["integration-harness"]
+
+[dependencies]
+oauth2 = { version = "=5.0.0", default-features = false }
+reqwest = { version = "=0.12.28", default-features = false, features = ["blocking", "json", "rustls-tls-native-roots"] }
+url = "=2.5.8"
+httparse = "=1.10.1"
+getrandom = "=0.4.3"
+base64 = "=0.22.1"
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.151"
+zeroize = "=1.9.1"
+webbrowser = "=1.2.4"

@@ -1209,3 +1209,118 @@ durable file source/resume and maximum-scale history indexes remain P08/P10,
 P07, P12 and P11 respectively. Qualified G2/G3 review remains unassigned/unbooked/
 NOT_RUN; production release/deployment are not complete. No new owner-device
 action is required for P05. The next full batch is P06 authentication/sessions.
+
+## P06 local implementation checks (hosted acceptance pending)
+
+Local actual TLS Nginx -> Laravel -> owned MariaDB authentication passes 215
+checks. Both eight-request registration and refresh races have one winner and
+seven denials; refresh reuse revokes the family. Rate admission: 64 requests
+in eight concurrent waves, exactly 60 admitted/four typed denials; expired
+window reset PASS. Expired-cookie login, CSRF regeneration after logout,
+cross-account isolation, admin invite/disable, all-session revocation and
+bounded expiry cleanup preserving roots/devices/rosters PASS. The real Rust oauth2 adapter
+uses the PHP League server over verified HTTPS, real TCP callback, state/PKCE
+and refresh/reuse, with metadata-only output. Four native tests execute IPv4/
+IPv6 callbacks, attacker substitutions, one-use/deadline and maintained PKCE.
+P04 regression: 21 tests/322 assertions and actual SQL/rollback/concurrency PASS.
+The auth compatibility gate preserves 103 old records plus 23 reviewed additions
+and rejects four real tampered-lock cases even with recomputed current checksum.
+P06 static/API/session readiness is repeatable on the current restored instance.
+The local sandboxed browser attempt is BLOCKED; hosted strict-CSP UI/WebAuthn
+and Windows/MSVC jobs remain mandatory. These local outputs describe a dirty
+development tree based on 129cd63, not a clean hosted acceptance commit.
+
+P05 saved setup publication and a fresh-task restoration are now observed: the
+owner published the prior draft and this P06 task restored exact tools/packages
+and owned service readiness. This does not publish a later P06 configuration.
+
+The first parallel local P03/P06 attempt was invalidated by P03's deliberate
+shared database outage; sequential P03 rerun passed. Real concurrent admission
+then exposed MariaDB ER_CHECKREAD (1020) after a nonlocking rate-bucket snapshot.
+The corrected implementation locks the current bucket first and retries bounded
+first-insertion deadlocks. All 215 checks, strict one-winner races and the exact
+64-request rate bound passed after that correction. No error assertion or
+verification control was weakened; temporary metadata-only diagnostics were
+removed from application source before commit.
+
+The initial P06 Windows workflow stopped during setup before running Rust:
+CPython 3.12.14 has no Windows x64 build in the maintained Actions manifest.
+The Windows-only helper runtime is pinned to maintained CPython 3.14.8, verified
+against the primary actions/python-versions manifest. Linux/cloud remain at
+3.12.14. This does not alter any cryptographic dependency or weaken an assertion.
+The source receipt records the actual helper Python version and platform.
+
+The second Windows job completed Rust fmt/clippy but rejected the raw-lock
+inventory: checkout converted the new Cargo.lock to CRLF. Its Git attribute now
+preserves exact frozen bytes (`-text`) on every platform. The checksum and
+package/license records are unchanged; the checker does not normalize away drift.
+No native test pass is claimed for either failed initial Windows job.
+
+The initial hosted TLS/SQL attack suite passed; the real browser reached the
+strict-CSP static app but account-service bootstrap failed, so WebAuthn acceptance
+was not claimed. The harness now waits for completed SDK bootstrap and retains
+bounded public pre-credential network/runtime diagnostics instead of timing out
+on a generic status. Subsequent hosted acceptance remains required.
+
+Hosted Windows/MSVC acceptance passed at 28a5581: actual IPv4/IPv6 callback,
+one-use/deadline, attack matrix and maintained PKCE tests all executed. The
+hosted browser's completed bootstrap returned a TypeError without a network
+failure; the SDK default fetch must retain its Window/Worker receiver. Its
+default is now bound to globalThis. Node's fetch ignores that receiver, so the
+previous Node-only transport result did not expose the browser-specific issue.
+The real sandboxed browser gate remains mandatory after the correction.
+
+The browser fetch correction passed real bootstrap, attestation, offline kit
+export, root/device registration and cookie checks. The next failure was a test
+provider choice: adding a passkey on the same authenticator correctly rejects
+its already enrolled credential through excludeCredentials. The harness now
+uses two independent resident UV providers and keeps production exclusion
+checks unchanged. It then logs in with the second provider.
+
+The HTTP matrix also includes eight parallel code redemptions (one grant and
+one access/refresh row), and eight assertions with the same nonzero counter
+(one grant). Current-row locking avoids old REPEATABLE READ snapshots for OAuth
+revocation, account status, admission caps and all-session revocation. The
+maintained verifier's existing current credential counter read remains intact.
+
+## P06 completed hosted software acceptance
+
+[Authentication run 38170283444](https://github.com/kurasis/AnyNote/actions/runs/38170283444)
+passes both actual Linux/TLS/SQL/browser and Windows/MSVC jobs. All ten source jobs
+at branch head `d8198af2746a55e46239ee9b4ea1b27e20c5d654` completed successfully.
+Actual checkout `8b12e0d20e409c9c1bf0f5dae1bb5cc622c14d19` and the branch head have
+identical complete clean Git trees: `363f1761bcd5c28775ecb7928623a6806a6df2c5`.
+
+- HTTP/SQL: **215** actual checks, real Rust oauth2 -> verified HTTPS -> PHP
+  League, real loopback TCP, PKCE/issuer/state and refresh/reuse.
+- Four eight-request races (registration, code, refresh, same nonzero assertion
+  counter) each produce one winner and seven denials. Code redemption creates
+  exactly one access/refresh row. Refresh reuse revokes the whole family.
+- Admission: 64 requests in eight parallel waves admit 60 and return four typed
+  rate denials; expired-window reset and bounded cleanup preserve roots/rosters.
+- Browser: **18** real checks through the shipped UI, Chromium sandbox enabled,
+  NSS trusted disposable CA and hostname validation, strict CSP with no JS eval/
+  inline exception, genuine resident UV credentials from two independent CDP
+  providers, excluded-provider rejection, offline kit, cookie/CSRF and restricted
+  login with no content authority or storage tokens.
+- Native: **four** actual tests per Linux and Windows/MSVC platform. This is
+  software callback evidence, not physical Windows Hello/TPM/iPhone acceptance.
+
+Public raw reports: [HTTP](evidence/p06/http-report.json),
+[browser](evidence/p06/browser-report.json),
+[Linux source](evidence/p06/linux-source-report.json),
+[Windows source](evidence/p06/windows-source-report.json),
+[gate/tree/artifact acceptance](evidence/p06/acceptance.json). Linux's 131 raw
+input hashes match the checkout exactly. Windows's receipt retains its 131 actual
+working-file hashes: 130 normal text inputs are CRLF, while the native lock is
+byte-identical LF through `-text`. Both Git tree IDs are identical; inventory
+hashes were not normalized to bypass a mismatch. These artifacts contain no
+credential, cookie, token, R or private key values.
+
+The final read-only setup extension passed at d8198af and preserved all 625
+then-visible source files; install/start fields were saved/read back as revision
+14 with unrelated configuration preserved. P06 Review/Save -> Publish and a
+fresh-task restore remain NOT_RUN; earlier P05 publication/restore are observed.
+Final source tracking/receipt changes require all ten jobs on the final head
+before ordinary merge. Physical P01 and qualified G2/G3 remain open/unbooked/
+NOT_RUN. No production migration/deployment, release, owner trial or outreach.

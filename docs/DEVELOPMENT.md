@@ -86,3 +86,14 @@ its inventory and portable codec equivalence, and runs the actual native/Node
 corpus. The optional cloud sandbox block remains explicit; GitHub CI requires
 real sandboxed Worker, PHP public-only and Windows/MSVC acceptance. General PHP
 payload JCS, local persistent vault and product auth routes are not added here.
+
+## P06 authentication development
+
+Read [P06_AUTHENTICATION.md](P06_AUTHENTICATION.md). Activate pinned runtimes,
+then `python3 scripts/p06-stack.py up` and `check` start/verify owned TLS static/API
+services and encrypted SQL sessions without replacing existing owned data. The
+native adapter has its own frozen Cargo lock/inventory. Setup and generators
+remain read-only. Full attack tests explicitly reset only the separately marked
+synthetic P06 database; run them sequentially with P03 outage tests because both
+use the owned MariaDB service. Strict-CSP browser and Windows gates run in CI.
+No production credentials, migrations, deployment or device trial are involved.

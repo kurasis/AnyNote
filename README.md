@@ -4,11 +4,10 @@ An invite-only, end-to-end encrypted notes and files service for Windows
 (Tauri 2 / WebView2) and iPhone (installed PWA), backed by Laravel, MariaDB,
 Nginx and PHP-FPM.
 
-**Current state:** P00, P02 protocol design and P03 development foundation are
-complete. P01 has scoped Windows/iPhone and host feasibility evidence; its full
-physical matrix remains open. Initial OpenAPI, generated types, strict common
-errors and content-free logs are verified against synthetic services. Product
-authorization, storage, crypto adapters and deployment follow P04 onward.
+**Current state:** P00 and P02–P06 are verified. P06 includes passkey account
+authentication, session security, account UI and the native browser/PKCE adapter.
+P01 has scoped Windows/iPhone and host feasibility evidence; its full physical
+matrix remains open. Encrypted local persistence and locking continue in P07.
 Qualified independent review and production release gates remain open. Do not
 store real secrets or user data in experimental builds.
 
@@ -51,4 +50,7 @@ Backend foundation: [commands and boundaries](docs/P03_DEVELOPMENT.md).
 P04 backend foundation is verified: scoped current SQL authorization,
 immutable revisions, atomic quota/receipt/event transactions and supervised
 maintenance. See [P04 backend guide](docs/P04_BACKEND.md) and
-[validation evidence](docs/TEST_EVIDENCE.md). Full user operations continue in P05 onward.
+[validation evidence](docs/TEST_EVIDENCE.md). Full content workflows remain owned by later phases.
+
+Client cryptographic core: [P05 guide and boundaries](docs/P05_CRYPTO_CORE.md).
+Account authentication: [P06 API, UI, native adapter and commands](docs/P06_AUTHENTICATION.md).

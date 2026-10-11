@@ -2,7 +2,7 @@
   "schema_version": 1,
   "purpose": "P03 resolved development dependency inventory, not a release SBOM",
   "project_release_license": "UNSELECTED",
-  "lock_sha256": "679c6b23a2ac0ee8b1c9a888a76562649b32c829340ca606cf8bf5f8a69bb568",
+  "lock_sha256": "abfa2917b7168e0ff2efc756e20438b434b64d7b548f255af0e2bfbef9b2f252",
   "packages": [
     {
       "name": "brick/math",
@@ -43,6 +43,25 @@
       }
     },
     {
+      "name": "defuse/php-encryption",
+      "version": "v2.4.0",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/defuse/php-encryption.git",
+        "reference": "f53396c2d34225064647a05ca76c1da9d99e5828"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/defuse/php-encryption/zipball/f53396c2d34225064647a05ca76c1da9d99e5828",
+        "reference": "f53396c2d34225064647a05ca76c1da9d99e5828",
+        "shasum": ""
+      }
+    },
+    {
       "name": "dflydev/dot-access-data",
       "version": "v3.0.3",
       "development_only": false,
@@ -58,6 +77,25 @@
         "type": "zip",
         "url": "https://api.github.com/repos/dflydev/dflydev-dot-access-data/zipball/a23a2bf4f31d3518f3ecb38660c95715dfead60f",
         "reference": "a23a2bf4f31d3518f3ecb38660c95715dfead60f",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "doctrine/deprecations",
+      "version": "1.1.6",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/doctrine/deprecations.git",
+        "reference": "d4fe3e6fd9bb9e72557a19674f44d8ac7db4c6ca"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/doctrine/deprecations/zipball/d4fe3e6fd9bb9e72557a19674f44d8ac7db4c6ca",
+        "reference": "d4fe3e6fd9bb9e72557a19674f44d8ac7db4c6ca",
         "shasum": ""
       }
     },
@@ -328,6 +366,25 @@
       }
     },
     {
+      "name": "lcobucci/jwt",
+      "version": "5.6.1",
+      "development_only": false,
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/lcobucci/jwt.git",
+        "reference": "482760068e5a55a9045feddb3e2fc3f878cbd577"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/lcobucci/jwt/zipball/482760068e5a55a9045feddb3e2fc3f878cbd577",
+        "reference": "482760068e5a55a9045feddb3e2fc3f878cbd577",
+        "shasum": ""
+      }
+    },
+    {
       "name": "league/commonmark",
       "version": "2.10.3",
       "development_only": false,
@@ -362,6 +419,25 @@
         "type": "zip",
         "url": "https://api.github.com/repos/thephpleague/config/zipball/754b3604fb2984c71f4af4a9cbe7b57f346ec1f3",
         "reference": "754b3604fb2984c71f4af4a9cbe7b57f346ec1f3",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "league/event",
+      "version": "3.0.3",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/thephpleague/event.git",
+        "reference": "ec38ff7ea10cad7d99a79ac937fbcffb9334c210"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/thephpleague/event/zipball/ec38ff7ea10cad7d99a79ac937fbcffb9334c210",
+        "reference": "ec38ff7ea10cad7d99a79ac937fbcffb9334c210",
         "shasum": ""
       }
     },
@@ -419,6 +495,25 @@
         "type": "zip",
         "url": "https://api.github.com/repos/thephpleague/mime-type-detection/zipball/f5f47eff7c48ed1003069a2ca67f316fb4021c76",
         "reference": "f5f47eff7c48ed1003069a2ca67f316fb4021c76",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "league/oauth2-server",
+      "version": "9.4.1",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/thephpleague/oauth2-server.git",
+        "reference": "9d2f6fc0a0b5aa1bb02506971d3a4ecff2c6526c"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/thephpleague/oauth2-server/zipball/9d2f6fc0a0b5aa1bb02506971d3a4ecff2c6526c",
+        "reference": "9d2f6fc0a0b5aa1bb02506971d3a4ecff2c6526c",
         "shasum": ""
       }
     },
@@ -655,6 +750,44 @@
       }
     },
     {
+      "name": "paragonie/constant_time_encoding",
+      "version": "v3.1.3",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/paragonie/constant_time_encoding.git",
+        "reference": "d5b01a39b3415c2cd581d3bd3a3575c1ebbd8e77"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/paragonie/constant_time_encoding/zipball/d5b01a39b3415c2cd581d3bd3a3575c1ebbd8e77",
+        "reference": "d5b01a39b3415c2cd581d3bd3a3575c1ebbd8e77",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "paragonie/random_compat",
+      "version": "v9.99.100",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/paragonie/random_compat.git",
+        "reference": "996434e5492cb4c3edcb9168db6fbb1359ef965a"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/paragonie/random_compat/zipball/996434e5492cb4c3edcb9168db6fbb1359ef965a",
+        "reference": "996434e5492cb4c3edcb9168db6fbb1359ef965a",
+        "shasum": ""
+      }
+    },
+    {
       "name": "phar-io/manifest",
       "version": "2.0.4",
       "development_only": true,
@@ -693,6 +826,63 @@
       }
     },
     {
+      "name": "phpdocumentor/reflection-common",
+      "version": "2.2.1",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/phpDocumentor/ReflectionCommon.git",
+        "reference": "ee15a5a2022c8383906b225055e9496a6a5e6e3b"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/phpDocumentor/ReflectionCommon/zipball/ee15a5a2022c8383906b225055e9496a6a5e6e3b",
+        "reference": "ee15a5a2022c8383906b225055e9496a6a5e6e3b",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "phpdocumentor/reflection-docblock",
+      "version": "6.0.3",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
+        "reference": "7bae67520aa9f5ecc506d646810bd40d9da54582"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/7bae67520aa9f5ecc506d646810bd40d9da54582",
+        "reference": "7bae67520aa9f5ecc506d646810bd40d9da54582",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "phpdocumentor/type-resolver",
+      "version": "2.1.0",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/phpDocumentor/TypeResolver.git",
+        "reference": "dbe2133bb23e2e33a6834f4ed417f24a1b167769"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/dbe2133bb23e2e33a6834f4ed417f24a1b167769",
+        "reference": "dbe2133bb23e2e33a6834f4ed417f24a1b167769",
+        "shasum": ""
+      }
+    },
+    {
       "name": "phpoption/phpoption",
       "version": "1.10.0",
       "development_only": false,
@@ -708,6 +898,25 @@
         "type": "zip",
         "url": "https://api.github.com/repos/schmittjoh/php-option/zipball/67b192b6a42ec03944b972d6e633ddec78ad2c6d",
         "reference": "67b192b6a42ec03944b972d6e633ddec78ad2c6d",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "phpstan/phpdoc-parser",
+      "version": "2.3.6",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/phpstan/phpdoc-parser.git",
+        "reference": "1427af4647235b4a73b13940b1f1258d3584f36e"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/1427af4647235b4a73b13940b1f1258d3584f36e",
+        "reference": "1427af4647235b4a73b13940b1f1258d3584f36e",
         "shasum": ""
       }
     },
@@ -936,6 +1145,44 @@
         "type": "zip",
         "url": "https://api.github.com/repos/php-fig/http-message/zipball/402d35bcb92c70c026d1a6a9883f06b2ead23d71",
         "reference": "402d35bcb92c70c026d1a6a9883f06b2ead23d71",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "psr/http-server-handler",
+      "version": "1.0.2",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/php-fig/http-server-handler.git",
+        "reference": "84c4fb66179be4caaf8e97bd239203245302e7d4"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/php-fig/http-server-handler/zipball/84c4fb66179be4caaf8e97bd239203245302e7d4",
+        "reference": "84c4fb66179be4caaf8e97bd239203245302e7d4",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "psr/http-server-middleware",
+      "version": "1.0.2",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/php-fig/http-server-middleware.git",
+        "reference": "c1481f747daaa6a0782775cd6a8c26a1bf4a3829"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/php-fig/http-server-middleware/zipball/c1481f747daaa6a0782775cd6a8c26a1bf4a3829",
+        "reference": "c1481f747daaa6a0782775cd6a8c26a1bf4a3829",
         "shasum": ""
       }
     },
@@ -1259,6 +1506,44 @@
         "type": "zip",
         "url": "https://api.github.com/repos/sebastianbergmann/version/zipball/9e935a16187e14f39b0e79910dabd614972cdb26",
         "reference": "9e935a16187e14f39b0e79910dabd614972cdb26",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "spomky-labs/cbor-php",
+      "version": "3.4.2",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/Spomky-Labs/cbor-php.git",
+        "reference": "8f5ea00a07ad529d20886505cdbeb2b9ac7bb2d6"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/Spomky-Labs/cbor-php/zipball/8f5ea00a07ad529d20886505cdbeb2b9ac7bb2d6",
+        "reference": "8f5ea00a07ad529d20886505cdbeb2b9ac7bb2d6",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "spomky-labs/pki-framework",
+      "version": "1.6.3",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/Spomky-Labs/pki-framework.git",
+        "reference": "792e909d4e387adffe3c4f404451c7d57a3d2022"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/Spomky-Labs/pki-framework/zipball/792e909d4e387adffe3c4f404451c7d57a3d2022",
+        "reference": "792e909d4e387adffe3c4f404451c7d57a3d2022",
         "shasum": ""
       }
     },
@@ -1624,6 +1909,25 @@
       }
     },
     {
+      "name": "symfony/polyfill-php81",
+      "version": "v1.38.1",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/symfony/polyfill-php81.git",
+        "reference": "6bfb9c766cacffbc8e118cb87217d08ed84e5cd7"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/symfony/polyfill-php81/zipball/6bfb9c766cacffbc8e118cb87217d08ed84e5cd7",
+        "reference": "6bfb9c766cacffbc8e118cb87217d08ed84e5cd7",
+        "shasum": ""
+      }
+    },
+    {
       "name": "symfony/polyfill-php82",
       "version": "v1.43.0",
       "development_only": false,
@@ -1738,6 +2042,44 @@
       }
     },
     {
+      "name": "symfony/property-access",
+      "version": "v8.1.4",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/symfony/property-access.git",
+        "reference": "1a41232c678972b93ce499a504e19ea09dfcd0b2"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/symfony/property-access/zipball/1a41232c678972b93ce499a504e19ea09dfcd0b2",
+        "reference": "1a41232c678972b93ce499a504e19ea09dfcd0b2",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "symfony/property-info",
+      "version": "v8.1.8",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/symfony/property-info.git",
+        "reference": "fe727d4888a92ac9200a2c1b8e0a995b6022afa7"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/symfony/property-info/zipball/fe727d4888a92ac9200a2c1b8e0a995b6022afa7",
+        "reference": "fe727d4888a92ac9200a2c1b8e0a995b6022afa7",
+        "shasum": ""
+      }
+    },
+    {
       "name": "symfony/routing",
       "version": "v8.1.8",
       "development_only": false,
@@ -1753,6 +2095,25 @@
         "type": "zip",
         "url": "https://api.github.com/repos/symfony/routing/zipball/e46d741c56485441f37104a3e7eace4e17ed91f9",
         "reference": "e46d741c56485441f37104a3e7eace4e17ed91f9",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "symfony/serializer",
+      "version": "v8.1.8",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/symfony/serializer.git",
+        "reference": "df54c4fe859d945eb633d2c5e6a410ce535f21e4"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/symfony/serializer/zipball/df54c4fe859d945eb633d2c5e6a410ce535f21e4",
+        "reference": "df54c4fe859d945eb633d2c5e6a410ce535f21e4",
         "shasum": ""
       }
     },
@@ -1829,6 +2190,25 @@
         "type": "zip",
         "url": "https://api.github.com/repos/symfony/translation-contracts/zipball/ccb206b98faccc511ebae8e5fad50f2dc0b30621",
         "reference": "ccb206b98faccc511ebae8e5fad50f2dc0b30621",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "symfony/type-info",
+      "version": "v8.1.8",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/symfony/type-info.git",
+        "reference": "18e1d891f0b8776141f281f7b6f5e67e4df9d9cd"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/symfony/type-info/zipball/18e1d891f0b8776141f281f7b6f5e67e4df9d9cd",
+        "reference": "18e1d891f0b8776141f281f7b6f5e67e4df9d9cd",
         "shasum": ""
       }
     },
@@ -1962,6 +2342,63 @@
         "type": "zip",
         "url": "https://api.github.com/repos/voku/portable-ascii/zipball/8e1051fe39379367aecf014f41744ce7539a856f",
         "reference": "8e1051fe39379367aecf014f41744ce7539a856f",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "web-auth/cose-lib",
+      "version": "4.8.2",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/web-auth/cose-lib.git",
+        "reference": "8849e8bf043a2d42d0bec5bda5db2469ad376148"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/web-auth/cose-lib/zipball/8849e8bf043a2d42d0bec5bda5db2469ad376148",
+        "reference": "8849e8bf043a2d42d0bec5bda5db2469ad376148",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "web-auth/webauthn-lib",
+      "version": "5.3.9",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/web-auth/webauthn-lib.git",
+        "reference": "727e378fb7a36c26be5c911e4a0120c146741ce7"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/web-auth/webauthn-lib/zipball/727e378fb7a36c26be5c911e4a0120c146741ce7",
+        "reference": "727e378fb7a36c26be5c911e4a0120c146741ce7",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "webmozart/assert",
+      "version": "2.5.0",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/webmozarts/assert.git",
+        "reference": "8a163706bbcac613733dba03f51e13b5eb1bb819"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/webmozarts/assert/zipball/8a163706bbcac613733dba03f51e13b5eb1bb819",
+        "reference": "8a163706bbcac613733dba03f51e13b5eb1bb819",
         "shasum": ""
       }
     }

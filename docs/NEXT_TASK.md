@@ -1,33 +1,34 @@
 # Next implementation batch
 
-## P06 complete account authentication and session lifecycle
+## Complete P07 encrypted local persistence and lock boundary
 
-Read AGENTS.md, current tracking, original 05/08/13/14/20, P04_BACKEND.md and
-P05_CRYPTO_CORE.md. Russian chat, English repository; existing checkout; normal
-passing PR and automatically authorized push/merge. No production deployment,
-release, owner-device trial or independent reviewer outreach is implied.
+P06 is verified: 215 actual HTTPS/SQL checks, 18 sandboxed strict-CSP browser
+checks, four native tests per Linux/Windows platform and all ten hosted gates.
+Public receipts identify the exact clean tree and working-file hashes. Confirm
+current tracking and final CI evidence before making new changes. P06 setup
+revision 14 is saved; publication/fresh-task restoration are separate from the
+previously observed P05 restore. Start owned services with the saved instructions.
 
-1. Implement single-use invite consumption, maintained WebAuthn registration/
-   assertion and multiple passkeys against the frozen contracts and durable P04
-   authority. Bind exact trusted origins/RP IDs and one-use challenges; do not
-   substitute a password/test-token login for the specified passkey flows.
-2. Distinguish unauthenticated, restricted and trusted-device sessions. Do not
-   invent an active roster from a valid certificate or claim P08 enrollment/root
-   reset is complete. No generic test-token issuer or verification bypass.
-3. Implement PWA host-only secure sessions/CSRF, native browser handoff with
-   state/PKCE, refresh rotation/reuse detection, logout/session list,
-   authentication recovery codes, recent-auth and rate limiting. Test actual
-   HTTP/SQL flows, concurrent/replayed/expired challenges, invitations and
-   refresh sessions, origin/RP/substitution failures and concealed errors.
-   Keep quota/immutable revision/counter-last ordering and server opaque E2EE bytes.
-4. Run frozen core/reference regression and Linux/browser/Windows/PHP CI as
-   relevant. Update progress/decisions/limits/evidence and tested read-only setup.
+Read AGENTS.md, tracking, original 05/06/11/13/14/20,
+P05_CRYPTO_CORE.md and P06_AUTHENTICATION.md. Russian chat, English repository;
+existing checkout; ordinary passing PR and automatically authorized push/merge.
+No production deployment, release, owner-device trial or reviewer outreach.
 
-P05 is VERIFIED: mandatory hosted two-way Worker/Rust, Windows/MSVC, PHP and
-measured desktop 1 GB gates passed. Exact clean-source/tree and raw metadata
-reports are retained in TEST_EVIDENCE.md and docs/evidence/p05-*-hosted.json.
-C04/C16 use independently trusted issuer/checkpoint inputs; P08/P10 will establish
-those authorities. P07 owns persistent local custody/lock/multi-window fencing;
-P12 owns durable file source/resume/reservation state. Full physical P01 matrix
-and G2/G3 qualified review remain open, unassigned/unbooked/NOT_RUN. No new action
-on an owner device is required for this independent phase.
+Complete P07 persistent local vault in one full batch: encrypted IndexedDB/native
+SQLite state and migration policy; existing strict C01/C08/C10 frames and P05
+maintained crypto; device/local secret custody; protected Windows Hello adapter
+using the saved proven handoff and passphrase fallback only when explicitly
+permitted by frozen eligibility policy; local lock/idle/suspend/logout generation
+fencing; Worker/native key isolation; multi-window arbitration; interrupted
+unlock/crash/rollback/replay/tamper and stale-completion tests; bounded memory and
+secure best-effort wiping. Keep auth sessions, device trust and local unlock
+separate. A trusted server session cannot substitute for private key custody.
+Persist no raw reusable bearer/device/R secret in ordinary storage or logs.
+Integrate P06 session-bound both-key proof after local unlock/re-login without
+inventing a roster. Preserve all original spec/locks/fixtures.
+
+Run appropriate actual SQL/HTTP/native/sandboxed browser/Windows regression;
+update progress/decisions/limits/evidence and exact next task. Broader pairing/
+root reset and current roster materialization stay P08, group authority P10,
+large history indexing P11, durable file-source/resume P12. Physical P01 matrix
+and qualified G2/G3 review remain open, unassigned/unbooked/NOT_RUN.

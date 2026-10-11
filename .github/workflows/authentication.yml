@@ -1,0 +1,116 @@
+name: P06 account authentication
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: authentication-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  auth-linux-http-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      ANYNOTE_TOOLCHAINS: /tmp/anynote-p06-toolchains
+      CHROMIUM_EXECUTABLE: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.12.14'
+      - name: Frozen dependencies and real certificate trust tools
+        run: |
+          bash scripts/install-p01-toolchains.sh
+          source scripts/runtime-env.sh
+          npm --prefix packages/protocol ci --ignore-scripts --no-audit --no-fund
+          npm --prefix experiments/p01 ci --no-audit --no-fund
+          npm --prefix packages/api-client ci --ignore-scripts --no-audit --no-fund
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libnss3-tools
+          python3 scripts/dev-stack.py install
+          python3 scripts/dev-stack.py up
+      - name: Native adapter, compatibility and typed API
+        run: |
+          source scripts/runtime-env.sh
+          cargo fmt --manifest-path packages/auth-native/Cargo.toml --check
+          cargo clippy --manifest-path packages/auth-native/Cargo.toml --locked --all-targets --all-features -j 4 -- -D warnings
+          cargo build --manifest-path packages/auth-native/Cargo.toml --locked --features integration-harness -j 4
+          python3 scripts/p06-native-inventory.py
+          python3 scripts/check-p06.py
+          python3 scripts/p03-contracts.py
+          npm --prefix packages/api-client run typecheck
+          npm --prefix packages/api-client test
+      - name: Actual TLS, SQL and parallel forgery/replay/refresh tests
+        run: |
+          source scripts/runtime-env.sh
+          python3 scripts/p06-stack.py reset
+          node packages/protocol/p06-http.mjs
+      - name: Actual strict-CSP UI and sandboxed resident-key WebAuthn
+        run: |
+          source scripts/runtime-env.sh
+          python3 scripts/p06-stack.py reset
+          node experiments/p01/p06-browser.mjs
+          python3 scripts/p06-evidence.py linux
+          git diff --exit-code
+      - name: Preserve only public source receipts and metadata
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: p06-linux-authentication-report
+          path: |
+            artifacts/p06/http-report.json
+            artifacts/p06/browser-report.json
+            artifacts/p06/source-report.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Stop only the owned services
+        if: always()
+        run: |
+          python3 scripts/p06-stack.py stop
+          python3 scripts/dev-stack.py stop
+
+  auth-windows-native:
+    runs-on: windows-2025
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.14.8'
+      - name: Install exact Rust
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal --component clippy,rustfmt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          rustup override set 1.99.0
+      - name: Actual MSVC, IPv4/IPv6 and callback attack matrix
+        run: |
+          cargo fmt --manifest-path packages/auth-native/Cargo.toml --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo clippy --manifest-path packages/auth-native/Cargo.toml --locked --all-targets --all-features -- -D warnings
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/p06-native-inventory.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/p06-evidence.py windows
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: p06-windows-authentication-report
+          path: artifacts/p06/source-report.json
+          if-no-files-found: error
+          retention-days: 14

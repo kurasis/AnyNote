@@ -5,7 +5,7 @@ from pathlib import Path
 from p04_compatibility import verify
 ROOT=Path(__file__).resolve().parents[1]
 verify(ROOT)
-paths=['packages/contracts/p04-compatibility.json','packages/contracts/p02-v1.registry.json','docs/reference/p02/composer-p02.lock','apps/api/composer.lock']
+paths=['packages/contracts/p04-compatibility.json','packages/contracts/p02-v1.registry.json','docs/reference/p02/composer-p02.lock','apps/api/composer.lock','packages/contracts/p06-compatibility.json','docs/reference/p04/composer-p04.lock']
 with tempfile.TemporaryDirectory(prefix='p04-compatibility-',dir='/tmp') as directory:
     root=Path(directory)
     for path in paths:

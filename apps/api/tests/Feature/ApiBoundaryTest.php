@@ -108,7 +108,8 @@ final class ApiBoundaryTest extends TestCase
         config(['api.service_id' => null, 'api.app_origin' => null]);
         $this->get('https://api.anynote.test/api/v1/capabilities')->assertStatus(503);
         $this->get('https://api.anynote.test/api/v1/groups')->assertNotFound();
-        $this->postJson('https://api.anynote.test/api/v1/auth/passkeys/verify', ['credential' => 'synthetic'])->assertNotFound();
+        // P06 owns this route now; malformed unauthenticated mutation fails Laravel CSRF.
+        $this->postJson('https://api.anynote.test/api/v1/auth/passkeys/verify', ['credential' => 'synthetic'])->assertStatus(400);
         $this->get('https://api.anynote.test/api/v1/health/live')->assertOk()->assertExactJson(['status' => 'live']);
     }
 }
