@@ -68,15 +68,19 @@ const exec = (args) => {
   if (r.status !== 0) throw Error("NATIVE_CORPUS_FAILED");
   return JSON.parse(r.stdout);
 };
+console.log("P05_PROGRESS:native baseline started");
 const base = exec([]);
+console.log("P05_PROGRESS:native baseline passed");
 writeFileSync(join(out, "native-output.json"), JSON.stringify(base));
 const node = await runSuite(f, base.peer);
+console.log("P05_PROGRESS:Node corpus passed");
 writeFileSync(join(out, "node-peer.json"), JSON.stringify(node.peer));
 const fromNode = exec([
   "--peer",
   join(out, "node-peer.json"),
   ...(process.argv.includes("--large") ? ["--large"] : []),
 ]);
+console.log("P05_PROGRESS:native peer/large passed");
 const strip = ({ peer, ...metadata }) => metadata;
 const report = {
   purpose: "P05 actual crypto interoperability and bounded resources",
@@ -128,6 +132,7 @@ const server = createServer((req, res) => {
 });
 await new Promise((r) => server.listen(0, "127.0.0.1", r));
 let context;
+console.log("P05_PROGRESS:browser bundles complete");
 try {
   context = await chromium.launchPersistentContext(join(scratch, "profile"), {
     executablePath:

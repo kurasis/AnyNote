@@ -24,6 +24,7 @@ export class CryptoWorker {
         }
         const p = this.#pending;
         if (!p || r.id !== p.id) return;
+        clearTimeout(p.timer);
         this.#pending = null;
         r.error
           ? p.reject(Object.assign(new Error(r.error), { code: r.error }))
@@ -53,10 +54,16 @@ export class CryptoWorker {
     if (this.#pending) throw new Error("WORKER_BUSY");
     return new Promise((resolve, reject) => {
       const id = ++this.#next;
-      this.#pending = { id, resolve, reject };
+      this.#pending = {
+        id,
+        resolve,
+        reject,
+        timer: setTimeout(() => this.close("WORKER_TIMEOUT"), 120000),
+      };
       try {
         this.#worker.postMessage({ version: 1, id, op, args }, transfer);
       } catch {
+        clearTimeout(this.#pending.timer);
         this.#pending = null;
         reject(new Error("INVALID_WORKER_REQUEST"));
       }
@@ -68,6 +75,7 @@ export class CryptoWorker {
       clearTimeout(this.#initTimer);
       this.#worker.terminate();
       this.#rejectReady(new Error(code));
+      clearTimeout(this.#pending?.timer);
       this.#pending?.reject(new Error(code));
       this.#pending = null;
     }

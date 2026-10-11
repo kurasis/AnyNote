@@ -11,7 +11,12 @@ static KDF: Mutex<()> = Mutex::new(());
 pub fn phrase_kek(c: &Codec, phrase: &str, parameters: &[u8]) -> Result<Zeroizing<Vec<u8>>> {
     let p = c.decode("p02-v1", "argon2-parameters", parameters)?;
     require(
-        (24..=1024).contains(&phrase.len()) && phrase.split_whitespace().count() >= 5,
+        (24..=1024).contains(&phrase.len())
+            && phrase
+                .split(ecma_whitespace)
+                .filter(|word| !word.is_empty())
+                .count()
+                >= 5,
         "STRONG_PHRASE_REQUIRED",
     )?;
     let _guard = KDF.try_lock().map_err(|_| Error("KDF_BUSY"))?;
@@ -25,6 +30,10 @@ pub fn phrase_kek(c: &Codec, phrase: &str, parameters: &[u8]) -> Result<Zeroizin
     )
     .map(Zeroizing::new)
     .map_err(|_| Error("KDF_FAILURE"))
+}
+// Match the frozen browser strength predicate; KDF bytes are never normalized.
+fn ecma_whitespace(c: char) -> bool {
+    matches!(c, '\u{0009}'..='\u{000d}' | '\u{0020}' | '\u{00a0}' | '\u{1680}' | '\u{2000}'..='\u{200a}' | '\u{2028}' | '\u{2029}' | '\u{202f}' | '\u{205f}' | '\u{3000}' | '\u{feff}')
 }
 pub fn prf_kek(
     c: &Codec,

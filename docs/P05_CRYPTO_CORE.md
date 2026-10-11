@@ -93,6 +93,24 @@ owned temporary directory/OPFS namespace. UI timer and sampled Chromium process
 RSS are measured, not a hard/mobile memory guarantee. Physical iPhone/WebView2,
 older-device memory, full P01 matrix and qualified G2/G3 review remain open.
 
+## P05 acceptance mapping
+
+| Gate | Executed core behavior | Authority/lifecycle boundary |
+| --- | --- | --- |
+| C01 | Fresh Rust -> Worker and Worker -> Rust note/local/AES/grant/file bytes; frozen KATs | Actual hosted Worker required, cloud BLOCKED is separate |
+| C02 | 146 frames, 173 closed-frame negatives, 28 independent JCS cases, 14 malformed byte cases, 21 public signature types | PHP receives public-only frames; client JCS is general |
+| C03 | Wrong key/tag/nonce/AAD/group/revision; correctly signed public frames still fail AEAD or invalid decrypted schema/context | No partial plaintext result/fallback from object operations |
+| C04 | Decryptable envelope with rogue issuer signature refused | Independently verified issuer/context supplied; P08/P10 establish current authority |
+| C07 | Exact root/recovery and local/Windows PRF-purpose vectors, changed service/account and random separate device keys | Everyday root custody/recovery UI is P07/P08 |
+| C08 | Actual four concurrent native KDF jobs; Worker/RPC concurrency; low/high parameters and short PIN refused | Bounds checked before allocation; one active process/module job |
+| C10 | Owned sequential writer refuses repeat completed index/changed-source retry; fresh keys/nonces and no caller nonce/index | Restart uses new immutable version; durable source/resume transactions are P12 |
+| C16 | Pinned full checkpoint/inventory/ancestry; anchored note/file accepted, newly re-signed backdated revision refused | No timestamp/current-role/freshness inference; absent independent witness stays unanchored |
+
+Browser callers use the dedicated worker for expensive crypto, rather than doing
+Argon2id/file work on the UI thread. The direct module is also used by native/Node
+integration tools. Startup waits for READY with a bounded timeout; closing a
+pending initialization or operation rejects it and terminates the owned worker.
+
 ## Reproduce
 
 After frozen environment installation and `source scripts/runtime-env.sh`:

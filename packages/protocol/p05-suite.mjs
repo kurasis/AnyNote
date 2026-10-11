@@ -488,6 +488,24 @@ export async function runSuite(f, peer = null) {
       ),
     "stale recipient epoch",
   );
+  const unicodeKek = await c.phraseKek(
+    i.phrase.replaceAll(" ", "\uFEFF"),
+    wire(o.parameters),
+  );
+  const unicodeWrapper = c.wrapLocalKey(
+    "phrase-wrapper",
+    wire(o.phrase_descriptor),
+    local,
+    unicodeKek,
+  );
+  await deniedAsync(
+    () =>
+      c.phraseKek(
+        "alpha\u0085bravo\u0085charlie\u0085delta\u0085echo",
+        wire(o.parameters),
+      ),
+    "ECMAScript phrase strength whitespace",
+  );
   const h = f.history,
     anchor = new c.HistoryAnchor(
       wire(h.record),
@@ -579,6 +597,17 @@ export async function runSuite(f, peer = null) {
     "oversize before allocation",
   );
   if (peer) {
+    must(
+      c.b64(
+        c.unwrapLocalKey(
+          "phrase-wrapper",
+          wire(peer.unicode_phrase_wrapper),
+          wire(o.phrase_descriptor),
+          unicodeKek,
+        ),
+      ) === c.b64(local),
+      "Rust -> browser UTF8 phrase bytes and strength",
+    );
     for (const x of peer.public_signatures) {
       must(
         c.sodium.crypto_sign_verify_detached(
@@ -644,6 +673,7 @@ export async function runSuite(f, peer = null) {
     must(r.finish().complete, "Rust file complete");
   }
   for (const s of [
+    unicodeKek,
     phrase,
     pk,
     nk,
@@ -666,6 +696,9 @@ export async function runSuite(f, peer = null) {
     frames: f.frames.length,
     jcs: f.jcs.valid.length,
     peer: {
+      unicode_phrase_wrapper: JSON.parse(
+        c.Buffer.from(unicodeWrapper).toString(),
+      ),
       public_signatures: publicSignatures,
       bundle: fresh,
       local: JSON.parse(c.Buffer.from(lc).toString()),

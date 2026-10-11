@@ -474,7 +474,26 @@ fn main() -> R<()> {
     let bundle = objects::seal_object(&codec, &raw(&o["payload"]), &group, &signing)?;
     let local_record = objects::seal_local(&codec, &raw(&o["local_plain"]), &local_key)?;
     let nw = local::wrap_native(&codec, &raw(&o["native_descriptor"]), &local_key, &prf)?;
-    let mut report = json!({"status":"PASS","checks":checks,"frames":f["frames"].as_array().unwrap().len(),"peer":{"public_signatures":public_signatures,"bundle":bundle,"local":local_record,"native_wrapper":nw,"grant":grant,"file":{"record":record,"chunk":b64(&chunk)}}});
+    let unicode_phrase = text(&i["phrase"])?.replace(' ', "\u{feff}");
+    let unicode_kek = local::phrase_kek(&codec, &unicode_phrase, &raw(&o["parameters"]))?;
+    let unicode_wrapper = local::wrap(
+        &codec,
+        "phrase-wrapper",
+        &raw(&o["phrase_descriptor"]),
+        &local_key,
+        &unicode_kek,
+    )?;
+    must(
+        local::phrase_kek(
+            &codec,
+            "alpha\u{0085}bravo\u{0085}charlie\u{0085}delta\u{0085}echo",
+            &raw(&o["parameters"]),
+        )
+        .is_err(),
+        &mut checks,
+        "ECMAScript phrase strength whitespace",
+    );
+    let mut report = json!({"status":"PASS","checks":checks,"frames":f["frames"].as_array().unwrap().len(),"peer":{"unicode_phrase_wrapper":unicode_wrapper,"public_signatures":public_signatures,"bundle":bundle,"local":local_record,"native_wrapper":nw,"grant":grant,"file":{"record":record,"chunk":b64(&chunk)}}});
     while let Some(mode) = args.next() {
         match mode.as_str() {
             "--peer" => {
@@ -482,6 +501,17 @@ fn main() -> R<()> {
                     &fs::read(args.next().ok_or("Missing PUBLIC peer path")?)?,
                     16_777_216,
                 )?;
+                must(
+                    *local::unwrap(
+                        &codec,
+                        "phrase-wrapper",
+                        &raw(&p["unicode_phrase_wrapper"]),
+                        &raw(&o["phrase_descriptor"]),
+                        &unicode_kek,
+                    )? == local_key,
+                    &mut checks,
+                    "peer UTF8 phrase bytes and strength",
+                );
                 for x in p["public_signatures"].as_array().unwrap() {
                     let bytes = codec.signing(
                         text(&x["profile"])?,
