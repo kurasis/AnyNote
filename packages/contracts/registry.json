@@ -48,6 +48,11 @@
       "contract": "p02-state-c1",
       "registry": "p02-state-c1.registry.json",
       "status": "CANDIDATE_PINNED_DEVICE_STATE_GROUP_AUTHORIZATION_NOT_EVALUATED"
+    },
+    {
+      "contract": "p02-group-c1",
+      "registry": "p02-group-c1.registry.json",
+      "status": "CANDIDATE_PINNED_GROUP_EVALUATION_NO_PRODUCT_AUTH_SQL_OR_AUDIT"
     }
   ]
 }

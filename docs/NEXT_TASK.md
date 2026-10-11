@@ -1,39 +1,33 @@
 # Next bounded task
 
-## P02-GROUP-POLICY-EPOCH-HISTORY-CONTRACT (larger batch)
+## P02-NOTE-LOCAL-EXPORT-CONTRACT (larger batch)
 
-Read tracking, original chapters 06/08/13/15/19/20, protocol-v1 and all three
-candidate registries/contracts. Preserve original spec, previous schema/vector
-bytes, P01 kits/reference/licenses, dependency locks and unrelated changes. Chat
-Russian, repository English. Automatically push/merge the passing reviewable PR.
+Read tracking, original chapters 04/07/09/10/11/12/13/15/16/19/20, protocol-v1
+and all four candidate registries/contracts. Preserve original spec, previous
+schema/vector bytes, P01 kits/reference/licenses, dependency locks and unrelated
+changes. Chat Russian, repository English. Automatically push/merge a passing
+reviewable PR; respect protection and required checks.
 
-1. Freeze exact signed group genesis/policy/member/role/invitation/acceptance
-   candidate bytes with independently pinned roots/policy heads and active device
-   proofs. Distinguish owner/writer/reader/current membership from key possession.
-   Invitations bind target root, role, explicit full-history disclosure and policy;
-   acceptance remains pending until complete authorized grants finalize.
-2. Implement synthetic trusted policy/epoch verifier and expected recipient
-   derivation from current signed member and roster evidence. Device/recovery
-   envelopes need exact coverage at pinned relevant heads; owner/policy/head or
-   device changes invalidate staging. Validate current writer rights separately
-   from signature and AEAD; reader receives keys but never writer permission.
-3. Freeze staged transition/finalization/rekey contracts: bounded inventory/grant
-   pages, digest-bound descriptor, all-head CAS, atomic complete epoch activation,
-   no partial grant publication or excluded recipient reuse. Model compromise
-   revoke/reset group maintenance and full-history admission/repair explicitly.
-   Server cannot verify encrypted key contents; failed unwrap is repair, not PASS.
-4. Connect existing checkpoint/file byte candidates to historical writer authority:
-   independent witnessed history, signed descriptor/pages, exact inventory and
-   parent closure, revocation boundaries and offline provenance ambiguity. No
-   timestamp-alone acceptance or automatic reader-certified backdated writes.
-5. Add frozen public vectors/adversarial tests and meaningful independent PHP
-   subset checks, extend CI/saved setup with read-only frozen installs, update
-   decisions/evidence/limitations/traceability. Explicitly distinguish synthetic
-   synchronous ledger from P03 durable SQL/auth/product implementation.
+1. Freeze typed encrypted note revisions, note/group metadata, trash/tombstone and
+   conflict/parent closure using existing standard authenticated crypto/signature
+   and pinned group-authority candidates. Distinguish plaintext local inspection,
+   opaque server bytes, valid signature, current writer and historical acceptance.
+2. Freeze local encrypted vault/session/offline state and backup/export/import
+   candidate formats, exact key paths/AAD/domain/version/limits and corruption
+   behavior. Root/recovery custody and export disclosure must be explicit; no
+   server plaintext fallback or fake OS-keystore/physical-memory claim.
+3. Add synthetic bounded streaming/export/import and crash/partial/stale/conflict
+   rejection fixtures; demonstrate key unwrap through note/file payload paths
+   without uploader keys. Preserve independent history ambiguity and recovery
+   roster/rekey gates, including reader denial and historical tombstone closure.
+4. Extend frozen public vectors, meaningful adversarial tests, independent PHP
+   subset/CI and read-only saved setup; update decisions, evidence, limitations
+   and traceability. Prepare a complete P02 remaining review checklist before
+   P03 generated types/errors or product P04/P08/P09 work.
 
-Exit: independently reproducible policy/epoch/historical acceptance and recipient
-coverage at pinned heads; reader denial, compromised delegation/roster changes,
-partial/stale grants and ambiguous unanchored history fail safely. P02 remains
-IN PROGRESS until all local/export/note formats and qualified review are complete.
-Do not claim P04/P08/P09 product implementation. No new owner device action,
-production deployment or kit release is needed for this synthetic batch.
+Exit: reproducible note/local/export bytes and key paths, complete parser/resource
+bounds and safely rejected corruption/partial import/conflicts. P02/G2 remains
+IN PROGRESS until full required formats/interoperability and qualified review are
+complete. Do not fabricate native OS custody, production SQL/auth/session or an
+independent security audit. No new owner device action, deployment or kit release
+is needed for this synthetic batch.

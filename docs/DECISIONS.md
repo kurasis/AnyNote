@@ -507,3 +507,37 @@ as writer access. Previous candidate bytes/locks remain unchanged. PHP only
 reproduces public ASCII fixture signatures/possession/events/secretstream inputs,
 not general strict schema/JCS/auth verification. Exact PUBLIC values alone are
 scanner-excepted; six fake PAT path/eight changed key negatives must still reject.
+
+## ADR-011 — pinned group policy, complete epochs and witnessed history
+
+Add isolated p02-group-c1 without changing earlier schemas/vectors/locks. Signed
+policy states distinguish owner/editor/reader and exact independently pinned
+member roots/rosters. Full-history invitation acceptance stays pending until all
+retained epoch/device/recovery grants finalize at exact heads. Removal/role loss
+blocks access/writes immediately; mandatory reader roster maintenance cannot
+change membership or certify history. Shared transfer co-signs the same body;
+recent account authentication remains a required unimplemented product gate.
+
+Select standard SHA-256 equality commitment over typed group scope and a CSPRNG
+32-byte G to detect reuse across cancelled/excluded-recipient operations. Signed
+intent precedes grants, descriptor and final commit; new grants reference intent
+digest, not a recursive final digest. Greedy bounded pages have exact binary
+ordered commitment/counts. Finalize checks all-head CAS/coverage before synchronous
+mutation. This is client evaluation, not a durable SQL/session endpoint. Server
+cannot verify encrypted key contents; recipient wrong-G unwrap requires repair.
+No new dependency, entropy proof, forward secrecy or qualified-review claim.
+
+Historical acceptance uses independently observed exact envelope/parent closure,
+qualified current writer endorsement and sequence/head/operation-bound checkpoints.
+An independent OOB pin may import a complete boundary for a new client; server
+flags/timestamps alone cannot. Reader cannot endorse unknown history; new/recovered
+clients without an independent boundary remain UNANCHORED_HISTORY for writes.
+Old authorized signatures outside that known index remain quarantined. Simulation
+is not an actual server commit or proof of global freshness. Full byte/key formulas,
+limits, native PHP subset and remaining review questions are in P02_GROUP_CONTRACT.
+
+Source scanner preserves upstream detection and uses only 31 complete known PUBLIC
+fixture values plus one complete field and one complete exact PUBLIC scanner fragment
+(random substring/chunk location heuristics); no arbitrary hashes/partial ciphertext/path exemption. Seven fake
+PAT paths and twelve changed key/digest negatives and a full-fixture mutation must reject. Rollback: ordinary
+revert, no production migrations/data. P02/G2 and physical/audit/product gates stay open.

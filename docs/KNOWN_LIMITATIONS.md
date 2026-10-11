@@ -174,3 +174,25 @@
 - PHP reproduces restricted public ASCII fixtures, not strict arbitrary JSON/JCS
   schemas or the complete Node state/session verifier. Full Rust/browser general
   interoperability and qualified review are pending; JS erasure is best effort.
+
+## P02 group candidate boundary (supersedes earlier group work items)
+
+- Group policy/epoch/current writer/history authorization now has pinned synthetic
+  client evaluation, documented in P02_GROUP_CONTRACT.md. Old signature-only APIs
+  keep NOT_EVALUATED semantics. No product auth/session/recent-auth transfer,
+  durable SQL, real transaction/concurrency/restart or physical review evidence.
+- Full retained history includes preserved revision/tombstone metadata; sealed
+  key contents and encrypted payload truth cannot be checked by server. Wrong G
+  gives KEY_REPAIR_REQUIRED. Downloaded keys/plaintext are not recalled on revoke.
+- Local known-history observation is simulated acceptance. OOB pins must be
+  independent of the untrusted history server; no global newest-state proof.
+  Reader cannot certify unknown history; missing trusted boundary quarantines
+  writes/backdated revisions. Trusted writer endorsement is an explicit boundary.
+- Reference bounds include 16 MiB aggregate budgets, so theoretical record/page
+  maxima are not simultaneous capacity claims. Two-page tests cover serialization
+  with placeholder signatures, not large authenticated production distribution.
+- PHP verifies only documented public ASCII fixture inputs, not a general group
+  verifier/parser. Full Rust/browser/phone/Windows group interoperability and
+  qualified composition/security review remain NOT RUN; P02/G2 stays open.
+- No new owner physical trial or kit release is required here. Environment draft
+  save/readback is separate from publication and untested future-task restoration.
