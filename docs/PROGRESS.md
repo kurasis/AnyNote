@@ -7,7 +7,7 @@ does not satisfy a feature gate. Production release is not ready.
 | Phase | Status | Evidence / remaining gate |
 | --- | --- | --- |
 | P00 | VERIFIED | Local baseline and four negative cases passed; scope/version/inventory deliverables complete; remote bootstrap and clean-clone verification passed; both baseline Actions runs verified |
-| P01 | IN PROGRESS | Crypto/KDF/storage, selected 1 GB disk export, per-phase desktop RSS and real export fault/cleanup host evidence VERIFIED; Windows native probe/ABI/collector verified; actual Hello and iPhone G1 remain open |
+| P01 | IN PROGRESS | Host crypto/KDF/storage/export/fault evidence VERIFIED; owner 0.1.4 fresh-process Hello authentication, WTS lock/STALE, installed-iPhone-PWA selected 1 GB hash and diagnostic recovery PASS; full physical G1/memory/network matrix remains open |
 | P02 | NOT STARTED | Depends on P00/P01 findings; qualified review remains external |
 | P03 | NOT STARTED | Tooling may begin after P00; final contracts follow P02 |
 | P04 | NOT STARTED | P02/P03; signature acceptance also needs P05 fixtures |
@@ -251,3 +251,27 @@ these verified bytes as a new v0.1.4-p01-device-kit tag through Actions; do not
 overwrite 0.1.3. Final publication/download evidence is in PR #8/release.
 Actual installed-iPhone stream/Files/memory and selected Windows lock still
 need owner records; earlier Windows positive findings are preserved.
+
+## P01 owner 0.1.4 results — instrumented lock and installed-PWA export
+
+Both new owner reports identify released source 566ec84; the Windows executable
+hash matches the downloaded 0.1.4 release. Enrollment, fresh-process authenticated
+PRF/exact-TPM reopen, explicit HELLO_CANCELLED and exact owned cleanup PASS.
+The selected automatic lock trial reports one WTS session-lock event and STALE
+rejection, satisfying the instrumented lock classifier. API acceptance alone
+is not used as proof; prompt visibility/timing is not directly captured.
+
+Phone reports installed_pwa=true. Local crypto/KDF/storage/fault checks and
+1 GB/120 chunks PASS; the scoped SW sent 1,000,000,000 bytes and the selected
+output matches the expected SHA-256. Diagnostic recovery from the verify stage
+restored no keys; the retained export reopened and rehashed, then exact cleanup
+PASS. The restart cause and selected destination folder are not captured.
+Archive Windows bytes unchanged, redact only the phone's private origin, and
+retain original upload checksums and precise scope in the receipt.
+
+These reports supersede the outstanding 0.1.4 owner-run request for these
+specific checks. No kit update or repeated whole trial is needed on this evidence.
+Process memory, older-phone, network/resume/low-space, passkeys, PWA update and
+remaining Windows matrix keep P01/G1 OPEN. P03 tooling remains the next bounded
+independent task. No application/source-format/migration change in this slice.
+Rollback: revert only this evidence/tracking addition; preserve prior reports.

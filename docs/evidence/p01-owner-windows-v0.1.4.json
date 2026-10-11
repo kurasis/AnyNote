@@ -1,0 +1,185 @@
+{
+  "capability": {
+    "exit_code": 0,
+    "operation": "capabilities",
+    "report": {
+      "native_objects_created": false,
+      "physical_acceptance": false,
+      "report": {
+        "algorithm": "webauthn-prf-aes256gcm",
+        "checks": [
+          {
+            "status": "passed",
+            "test": "webauthn-load"
+          },
+          {
+            "status": "passed",
+            "test": "webauthn-api"
+          },
+          {
+            "status": "passed",
+            "test": "hello-platform"
+          },
+          {
+            "status": "passed",
+            "test": "hello-route"
+          }
+        ],
+        "eligible": false,
+        "enrolled": false,
+        "outcome": "webauthn-capability-observed",
+        "purpose": "webauthn-prf-capability",
+        "remaining": [
+          "per-key-tpm-proof",
+          "fresh-authorization-proof",
+          "fresh-process-proof",
+          "account-machine-copy-proof"
+        ],
+        "unlocked": false,
+        "version": 1,
+        "webauthn": {
+          "apiVersion": 9,
+          "helloCandidates": 1,
+          "helloLocked": false,
+          "osBuild": 26200,
+          "platformAvailable": true,
+          "routing": "display-name-candidate",
+          "tpmBinding": "not-verified"
+        }
+      },
+      "source_commit": "566ec84a6630794f266a2ab4bdfea8a170457e6a",
+      "status": "CAPABILITY_ONLY",
+      "trial_route_available": true
+    }
+  },
+  "environment_kind": "owner_device",
+  "executable_sha256": "ee8327e9fc83a491ccca89bf6104fd7d374d4bb1bae1e9357f8177ccb52d6555",
+  "guided_cancel": {
+    "instruction": "Owner requested to cancel the next prompt",
+    "physical_cancel_classification": "Only explicit HELLO_CANCELLED is cancellation",
+    "status": "PASS_NATIVE_CANCELLED"
+  },
+  "guided_lock": {
+    "limitation": "One-shot LockWorkStation requested only after explicit owner selection; API acceptance alone is not a lock event or proof that the prompt was pending",
+    "lock_request": "OS_REQUEST_ACCEPTED_NOT_LOCK_PROOF",
+    "status": "PASS_NATIVE_LOCK_EVENT_STALE_REJECTED"
+  },
+  "license": "GPL-3.0-only; corresponding source and license accompany the GitHub test release",
+  "local_checks": {
+    "cleaned_orphans": 0,
+    "crypto": {
+      "checks": 51,
+      "scope": "Frozen XChaCha20-Poly1305 corpora and three public 64 MiB Argon2id vectors",
+      "status": "PASS"
+    },
+    "file": {
+      "bytes": 1000000000,
+      "chunks": 120,
+      "memory": "NOT MEASURED",
+      "sha256": "d4a6942492212a1b8c74ea54839e4b0bf62ab5193b4f81ee93916f0ddaaef90e",
+      "status": "PASS",
+      "transport": "Local disk ciphertext only; network and WebView2 not tested"
+    },
+    "status": "PASS",
+    "synthetic_disk_cleanup": "PASS"
+  },
+  "operations": [
+    {
+      "exit_code": 0,
+      "operation": "enroll",
+      "report": {
+        "fresh_unlock": "NOT RUN; use a new process with unlock",
+        "lifecycle": {
+          "owner_window_close": 0,
+          "suspend": 0,
+          "wts_session_lock": 0,
+          "wts_session_unlock": 0
+        },
+        "lock_request": "NOT_REQUESTED",
+        "mode": "remember6",
+        "physical_acceptance": false,
+        "status": "PASS_SYNTHETIC_ENROLLMENT"
+      }
+    },
+    {
+      "exit_code": 0,
+      "operation": "unlock",
+      "report": {
+        "actual_vault_authenticated": true,
+        "fresh_prf_and_exact_tpm_reopen": true,
+        "lifecycle": {
+          "owner_window_close": 0,
+          "suspend": 0,
+          "wts_session_lock": 0,
+          "wts_session_unlock": 0
+        },
+        "lock_request": "NOT_REQUESTED",
+        "physical_acceptance": false,
+        "status": "PASS_SYNTHETIC_UNLOCK"
+      }
+    },
+    {
+      "exit_code": 1,
+      "operation": "unlock",
+      "report": {
+        "cleanup": "Run cleanup; a retained journal must not be discarded",
+        "code": "HELLO_CANCELLED",
+        "lifecycle": {
+          "owner_window_close": 0,
+          "suspend": 0,
+          "wts_session_lock": 0,
+          "wts_session_unlock": 0
+        },
+        "lock_request": "NOT_REQUESTED",
+        "physical_acceptance": false,
+        "status": "FAIL_OR_UNAVAILABLE"
+      }
+    },
+    {
+      "exit_code": 1,
+      "operation": "unlock-lock-trial",
+      "report": {
+        "cleanup": "Run cleanup; a retained journal must not be discarded",
+        "code": "STALE",
+        "lifecycle": {
+          "owner_window_close": 0,
+          "suspend": 0,
+          "wts_session_lock": 1,
+          "wts_session_unlock": 0
+        },
+        "lock_request": "OS_REQUEST_ACCEPTED_NOT_LOCK_PROOF",
+        "physical_acceptance": false,
+        "status": "FAIL_OR_UNAVAILABLE"
+      }
+    },
+    {
+      "exit_code": 0,
+      "operation": "cleanup",
+      "report": {
+        "exact_owned_objects_deleted": true,
+        "lifecycle": {
+          "owner_window_close": 0,
+          "suspend": 0,
+          "wts_session_lock": 0,
+          "wts_session_unlock": 0
+        },
+        "lock_request": "NOT_REQUESTED",
+        "physical_acceptance": false,
+        "status": "PASS"
+      }
+    }
+  ],
+  "physical_acceptance": false,
+  "purpose": "AnyNote P01 synthetic device kit",
+  "remaining": [
+    "Real lock/suspend with a pending prompt",
+    "TPM/provider changes",
+    "Other-account denial",
+    "Windows file/memory/WebView2 integration"
+  ],
+  "source_commit": "566ec84a6630794f266a2ab4bdfea8a170457e6a",
+  "status": "PASS_SYNTHETIC_FRESH_PROCESS_UNLOCK",
+  "timestamp_unix_ms": 1791698247065,
+  "trial_route_available": true,
+  "version": 1
+}

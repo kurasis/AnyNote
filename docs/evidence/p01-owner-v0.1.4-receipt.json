@@ -1,0 +1,48 @@
+{
+  "kind": "OWNER_SUPPLIED_NOT_HOSTED",
+  "received_on": "2026-10-11",
+  "source_commit": "566ec84a6630794f266a2ab4bdfea8a170457e6a",
+  "kit_version": "0.1.4",
+  "release": "https://github.com/kurasis/AnyNote/releases/tag/v0.1.4-p01-device-kit",
+  "windows_original_sha256": "f8902a33539cd496aca271b30dc9e81ae6bddb698a8c9b23d502e1ec1f776adb",
+  "iphone_original_sha256": "56467391aa5519441ce552fcd35e34c200e64f7331975ffcc1e257a8e2875a48",
+  "release_tag_source_matches": true,
+  "executable_matches_release": true,
+  "executable_sha256": "ee8327e9fc83a491ccca89bf6104fd7d374d4bb1bae1e9357f8177ccb52d6555",
+  "redactions": {
+    "windows": "None; byte-preserved",
+    "iphone": "Private origin replaced by REDACTED_PRIVATE_TEST_ORIGIN; all other JSON fields preserved"
+  },
+  "reported_results": {
+    "windows": {
+      "local_crypto_checks": 51,
+      "local_file_bytes": 1000000000,
+      "fresh_process_authenticated_unlock": "PASS",
+      "explicit_cancel": "HELLO_CANCELLED",
+      "guided_lock": "PASS_NATIVE_LOCK_EVENT_STALE_REJECTED",
+      "observed_wts_session_lock": 1,
+      "lock_step_result": "STALE",
+      "exact_owned_cleanup": "PASS"
+    },
+    "iphone": {
+      "installed_pwa": true,
+      "local_file_bytes": 1000000000,
+      "stream_sent_bytes": 1000000000,
+      "selected_file_hash": "PASS_SELECTED_OUTPUT_HASH",
+      "selected_file_sha256": "7408855a02fe65cc1ace7e0742c2e3129a2d7d4dbd5569607ab53d3dd5b83764",
+      "diagnostic_recovery": "RESTORED_DIAGNOSTICS_ONLY",
+      "keys_restored": false,
+      "retained_export": "REOPENED_AND_HASH_VERIFIED",
+      "temporary_export_cleanup": "PASS"
+    }
+  },
+  "limitations": [
+    "Owner-supplied reports, not independent captures or complete physical acceptance",
+    "Windows report does not directly observe whether the Hello prompt was visible at the instant of lock; suspend/provider/account/WebView2 gates remain open",
+    "Selected iPhone file bytes/hash verified; destination-folder provenance and restart cause are not recorded",
+    "Device process memory, older iPhone, network/resume, low space, passkeys/PRF and PWA update with pending writes remain unverified",
+    "Report remaining arrays are static kit checklists and do not negate the more specific successful operation/file results"
+  ],
+  "owner_clarifications": null,
+  "physical_acceptance": false
+}

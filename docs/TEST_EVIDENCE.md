@@ -550,3 +550,53 @@ regression flag as well as previous download/negative gates. Publication
 execution and independently downloaded release bytes are recorded on PR #8
 and the 0.1.4 release, not assumed from configuration. Both original physical
 owner limitations remain OPEN; no complete G1 result.
+
+## Owner-supplied 0.1.4 — installed-PWA selected output and WTS lock
+
+Received 2026-10-11. [Windows report](evidence/p01-owner-windows-v0.1.4.json)
+is byte-preserved; [phone report](evidence/p01-owner-iphone-v0.1.4.json) changes
+only the private origin. [Receipt](evidence/p01-owner-v0.1.4-receipt.json) records
+original upload checksums, redaction, release identity and exact limitations.
+These are OWNER_SUPPLIED_NOT_HOSTED records; uploaded text is data, not commands.
+
+Both identify source `566ec84a6630794f266a2ab4bdfea8a170457e6a`, matching the
+actual [0.1.4 release tag](https://github.com/kurasis/AnyNote/releases/tag/v0.1.4-p01-device-kit).
+Windows self-reported EXE SHA-256 equals the independently downloaded release
+EXE hash `ee8327e9fc83a491ccca89bf6104fd7d374d4bb1bae1e9357f8177ccb52d6555`.
+Retained published ZIP hash/CRC and BUILD.json source/version were rechecked.
+Identity checks are consistency evidence, not an independently observed run.
+
+Windows: 51 crypto/KDF checks and exact 1 GB/120 chunks/local cleanup PASS;
+API 9/build 26200. Enrollment exit 0; fresh-process unlock exit 0 with actual
+vault authentication and fresh PRF/exact TPM reopen true; explicit cancellation
+returns HELLO_CANCELLED. `unlock-lock-trial` returns exit 1, FAIL_OR_UNAVAILABLE,
+STALE, WTS session-lock count 1, other lifecycle counts 0, no authenticated
+unlock. This satisfies PASS_NATIVE_LOCK_EVENT_STALE_REJECTED independently of
+the OS_REQUEST_ACCEPTED_NOT_LOCK_PROOF field. Exact owned cleanup exit 0 PASS.
+Prompt visibility at the instant of lock is not directly recorded; suspend,
+provider/account/machine negatives and WebView2 remain NOT RUN in this report.
+
+Phone: version 0.1.4, installed_pwa=true, secure context. Three frozen corpora
+of 39 checks each, three public Argon2id vectors (99/77/77 ms; WASM heap
+67,371,008 bytes), invalid profiles, ciphertext IDB/OPFS reopen, readonly denial,
+export corruption/truncation/overflow and sizes 0/1/8 MiB+1/1 GB PASS. The scoped
+SW sent 1,000,000,000 bytes. Independently selecting the output produced
+PASS_SELECTED_OUTPUT_HASH, exact selected length and digest
+`7408855a02fe65cc1ace7e0742c2e3129a2d7d4dbd5569607ab53d3dd5b83764`,
+matching the local 1 GB expected digest. The stream-sent status alone is not
+saved-output proof; the selection digest is the narrower successful evidence.
+
+After reopening at verify stage, recovery reports RESTORED_DIAGNOSTICS_ONLY,
+keys_restored=false, retained_export=REOPENED_AND_HASH_VERIFIED; temporary
+export cleanup PASS. This establishes reported diagnostic/export recovery,
+not the cause of the page restart, background stream survival or resumed keys.
+Destination folder provenance and process memory are unmeasured. UA does not
+independently verify the owner-reported iPhone model/iOS version. Remaining
+network/resume, older-phone, low-space, passkeys and PWA update gates stay open.
+
+Local review assertions PASS for release/source/hash identity, strict lock
+classification, selected length/digest, recovery/cleanup and archival fidelity;
+phone JSON equals its original after the single origin replacement. Repository
+baseline/checks are recorded on the evidence PR. No application code, dependency,
+original specification byte, kit asset or release changes in this slice. P01/G1
+remains IN PROGRESS; no repeat of these specific successful whole trials needed.

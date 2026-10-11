@@ -3,8 +3,9 @@
 - P00 is complete; an isolated P01 synthetic native/Node/browser-worker harness
   exists. No production application authentication, device trust, encrypted vault, Laravel
   service, manifests or resume is implemented. The isolated selected-file PWA
-  harness and experimental disk-File sharing candidate do not establish iOS Files
-  export or a real recipient/recovery path.
+  harness now has owner-supplied installed-iPhone-PWA selected 1 GB byte/hash
+  evidence. It does not establish complete Files/network/memory acceptance or
+  a real recipient/account recovery path.
 - Rust/Cargo 1.99.0 and Node 24.21.0/npm 11.19.0 are installed and activated
   through scripts/runtime-env.sh; experiment dependencies have lockfiles. PHP,
   Composer, MariaDB and Nginx are still not prepared (P03).
@@ -26,8 +27,9 @@
   prior committed output in the tested failures before close; arbitrary physical
   sinks or rollback after OS close/commit are not established by these tests.
 - The physical runbook, bounded file helper and hash/source Windows collector
-  are ready. Owner reports the private HTTPS host is not ready. Reachability,
-  phone certificate trust and actual installation remain unverified. The local
+  are ready. The earlier host-not-ready observation is superseded by the 0.1.4
+  phone report with secure_context=true and installed_pwa=true. HTTPS trust
+  provisioning was not independently inspected. The local
   Windows certificate procedure is optional, manual and unexecuted here.
 - Owner-reported targets are Windows 11 Pro 25H2 with Hello planned and iPhone
   17 Pro / iOS 26.7.1. Exact builds/providers are uninspected; the required older
@@ -63,7 +65,8 @@
   memory-only report. A terminated 0.1.0 report cannot be recovered retroactively.
   0.1.1 persists diagnostics before handoff and survives hosted page destruction,
   but origin eviction/clearing or denied storage can still remove/prevent them.
-  Real updated iPhone Files/hash/restart and process-memory acceptance remain OPEN.
+  The 0.1.4 owner report now verifies selected 1 GB bytes/hash and restored
+  diagnostics; process-memory and complete lifecycle acceptance remain OPEN.
 
 - Owner 0.1.1 Windows report now supplies positive enrollment/fresh-process
   authenticated PRF/TPM unlock, native cancellation and cleanup. Win+L lock
@@ -74,8 +77,8 @@
   recovery, not installed-PWA or actual Files byte/hash acceptance. Wrong
   selected size is explained by the owner's JSON/other-file selection; the .bin
   was not verified. Do not infer corruption or an OS save failure from this.
-- Same-origin prior-report migration reads only the documented v011 sibling
-  key. A different path/origin, eviction or separate browser/PWA storage may
+- Same-origin prior-report migration reads only the documented v011/v012 sibling
+  keys. A different path/origin, eviction or separate browser/PWA storage may
   prevent recovery. Retry does not turn a mismatched file into a success.
 
 - Owner 0.1.2 Windows run has zero lifecycle events and HELLO_CANCELLED at the
@@ -95,3 +98,12 @@
   an actively streaming SW can still be stopped by the OS. Transactional
   metadata storage is small and contains no bytes/vault keys. Denied ticket
   storage blocks the download; expired/consumed tickets do not resume.
+
+- Latest owner 0.1.4 evidence supersedes earlier missing installed-PWA/selected
+  hash and missing instrumented-lock results: exact 1 GB selected hash, diagnostic
+  restore/key-free export reopen/cleanup, and WTS lock plus STALE PASS. Earlier
+  observations above describe separate runs. The new report does not measure
+  iPhone process memory, establish selected Files folder provenance/restart
+  cause, observe Windows prompt visibility at lock, or complete the remaining
+  provider/account/suspend/WebView2 and phone G1 matrix. Static `remaining` arrays
+  in the kit reports are broader checklists, not contradictions of specific PASS.

@@ -321,3 +321,15 @@ retained tickets at 64; consume atomically removes before use. Keep five-minute
 expiry, strict synthetic owner/name/marker checks and no runtime export cache.
 Test actual SW termination before consuming the prepared URL, not a JS mock.
 This does not resume an interrupted stream or guarantee background survival.
+
+ADR-006 owner 0.1.4 evidence addendum (2026-10-11): archive the new owner
+Windows report byte for byte and redact only the phone's private origin, with
+original upload SHA-256 values and source/release verification in a receipt.
+Classify the actual WTS lock plus failed STALE operation as the instrumented
+lock result, and the installed-PWA selected 1 GB SHA-256 match as saved-output
+byte evidence. Recovery records confirm diagnostics and key-free synthetic
+export reopening, not resumed unlocked state. Do not infer a restart cause,
+Files folder provenance, prompt visibility at lock, memory bound or complete
+G1 acceptance. Preserve earlier failed/limited runs; successful narrow owner
+results do not require another whole trial or an application change. P03 tooling
+can proceed independently while remaining platform and review gates stay open.
