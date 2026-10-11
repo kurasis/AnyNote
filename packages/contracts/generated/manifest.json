@@ -28,7 +28,7 @@
     },
     {
       "path": "apps/api/app/Backend/Authorization.php",
-      "sha256": "9cf5887feeb0c3e5b4a7ec5ea1627830da7f73e7be4c46ec5546348b388e3eb2"
+      "sha256": "1f0261f134b1a7d45b6b59a3ed2e757b25ff5b0ef75429ef741aae4a1dadc568"
     },
     {
       "path": "apps/api/app/Backend/ReservationService.php",

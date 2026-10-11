@@ -14,6 +14,9 @@ final class Authorization
 
     public function actor(string $secret, bool $lock = true): Actor
     {
+        if ($lock && DB::transactionLevel() < 1) {
+            throw new \LogicException('Transaction required');
+        }
         if (! P::isBinary($secret, 32)) {
             throw new ApiException('AUTH_REQUIRED');
         }
@@ -92,6 +95,12 @@ final class Authorization
 
     public function group(Actor $actor, string $id, string $permission = 'read', bool $lock = true): stdClass
     {
+        if ($lock && DB::transactionLevel() < 1) {
+            throw new \LogicException('Transaction required');
+        }
+        if (! in_array($permission, ['read', 'write', 'owner'], true)) {
+            throw new ApiException('INVALID_REQUEST');
+        }
         if (! P::isBinary($id, 16)) {
             throw new ApiException('NOT_FOUND');
         }

@@ -120,6 +120,7 @@ final class BackendFoundationTest extends TestCase
 
     public function test_three_accounts_cross_group_scope_reader_and_admin_do_not_gain_write_authority(): void
     {
+        $this->denied('INVALID_REQUEST', fn () => app(Authorization::class)->group(app(Authorization::class)->actor($this->secret()), $this->group(), 'unknown-permission'));
         $this->denied('NOT_FOUND', fn () => $this->commit(null, 2));
         DB::table('users')->where('id', $this->fixture['accounts'][2]['account_id'])->update(['is_admin' => true]);
         $this->denied('NOT_FOUND', fn () => $this->commit(null, 2));

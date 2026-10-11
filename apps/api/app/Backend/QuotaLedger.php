@@ -10,6 +10,9 @@ final class QuotaLedger
 {
     public function lock(string $account, string $group): array
     {
+        if (DB::transactionLevel() < 1) {
+            throw new \LogicException('Transaction required');
+        }
         $scopes = ['global', 'group/'.$group, 'account/'.$account];
         $rows = [DB::table('quota_ledgers')->where('scope', 'global')->lockForUpdate()->first()];
         foreach (array_slice($scopes, 1) as $scope) {
@@ -24,6 +27,9 @@ final class QuotaLedger
 
     public function apply(array $ledgers, int $committed, int $reserved): void
     {
+        if (DB::transactionLevel() < 1) {
+            throw new \LogicException('Transaction required');
+        }
         foreach ($ledgers as $row) {
             $c = (int) $row->committed_bytes;
             $r = (int) $row->reserved_bytes;

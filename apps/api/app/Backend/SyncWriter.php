@@ -11,6 +11,9 @@ final class SyncWriter
     /** LAST lock. No external I/O or further business locks after this call. */
     public function append(array $events): array
     {
+        if (DB::transactionLevel() < 1) {
+            throw new \LogicException('Transaction required');
+        }
         if ($events === [] || count($events) > 100) {
             throw new ApiException('RESOURCE_LIMIT');
         }

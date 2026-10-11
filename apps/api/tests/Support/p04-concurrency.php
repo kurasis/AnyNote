@@ -1,6 +1,7 @@
 <?php
 
 use App\Backend\ObjectService;
+use App\Backend\QuotaLedger;
 use App\Backend\ReservationService;
 use App\Backend\SyncWriter;
 use App\Crypto\PublicProtocol as P;
@@ -91,6 +92,14 @@ function signRequest(array $r): array
 }
 check(DB::table('users')->count() === 0);
 SyntheticBackend::seed($f);
+foreach ([fn () => app(QuotaLedger::class)->apply([], 1, 1), fn () => app(SyncWriter::class)->append([$event]), fn () => app(QuotaLedger::class)->lock($f['accounts'][0]['account_id'], $f['groups'][0]['id'])] as $call) {
+    try {
+        $call();
+        throw new RuntimeException('Autocommit business write accepted');
+    } catch (LogicException $e) {
+        check($e->getMessage() === 'Transaction required');
+    }
+}
 writeRequest('same', $f['request']);
 $a = start('commit', 0, 'same');
 $b = start('commit', 0, 'same');
