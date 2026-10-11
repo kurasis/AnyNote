@@ -650,3 +650,31 @@ Draft save, publication and future-task restoration remain distinct. P03 tooling
 is verified; final contracts/types/errors/logging depend on P02. P01/G1 and
 qualified review stay open. No public deployment, owner device action, native
 reference/license change, production format/schema migration or real secret.
+
+### Hosted fresh-checkout P03 source and existing regression checks
+
+[Raw foundation report](evidence/p03-foundation-hosted.json) and
+[receipt](evidence/p03-hosted-receipt.json) preserve the actual hosted results.
+Foundation [38119399644](https://github.com/kurasis/AnyNote/actions/runs/38119399644),
+baseline [38119399647](https://github.com/kurasis/AnyNote/actions/runs/38119399647)
+and all three P01 [38119399652](https://github.com/kurasis/AnyNote/actions/runs/38119399652)
+jobs PASS for workflow head 76860c8. Actions checkout tested merge ref 1405c76,
+whose parents are main 7656fc2 and head 76860c8; its entire tree equals that head.
+The raw report keeps the actual checkout commit, not a substituted PR-head stamp.
+
+Actual foundation versions match pins; native extensions, InnoDB commit/rollback/
+cleanup, HTTP readiness, DB outage/recovery, static/API/path/host isolation, actual
+loopback bindings/users, production denial and 3 tests/7 assertions PASS. Hosted
+source tree stays clean; generated PHPUnit cache is excluded from Git and input
+receipts. The earlier dirty local capture retains that transient cache's fingerprint
+as historical data, not a committed source assertion. All 43 hosted source-input
+SHA-256 receipts independently match current foundation bytes. Existing native/
+Node/sandboxed-browser/network/1 GB/export/fault and Windows gates also PASS.
+Cancelled initial 6c79236 runs are not counted; they were superseded by the cache
+tracking correction. The publication-only job is intentionally skipped.
+
+[Environment receipt](evidence/p03-environment-setup.json) confirms complete
+install execution, repeated frozen install, full owned stop/start/readiness and
+actual saved install_script/start_skill. Tool returned requires_publish=true:
+review/save/publish in environment settings remains product-owned; no future
+restoration or production deployment is claimed.

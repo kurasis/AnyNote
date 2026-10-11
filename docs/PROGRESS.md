@@ -301,3 +301,10 @@ Rollback: revert these foundation additions, stop only the marked synthetic
 Compose project and preserve its disposable volume/state. No production data or
 protocol-format migration exists. Next: P02-KEY-AND-FILE-CONTRACT; complete P01
 physical/memory/network matrix and qualified review remain separate open gates.
+
+Hosted source 76860c8: foundation 38119399644, baseline 38119399647 and all three
+P01 jobs 38119399652 PASS. Actual checkout merge ref 1405c76 has the same complete
+tree; raw report/source receipts archived, clean tree and no generated cache
+tracked. Cloud install_script/start_skill save confirmed; publication/future-task
+restoration NOT RUN. This final evidence addition leaves foundation/P01 code
+unchanged; final PR-head checks must pass before automatic merge.
