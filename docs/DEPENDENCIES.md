@@ -106,3 +106,21 @@ metadata/README/RFC evidence: evidence/p02-primary-sources.json. Project release
 license remains UNSELECTED; root package is private UNLICENSED, not an assertion
 that dependencies lack licenses. No new lifecycle scripts, crypto primitives,
 GPL adapter imports or production/native/browser JCS compatibility claim.
+
+
+## P02 identity/recipient candidate additions
+
+@scure/base 2.4.0 MIT provides established Bech32m, with no production transitive
+packages. libsodium-wrappers-sumo and explicitly overridden libsodium-sumo 0.8.4
+ISC reuse WASM sodium 1.0.22 already exercised in P01. Exact frozen npm inventory
+now contains ten packages; licenses/SRI/source metadata checked in
+[evidence](evidence/p02-identity-primary-sources.json). No lifecycle script,
+GPL adapter import or project release license change. Node 24.21.0 built-in HKDF
+uses its existing upstream runtime/license; no new HKDF implementation dependency.
+
+Pinned foundation PHP 8.4.26 native sodium reports 1.0.18 from the image's signed
+OS packages. Actual primitive/vector interoperability is tested, not selection
+of this OS version as a future production crypto baseline. Scure README names
+external review of 1.0.0 and self-review of 2.2.0; neither is review evidence for
+selected 2.4.0 or this candidate. No signature/provenance verification or full
+OS license SBOM is claimed from registry SRI and inspected notices.

@@ -37,5 +37,12 @@
     "file-chunk": "AnyNote/p02-file-c1/aad/file-chunk\u0000",
     "file-manifest": "AnyNote/p02-file-c1/aad/file-manifest\u0000",
     "file-manifest-key-wrap": "AnyNote/p02-file-c1/aad/file-manifest-key-wrap\u0000"
-  }
+  },
+  "related_candidates": [
+    {
+      "contract": "p02-identity-c1",
+      "registry": "p02-identity-c1.registry.json",
+      "status": "CANDIDATE_SYNTHETIC_CRYPTO_AUTHORIZATION_NOT_EVALUATED"
+    }
+  ]
 }

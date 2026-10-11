@@ -1,0 +1,47 @@
+{
+  "status": "CANDIDATE_SYNTHETIC_CRYPTO_AUTHORIZATION_NOT_EVALUATED",
+  "contract": "p02-identity-c1",
+  "schema": "p02-identity-c1.schema.json",
+  "codec": "../protocol/src/identity-codec.mjs",
+  "crypto_reference": "../protocol/src/identity-crypto.mjs",
+  "structures": [
+    "id",
+    "digest",
+    "signature",
+    "counter",
+    "head",
+    "identity-pin",
+    "derivation-context",
+    "identity-body",
+    "identity",
+    "kit",
+    "issuer",
+    "certificate-body",
+    "certificate",
+    "sender",
+    "recipient",
+    "grant-context",
+    "grant-plaintext",
+    "grant-body",
+    "grant"
+  ],
+  "maximum_wire_bytes": 16384,
+  "maximum_json_depth": 32,
+  "maximum_sealed_ciphertext_bytes": 4096,
+  "maximum_recipient_count": 60,
+  "signature_alg": "Ed25519",
+  "root_derivation": "HKDF-SHA256 + library seed-keypair APIs",
+  "recovery_encoding": "Bech32m HRP anr; payload byte 01 + random 32-byte R; canonical lowercase 63 characters",
+  "signature_domains": {
+    "account-root-identity": "AnyNote/p02-identity-c1/sign/account-root-identity\u0000",
+    "provisional-device-certificate": "AnyNote/p02-identity-c1/sign/provisional-device-certificate\u0000",
+    "group-key-distribution": "AnyNote/p02-identity-c1/sign/group-key-distribution\u0000"
+  },
+  "hash_domains": {
+    "account-root-identity": "AnyNote/p02-identity-c1/hash/account-root-identity\u0000",
+    "device-certificate": "AnyNote/p02-identity-c1/hash/device-certificate\u0000",
+    "grant-context": "AnyNote/p02-identity-c1/hash/grant-context\u0000",
+    "group-key-distribution": "AnyNote/p02-identity-c1/hash/group-key-distribution\u0000",
+    "x25519-public-key": "AnyNote/p02-identity-c1/hash/x25519-public-key\u0000"
+  }
+}

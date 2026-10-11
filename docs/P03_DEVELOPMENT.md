@@ -9,8 +9,12 @@ and P02 remain open; authoritative contracts/generated types follow P02.
 apps/api contains Laravel and frozen Composer dependencies; infra/dev contains
 digest-pinned images and owned Compose services. scripts/dev-stack.py provides
 install/up/check/test/stop. experiments/p01 remains independently runnable.
-apps/web/desktop, packages/contracts/protocol and crates/vault-core are reserved
-architecture areas, not implemented packages or placeholder crypto interfaces.
+apps/web/desktop and crates/vault-core remain reserved architecture areas.
+packages/contracts/protocol now contain isolated P02 candidate schemas/reference,
+not product crypto or authorization. After owned install/up, run
+python3 scripts/check-p02-crypto.py for independent public-fixture PHP HKDF/
+signature/sealed-box/AEAD verification; its read-only reference mount does not
+add an API route or general PHP JCS/parser implementation.
 
 Tested on Linux x86_64 / Debian 13.6, Docker 28.4.0, Compose 2.40.3 and Python
 3.12.14. Use a non-root developer UID. No host PHP/system service installation,

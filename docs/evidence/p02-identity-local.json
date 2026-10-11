@@ -1,0 +1,194 @@
+{
+  "captured_at_utc": "2026-10-11T08:21:52.591888+00:00",
+  "scope": "PUBLIC_SYNTHETIC_CANDIDATE_ONLY",
+  "source_commit": "30cc8b25b28055cdcf98c42d1b4eea7f45607223",
+  "source_tree_dirty": true,
+  "node": "24.21.0",
+  "npm": "11.19.0",
+  "tests": {
+    "command": "npm --prefix packages/protocol test",
+    "executed": 145,
+    "passed": 145,
+    "failed": 0,
+    "skipped": 0,
+    "status": "PASS"
+  },
+  "crypto_vectors": {
+    "command": "npm --prefix packages/protocol run crypto:check",
+    "status": "PASS",
+    "fresh_recipient_paths": [
+      "device",
+      "account-recovery"
+    ],
+    "plaintext_bytes": 79,
+    "authorization": "NOT_EVALUATED"
+  },
+  "independent_php": {
+    "checks": 1898,
+    "fresh_recipient_paths": [
+      "device",
+      "account-recovery"
+    ],
+    "php": "8.4.26",
+    "plaintext_bytes": 79,
+    "production_parser_and_authorization": "NOT_EVALUATED",
+    "scope": "PUBLIC_FIXTURE_SUBSET_ONLY",
+    "sodium": "1.0.18",
+    "source_commit": "30cc8b25b28055cdcf98c42d1b4eea7f45607223",
+    "source_tree_dirty": true,
+    "status": "PASS"
+  },
+  "file_framing_reference": {
+    "status": "PASS",
+    "cases": 6,
+    "nonce_aad_pairs": 125,
+    "rejection_mutations": 2
+  },
+  "npm_audit": {
+    "status": "PASS",
+    "advisories": 0,
+    "qualified_review": false
+  },
+  "source_scan": {
+    "status": "PASS",
+    "pat_path_negatives": 5,
+    "changed_key_digest_negatives": 5,
+    "reviewed_exact_public_values": 10
+  },
+  "preservation": {
+    "status": "PASS",
+    "original_spec_files": 21,
+    "p01_source": "UNCHANGED",
+    "p02_file_schema_and_old_vectors": "UNCHANGED"
+  },
+  "hosted_final_head": "Recorded on PR after completion; NOT_RUN at local capture",
+  "not_run": [
+    "Production account/device/group authority",
+    "Authenticated pairing/roster/reset transactions",
+    "Full Rust/browser/general PHP candidate interoperability",
+    "New physical acceptance and mobile memory",
+    "Qualified independent review"
+  ],
+  "source_inputs": [
+    {
+      "path": ".github/workflows/foundation.yml",
+      "sha256_base64url": "VIJnFQQXmZeCHVUey7SO3V1TU6029eVGRlk-cFidV6o"
+    },
+    {
+      "path": ".github/workflows/protocol-candidate.yml",
+      "sha256_base64url": "fxkPPl9Z7tQDEeQhvr5yAT2IatDkJFwZTzeByU9nM6o"
+    },
+    {
+      "path": ".gitleaks.toml",
+      "sha256_base64url": "35UliMt_4E9RFaH7Bu8ew-rUC3PeRurRG_g0C8RObGI"
+    },
+    {
+      "path": "docs/P02_IDENTITY_CONTRACT.md",
+      "sha256_base64url": "H6e3QcYjhp6JtB73d02RNE71e1_PyY2QeuZx4SDC7EI"
+    },
+    {
+      "path": "docs/protocol-v1.md",
+      "sha256_base64url": "dNCvBPIhdxeen6FD6vXaku8aTUR_BeqDoMu1XanHdkQ"
+    },
+    {
+      "path": "fixtures/protocol/p02/README.md",
+      "sha256_base64url": "YBfCGwzOT9RaRC8hxvr6sIjPVSWnzWgEdt08bpm0iyo"
+    },
+    {
+      "path": "fixtures/protocol/p02/identity-vectors.json",
+      "sha256_base64url": "PI3Ypg5QDvoHQAZLUn9ePsZHaa5OvDU70x2YzIdgCMg"
+    },
+    {
+      "path": "fixtures/protocol/p02/vectors.json",
+      "sha256_base64url": "CxjEUl4gQsqhao1Te7pewadlRF2e5qUhX2kiWsATy-0"
+    },
+    {
+      "path": "packages/contracts/README.md",
+      "sha256_base64url": "6vilakmPbIidtPfIKyoHHImCDWBguL5HsGGtRs9YoUI"
+    },
+    {
+      "path": "packages/contracts/p02-file-c1.schema.json",
+      "sha256_base64url": "421iJhKsyvxjP4YnnICXYVdccxVBylFzvXWHHdEiNLs"
+    },
+    {
+      "path": "packages/contracts/p02-identity-c1.registry.json",
+      "sha256_base64url": "B7QDTybbRxZZzMcQhQ7Yk3gKCwRUcM0m09JaOXK8q3c"
+    },
+    {
+      "path": "packages/contracts/p02-identity-c1.schema.json",
+      "sha256_base64url": "70l_tUuJnRA7PNBpBOHb0j0ZGlhvFLnTWCZCE6-c_E4"
+    },
+    {
+      "path": "packages/contracts/registry.json",
+      "sha256_base64url": "b8FVmPYEl4l1rzNgj5gP_JpBG_QAi2zRgpajvOxPrGY"
+    },
+    {
+      "path": "packages/protocol/README.md",
+      "sha256_base64url": "OUBhy3AJeoOKGD1f3unVQPtO0BJBg7AvhpfS7LzInRM"
+    },
+    {
+      "path": "packages/protocol/crypto-vectors.mjs",
+      "sha256_base64url": "XTK84f8-MHcud0sFFJTz9LpcfNzrbtNBNgnySAKjQsg"
+    },
+    {
+      "path": "packages/protocol/dependency-inventory.json",
+      "sha256_base64url": "kU9rDA4dL8CVWgh4bobFMp-G__WcgChqxGhK_Uv4s48"
+    },
+    {
+      "path": "packages/protocol/evaluation-file.mjs",
+      "sha256_base64url": "F6BomSD1vRFjmtP1ajBszqmwKjSGkajSbWgxaw59_yo"
+    },
+    {
+      "path": "packages/protocol/fixtures.mjs",
+      "sha256_base64url": "R4V_BJ9re23Ly_HTgmIY0grgHt6OCklELMlRJsevhuA"
+    },
+    {
+      "path": "packages/protocol/inventory.mjs",
+      "sha256_base64url": "A_4lZYfE7yPg4I8I-qILCeCGQE7ZpG_3GgSJ6LTJu9o"
+    },
+    {
+      "path": "packages/protocol/package-lock.json",
+      "sha256_base64url": "bnKGKGsP4nlzEMV6j7TXaMTa4r7FP1j3iLjQyDD6-38"
+    },
+    {
+      "path": "packages/protocol/package.json",
+      "sha256_base64url": "w6MQ-c17ufPQBAguXmo--jmIo7IfbXfD5h-k8t5yQAA"
+    },
+    {
+      "path": "packages/protocol/src/codec.mjs",
+      "sha256_base64url": "de8e5RPU_Jb-q0oghcm3aPVsYPWpbiS21qvZ-uoSlBA"
+    },
+    {
+      "path": "packages/protocol/src/identity-codec.mjs",
+      "sha256_base64url": "qQ_ftl_Tfg-MaIyJuW6VZrfjvUrXj5z1MeOagsRXOzQ"
+    },
+    {
+      "path": "packages/protocol/src/identity-crypto.mjs",
+      "sha256_base64url": "DCmZvF4J_J8YotftqiyG3FNudLX9XFMVJthq0VDUL50"
+    },
+    {
+      "path": "packages/protocol/src/strict-json.mjs",
+      "sha256_base64url": "gRtm14ent0Z79cSTl9HeFh6dIhb3B-IOMkTZZ6tAtug"
+    },
+    {
+      "path": "packages/protocol/test/contract.test.mjs",
+      "sha256_base64url": "ktACeROk0boBSqYB5pKmBbfLjK86dE0pzC4SEuDOxNI"
+    },
+    {
+      "path": "packages/protocol/test/identity.test.mjs",
+      "sha256_base64url": "YF2Jja8pAljTpH5-uB77genAR1sAq9UFLEJqrffnSuU"
+    },
+    {
+      "path": "scripts/check-p02-crypto.php",
+      "sha256_base64url": "_cFbQQ2fyUuk5m8v176VBIzyA1msvp9V4CDo7EZCaiA"
+    },
+    {
+      "path": "scripts/check-p02-crypto.py",
+      "sha256_base64url": "z2GjkSdpAhq6e144qu2zy5ejMxRBvcprQuLvXYVJvMo"
+    },
+    {
+      "path": "scripts/check-secrets.py",
+      "sha256_base64url": "q9dWGokyHM7STXJumlqAVoXMKXmDhFRru8_QG4oME2M"
+    }
+  ]
+}

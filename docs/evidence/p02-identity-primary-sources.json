@@ -1,0 +1,142 @@
+{
+  "checked_at_utc": "2026-10-11T08:17:31.438711+00:00",
+  "dependency_selection": [
+    {
+      "package": "@scure/base",
+      "version": "2.4.0",
+      "license": "MIT",
+      "metadata_url": "https://registry.npmjs.org/@scure%2fbase/2.4.0",
+      "metadata_sha256_base64url": "nwYGDBXLOjAIL3IhfWYRK60MXGfG296GDIGq4VXl5h4",
+      "repository": {
+        "url": "git+https://github.com/paulmillr/scure-base.git",
+        "type": "git"
+      },
+      "dist": {
+        "tarball": "https://registry.npmjs.org/@scure/base/-/base-2.4.0.tgz",
+        "integrity": "sha512-thZ1TuJwFwBblOhgsjDKvvGirBxNp+wSvY/DR6tJBJOTDhdAAcHJ8Vbr2eFnqaxeca4+t0i9KBf+uHYGWwZORg==",
+        "shasum": "61e4ed7d4447afc247f2bff9aeb8fca53267db86"
+      }
+    },
+    {
+      "package": "libsodium-wrappers-sumo",
+      "version": "0.8.4",
+      "license": "ISC",
+      "metadata_url": "https://registry.npmjs.org/libsodium-wrappers-sumo/0.8.4",
+      "metadata_sha256_base64url": "JuAiIUSlcB2y8YJJaM_4ynv_QRmkOHNCHt08YE6zosU",
+      "repository": {
+        "url": "git+https://github.com/jedisct1/libsodium.js.git",
+        "type": "git"
+      },
+      "dist": {
+        "tarball": "https://registry.npmjs.org/libsodium-wrappers-sumo/-/libsodium-wrappers-sumo-0.8.4.tgz",
+        "integrity": "sha512-ql7hcgulKZ3ekfa2DGAogcCKsWU0diA/0nArz1CFzh93WQdb46/Kj18ka/Hifq6uA3Ush34Pc6vU/6HXeRwUkg==",
+        "shasum": "6656a3e7e0551ecce08ddee4bfb501a092eac6fa"
+      }
+    },
+    {
+      "package": "libsodium-sumo",
+      "version": "0.8.4",
+      "license": "ISC",
+      "metadata_url": "https://registry.npmjs.org/libsodium-sumo/0.8.4",
+      "metadata_sha256_base64url": "GoA2SOo9oteaeokoeT8Axg5ePmBzeFYFnVLe6I0xYNY",
+      "repository": {
+        "url": "git+https://github.com/jedisct1/libsodium.js.git",
+        "type": "git"
+      },
+      "dist": {
+        "tarball": "https://registry.npmjs.org/libsodium-sumo/-/libsodium-sumo-0.8.4.tgz",
+        "integrity": "sha512-TMtHShQfVVsaxDygyapvUC3o7YsPgXa/hRWeIgzyFz6w5k/1hirGptCxp1U7XwW3rCskaTTYKgV10v86UiGgNw==",
+        "shasum": "6d4687781fa0ad398af14a7df872d5c27cf8cd31"
+      }
+    }
+  ],
+  "primary_sources": [
+    {
+      "label": "HKDF-SHA256 RFC 5869",
+      "url": "https://www.rfc-editor.org/rfc/rfc5869.txt",
+      "bytes": 25854,
+      "sha256_base64url": "ekDrODWzX8lH6xKi7WFNsHnUOyblDbxTfDH7oWOXCJw"
+    },
+    {
+      "label": "Bech32m BIP 350",
+      "url": "https://raw.githubusercontent.com/bitcoin/bips/master/bip-0350.mediawiki",
+      "bytes": 26836,
+      "sha256_base64url": "Y2NLBqqLroizGSlnRzbnSWTEWYaEJprCsLFAxDp6Dew"
+    },
+    {
+      "label": "Node maintained HKDF API",
+      "url": "https://nodejs.org/docs/latest-v24.x/api/crypto.html",
+      "bytes": 634449,
+      "sha256_base64url": "xi0SK8j08bAMvDtPlDcWZnQi_pcWLCO-HTxESXPcJkc"
+    },
+    {
+      "label": "Libsodium sealed boxes",
+      "url": "https://raw.githubusercontent.com/jedisct1/libsodium-doc/master/public-key_cryptography/sealed_boxes.md",
+      "bytes": 2977,
+      "sha256_base64url": "YkttUBA2ovh36B-Z8Dc08_zvdl9DqAwUid16H5Fpmzw"
+    },
+    {
+      "label": "Libsodium signing seed API",
+      "url": "https://raw.githubusercontent.com/jedisct1/libsodium-doc/master/public-key_cryptography/public-key_signatures.md",
+      "bytes": 10664,
+      "sha256_base64url": "qHw6WeF6pgcHBa383XDjhEKyXUjjue95G3xaxjn8FY8"
+    },
+    {
+      "label": "Libsodium encryption seed API",
+      "url": "https://raw.githubusercontent.com/jedisct1/libsodium-doc/master/public-key_cryptography/authenticated_encryption.md",
+      "bytes": 10469,
+      "sha256_base64url": "8HJth9WNaNDY8WGL1AmP4vkiBp9SH5paEczR7BvzmEM"
+    }
+  ],
+  "inspected_upstream_notice_files": [
+    {
+      "package": "@scure/base",
+      "file": "LICENSE",
+      "sha256_base64url": "MjnhNOtubWRTjKdkmMf8sIo5UkndnUr5knv20Bae5Ck"
+    },
+    {
+      "package": "@scure/base",
+      "file": "README.md",
+      "sha256_base64url": "Vs6W9dBhzABU0nRPkj0ODm_phKzNEqsXfAIuKuD0VQk"
+    },
+    {
+      "package": "@scure/base",
+      "file": "package.json",
+      "sha256_base64url": "DnT3Ma3NXoS7YrfhVAR7WFaG_3D2RDXS4GS2ZFLShBo"
+    },
+    {
+      "package": "libsodium-wrappers-sumo",
+      "file": "LICENSE",
+      "sha256_base64url": "znuLoU2wharbcjWSJsz3JzIl2zHa1lMkKncmoQ2ru9Q"
+    },
+    {
+      "package": "libsodium-wrappers-sumo",
+      "file": "README.md",
+      "sha256_base64url": "TPIeR_9JtYDR5vYYanPRWCNoesFSpsHF2NNWH4Gj8VI"
+    },
+    {
+      "package": "libsodium-wrappers-sumo",
+      "file": "package.json",
+      "sha256_base64url": "CQJW3n-pxRG7rY3Ywl_xzLfiz64DlVdnXTqlZyoDn7A"
+    },
+    {
+      "package": "libsodium-sumo",
+      "file": "LICENSE",
+      "sha256_base64url": "znuLoU2wharbcjWSJsz3JzIl2zHa1lMkKncmoQ2ru9Q"
+    },
+    {
+      "package": "libsodium-sumo",
+      "file": "README.md",
+      "sha256_base64url": "TPIeR_9JtYDR5vYYanPRWCNoesFSpsHF2NNWH4Gj8VI"
+    },
+    {
+      "package": "libsodium-sumo",
+      "file": "package.json",
+      "sha256_base64url": "fvGF23QMNRvJCyD-wlC36NSUxoKff_jy9Y9ZeHLL_D8"
+    }
+  ],
+  "review_scope": "Exact metadata/SRI/license/API and standard checks, not signature/provenance verification or an independent protocol audit",
+  "audit_boundary": "Scure README identifies external review at 1.0.0 and self-review at 2.2.0; neither proves review of selected 2.4.0 or AnyNote candidate",
+  "source_access_note": "doc.libsodium.org returned proxy tunnel 502; checked the same official jedisct1/libsodium-doc primary source repository instead, with TLS intact",
+  "native_php_sodium": "1.0.18 from existing digest-pinned foundation OS image; public primitive interoperability only"
+}

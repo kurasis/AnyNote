@@ -8,7 +8,7 @@ does not satisfy a feature gate. Production release is not ready.
 | --- | --- | --- |
 | P00 | VERIFIED | Local baseline and four negative cases passed; scope/version/inventory deliverables complete; remote bootstrap and clean-clone verification passed; both baseline Actions runs verified |
 | P01 | IN PROGRESS | Host crypto/KDF/storage/export/fault evidence VERIFIED; owner 0.1.4 fresh-process Hello authentication, WTS lock/STALE, installed-iPhone-PWA selected 1 GB hash and diagnostic recovery PASS; full physical G1/memory/network matrix remains open |
-| P02 | IN PROGRESS | Candidate key/file/checkpoint schemas, strict JCS byte codecs and public serialization fixtures implemented; remaining identity/recipient/pairing/transitions and qualified review stay open |
+| P02 | IN PROGRESS | Candidate file/checkpoint + root/kit/identity/certificate/recipient schemas and Node/PHP synthetic crypto implemented; pairing/roster/policy/reset authority, remaining formats and qualified review stay open |
 | P03 | IN PROGRESS | Laravel/MariaDB/FPM/Nginx tooling and synthetic integration implemented; final contracts/generated types/errors/logging follow P02; evidence below |
 | P04 | NOT STARTED | P02/P03; signature acceptance also needs P05 fixtures |
 | P05 | NOT STARTED | P01/P02/P03 |
@@ -334,3 +334,27 @@ qualified independent review NOT RUN. R01/R14/R19 have byte/framing/design
 evidence only, not full application acceptance. P01/G1 and P03 gates unchanged.
 Rollback is a normal revert of candidate additions, no content migration/data.
 Next: P02-ROOT-IDENTITY-CONTRACT; no repeated owner device trial required.
+
+## Completed larger slice: P02-IDENTITY-CERTIFICATE-RECIPIENT
+
+Candidate p02-identity-c1 adds exact HKDF/root/recovery kit, noncircular pinned
+public identity, provisional root/delegate certificates and signed sealed
+recipient contexts/coverage. Private signature proofs explicitly carry
+NOT_EVALUATED authorization; no device/session activation or unchecked roster
+acceptance. Complete file candidate bytes and original/P01 sources are preserved.
+
+145 Node tests PASS, including external RFC 5869/BIP 350 expected examples,
+real deterministic crypto/vector drift and adversarial signature/context/recipient
+checks. Both fresh synthetic recipient paths decrypt the same 79-byte file via
+G -> manifest DEK -> encrypted manifest/file-data key -> chunk, no uploader DEK
+input. Independent PHP 8.4.26/native sodium 1.0.18 reproduces fixture keys/JCS
+subset/signatures/sealed/AEAD and tag/AAD negatives. Ten-package frozen inventory,
+zero npm advisories and source scanner with ten negatives PASS. Full saved setup
+execution/repetition and final source CI are recorded in TEST_EVIDENCE/PR.
+
+P02/G2 remains IN PROGRESS: authenticated pairing, signed roster/activation/
+revoke/reset/session and policy/epoch/historical authority, local/export schemas,
+full Rust/browser/general PHP compatibility and qualified review are outstanding.
+P01/G1 and P03 product gates unchanged. No new owner device action is needed.
+Rollback: normal revert of isolated candidate additions, no production migration.
+Next larger batch: P02-ROSTER-AND-RECOVERY-STATE.

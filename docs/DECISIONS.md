@@ -421,3 +421,58 @@ This bounded candidate changes no production trust/key custody, migration or
 endpoint. Other protocol schemas, root HKDF/kit/pairing/recipient constructions
 and qualified review remain open. Full G2/R01/R14/R19 acceptance is not claimed.
 See protocol-v1.md and evidence/p02-primary-sources.json for checked references.
+
+## ADR-009 — larger candidate root/certificate/recipient crypto batch
+
+Date: 2026-10-11. Status: ACCEPTED for public synthetic evaluation only.
+
+The owner requests larger batches. Combine root HKDF/kit/identity, provisional
+certificate signatures, signed sealed recipient contexts/coverage and a linked
+small-file cryptographic path, preserving p02-file-c1 and original specification
+bytes. Separate new p02-identity-c1 marker/schema/registry from earlier file
+candidate. Node maintained HKDF-SHA256 uses exact SHA256 domain/context salt and
+distinct info labels; sodium seed-keypair APIs keep signing/recovery keys separate.
+New device identities use independent random keypair calls, not root derivation.
+Select @scure/base 2.4.0 MIT Bech32m HRP anr/version byte 01 + random 32-byte R;
+strict lowercase bounded encoding, no phrase/PIN or error correction. Sodium
+wrappers/core 0.8.4 ISC are locked/overridden, existing primitive WASM 1.0.22.
+
+Root fingerprint covers unsigned exact identity body; root signature has its
+own purpose domain. Independent service/account/root pins are required, not
+kit/server self-assertion. Certificates bind both device keys, generation,
+predecessor, exact issuer-certificate digest, capabilities and transcript digest.
+Private proof handles attest signature verification only and explicitly retain
+NOT_EVALUATED authorization. No certificate, root signature, valid AEAD or
+coverage result upgrades a session or proves current membership/roster authority.
+Authenticated pairing, activation/possession, delegate revocation/descendant
+closure, reset/CAS and group policy/epoch transactions remain subsequent gates.
+Do not expose candidate references as a product enrollment/recovery API.
+
+Sealed inner context binds exact sender and device/account-recovery recipient,
+key fingerprint, membership/roster/epoch/operation; outer signature authenticates
+whole context/ciphertext. Require matching trusted expected contexts and exact
+coverage with unique recipient IDs and one transition base. Derive expected
+recipients from authenticated current state in later product work; no SQL array,
+administrator recipient, reader writer privilege or global freshness assertion.
+Random sealed boxes are frozen as public inputs; never seed/patch global RNG.
+Deterministic derivation/signatures/file bytes and real random creation checks
+are distinct. The file evaluator is 64 KiB-capped; 79-byte fixture follows full
+manifest-only key path for separate device/recovery recipients without uploader
+DEK input. It is not a 1 GB product, mobile-memory or complete R01 verdict.
+
+Independent pinned PHP 8.4.26/native sodium 1.0.18 reproduces public HKDF/keys/
+signatures/sealed/AEAD and restricted ASCII-key/string fixture serialization.
+Its handwritten fixture serializer is not a production JCS/parser/schema API;
+Rust/browser/general PHP contract interoperability remains pending. Package
+metadata/license/SRI and upstream docs are checked; library review at old
+versions/self-review does not establish review of 2.4.0 or this protocol. No
+qualified reviewer booked/performed. JS/WASM/GC secret erasure remains best
+effort, ephemeral root/kit material never belongs on the server/everyday clients.
+
+Review 16 scanner false positives as ten complete known PUBLIC TEST fixture
+fields, allowing only exact rule/path/value (including scanner-decoded full
+expected fields). No arbitrary hashes, partial-value or whole-path suppression.
+Five PAT-path and five changed-key/digest negatives must fail. Saved setup uses
+frozen locks and crypto checks without fixture/source writes; owned P03 services
+restart after snapshot. Normal revert has no production data/format migration,
+site deployment, kit replacement or repeated owner action.

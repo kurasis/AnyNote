@@ -10,7 +10,7 @@ an ADR. Full traceability: [specification chapter 18](spec/18_REQUIREMENTS_TRACE
 | Invite-only accounts; passkeys separate from decryption/device trust | P04/P06/P08 | Auth isolation, C05/C06, R02/R05/R06 | NOT STARTED |
 | Private and shared groups; threads/entries/checklists | P09/P10 | F01–F10, C09/C12 | NOT STARTED |
 | Encrypted titles, text, filenames, tags, drafts, previews/history | P05/P07/P09/P12/P13 | C01–C04, storage/log leakage inspection | NOT STARTED |
-| Signed roles, recipient authorization and fresh epochs | P02/P05/P10 | C07–C10, R08/R14/R19/R21 | NOT STARTED |
+| Signed roles, recipient authorization and fresh epochs | P02/P05/P10 | C07–C10, R08/R14/R19/R21 | IN PROGRESS: candidate contexts/signatures/coverage only; current authority pending |
 | Independent devices, QR approval, offline recovery, no admin master key | P08 | C05/C06/C11/C13, R02/R06/R07 | NOT STARTED |
 | Durable offline drafts/sync, conflict preservation | P07/P11 | S01–S12, R03/R09/R10/R20 | NOT STARTED |
 | Exact 1,000,000,000-byte files; bounded resumable transfer/export | P01/P12/P14/P15 | U01–U17, physical U11/U12 | NOT STARTED |
@@ -35,3 +35,12 @@ protocol-v1.md, packages/contracts/p02-file-c1.schema.json, strict candidate
 codecs/tests and fixtures/protocol/p02. Status is candidate byte/framing/design
 evidence only; no complete R01 fresh-recipient crypto, R14 author/reader trust
 state or R19 application thread/signature substitution acceptance.
+
+
+P02-IDENTITY-CERTIFICATE-RECIPIENT: C05/C07 now map to exact HKDF/service/account/
+purpose separation, pinned identity/kit and substitution rejection vectors;
+C04 has signature/inner-context negatives for decryptable sealed records, with
+current group authorization still pending. R01 gains Node/PHP 79-byte fresh
+synthetic device/recovery file paths, no uploader DEK input. This does not
+complete C06/C11/C13 pairing/active roster/reset or R01 product/platform scope.
+See P02_IDENTITY_CONTRACT.md, public identity-vectors.json and TEST_EVIDENCE.md.

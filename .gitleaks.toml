@@ -27,3 +27,21 @@ paths = ['''fixtures/protocol/p02/vectors\.json$''']
 regexTarget = "secret"
 regexes = ['''^4W0vDgp41T01ZXPNRdhZfx8GSgRYIJ5CUJ8YeBMa_no$''',
             '''^AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8$''']
+
+[[rules.allowlists]]
+description = "Exact known PUBLIC TEST identity/key/HKDF values; candidate crypto drift and changed-value negatives remain mandatory"
+condition = "AND"
+paths = ['''fixtures/protocol/p02/identity-vectors\.json$''']
+regexTarget = "secret"
+regexes = [
+    '''^2\-OSfxYnQMsS2uyLesY3I24nTqQFwmiOtfpSg668ArE$''',
+    '''^8UtRcxMKG4Bofyc9Sej0dAp5OpSbg7EFg38qYej\-4U8$''',
+    '''^BvpwQ5p\-c2quCfMKEi1ij5GG0Fw6zYPdL\-dAzK4aGjQ$''',
+    '''^F0VTtFbd38aQjsqxwQH\-arIeK6oGF3lbfUOmNIKZP9U$''',
+    '''^Kay64UG8yvCyLhqU000LxzYeUm0L_hLIl5S8kyKWbdc$''',
+    '''^PecMsrm7C9o4c9E\-inz06ocNq\-spbKod_OCl9BHI0jQ$''',
+    '''^VWh_nuFrIct_6XgVANqcg9Tfok\-GmuVgzRn2ixZxkJg$''',
+    '''^anr1qyqqzqsrqszsvpcgpy9qkrqdpc83qygjzv2p29shrqv35xcur50p7jxuydq$''',
+    '''^b1GAuBizeAdNkSGoX6Dc21rGiqfsAE4vDKIqJi6jy1E$''',
+    '''^ukB5\-fSLIy_tx4c7E2AVHWMH4kheVtuKVIQGgC7giR4$'''
+]
