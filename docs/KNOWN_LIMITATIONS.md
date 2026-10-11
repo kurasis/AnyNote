@@ -227,3 +227,22 @@
   source-scanner exceptions never allow another identity/changed field/fake PAT.
   No actual server, origin deployment, kit release, production migration or
   environment publication/future-task restoration is completed by these checks.
+
+## P03 completion boundary (supersedes pending contracts/logging statements)
+
+- P03 initial OpenAPI/shared types, strict common errors, request IDs, safe logs
+  and actual synthetic HTTP/SQL environment are complete. Only capabilities and
+  liveness are public implemented operations; no dummy product/auth/crypto route.
+- Future phase-owned transports are explicitly unimplemented/unavailable; initial
+  OpenAPI is not a complete running product API. PHP readonly DTOs constrain
+  primitives/construction, not general nested schemas/signatures/authorization.
+  P04/P05/P06 must supply those validators and current session/device authority.
+- Raw common control validation and generated TypeScript/Node schema checks do
+  not certify full Rust/browser/physical interoperability or real HTTPS hosting.
+  Exact CORS does not replace CSRF/auth; production proxy/issuer/cookies are P06/P16.
+- Seven-day content-free log retention has bounded record size, not a measured
+  production total-disk rate budget. Monitoring/operational rotation remains P16.
+  Log-source scanning concerns current Git-visible source, not all history/secrets.
+- Read-only setup/current instance, saved draft, publication and future task
+  restoration have separate evidence. No production deploy/migration/release,
+  external reviewer booking or new physical trial is performed by P03 completion.

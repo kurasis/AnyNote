@@ -1,0 +1,1076 @@
+{
+  "components": [
+    "p02-file-c1",
+    "p02-identity-c1",
+    "p02-state-c1",
+    "p02-group-c2",
+    "p02-v1"
+  ],
+  "errors": {
+    "profile": "p02-v1",
+    "unauthorized_resource_existence": "NOT_FOUND/404 before any diagnostic details",
+    "maximum_retry_after_ms": 60000,
+    "errors": [
+      {
+        "code": "ACCESS_REVOKED",
+        "http_status": 404,
+        "message_key": "error.access_revoked",
+        "retryable": false,
+        "retry_action": "never",
+        "local_only": false
+      },
+      {
+        "code": "AUTH_REQUIRED",
+        "http_status": 401,
+        "message_key": "error.auth_required",
+        "retryable": false,
+        "retry_action": "authenticate",
+        "local_only": false
+      },
+      {
+        "code": "DEVICE_NOT_TRUSTED",
+        "http_status": 403,
+        "message_key": "error.device_not_trusted",
+        "retryable": false,
+        "retry_action": "explicit-authorize",
+        "local_only": false
+      },
+      {
+        "code": "DEVICE_REVOKED",
+        "http_status": 403,
+        "message_key": "error.device_revoked",
+        "retryable": false,
+        "retry_action": "explicit-authorize",
+        "local_only": false
+      },
+      {
+        "code": "ENROLLMENT_EXPIRED",
+        "http_status": 410,
+        "message_key": "error.enrollment_expired",
+        "retryable": false,
+        "retry_action": "restart-explicit",
+        "local_only": false
+      },
+      {
+        "code": "EXPORT_INTEGRITY_FAILURE",
+        "http_status": null,
+        "message_key": "error.export_integrity_failure",
+        "retryable": false,
+        "retry_action": "never",
+        "local_only": true
+      },
+      {
+        "code": "EXPORT_TRUNCATED",
+        "http_status": null,
+        "message_key": "error.export_truncated",
+        "retryable": false,
+        "retry_action": "never",
+        "local_only": true
+      },
+      {
+        "code": "FILE_LIMIT_EXCEEDED",
+        "http_status": 413,
+        "message_key": "error.file_limit_exceeded",
+        "retryable": false,
+        "retry_action": "reduce-explicit",
+        "local_only": false
+      },
+      {
+        "code": "HISTORY_CLOSURE_REQUIRED",
+        "http_status": 409,
+        "message_key": "error.history_closure_required",
+        "retryable": false,
+        "retry_action": "reconcile",
+        "local_only": false
+      },
+      {
+        "code": "IDEMPOTENCY_MISMATCH",
+        "http_status": 409,
+        "message_key": "error.idempotency_mismatch",
+        "retryable": false,
+        "retry_action": "reconcile",
+        "local_only": false
+      },
+      {
+        "code": "INSUFFICIENT_STORAGE",
+        "http_status": 507,
+        "message_key": "error.insufficient_storage",
+        "retryable": false,
+        "retry_action": "free-space-explicit",
+        "local_only": false
+      },
+      {
+        "code": "INTEGRITY_FAILURE",
+        "http_status": null,
+        "message_key": "error.integrity_failure",
+        "retryable": false,
+        "retry_action": "never",
+        "local_only": true
+      },
+      {
+        "code": "INVALID_CHUNK",
+        "http_status": 400,
+        "message_key": "error.invalid_chunk",
+        "retryable": false,
+        "retry_action": "never",
+        "local_only": false
+      },
+      {
+        "code": "INVALID_REQUEST",
+        "http_status": 400,
+        "message_key": "error.invalid_request",
+        "retryable": false,
+        "retry_action": "never",
+        "local_only": false
+      },
+      {
+        "code": "INVALID_SIGNATURE",
+        "http_status": 422,
+        "message_key": "error.invalid_signature",
+        "retryable": false,
+        "retry_action": "never",
+        "local_only": false
+      },
+      {
+        "code": "KEYS_PENDING",
+        "http_status": 409,
+        "message_key": "error.keys_pending",
+        "retryable": false,
+        "retry_action": "reconcile",
+        "local_only": false
+      },
+      {
+        "code": "MALFORMED_ENVELOPE",
+        "http_status": 400,
+        "message_key": "error.malformed_envelope",
+        "retryable": false,
+        "retry_action": "never",
+        "local_only": false
+      },
+      {
+        "code": "NOT_FOUND",
+        "http_status": 404,
+        "message_key": "error.not_found",
+        "retryable": false,
+        "retry_action": "never",
+        "local_only": false
+      },
+      {
+        "code": "POLICY_CHANGED",
+        "http_status": 409,
+        "message_key": "error.policy_changed",
+        "retryable": false,
+        "retry_action": "reconcile",
+        "local_only": false
+      },
+      {
+        "code": "QUOTA_EXCEEDED",
+        "http_status": 507,
+        "message_key": "error.quota_exceeded",
+        "retryable": false,
+        "retry_action": "free-space-explicit",
+        "local_only": false
+      },
+      {
+        "code": "RATE_LIMITED",
+        "http_status": 429,
+        "message_key": "error.rate_limited",
+        "retryable": true,
+        "retry_action": "bounded-backoff",
+        "local_only": false
+      },
+      {
+        "code": "RECOVERY_GENERATION_CONFLICT",
+        "http_status": 409,
+        "message_key": "error.recovery_generation_conflict",
+        "retryable": false,
+        "retry_action": "reconcile",
+        "local_only": false
+      },
+      {
+        "code": "REKEY_REQUIRED",
+        "http_status": 409,
+        "message_key": "error.rekey_required",
+        "retryable": false,
+        "retry_action": "reconcile",
+        "local_only": false
+      },
+      {
+        "code": "REKEY_RESTART_REQUIRED",
+        "http_status": 409,
+        "message_key": "error.rekey_restart_required",
+        "retryable": false,
+        "retry_action": "reconcile",
+        "local_only": false
+      },
+      {
+        "code": "REQUEST_TOO_LARGE",
+        "http_status": 413,
+        "message_key": "error.request_too_large",
+        "retryable": false,
+        "retry_action": "reduce-explicit",
+        "local_only": false
+      },
+      {
+        "code": "RESOURCE_LIMIT",
+        "http_status": 413,
+        "message_key": "error.resource_limit",
+        "retryable": false,
+        "retry_action": "reduce-explicit",
+        "local_only": false
+      },
+      {
+        "code": "RESTORE_QUARANTINE",
+        "http_status": 409,
+        "message_key": "error.restore_quarantine",
+        "retryable": false,
+        "retry_action": "reconcile",
+        "local_only": false
+      },
+      {
+        "code": "REVISION_ID_CONFLICT",
+        "http_status": 409,
+        "message_key": "error.revision_id_conflict",
+        "retryable": false,
+        "retry_action": "reconcile",
+        "local_only": false
+      },
+      {
+        "code": "ROLE_FORBIDDEN",
+        "http_status": 403,
+        "message_key": "error.role_forbidden",
+        "retryable": false,
+        "retry_action": "explicit-authorize",
+        "local_only": false
+      },
+      {
+        "code": "ROSTER_CHANGED",
+        "http_status": 409,
+        "message_key": "error.roster_changed",
+        "retryable": false,
+        "retry_action": "reconcile",
+        "local_only": false
+      },
+      {
+        "code": "SESSION_DEVICE_PROOF_REQUIRED",
+        "http_status": 401,
+        "message_key": "error.session_device_proof_required",
+        "retryable": false,
+        "retry_action": "authenticate",
+        "local_only": false
+      },
+      {
+        "code": "SESSION_EXPIRED",
+        "http_status": 401,
+        "message_key": "error.session_expired",
+        "retryable": false,
+        "retry_action": "authenticate",
+        "local_only": false
+      },
+      {
+        "code": "SNAPSHOT_EXPIRED",
+        "http_status": 410,
+        "message_key": "error.snapshot_expired",
+        "retryable": false,
+        "retry_action": "restart-explicit",
+        "local_only": false
+      },
+      {
+        "code": "STALE_MEMBERSHIP",
+        "http_status": 409,
+        "message_key": "error.stale_membership",
+        "retryable": false,
+        "retry_action": "reconcile",
+        "local_only": false
+      },
+      {
+        "code": "STALE_REVISION",
+        "http_status": 409,
+        "message_key": "error.stale_revision",
+        "retryable": false,
+        "retry_action": "reconcile",
+        "local_only": false
+      },
+      {
+        "code": "STORAGE_UNAVAILABLE",
+        "http_status": 507,
+        "message_key": "error.storage_unavailable",
+        "retryable": false,
+        "retry_action": "free-space-explicit",
+        "local_only": false
+      },
+      {
+        "code": "SYNC_CURSOR_EXPIRED",
+        "http_status": 410,
+        "message_key": "error.sync_cursor_expired",
+        "retryable": false,
+        "retry_action": "restart-explicit",
+        "local_only": false
+      },
+      {
+        "code": "TEMPORARY_UNAVAILABLE",
+        "http_status": 503,
+        "message_key": "error.temporary_unavailable",
+        "retryable": true,
+        "retry_action": "bounded-backoff",
+        "local_only": false
+      },
+      {
+        "code": "TRANSITION_EXPIRED",
+        "http_status": 410,
+        "message_key": "error.transition_expired",
+        "retryable": false,
+        "retry_action": "restart-explicit",
+        "local_only": false
+      },
+      {
+        "code": "UNANCHORED_HISTORY",
+        "http_status": 409,
+        "message_key": "error.unanchored_history",
+        "retryable": false,
+        "retry_action": "reconcile",
+        "local_only": false
+      },
+      {
+        "code": "UNSUPPORTED_SCHEMA",
+        "http_status": 400,
+        "message_key": "error.unsupported_schema",
+        "retryable": false,
+        "retry_action": "never",
+        "local_only": false
+      },
+      {
+        "code": "UPLOAD_EXPIRED",
+        "http_status": 410,
+        "message_key": "error.upload_expired",
+        "retryable": false,
+        "retry_action": "restart-explicit",
+        "local_only": false
+      }
+    ]
+  },
+  "operations": [
+    {
+      "method": "POST",
+      "path": "/api/v1/accounts/register",
+      "summary": "Consume invite and attach public identity",
+      "authorization": "Invite, verified auth enrollment, root-signed identity proof",
+      "operation_id": "post_accounts_register",
+      "phase": "P08",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/accounts/{id}/identity",
+      "summary": "Public identity for an authorized invitation/member workflow; not an unrestricted directory",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "get_accounts_id_identity",
+      "phase": "P08",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/accounts/{id}/roster",
+      "summary": "Signed roster chain for authorized related accounts",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "get_accounts_id_roster",
+      "phase": "P08",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/account-invitations",
+      "summary": "Create invite",
+      "authorization": "Service admin, recent auth",
+      "operation_id": "post_admin_account_invitations",
+      "phase": "P04",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/accounts/{id}/disable",
+      "summary": "Disable service access",
+      "authorization": "Service admin; no cryptographic ownership gain",
+      "operation_id": "post_admin_accounts_id_disable",
+      "phase": "P04",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/storage",
+      "summary": "storage",
+      "authorization": "See original chapter 08; no implicit public data access",
+      "operation_id": "get_admin_storage",
+      "phase": "P04",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/csrf",
+      "summary": "csrf",
+      "authorization": "See original chapter 08; no implicit public data access",
+      "operation_id": "get_auth_csrf",
+      "phase": "P06",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/device-challenge",
+      "summary": "device-challenge",
+      "authorization": "See original chapter 08; no implicit public data access",
+      "operation_id": "post_auth_device_challenge",
+      "phase": "P06",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/device-proof",
+      "summary": "device-proof",
+      "authorization": "See original chapter 08; no implicit public data access",
+      "operation_id": "post_auth_device_proof",
+      "phase": "P06",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "summary": "Revoke current session",
+      "authorization": "Session + CSRF for cookie clients",
+      "operation_id": "post_auth_logout",
+      "phase": "P06",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/native/approve",
+      "summary": "Confirm browser consent and issue single-use code",
+      "authorization": "Authenticated browser session, CSRF, validated authorization request",
+      "operation_id": "post_auth_native_approve",
+      "phase": "P06",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/native/authorize",
+      "summary": "Start native browser authorization",
+      "authorization": "Registered client, fixed issuer, redirect policy, state/PKCE",
+      "operation_id": "get_auth_native_authorize",
+      "phase": "P06",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/native/token",
+      "summary": "Redeem code/rotate refresh",
+      "authorization": "Single-use code or valid rotation credential",
+      "operation_id": "post_auth_native_token",
+      "phase": "P06",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/passkeys/options",
+      "summary": "Start registration or assertion",
+      "authorization": "Invitation/active session for registration; bounded public sign-in challenge",
+      "operation_id": "post_auth_passkeys_options",
+      "phase": "P06",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/passkeys/verify",
+      "summary": "Verify one-time ceremony",
+      "authorization": "Strict WebAuthn verifier, origin/RP/challenge checks",
+      "operation_id": "post_auth_passkeys_verify",
+      "phase": "P06",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/recovery-code",
+      "summary": "Restore authentication session",
+      "authorization": "One-time code, strong rate limits; not content unlock",
+      "operation_id": "post_auth_recovery_code",
+      "phase": "P06",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/capabilities",
+      "summary": "API/protocol ranges, numeric limits, service identity, feature availability",
+      "authorization": "Minimal public data; no secret config",
+      "operation_id": "get_capabilities",
+      "phase": "P03",
+      "implemented": true,
+      "response": "capabilities"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/files/{version}/chunks/{index}",
+      "summary": "Authorized ciphertext part delivery",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "get_files_version_chunks_index",
+      "phase": "P12",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/files/{version}/manifest",
+      "summary": "Authorized signed encrypted manifest",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "get_files_version_manifest",
+      "phase": "P12",
+      "implemented": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/files/{version}/unattached",
+      "summary": "Current uploader/writer or owner explicitly removes an unreferenced committed version; reference/retention checks required",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "delete_files_version_unattached",
+      "phase": "P12",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/group-invitations/{id}/accept",
+      "summary": "Trusted target account signs acceptance; no access activated yet",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_group_invitations_id_accept",
+      "phase": "P10",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/group-invitations/{id}/decline",
+      "summary": "Trusted target declines pending admission",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_group_invitations_id_decline",
+      "phase": "P10",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/groups",
+      "summary": "Only groups accessible to the active account/device",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "get_groups",
+      "phase": "P10",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups",
+      "summary": "Signed private/shared genesis, encrypted metadata, initial envelopes",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_groups",
+      "phase": "P10",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/epoch-transitions",
+      "summary": "Owner/editor optional rekey or member-executed mandatory roster-only rekey; exact expected state",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_groups_id_epoch_transitions",
+      "phase": "P10",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/groups/{id}/files",
+      "summary": "Paginated attachment/file-version metadata",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "get_groups_id_files",
+      "phase": "P12",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/invitations",
+      "summary": "Owner-signed pending admission intent targeting exact account root",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_groups_id_invitations",
+      "phase": "P10",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/key-distributions",
+      "summary": "Same-account device grants or authorized full-history invitation grants",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_groups_id_key_distributions",
+      "phase": "P10",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/groups/{id}/key-envelopes",
+      "summary": "Trusted current member: own device or own account recovery-recipient envelopes, scoped by epoch",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "get_groups_id_key_envelopes",
+      "phase": "P10",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/ownership-transfer",
+      "summary": "Both identities' consent, recent auth",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_groups_id_ownership_transfer",
+      "phase": "P10",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/groups/{id}/policy",
+      "summary": "Signed genesis and policy chain, paginated",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "get_groups_id_policy",
+      "phase": "P10",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/policy-events",
+      "summary": "Owner-signed membership/settings/archive changes",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_groups_id_policy_events",
+      "phase": "P10",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/purge",
+      "summary": "Owner-signed permanent deletion; retention and operational backup limits disclosed",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_groups_id_purge",
+      "phase": "P10",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/snapshots",
+      "summary": "snapshots",
+      "authorization": "See original chapter 08; no implicit public data access",
+      "operation_id": "post_groups_id_snapshots",
+      "phase": "P11",
+      "implemented": false,
+      "request": "snapshot-request"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/groups/{id}/threads",
+      "summary": "Paginated encrypted metadata/references",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "get_groups_id_threads",
+      "phase": "P09",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/threads",
+      "summary": "Signed creation with encrypted title",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_groups_id_threads",
+      "phase": "P09",
+      "implemented": false,
+      "request": "p02-v1/envelope"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/transitions",
+      "summary": "Create bounded staging descriptor for membership/epoch/checkpoint operation",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_groups_id_transitions",
+      "phase": "P10",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/transitions/{tid}/commit",
+      "summary": "Atomically bind page commitment, signatures, expected heads and recipient set",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_groups_id_transitions_tid_commit",
+      "phase": "P10",
+      "implemented": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/groups/{id}/transitions/{tid}/pages/{index}",
+      "summary": "Idempotent bounded immutable ciphertext/envelope/inventory page",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "put_groups_id_transitions_tid_pages_index",
+      "phase": "P10",
+      "implemented": false,
+      "request": "p02-group-c2/grant-page"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/groups/{id}/trash",
+      "summary": "Authorized deleted-object metadata/ciphertext",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "get_groups_id_trash",
+      "phase": "P09",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/uploads",
+      "summary": "Reserve bytes, bind upload to device/group/new file version",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_groups_id_uploads",
+      "phase": "P12",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/health/live",
+      "summary": "live",
+      "authorization": "See original chapter 08; no implicit public data access",
+      "operation_id": "get_health_live",
+      "phase": "P03",
+      "implemented": true,
+      "response": "liveness"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "summary": "Minimal account/security state",
+      "authorization": "Authenticated account",
+      "operation_id": "get_me",
+      "phase": "P06",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/devices",
+      "summary": "Current account device view and certificates",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "get_me_devices",
+      "phase": "P08",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/me/devices/{id}/revoke",
+      "summary": "Signed roster event plus immediate session revocation",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_me_devices_id_revoke",
+      "phase": "P08",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/me/enrollments",
+      "summary": "New pending device request",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_me_enrollments",
+      "phase": "P08",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/me/enrollments/{id}/approve",
+      "summary": "Submit signed provisional certificate after OOB verification; no active roster publication yet",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_me_enrollments_id_approve",
+      "phase": "P08",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/me/enrollments/{id}/confirm",
+      "summary": "New device proves possession and completes single-use flow",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_me_enrollments_id_confirm",
+      "phase": "P08",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/enrollments/{id}/relay",
+      "summary": "Bounded opaque pairing messages, transcript commitments",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "get_me_enrollments_id_relay",
+      "phase": "P08",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/me/enrollments/{id}/relay",
+      "summary": "Bounded opaque pairing messages, transcript commitments",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_me_enrollments_id_relay",
+      "phase": "P08",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/me/notification-subscriptions",
+      "summary": "notification-subscriptions",
+      "authorization": "See original chapter 08; no implicit public data access",
+      "operation_id": "post_me_notification_subscriptions",
+      "phase": "P13",
+      "implemented": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/me/notification-subscriptions/{id}",
+      "summary": "{id}",
+      "authorization": "See original chapter 08; no implicit public data access",
+      "operation_id": "delete_me_notification_subscriptions_id",
+      "phase": "P13",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/passkeys",
+      "summary": "Manage authentication credentials",
+      "authorization": "Same account, recent auth; prevent accidental last-method lockout",
+      "operation_id": "get_me_passkeys",
+      "phase": "P06",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/me/passkeys",
+      "summary": "Manage authentication credentials",
+      "authorization": "Same account, recent auth; prevent accidental last-method lockout",
+      "operation_id": "post_me_passkeys",
+      "phase": "P06",
+      "implemented": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/me/passkeys/{id}",
+      "summary": "Manage authentication credentials",
+      "authorization": "Same account, recent auth; prevent accidental last-method lockout",
+      "operation_id": "delete_me_passkeys_id",
+      "phase": "P06",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/me/recovery-challenge",
+      "summary": "Restricted authenticated session obtains current generation/head and single-use nonce",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_me_recovery_challenge",
+      "phase": "P08",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/me/recovery-reset",
+      "summary": "Root-signed CAS reset and new-device proof; atomically upgrade current session and revoke others",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_me_recovery_reset",
+      "phase": "P08",
+      "implemented": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/me/sessions",
+      "summary": "List or revoke sessions",
+      "authorization": "Same account; recent auth for revoke-all",
+      "operation_id": "delete_me_sessions",
+      "phase": "P06",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/sessions",
+      "summary": "List or revoke sessions",
+      "authorization": "Same account; recent auth for revoke-all",
+      "operation_id": "get_me_sessions",
+      "phase": "P06",
+      "implemented": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/me/sessions/{id}",
+      "summary": "List or revoke sessions",
+      "authorization": "Same account; recent auth for revoke-all",
+      "operation_id": "delete_me_sessions_id",
+      "phase": "P06",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/storage",
+      "summary": "storage",
+      "authorization": "See original chapter 08; no implicit public data access",
+      "operation_id": "get_me_storage",
+      "phase": "P13",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/unattached-files",
+      "summary": "Recoverable committed versions uploaded by this account, still in currently accessible groups, awaiting entry publication",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "get_me_unattached_files",
+      "phase": "P12",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/mutations/{operation_id}",
+      "summary": "{operation_id}",
+      "authorization": "See original chapter 08; no implicit public data access",
+      "operation_id": "get_mutations_operation_id",
+      "phase": "P11",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/objects/{id}/restore",
+      "summary": "Signed restore as new state/revision",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_objects_id_restore",
+      "phase": "P09",
+      "implemented": false,
+      "request": "p02-v1/envelope"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/objects/{id}/revisions",
+      "summary": "Authorized retained immutable versions",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "get_objects_id_revisions",
+      "phase": "P09",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/objects/{id}/revisions",
+      "summary": "Compare-and-swap or explicit conflict branch",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_objects_id_revisions",
+      "phase": "P09",
+      "implemented": false,
+      "request": "p02-v1/envelope"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/objects/{id}/tombstone",
+      "summary": "Signed soft delete",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_objects_id_tombstone",
+      "phase": "P09",
+      "implemented": false,
+      "request": "p02-v1/envelope"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/snapshots",
+      "summary": "snapshots",
+      "authorization": "See original chapter 08; no implicit public data access",
+      "operation_id": "post_snapshots",
+      "phase": "P11",
+      "implemented": false,
+      "request": "snapshot-request"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/snapshots/{id}",
+      "summary": "{id}",
+      "authorization": "See original chapter 08; no implicit public data access",
+      "operation_id": "delete_snapshots_id",
+      "phase": "P11",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/snapshots/{id}/pages",
+      "summary": "pages",
+      "authorization": "See original chapter 08; no implicit public data access",
+      "operation_id": "get_snapshots_id_pages",
+      "phase": "P11",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/snapshots/{id}/renew",
+      "summary": "renew",
+      "authorization": "See original chapter 08; no implicit public data access",
+      "operation_id": "post_snapshots_id_renew",
+      "phase": "P11",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/sync",
+      "summary": "sync",
+      "authorization": "See original chapter 08; no implicit public data access",
+      "operation_id": "get_sync",
+      "phase": "P11",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/sync/ack",
+      "summary": "ack",
+      "authorization": "See original chapter 08; no implicit public data access",
+      "operation_id": "post_sync_ack",
+      "phase": "P11",
+      "implemented": false,
+      "request": "sync-ack"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/threads/{id}/entries",
+      "summary": "Paginated encrypted entry heads",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "get_threads_id_entries",
+      "phase": "P09",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/threads/{id}/entries",
+      "summary": "Signed initial revision",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_threads_id_entries",
+      "phase": "P09",
+      "implemented": false,
+      "request": "p02-v1/envelope"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/uploads/{id}",
+      "summary": "Cancel/release reservation idempotently",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "delete_uploads_id",
+      "phase": "P12",
+      "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/uploads/{id}",
+      "summary": "Missing part list, acknowledged digests, expiry, reservation",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "get_uploads_id",
+      "phase": "P12",
+      "implemented": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/uploads/{id}/commit",
+      "summary": "Signed encrypted manifest and exact part inventory -> committed unattached version",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "post_uploads_id_commit",
+      "phase": "P12",
+      "implemented": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/uploads/{id}/parts/{index}",
+      "summary": "Bounded binary ciphertext body, expected length/digest",
+      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "operation_id": "put_uploads_id_parts_index",
+      "phase": "P12",
+      "implemented": false
+    }
+  ]
+}

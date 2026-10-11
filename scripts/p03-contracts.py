@@ -1,0 +1,120 @@
+#!/usr/bin/env python3
+"""Deterministic P03 generator. Default is read-only; --write is development only."""
+import argparse
+import hashlib
+import json
+import re
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+COMPONENTS = ['p02-file-c1', 'p02-identity-c1', 'p02-state-c1', 'p02-group-c2', 'p02-v1', 'p03-api']
+
+def pascal(value):
+    return ''.join(part[:1].upper() + part[1:] for part in re.split('[^A-Za-z0-9]+', value))
+
+def outputs():
+    lock_path=ROOT/'packages/api-client/package-lock.json'
+    lock=json.loads(lock_path.read_text())
+    inventory=json.loads((ROOT/'packages/api-client/dependency-inventory.json').read_text())
+    records=[{'name':n.removeprefix('node_modules/'),'version':v['version'],'resolved':v.get('resolved'),'integrity':v.get('integrity'),'license':v.get('license'),'development_only':v.get('dev',False)} for n,v in lock['packages'].items() if n]
+    assert inventory['lock_sha256']==hashlib.sha256(lock_path.read_bytes()).hexdigest() and inventory['packages']==records, 'Dependency inventory drift'
+    ts_package=lock['packages']['node_modules/typescript']
+    assert ts_package['integrity']==inventory['typescript_primary_metadata']['dist.integrity'], 'Pinned compiler primary artifact differs'
+    documents = {name: json.loads((ROOT / f'packages/contracts/{name}.schema.json').read_text()) for name in COMPONENTS}
+    ids = {doc['$id']: name for name, doc in documents.items()}
+    definitions = {(name, key): value for name, doc in documents.items() for key, value in doc['$defs'].items()}
+    def ref(value, current):
+        uri, fragment = value.split('#', 1)
+        assert fragment.startswith('/$defs/'), value
+        return ids[uri] if uri else current, fragment[len('/$defs/'):]
+    def typename(key):return pascal(key[0]) + pascal(key[1])
+    def ts(value, current):
+        if '$ref' in value:return typename(ref(value['$ref'], current))
+        if 'const' in value:return json.dumps(value['const'])
+        if 'enum' in value:return ' | '.join(json.dumps(v) for v in value['enum'])
+        for union in ('oneOf', 'anyOf'):
+            if union in value:return ' | '.join('('+ts(v,current)+')' for v in value[union])
+        kind=value.get('type')
+        if isinstance(kind,list):return ' | '.join(ts({'type':t},current) for t in kind)
+        if kind=='object':
+            assert value.get('additionalProperties') is False
+            required=value.get('required',[])
+            return '{ '+ '; '.join('readonly '+json.dumps(k)+('' if k in required else '?')+': '+ts(v,current) for k,v in value.get('properties',{}).items())+' }'
+        if kind=='array':return 'ReadonlyArray<'+ts(value['items'],current)+'>'
+        if kind in ('integer','number'):return 'number'
+        if kind in ('string','boolean','null'):return kind
+        raise ValueError('Unsupported schema structure: '+str(value))
+    def php_type(value,current):
+        if '$ref' in value:
+            n,k=ref(value['$ref'],current);return php_type(definitions[(n,k)],n)
+        if 'const' in value:
+            v=value['const'];return 'bool' if isinstance(v,bool) else 'int' if isinstance(v,int) else 'string'
+        if 'enum' in value:return 'string' if all(isinstance(v,str) for v in value['enum']) else 'int'
+        for union in ('oneOf','anyOf'):
+            if union in value:return '|'.join(sorted(set(php_type(v,current) for v in value[union])))
+        kind=value.get('type')
+        if isinstance(kind,list):return '|'.join(php_type({'type':k},current) for k in kind)
+        return {'string':'string','integer':'int','number':'float|int','boolean':'bool','null':'null','array':'array','object':'array'}[kind]
+    # Runtime schema references keep original IDs; OpenAPI embeds resolvable references.
+    def openapi_schema(value,current):
+        if isinstance(value,list):return [openapi_schema(v,current) for v in value]
+        if not isinstance(value,dict):return value
+        return {k:('#/components/schemas/'+typename(ref(v,current)) if k=='$ref' else openapi_schema(v,current)) for k,v in value.items()}
+    schema_components={typename(k):openapi_schema(v,k[0]) for k,v in definitions.items()}
+    errors=json.loads((ROOT/'packages/contracts/p02-errors.json').read_text())
+    operations=json.loads((ROOT/'packages/contracts/p03-operations.json').read_text())['operations']
+    paths={}
+    for op in operations:
+        params=[{'name':n,'in':'path','required':True,'schema':(openapi_schema(documents['p02-file-c1']['$defs']['part']['properties']['index'],'p02-file-c1') if n == 'index' and ('/parts/' in op['path'] or '/chunks/' in op['path']) else {'$ref':'#/components/schemas/P02FileC1Counter'} if n == 'index' else {'$ref':'#/components/schemas/P02FileC1Id'})} for n in re.findall(r'\{([^}]+)\}',op['path'])]
+        method={'operationId':op['operation_id'],'summary':op['summary'],'x-implementation-phase':op['phase'],'x-implemented':op['implemented'],'description':op['authorization'],'parameters':params,'security':[] if op['implemented'] else [{'CookieSession':[]},{'NativeBearer':[]}], 'responses':{'default':{'description':'Fixed typed error; unavailable resources are concealed as NOT_FOUND','content':{'application/json':{'schema':{'$ref':'#/components/schemas/P02V1ErrorResponse'}}}}}}
+        if 'response' in op:method['responses']['200']={'description':'P03 foundation response; product features are explicitly unavailable','content':{'application/json':{'schema':{'$ref':'#/components/schemas/'+typename(('p03-api',op['response']))}}}}
+        if 'request' in op:
+            key=op['request'].split('/') if '/' in op['request'] else ['p03-api',op['request']]
+            method['requestBody']={'required':True,'content':{'application/json':{'schema':{'$ref':'#/components/schemas/'+typename(key)}}}}
+        elif op['method'] in ('POST','PUT'):
+            method['x-request-dto-state']='Transport wrapper is finalized by '+op['phase']+' before endpoint implementation; no generic body is accepted'
+        if '/parts/' in op['path'] and op['method']=='PUT':
+            method['requestBody']={'required':True,'content':{'application/octet-stream':{'schema':{'type':'string','format':'binary','x-maximum-observed-bytes':8388624}}}}
+            method.pop('x-request-dto-state',None)
+        paths.setdefault(op['path'],{})[op['method'].lower()]=method
+    spec={'openapi':'3.1.0','jsonSchemaDialect':'https://json-schema.org/draft/2020-12/schema','info':{'title':'AnyNote initial API contract','version':'1.0.0','description':'P03 foundation. Product paths are declarations with explicit future phase ownership, not executable dummy auth/crypto. Semantic authorization and byte predicates remain authoritative P02 requirements.'},'servers':[{'url':'/'}],'paths':paths,'components':{'schemas':schema_components,'securitySchemes':{'CookieSession':{'type':'apiKey','in':'cookie','name':'anynote_session','description':'Future P06 host-only session + synchronizer CSRF + active device proof'},'NativeBearer':{'type':'http','scheme':'bearer','description':'Future P06 fixed-issuer native session'}}},'x-protocol-components':COMPONENTS[:-1],'x-errors':errors['errors']}
+    tsout='// Generated by scripts/p03-contracts.py; do not edit. Runtime validation remains mandatory.\n'
+    tsout+='\n'.join('export type '+typename(k)+' = '+ts(v,k[0])+';' for k,v in definitions.items())+'\n'
+    tsout+='export interface Operations {\n'
+    for op in operations:
+        request=typename(op['request'].split('/') if '/' in op['request'] else ['p03-api',op['request']]) if 'request' in op else 'never'
+        response=typename(('p03-api',op['response'])) if 'response' in op else 'never'
+        tsout+=json.dumps(op['operation_id'])+': { readonly phase: '+json.dumps(op['phase'])+'; readonly implemented: '+json.dumps(op['implemented'])+'; readonly request: '+request+'; readonly response: '+response+' };\n'
+    tsout+='}\n'
+    php='<?php\n\n// Generated by scripts/p03-contracts.py. Shapes are transport types, not authorization.\nnamespace App\\Generated;\n\n'
+    for key,value in definitions.items():
+        if value.get('type')!='object':continue
+        props=value.get('properties',{});required=value.get('required',[])
+        ordered=sorted(props,key=lambda p:p not in required)
+        php+='final readonly class '+typename(key)+' implements \\JsonSerializable\n{\n    public function __construct(\n'
+        for p in ordered:
+            t=php_type(props[p],key[0]);optional=p not in required
+            if optional and 'null' not in t.split('|'):t+='|null'
+            php+='        public '+t+' $'+p+(' = null' if optional else '')+',\n'
+        php+='    ) {}\n\n    public function jsonSerialize(): array\n    {\n        $values = get_object_vars($this);\n'
+        for p in ordered:
+            if p not in required:php+='        if ($values['+repr(p)+'] === null) { unset($values['+repr(p)+']); }\n'
+        php+='        return $values;\n    }\n}\n\n'
+    # JSON is a versioned generated data asset; PHP loads bounded trusted source, not network DTOs.
+    catalogue={'components':COMPONENTS[:-1],'errors':errors,'operations':operations}
+    def dumped(v):return json.dumps(v,indent=2,ensure_ascii=False)+'\n'
+    products={'packages/contracts/generated/openapi.json':dumped(spec),'packages/contracts/generated/protocol.d.ts':tsout,'packages/contracts/generated/runtime-schemas.json':dumped(list(documents.values())),'apps/api/app/Generated/Dtos.php':php,'apps/api/app/Generated/catalogue.json':dumped(catalogue)}
+    inputs=['scripts/p03-contracts.py','packages/api-client/package.json','packages/api-client/client.mjs','packages/api-client/package-lock.json','packages/api-client/dependency-inventory.json','packages/contracts/p03-operations.json','packages/contracts/p02-errors.json','packages/contracts/p02-v1.registry.json', 'docs/P02_COMPLETE_CONTRACT.md', 'packages/protocol/src/protocol-codec.mjs', 'packages/protocol/src/codec.mjs', 'packages/protocol/src/identity-codec.mjs', 'packages/protocol/src/state-codec.mjs', 'packages/protocol/src/group-codec.mjs', 'packages/protocol/src/strict-json.mjs']+[f'packages/contracts/{c}.schema.json' for c in COMPONENTS]
+    manifest={'version':1,'scope':'P03_GENERATION_NOT_PRODUCT_AUTHORIZATION','inputs':[{'path':p,'sha256':hashlib.sha256((ROOT/p).read_bytes()).hexdigest()} for p in inputs],'outputs':[{'path':p,'sha256':hashlib.sha256(v.encode()).hexdigest()} for p,v in products.items()],'structures':len(definitions),'operations':len(operations)}
+    products['packages/contracts/generated/manifest.json']=dumped(manifest)
+    return products,manifest
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--write',action='store_true');args=parser.parse_args()
+    products,manifest=outputs()
+    for path,content in products.items():
+        file=ROOT/path
+        if args.write:file.parent.mkdir(parents=True,exist_ok=True);file.write_text(content)
+        elif not file.is_file() or file.read_bytes()!=content.encode():raise RuntimeError('Generated contract drift: '+path)
+    print(json.dumps({'status':'PASS','structures':manifest['structures'],'operations':manifest['operations'],'mode':'write' if args.write else 'read-only'}))
+if __name__=='__main__':main()

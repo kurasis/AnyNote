@@ -96,6 +96,7 @@ def test():
     php('composer', 'validate', '--strict', '--no-check-publish')
     php('composer', 'check-platform-reqs')
     php('composer', 'audit', '--locked', '--no-interaction')
+    php('php', '-l', 'app/Generated/Dtos.php')
     php('composer', 'lint')
     php('composer', 'test')
     transaction = json.loads(php('php', 'artisan', 'foundation:check', capture=True))
@@ -140,7 +141,8 @@ def test():
                                        '--exclude-standard'], cwd=ROOT).decode().split('\0')
     prefixes = ('apps/api/', 'infra/dev/', 'scripts/dev-stack.py', 'scripts/api-inventory.py',
                 'scripts/install-p03-tools.py', 'scripts/check-secrets.py',
-                '.gitleaks.toml', '.github/workflows/foundation.yml')
+                '.gitleaks.toml', '.github/workflows/foundation.yml', 'packages/contracts/generated/',
+                'packages/contracts/p03-', 'packages/api-client/', 'scripts/p03-', 'scripts/check-p03-')
     source_inputs = {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
                      for p in sorted(set(visible)) if p.startswith(prefixes) and (ROOT / p).is_file()}
     versions = {

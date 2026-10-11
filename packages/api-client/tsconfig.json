@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "strict": true, "noEmit": true, "target": "ES2024", "module": "NodeNext",
+    "moduleResolution": "NodeNext", "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true, "skipLibCheck": false
+  },
+  "include": ["test/types.test.ts", "../contracts/generated/protocol.d.ts"]
+}

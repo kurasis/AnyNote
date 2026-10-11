@@ -36,7 +36,7 @@ services:
       DB_DATABASE: anynote_synthetic
       DB_USERNAME: anynote_dev
       DB_PASSWORD: ${ANYNOTE_DEV_DB_PASSWORD}
-      LOG_CHANNEL: "null"
+      ANYNOTE_APP_ORIGIN: http://app.anynote.test:${ANYNOTE_DEV_PORT:-18080}
       SESSION_DRIVER: array
       CACHE_STORE: array
       QUEUE_CONNECTION: sync

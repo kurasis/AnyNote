@@ -934,3 +934,47 @@ before freeze and were never executed by setup/CI. No actual platform/native
 custody, product SQL/import/large-archive/memory acceptance or independent audit
 is claimed. Qualified review is TRACKED_NOT_BOOKED / NOT_RUN, G2/G3 still open;
 this is completion of original P02 chapter 14 §5 design/fixture deliverables.
+
+## P03 completion — actual local foundation checks
+
+Source base e034859168c47bfacfcc6c33425522fc02d77724 with uncommitted implementation
+changes, explicitly source_tree_dirty=true; input hashes are in
+[evidence](evidence/p03-complete-local.json). This is not an exact clean hosted-head
+claim. The final PR records hosted job URLs, actual checkout/full tree and merge
+receipt after checks complete.
+
+- Read-only generator PASS: 79 initial operations, 157 schema-derived TS/PHP types;
+  all 157 strict Ajv schemas compile, generated local OpenAPI refs resolve.
+- Strict TypeScript PASS with five expected-error cases; Node client tests 5/5.
+  Nine changed input/output/client-predicate negatives fail in isolated temp copies;
+  repository source is never rewritten to exercise drift.
+- Actual native PHP 8.4.26 / PHPUnit 12.5.38: 11 tests / 215 assertions PASS, Pint and
+  generated PHP syntax PASS. Composer locked/platform/advisory checks PASS.
+- Owned Nginx/FPM/Laravel/MariaDB transaction/rollback/cleanup, DB stop/restart,
+  HTTP/origin/private-path/binding/unprivileged-user checks PASS. No product tables.
+- Actual HTTP client: 16 checks PASS, including exact five-component negotiation,
+  canonical service/request IDs, false features, hostile CORS/profile/header/body,
+  duplicate/UTF-8 JSON, ordinary and chunked 4 MiB overflow with canonical 413,
+  identical unavailable-resource errors, trusted FastCGI marker nonforgeability,
+  persisted safe-log poison inspection. Raw logs are never uploaded.
+- Full saved setup ran twice: exit 0 in 111.53s / 111.22s, 483 Git-visible files,
+  zero changed paths each run. Script hashes/results are in
+  [setup evidence](evidence/p03-complete-environment-setup.json); install_script and
+  start_skill were saved and read back exactly. Publication NOT_PERFORMED and new
+  task restoration NOT_RUN. Live processes require owned up/check after restoration.
+- Existing P02 checks PASS: 306 Node tests, 55 structures/160 frozen inputs,
+  9,648 PHP crypto and 3,856 PHP author-decision checks, 210 Python/age checks.
+  Original specification/P01/P02/schema/vector/lock bytes remain unchanged.
+- Git-visible source scan and all existing scanner negatives PASS; no exceptions
+  added. npm client audit 0 vulnerabilities at run time. New compiler lock/source/
+  integrity/license inventory retains 26 records including optional platforms.
+
+During development positive tests correctly rejected initial UUID/hex service/
+request IDs, GET test-helper array bodies and duplicate response headers; canonical
+P02 IDs and Nginx header handling corrected the implementation. Scanner initially
+flagged two public API-key-shaped hash-map keys; path/hash records preserve exact
+hashes without suppressions. Drift helper initially lacked temporary inputs/list
+mutation handling, fixed before claiming negative PASS. Generator syntax and
+finite/depth cases were corrected and required checks rerun. Initial failures are
+not passes. Local Chromium/hardware/production TLS/SQL authorization/general PHP
+crypto validation/independent qualified review are not certified by P03.

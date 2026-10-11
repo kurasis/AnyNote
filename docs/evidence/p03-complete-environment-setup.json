@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "scope": "COMPLETE_SAVED_INSTALL_EXECUTED_TWICE_SOURCE_BYTES_UNCHANGED",
+  "source_commit": "e034859168c47bfacfcc6c33425522fc02d77724",
+  "source_tree_dirty": true,
+  "runs": [
+    {
+      "run": 1,
+      "exit_code": 0,
+      "seconds": 111.53,
+      "git_visible_files": 483,
+      "changed_paths": []
+    },
+    {
+      "run": 2,
+      "exit_code": 0,
+      "seconds": 111.22,
+      "git_visible_files": 483,
+      "changed_paths": []
+    }
+  ],
+  "install_script_sha256": "bcca634ea830742956488128f87028fd79f537405cb71f9140a449643fd95157",
+  "start_skill_sha256": "0b0d85749ca04e51aab53b0a064b705b16378d915fe047e26aa00fa72b4665c0",
+  "publication": "NOT_PERFORMED",
+  "future_task_restoration": "NOT_RUN",
+  "fixture_and_contract_writers": false
+}
