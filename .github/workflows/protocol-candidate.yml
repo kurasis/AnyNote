@@ -17,6 +17,9 @@ jobs:
   file-contract:
     runs-on: ubuntu-24.04
     timeout-minutes: 8
+    env:
+      ANYNOTE_TOOLCHAINS: /tmp/anynote-p02-toolchains
+      NPM_CONFIG_CACHE: /tmp/anynote-p02-npm
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
@@ -29,14 +32,14 @@ jobs:
       - name: Install exact candidate dependencies without lifecycle scripts
         run: |
           source scripts/runtime-env.sh
-          npm --prefix packages/protocol ci --ignore-scripts --cache /workspace/.cache/npm --no-audit --no-fund
+          npm --prefix packages/protocol ci --ignore-scripts --cache "$NPM_CONFIG_CACHE" --no-audit --no-fund
       - name: Validate candidate parser, context, fixture and dependency drift
         run: |
           source scripts/runtime-env.sh
           npm --prefix packages/protocol test
           npm --prefix packages/protocol run fixtures:check
           npm --prefix packages/protocol run inventory:check
-          npm --prefix packages/protocol audit --cache /workspace/.cache/npm --audit-level=low
+          npm --prefix packages/protocol audit --cache "$NPM_CONFIG_CACHE" --audit-level=low
           python3 scripts/check-p02-fixtures.py
           python3 scripts/check_baseline.py
           git diff --exit-code

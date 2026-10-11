@@ -721,3 +721,9 @@ Readback confirms saved fields. Publication and future-task restoration NOT RUN;
 review/save/publish in environment settings remains product-owned. No new secret,
 network, live-data, owner Hello or phone-kit action is required for this slice.
 Hosted fresh-checkout/exact-head results are recorded on the PR before merge.
+
+Initial hosted candidate run 38121442916 failed before installing dependencies:
+the workflow used the cloud default /workspace toolchain path, unavailable to a
+hosted runner user. Corrected only that workflow to explicit owned /tmp toolchain
+and npm-cache paths as existing P01 jobs do. No permission, checksum, TLS, test
+or sandbox bypass. That failed run is not counted; final-head CI must pass.
