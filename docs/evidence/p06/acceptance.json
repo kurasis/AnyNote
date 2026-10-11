@@ -1,0 +1,109 @@
+{
+  "purpose": "P06 hosted software acceptance at an exactly identified clean Git tree",
+  "status": "PASS",
+  "branch_head": "d8198af2746a55e46239ee9b4ea1b27e20c5d654",
+  "actual_checkout": "8b12e0d20e409c9c1bf0f5dae1bb5cc622c14d19",
+  "source_tree": "363f1761bcd5c28775ecb7928623a6806a6df2c5",
+  "checks": [
+    {
+      "name": "auth-linux-http-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d8198af2746a55e46239ee9b4ea1b27e20c5d654",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38170283444/job/114561287036"
+    },
+    {
+      "name": "auth-windows-native",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d8198af2746a55e46239ee9b4ea1b27e20c5d654",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38170283444/job/114561286874"
+    },
+    {
+      "name": "windows-provider",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d8198af2746a55e46239ee9b4ea1b27e20c5d654",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38170283383/job/114561286675"
+    },
+    {
+      "name": "linux-native-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d8198af2746a55e46239ee9b4ea1b27e20c5d654",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38170283383/job/114561286668"
+    },
+    {
+      "name": "crypto-windows-native",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d8198af2746a55e46239ee9b4ea1b27e20c5d654",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38170283401/job/114561286580"
+    },
+    {
+      "name": "static-device-kit",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d8198af2746a55e46239ee9b4ea1b27e20c5d654",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38170283383/job/114561286546"
+    },
+    {
+      "name": "foundation",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d8198af2746a55e46239ee9b4ea1b27e20c5d654",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38170283406/job/114561286512"
+    },
+    {
+      "name": "baseline",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d8198af2746a55e46239ee9b4ea1b27e20c5d654",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38170283426/job/114561286484"
+    },
+    {
+      "name": "crypto-linux-browser-php",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d8198af2746a55e46239ee9b4ea1b27e20c5d654",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38170283401/job/114561286462"
+    },
+    {
+      "name": "file-contract",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d8198af2746a55e46239ee9b4ea1b27e20c5d654",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38170283350/job/114561286197"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/evidence/p06/http-report.json",
+      "sha256": "fbdaff15aab79cf2f4366ffe4f3a4cda2527c2e4aef0ba2eeac6144d3de0cdc8"
+    },
+    {
+      "path": "docs/evidence/p06/browser-report.json",
+      "sha256": "f843bce1326c9e090872468858094f9e5038f0e28564f2c59cb6246924034d60"
+    },
+    {
+      "path": "docs/evidence/p06/linux-source-report.json",
+      "sha256": "786dccd292893eea658c052b05b4482d9ff22554f0f8b46b4db35da889d6b863"
+    },
+    {
+      "path": "docs/evidence/p06/windows-source-report.json",
+      "sha256": "486f6ffed7634251456a2d834e5c64b8a559567fc46dc00fa7f6e0242a315ae6"
+    }
+  ],
+  "source_inputs": {
+    "linux": 131,
+    "windows": 131,
+    "linux_raw_hashes_match": true,
+    "windows_checkout": "130 text inputs are CRLF; the exact native lock stays LF via -text. Raw hashes are preserved in the receipt, not normalized by inventory."
+  },
+  "http_checks": 215,
+  "browser_checks": 18,
+  "native_tests_per_platform": 4,
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "deployment": "NOT_PERFORMED"
+}

@@ -12,7 +12,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P03 | VERIFIED | 79 initial OpenAPI operations / 157 schema-derived types; strict errors/request IDs/content-free logs; frozen setup, drift negatives and actual owned HTTP/SQL integration verified; product operations remain phase-owned |
 | P04 | VERIFIED | 21 tests/322 assertions, 578 actual SQL checks, eight-process concurrency/fault recovery and supervised restart; Rust/Node/sandboxed Chromium/PHP public-signature corpus PASS |
 | P05 | VERIFIED | Full native/browser core; 146 frozen frames, general RFC8785, fresh two-way Worker/Rust bytes and PHP public signatures; all eight hosted jobs PASS, actual native/Worker 1 GB measurements retained; physical memory and independent review remain open |
-| P06 | IMPLEMENTED / UNVERIFIED | Full auth/session/UI/native implementation; local actual HTTPS/SQL and Rust gates pass; mandatory hosted browser/Windows and final CI pending |
+| P06 | VERIFIED | 215 actual HTTPS/SQL attack checks, 18 sandboxed strict-CSP browser checks, four native tests on Linux/Windows; all ten hosted gates PASS; exact-source evidence retained |
 | P07 | NOT STARTED | P05/P06 |
 | P08 | NOT STARTED | P05–P07 |
 | P09 | NOT STARTED | P04/P07/P08 |
@@ -489,19 +489,32 @@ Final tracking changes require fresh CI before ordinary automatic merge.
 Rollback: ordinary source revert; no production data or format migration.
 Next full batch: P06 account authentication and session lifecycle.
 
-## P06 implementation awaiting hosted acceptance
+## Completed phase: P06 account authentication and session lifecycle
 
-Maintained WebAuthn and League OAuth2, strict PWA cookie/CSRF, atomic invite/root/
-first-device registration, restricted/trusted sessions, recovery, account security
-UI and maintained Rust native PKCE/loopback/rotation adapter are implemented.
-Local actual HTTPS/SQL: 215 checks, eight-request registration/refresh races and
-actual Rust-to-PHP OAuth transport PASS. Rust: four tests, fmt/clippy PASS. P04:
-21 tests/322 assertions and actual SQL concurrency PASS. Local Chromium remains
-BLOCKED; hosted sandboxed UI/WebAuthn and Windows/MSVC gates are mandatory.
-See P06_AUTHENTICATION.md. G2/G3/physical P01 remain open. No production migration,
-deployment, release, new owner trial or reviewer contact occurred.
+Maintained WebAuthn/League OAuth2 and Rust oauth2 now implement invitation-bound
+atomic public-root/first-device registration, multiple passkeys, strict encrypted
+PWA sessions/CSRF, native system-browser/PKCE handoff, recovery codes, recent auth,
+current-device proof, logout/session management and refresh rotation/reuse.
+The browser account-security UI exports the frozen checksummed offline kit with
+explicit address/instructions and supports distinct passkey providers.
 
-The previously saved P05 setup was published by the owner and restored into
-this fresh task: pinned runtimes, dependencies and owned service readiness PASS.
-This establishes the prior draft publication/restore separately from any P06
-configuration draft still to be saved. Next phase after acceptance: full P07.
+All ten source jobs PASS at d8198af. Actual hosted checkout 8b12e0d has the same
+complete clean Git tree 363f1761. Actual HTTPS/SQL: 215 checks; sandboxed Chromium
+with verified TLS/strict CSP: 18 checks; native callback/attack/PKCE: four tests
+on each of Linux and Windows/MSVC. Registration, code redemption, refresh and
+counter races each have exactly one winner among eight; the 64-request admission
+bound permits 60/four denials. Public artifacts, tree and 131 input hashes per
+platform are archived in TEST_EVIDENCE.md. Source tracking/evidence changes require
+fresh final CI before ordinary automatic merge; no failed gate is bypassed.
+
+Read-only setup repeated on this restored instance preserved all 625 then-visible
+files. Complete install/start fields were saved/read back as draft revision 14;
+network, credential requirements and repositories are unchanged. The earlier P05
+snapshot was published/restored; P06 draft publication and new-task restoration
+remain separately NOT_RUN. No owner-device action is needed for software P06.
+
+P07 owns encrypted local custody/locking; P08 owns general pairing/root reset and
+private-group genesis. Physical P01 and qualified G2/G3 remain open/unassigned/
+unbooked/NOT_RUN. No production migration/deployment, release or reviewer outreach
+occurred. Rollback: ordinary source revert; any deployed schema rollback requires
+an explicit data-preserving operator plan. Next full batch: complete P07.

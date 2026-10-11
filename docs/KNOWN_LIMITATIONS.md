@@ -300,8 +300,8 @@ remains separate from its future publication/restore.
 ## P06 boundary
 
 P06_AUTHENTICATION.md supersedes the earlier future-authentication placeholders.
-Full authentication/session implementation and local HTTPS/SQL/native checks are
-present; hosted browser/Windows acceptance is pending until recorded. Persistent
+Full authentication/session implementation and actual hosted HTTPS/SQL/browser/
+Windows software acceptance are verified; see docs/evidence/p06/acceptance.json. Persistent
 local token/device-key custody, local-vault locking and multi-window fencing are
 P07. Root reset, authenticated pairing and general roster transitions are P08;
 private preference-group genesis must precede preference writes in P08/P09.
@@ -312,3 +312,10 @@ Real owner Hello/TPM/browser/iPhone and full P01 memory/network acceptance remai
 separate from software/synthetic fixtures; G2/G3 review is unassigned/unbooked/
 NOT_RUN. Production certificate/origin configuration and deployment/release
 acceptance remain P16/P17. No owner action is required for independent P06 CI.
+
+P06 setup draft revision 14 has been saved and read back, and its complete tested
+install/start instructions preserve repository bytes. It is ready for environment
+settings Review/Save -> Publish. Saving does not publish the P06 snapshot or prove
+restoration in another task. The older P05 publication/restore is separately
+observed. Local cloud Chromium sandbox remains BLOCKED; mandatory hosted browser
+acceptance passed with the sandbox enabled and real certificate trust.

@@ -1282,3 +1282,45 @@ one access/refresh row), and eight assertions with the same nonzero counter
 (one grant). Current-row locking avoids old REPEATABLE READ snapshots for OAuth
 revocation, account status, admission caps and all-session revocation. The
 maintained verifier's existing current credential counter read remains intact.
+
+## P06 completed hosted software acceptance
+
+[Authentication run 38170283444](https://github.com/kurasis/AnyNote/actions/runs/38170283444)
+passes both actual Linux/TLS/SQL/browser and Windows/MSVC jobs. All ten source jobs
+at branch head `d8198af2746a55e46239ee9b4ea1b27e20c5d654` completed successfully.
+Actual checkout `8b12e0d20e409c9c1bf0f5dae1bb5cc622c14d19` and the branch head have
+identical complete clean Git trees: `363f1761bcd5c28775ecb7928623a6806a6df2c5`.
+
+- HTTP/SQL: **215** actual checks, real Rust oauth2 -> verified HTTPS -> PHP
+  League, real loopback TCP, PKCE/issuer/state and refresh/reuse.
+- Four eight-request races (registration, code, refresh, same nonzero assertion
+  counter) each produce one winner and seven denials. Code redemption creates
+  exactly one access/refresh row. Refresh reuse revokes the whole family.
+- Admission: 64 requests in eight parallel waves admit 60 and return four typed
+  rate denials; expired-window reset and bounded cleanup preserve roots/rosters.
+- Browser: **18** real checks through the shipped UI, Chromium sandbox enabled,
+  NSS trusted disposable CA and hostname validation, strict CSP with no JS eval/
+  inline exception, genuine resident UV credentials from two independent CDP
+  providers, excluded-provider rejection, offline kit, cookie/CSRF and restricted
+  login with no content authority or storage tokens.
+- Native: **four** actual tests per Linux and Windows/MSVC platform. This is
+  software callback evidence, not physical Windows Hello/TPM/iPhone acceptance.
+
+Public raw reports: [HTTP](evidence/p06/http-report.json),
+[browser](evidence/p06/browser-report.json),
+[Linux source](evidence/p06/linux-source-report.json),
+[Windows source](evidence/p06/windows-source-report.json),
+[gate/tree/artifact acceptance](evidence/p06/acceptance.json). Linux's 131 raw
+input hashes match the checkout exactly. Windows's receipt retains its 131 actual
+working-file hashes: 130 normal text inputs are CRLF, while the native lock is
+byte-identical LF through `-text`. Both Git tree IDs are identical; inventory
+hashes were not normalized to bypass a mismatch. These artifacts contain no
+credential, cookie, token, R or private key values.
+
+The final read-only setup extension passed at d8198af and preserved all 625
+then-visible source files; install/start fields were saved/read back as revision
+14 with unrelated configuration preserved. P06 Review/Save -> Publish and a
+fresh-task restore remain NOT_RUN; earlier P05 publication/restore are observed.
+Final source tracking/receipt changes require all ten jobs on the final head
+before ordinary merge. Physical P01 and qualified G2/G3 remain open/unbooked/
+NOT_RUN. No production migration/deployment, release, owner trial or outreach.

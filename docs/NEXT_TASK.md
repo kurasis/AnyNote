@@ -1,13 +1,15 @@
 # Next implementation batch
 
-## Finish P06 hosted acceptance, then complete P07 local vault
+## Complete P07 encrypted local persistence and lock boundary
 
-P06 implementation and local real HTTPS/SQL/Rust checks are present. Complete
-mandatory hosted strict-CSP UI/resident UV WebAuthn and Windows/MSVC gates, retain
-metadata-only exact-source evidence, save/test reusable read-only setup and merge
-only after every required job passes. Do not label local sandbox BLOCKED a pass.
+P06 is verified: 215 actual HTTPS/SQL checks, 18 sandboxed strict-CSP browser
+checks, four native tests per Linux/Windows platform and all ten hosted gates.
+Public receipts identify the exact clean tree and working-file hashes. Confirm
+current tracking and final CI evidence before making new changes. P06 setup
+revision 14 is saved; publication/fresh-task restoration are separate from the
+previously observed P05 restore. Start owned services with the saved instructions.
 
-After P06 acceptance, read AGENTS.md, tracking, original 05/06/11/13/14/20,
+Read AGENTS.md, tracking, original 05/06/11/13/14/20,
 P05_CRYPTO_CORE.md and P06_AUTHENTICATION.md. Russian chat, English repository;
 existing checkout; ordinary passing PR and automatically authorized push/merge.
 No production deployment, release, owner-device trial or reviewer outreach.

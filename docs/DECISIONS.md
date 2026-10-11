@@ -707,3 +707,13 @@ Test-only owned DB/network helpers exercise actual verifiers/transport and never
 issue generic product auth tokens. Physical Hello/TPM, persistent key custody and
 qualified review are separate gates. See P06_AUTHENTICATION.md for exact domains,
 commands, failure/lifecycle/retention rules and deployment boundaries.
+
+ADR-016 acceptance addendum: bind the default browser fetch receiver; use distinct
+resident UV providers when testing multiple passkeys and retain excludeCredentials.
+Read OAuth revocation/account/cap/all-session state through current locked rows,
+not an old REPEATABLE READ snapshot. Actual eight-request code/counter races and
+strict-CSP UI pass. The closed client-only export adds human service URL/instructions
+around the unchanged P02 recovery kit; import must not treat that URL as authority.
+Windows evidence helpers use maintained Python 3.14.8 and the exact native lock
+is `-text`; raw source receipts preserve platform line endings. No integrity,
+CSRF, TLS, sandbox, physical eligibility or qualified-review gate is relaxed.
