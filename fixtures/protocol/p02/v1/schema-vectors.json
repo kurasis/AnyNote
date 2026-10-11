@@ -1,0 +1,411 @@
+{
+  "common": {
+    "byte_blocks": [
+      "bytes/common-0000.hex"
+    ],
+    "digest": "fRtgEuIWfVdNEuGLS3PBfbGWvSl2qdYMC0DSOWwiuEM"
+  },
+  "attachment": {
+    "byte_blocks": [
+      "bytes/attachment-0000.hex"
+    ],
+    "digest": "5KTE3pnuy7qHCNPkK-wxOHakmUblkmVmw0J2ELMIHSg"
+  },
+  "context": {
+    "byte_blocks": [
+      "bytes/context-0000.hex"
+    ],
+    "digest": "GRSTxLt2DF80yWU8e9nsXZ_4UhfS3EAjuWJfIJ1Xyco"
+  },
+  "checklist-item": {
+    "byte_blocks": [
+      "bytes/checklist-item-0000.hex"
+    ],
+    "digest": "QNZORo-LXnDL4hQLyfp51Fa9Hz2SOuIkldB-3kcmsCA"
+  },
+  "payload": {
+    "byte_blocks": [
+      "bytes/payload-0000.hex"
+    ],
+    "digest": "N1tlERJZrIW8CRQrTZ8vnsek5pcGE0EuHbQDA6jy-AI"
+  },
+  "wrap": {
+    "byte_blocks": [
+      "bytes/wrap-0000.hex"
+    ],
+    "digest": "SdbvVnjhg5sDrNyZsJP3A_kaflRxh8A6aqy8bYbyT5A"
+  },
+  "header": {
+    "byte_blocks": [
+      "bytes/header-0000.hex"
+    ],
+    "digest": "GyHE0jNHJ9YMx6YilqOEltEVcxJv2bssLosiUxjszpU"
+  },
+  "envelope": {
+    "byte_blocks": [
+      "bytes/envelope-0000.hex"
+    ],
+    "digest": "XvBSJEngEKBaNjHlJXsH0ZeDNFmH7ZUpGmHOEDVgMTo"
+  },
+  "bundle": {
+    "byte_blocks": [
+      "bytes/bundle-0000.hex",
+      "bytes/bundle-0001.hex"
+    ],
+    "digest": "YYbBwIgtnZ3xzWhOJnuzRqrvgPiNXi87Gf2b4J_zudg"
+  },
+  "local-context": {
+    "byte_blocks": [
+      "bytes/local-context-0000.hex"
+    ],
+    "digest": "FwgB2zPnjNx2wX8w4tYU6o3xWM7TZLhLcz5ny2iXuxo"
+  },
+  "local-envelope": {
+    "byte_blocks": [
+      "bytes/local-envelope-0000.hex",
+      "bytes/local-envelope-0001.hex"
+    ],
+    "digest": "KG3HIFrrLFxCAUsDzkWB928j8t-aJFk9jCGuWE9voEg"
+  },
+  "vault-secrets": {
+    "byte_blocks": [
+      "bytes/vault-secrets-0000.hex"
+    ],
+    "digest": "YCxyjofYG_tGJoGMpXWY5F38KVXUjd7OpRr5sKUbIhQ"
+  },
+  "outbox": {
+    "byte_blocks": [
+      "bytes/outbox-0000.hex",
+      "bytes/outbox-0001.hex"
+    ],
+    "digest": "hPCRU8uOVivDme802kTqKE7_hziiy8EJ0rqoPS3Fr50"
+  },
+  "draft": {
+    "byte_blocks": [
+      "bytes/draft-0000.hex"
+    ],
+    "digest": "_mAs73spiK5nW2fxXyZ3vO93MbXxlke3EBWW7kdMCf8"
+  },
+  "session-secret": {
+    "byte_blocks": [
+      "bytes/session-secret-0000.hex"
+    ],
+    "digest": "zQp8qbwG80lfMJL0U83JpLINJeCFUFQbPDD5sKx4xHA"
+  },
+  "local-plaintext": {
+    "byte_blocks": [
+      "bytes/local-plaintext-0000.hex"
+    ],
+    "digest": "Tk0nXawL5_V-LwbaQ7t3SHXk9PuCyZupvx0l_4ac8O0"
+  },
+  "argon2-parameters": {
+    "byte_blocks": [
+      "bytes/argon2-parameters-0000.hex"
+    ],
+    "digest": "C3rMLeUxZmjTVVwaSeus9M6UCBP6npJdjepsyV1VLwM"
+  },
+  "unlock-context": {
+    "byte_blocks": [
+      "bytes/unlock-context-0000.hex"
+    ],
+    "digest": "b820zs93QDkQCdknrtvS-vGcvZ1R8nZiFS7rZcexb7I"
+  },
+  "phrase-wrapper": {
+    "byte_blocks": [
+      "bytes/phrase-wrapper-0000.hex"
+    ],
+    "digest": "nKM_wG_nm7H4CftEDuXMkHqpYqUK61FoyX0xy0XijkE"
+  },
+  "prf-wrapper": {
+    "byte_blocks": [
+      "bytes/prf-wrapper-0000.hex"
+    ],
+    "digest": "f1nVuaXnH8p17MvvxYpQYZa2KpzbMI1fftAANh4V3kk"
+  },
+  "native-wrapper": {
+    "byte_blocks": [
+      "bytes/native-wrapper-0000.hex"
+    ],
+    "digest": "Dq7lY0c1UE4EuEskYnlKNWiKhvjexfM78bxyPT9qonQ"
+  },
+  "cursor": {
+    "byte_blocks": [
+      "bytes/cursor-0000.hex"
+    ],
+    "digest": "EDZcjMN7Zqy6LUyfslnUulI1KJuhmPWeZBrDPFeFvJs"
+  },
+  "receipt": {
+    "byte_blocks": [
+      "bytes/receipt-0000.hex"
+    ],
+    "digest": "UPdE7wEWvjI1C8VoTqHq8fNb_Ze4G25EjgHnJrMLGYs"
+  },
+  "event": {
+    "byte_blocks": [
+      "bytes/event-0000.hex"
+    ],
+    "digest": "3tsVoyi-CwQRym2W8_ei4KvGLhOMEGm8GmZnoQsIEgY"
+  },
+  "sync-page": {
+    "byte_blocks": [
+      "bytes/sync-page-0000.hex"
+    ],
+    "digest": "TXYuFW0rwHBUjO3RHS5Kaym7ggy8LPUeLT6t4rmNkXk"
+  },
+  "snapshot-item": {
+    "byte_blocks": [
+      "bytes/snapshot-item-0000.hex"
+    ],
+    "digest": "WCtUxBI4rUlO1x-f1lI5d1Ijk6_tjmJH4zrQGj9eD3I"
+  },
+  "snapshot-page": {
+    "byte_blocks": [
+      "bytes/snapshot-page-0000.hex"
+    ],
+    "digest": "2ctYuMtyBIvTVZFMr5GBlFqSQJaozx_DpuG-r557vtg"
+  },
+  "snapshot-descriptor": {
+    "byte_blocks": [
+      "bytes/snapshot-descriptor-0000.hex"
+    ],
+    "digest": "W2gPCyNdlJE1Gci8tfrBnoXTC-juSmuEi6IF2K77vxg"
+  },
+  "restore-state": {
+    "byte_blocks": [
+      "bytes/restore-state-0000.hex"
+    ],
+    "digest": "Is6BxgiwZskyzz4zckRqUAChbZhqUhNQXFb7pEgbVU4"
+  },
+  "error": {
+    "byte_blocks": [
+      "bytes/error-0000.hex"
+    ],
+    "digest": "_vvLaPl037B5ZTT6v_xjzfs6TR-jfy2-gxIjwuNnwJQ"
+  },
+  "negotiation": {
+    "byte_blocks": [
+      "bytes/negotiation-0000.hex"
+    ],
+    "digest": "YYyQD74sX6xESxxIxOh3MHtDt8eE_rgkj7n8HrxgHm8"
+  },
+  "export-selection": {
+    "byte_blocks": [
+      "bytes/export-selection-0000.hex"
+    ],
+    "digest": "zxPXyduY9W7KF3VEEebR3QULpZdUGRFcKXIHzuhMffo"
+  },
+  "export-header": {
+    "byte_blocks": [
+      "bytes/export-header-0000.hex"
+    ],
+    "digest": "39JpdMpgAuFWVcPdWkvv4OapLawxnab2Zn-t_ssko1k"
+  },
+  "export-item": {
+    "byte_blocks": [
+      "bytes/export-item-0000.hex"
+    ],
+    "digest": "zsMu39XToEMfTnLZ_FsrtIicCnl4GaZtp7UDS_K3UWI"
+  },
+  "export-page": {
+    "byte_blocks": [
+      "bytes/export-page-0000.hex"
+    ],
+    "digest": "tWL8qJtm2K7NWd9dBJvuU47RSqxnjlaGd94HKRMA804"
+  },
+  "export-footer-body": {
+    "byte_blocks": [
+      "bytes/export-footer-body-0000.hex"
+    ],
+    "digest": "9_dumNutKXPJGtai2mLSXynKYmSdrZJTSbFpewL_Aww"
+  },
+  "export-footer": {
+    "byte_blocks": [
+      "bytes/export-footer-0000.hex"
+    ],
+    "digest": "eal7O92-fgQT2fOE1K2vGqR0uKUIeYaxfFZTpQAjB1U"
+  },
+  "export-key": {
+    "byte_blocks": [
+      "bytes/export-key-0000.hex"
+    ],
+    "digest": "a8OAwT78oOuM7HAUYzcNZ1R0gZXicRnR9H8rUjM0AZA"
+  },
+  "export-kit": {
+    "byte_blocks": [
+      "bytes/export-kit-0000.hex"
+    ],
+    "digest": "57s4AEdk9M5qoGGzU7bdt6HZUF6kvDofIBOXoXZD_LA"
+  },
+  "error-response": {
+    "byte_blocks": [
+      "bytes/error-response-0000.hex"
+    ],
+    "digest": "KObej6GsN3ZfScA_NbuVvWHQozi8OrQWPEGXouu7sNw"
+  },
+  "contact-card": {
+    "byte_blocks": [
+      "bytes/contact-card-0000.hex"
+    ],
+    "digest": "1YJ_JQ21jPcHyj8WvHlUQ-MKQTO7RuThEzIPI3LaokQ"
+  },
+  "id": {
+    "byte_blocks": [
+      "bytes/id-0000.hex"
+    ],
+    "digest": "u02UGEsUUN6636mbNcv3X4d073OaJncLqQWcsqqfHYI"
+  },
+  "digest": {
+    "byte_blocks": [
+      "bytes/digest-0000.hex"
+    ],
+    "digest": "G3VdkCeRjNzpPCieh2v7-W-gh6TN_KFgckR2F25geiA"
+  },
+  "cipher48": {
+    "byte_blocks": [
+      "bytes/cipher48-0000.hex"
+    ],
+    "digest": "0dq3Do1kef2ZgbKc4SDl8i0mszolmyRvngwro4ou69o"
+  },
+  "export-account-evidence": {
+    "byte_blocks": [
+      "bytes/export-account-evidence-0000.hex",
+      "bytes/export-account-evidence-0001.hex"
+    ],
+    "digest": "-CPQucYrF8ZDmW5qGw0tLvTgq8X6pPPMPt7n7KmD8dY"
+  },
+  "export-epoch-evidence": {
+    "byte_blocks": [
+      "bytes/export-epoch-evidence-0000.hex",
+      "bytes/export-epoch-evidence-0001.hex",
+      "bytes/export-epoch-evidence-0002.hex"
+    ],
+    "digest": "28jAXJxecxxkI1-cFGRJgiuk771JQtlKn3MSK-_o2P8"
+  },
+  "export-group-evidence": {
+    "byte_blocks": [
+      "bytes/export-group-evidence-0000.hex",
+      "bytes/export-group-evidence-0001.hex",
+      "bytes/export-group-evidence-0002.hex",
+      "bytes/export-group-evidence-0003.hex",
+      "bytes/export-group-evidence-0004.hex",
+      "bytes/export-group-evidence-0005.hex",
+      "bytes/export-group-evidence-0006.hex",
+      "bytes/export-group-evidence-0007.hex",
+      "bytes/export-group-evidence-0008.hex",
+      "bytes/export-group-evidence-0009.hex",
+      "bytes/export-group-evidence-0010.hex",
+      "bytes/export-group-evidence-0011.hex",
+      "bytes/export-group-evidence-0012.hex",
+      "bytes/export-group-evidence-0013.hex",
+      "bytes/export-group-evidence-0014.hex",
+      "bytes/export-group-evidence-0015.hex",
+      "bytes/export-group-evidence-0016.hex",
+      "bytes/export-group-evidence-0017.hex",
+      "bytes/export-group-evidence-0018.hex",
+      "bytes/export-group-evidence-0019.hex",
+      "bytes/export-group-evidence-0020.hex",
+      "bytes/export-group-evidence-0021.hex",
+      "bytes/export-group-evidence-0022.hex",
+      "bytes/export-group-evidence-0023.hex",
+      "bytes/export-group-evidence-0024.hex",
+      "bytes/export-group-evidence-0025.hex",
+      "bytes/export-group-evidence-0026.hex",
+      "bytes/export-group-evidence-0027.hex",
+      "bytes/export-group-evidence-0028.hex",
+      "bytes/export-group-evidence-0029.hex",
+      "bytes/export-group-evidence-0030.hex",
+      "bytes/export-group-evidence-0031.hex",
+      "bytes/export-group-evidence-0032.hex",
+      "bytes/export-group-evidence-0033.hex"
+    ],
+    "digest": "fvcz8uUAMnQwDJiPnW461f2r2KtU_MjiVeqBEaL-KPE"
+  },
+  "export-evidence": {
+    "byte_blocks": [
+      "bytes/export-evidence-0000.hex",
+      "bytes/export-evidence-0001.hex",
+      "bytes/export-evidence-0002.hex",
+      "bytes/export-evidence-0003.hex",
+      "bytes/export-evidence-0004.hex",
+      "bytes/export-evidence-0005.hex",
+      "bytes/export-evidence-0006.hex",
+      "bytes/export-evidence-0007.hex",
+      "bytes/export-evidence-0008.hex",
+      "bytes/export-evidence-0009.hex",
+      "bytes/export-evidence-0010.hex",
+      "bytes/export-evidence-0011.hex",
+      "bytes/export-evidence-0012.hex",
+      "bytes/export-evidence-0013.hex",
+      "bytes/export-evidence-0014.hex",
+      "bytes/export-evidence-0015.hex",
+      "bytes/export-evidence-0016.hex",
+      "bytes/export-evidence-0017.hex",
+      "bytes/export-evidence-0018.hex",
+      "bytes/export-evidence-0019.hex",
+      "bytes/export-evidence-0020.hex",
+      "bytes/export-evidence-0021.hex",
+      "bytes/export-evidence-0022.hex",
+      "bytes/export-evidence-0023.hex",
+      "bytes/export-evidence-0024.hex",
+      "bytes/export-evidence-0025.hex",
+      "bytes/export-evidence-0026.hex",
+      "bytes/export-evidence-0027.hex",
+      "bytes/export-evidence-0028.hex",
+      "bytes/export-evidence-0029.hex",
+      "bytes/export-evidence-0030.hex",
+      "bytes/export-evidence-0031.hex",
+      "bytes/export-evidence-0032.hex",
+      "bytes/export-evidence-0033.hex",
+      "bytes/export-evidence-0034.hex",
+      "bytes/export-evidence-0035.hex",
+      "bytes/export-evidence-0036.hex",
+      "bytes/export-evidence-0037.hex",
+      "bytes/export-evidence-0038.hex"
+    ],
+    "digest": "6PwGWTTs44u1eawMcHifdlA18Qj3_Qz4YfMH1_EfUJE"
+  },
+  "export-file-record": {
+    "byte_blocks": [
+      "bytes/export-file-record-0000.hex",
+      "bytes/export-file-record-0001.hex"
+    ],
+    "digest": "iuw5bIFOalvddFZPbHTsD_YH07pvE-Hav9JzoRNDn-A"
+  },
+  "export-pruned-record": {
+    "byte_blocks": [
+      "bytes/export-pruned-record-0000.hex"
+    ],
+    "digest": "ElRO6rqCSXldFYCIDqMQb2dU-izO_htA6I2Wg0lFHv8"
+  },
+  "export-public-group": {
+    "byte_blocks": [
+      "bytes/export-public-group-0000.hex"
+    ],
+    "digest": "6KHXAsExVlfVvPfhTlNtgoFC1P0oxRjxWi4NGrfoObo"
+  },
+  "export-public-event": {
+    "byte_blocks": [
+      "bytes/export-public-event-0000.hex"
+    ],
+    "digest": "6hR_hX0Qivz48LsuYQRQ93NL1OLbO8ws9Go2bfoAYT8"
+  },
+  "cache": {
+    "byte_blocks": [
+      "bytes/cache-0000.hex",
+      "bytes/cache-0001.hex"
+    ],
+    "digest": "sldAOTYQcJV2Xu_JsNvXROB2HqJ6FrprSYg6xxeu8Oo"
+  },
+  "search": {
+    "byte_blocks": [
+      "bytes/search-0000.hex"
+    ],
+    "digest": "x5BcT10RcFLJ4N1dpmL9l142IMrn7nSYQfvKLfdyUC4"
+  },
+  "transfer": {
+    "byte_blocks": [
+      "bytes/transfer-0000.hex"
+    ],
+    "digest": "Uwah5UQch1d1UdBpERFfwINs9rGKyBCC0rOW-uMuhtQ"
+  }
+}
