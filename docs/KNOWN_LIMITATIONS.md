@@ -154,3 +154,23 @@
   guaranteed memory erasure; no real root/kit is entrusted to this reference.
   Scure's historical upstream audits/self-review do not audit selected 2.4.0
   or AnyNote; qualified protocol review remains not performed/booked.
+
+## P02 state candidate boundary (supersedes earlier device-state work items)
+
+- Synthetic pairing/activation/ancestor revoke/root reset now verify independent
+  pins and current device state; group policy/epoch/history remains NOT_EVALUATED.
+  Existing signature-only functions retain their original status and bytes.
+- QR is data + secretstream reference, not an implemented camera/user/root import
+  flow. Channel secrets disclose recorded frames if leaked; no forward secrecy.
+  Intent/accessibility/transport/physical Windows/iPhone pairing not tested.
+- Evaluation account login is simulated, sessions/challenges/receipts are memory
+  maps, CAS is synchronous only. No actual account auth/invitation consumption,
+  HTTP routes, durable crash-safe transaction, retention/compaction or recovery
+  fetch endpoint. Finite evaluation resource budgets eventually deny new work.
+- Independent pins detect known rollback/fork, not server-global freshness.
+  Old timestamp replay is not trustworthy creation time or historical authority.
+  Revoke/reset indicate required group maintenance but do not implement it or
+  retract disclosed keys/plaintext. Root compromise needs new-identity migration.
+- PHP reproduces restricted public ASCII fixtures, not strict arbitrary JSON/JCS
+  schemas or the complete Node state/session verifier. Full Rust/browser general
+  interoperability and qualified review are pending; JS erasure is best effort.

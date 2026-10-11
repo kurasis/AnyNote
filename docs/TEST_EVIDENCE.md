@@ -799,3 +799,38 @@ Review/save/publish in environment settings remains product-owned; save is not
 publication or future-task acceptance. No new secret/network/owner physical
 action is required by this candidate. Final fresh hosted checks and exact tested
 head/source-tree proof are recorded on the review PR before automatic merge.
+
+## P02-ROSTER-AND-RECOVERY-STATE — larger candidate batch
+
+Date: 2026-10-11. Public synthetic inputs only. This supersedes prior device-state
+NOT RUN items for isolated evaluation only; product/physical/audit gates stay open.
+Receipts: [local](evidence/p02-state-local.json),
+[primary source](evidence/p02-state-primary-sources.json),
+[saved environment](evidence/p02-state-environment-setup.json).
+
+| Check | Actual result / boundary | Outcome |
+| --- | --- | --- |
+| Node tests | 189 PASS (145 prior + 44 state tests); dual-key activation, both QR modes, cap/CAS/retry/cancel, descendant revoke, concurrent reset, forged handles, session/challenge expiry, stale recipient denial and raw parser/resource failures | PASS |
+| Frozen state/channel input replay | Five signed events/heads, two QR modes, seven real secretstream frames; random inputs frozen without RNG replacement | PASS |
+| Independent PHP/native sodium | PHP 8.4.26/sodium 1.0.18; five event signatures/possession/head/snapshot checks and seven secretstream frames with signature/tag/AAD/wrong-key negatives; 4,812 assertions include serializer preconditions | PASS public ASCII subset only |
+| Current device recipient gating | Provisional/revoked/stale device contexts rejected; current exact certified issuer/recipient heads checked; group authorization NOT_EVALUATED | PASS candidate device layer only |
+| Frozen dependency/advisory checks | Ten-package exact inventory, no new dependencies/lock changes, npm audit reports zero advisories | PASS |
+| Source scan / negatives | Full Git-visible source; six fake PAT paths/eight changed fixture keys rejected; 28 new findings reviewed as 12 exact full PUBLIC state/QR key values | PASS |
+| Existing bytes / baseline | Previous file/identity schemas/vectors and npm lock exact unchanged; all 21 original checksums PASS; no P01/release/reference change | PASS |
+| Full saved install and repeat | Both complete final scripts reach final PHP state step; all Git-visible source/fixture/lock bytes preserved across installation and repetition; owned HTTP/DB readiness checked | PASS |
+| Draft readback | Revision 8 exact setup/start, network and repository membership preserved; requires_publish=true | PASS save only |
+| Real account authentication / QR intent/camera / persistent transactions / group policy/history authority / qualified review | Simulated or explicitly absent; no product endpoints, deployment or new owner physical trial | NOT RUN |
+
+Earlier full setup failed because a random all-letter changed-key sentinel was
+suppressed by Gitleaks' upstream generic-key alphabet heuristic; no source leak
+was exposed. Replaced only negative sample generation with a fixed public
+high-entropy mutation, preserving scanner rules and narrow exceptions. Complete
+final installs and all negatives then passed. Cancellation validation was also
+strengthened to forbid recycled keys/session bindings; the old expected error
+was updated to the earlier key-reuse rejection, and the full 189-test suite passed.
+
+Local source stamps intentionally name the base commit with dirty candidate input
+hashes. Final hosted source checks and exact tested/merge tree evidence are added
+to the review PR before automatic merge; do not relabel the dirty local stamp as
+hosted/physical evidence. Save does not publish the environment or establish
+future-task restoration: review/save/publish remains required in its settings.

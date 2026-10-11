@@ -476,3 +476,34 @@ Five PAT-path and five changed-key/digest negatives must fail. Saved setup uses
 frozen locks and crypto checks without fixture/source writes; owned P03 services
 restart after snapshot. Normal revert has no production data/format migration,
 site deployment, kit replacement or repeated owner action.
+
+## ADR-010 — authenticated QR pairing and pinned device-state evaluation
+
+Select existing locked libsodium secretstream with a fresh high-entropy one-use
+32-byte authenticated QR/OOB key; no invented short-code cryptography or new
+dependency. Single-message streams require TAG_FINAL and typed direction/anchor
+AAD. Signed offer/response/invitation/approval/confirmation bind the full transcript.
+Two QR modes let either new Windows or existing Windows display a code scanned
+by a phone, avoiding a mandatory PC camera. Root/head import and actual owner
+intent are explicit future ceremonies, not trust derived from the server. Primary
+API receipt is evidence/p02-state-primary-sources.json; qualified composition
+review remains NOT RUN. No forward secrecy or physical QR claim.
+
+Separate pinned client history from live synthetic authority. Historical replay
+checks signatures/head/capability ancestry, not today's expiry; live authority
+checks monotonic trusted time, exact pending/session/challenge/receipt and CAS.
+Only confirmed dual-key possession activates a device. Root-signed active cap
+(default 5, bounded candidate 1–32) has no silent eviction/change on reset. Revoke
+requires exact descendant closure by a surviving delegate; reset preserves root,
+advances generation, revokes old sessions/pending, then upgrades the new device.
+Same-root reset cannot recover a compromised root identity. No server receives R.
+
+Ledger login/challenges/sessions/atomic mutations are SIMULATED in memory, never
+P03 durable authentication or transaction evidence. New private state handles
+attest current device authority from the supplied independent pins; group policy,
+roles, epochs, full-history grants and historical writer acceptance remain
+NOT_EVALUATED. Do not reinterpret old signature-only proofs or group-key knowledge
+as writer access. Previous candidate bytes/locks remain unchanged. PHP only
+reproduces public ASCII fixture signatures/possession/events/secretstream inputs,
+not general strict schema/JCS/auth verification. Exact PUBLIC values alone are
+scanner-excepted; six fake PAT path/eight changed key negatives must still reject.

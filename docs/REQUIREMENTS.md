@@ -44,3 +44,15 @@ current group authorization still pending. R01 gains Node/PHP 79-byte fresh
 synthetic device/recovery file paths, no uploader DEK input. This does not
 complete C06/C11/C13 pairing/active roster/reset or R01 product/platform scope.
 See P02_IDENTITY_CONTRACT.md, public identity-vectors.json and TEST_EVIDENCE.md.
+
+## P02 device-state candidate evidence
+
+[Roster/pairing/reset candidate](P02_STATE_CONTRACT.md) supplies design and
+synthetic evidence for R02/R06/R07 and chapter 20 session/device/reset invariants:
+independent device keys, provisional denial, dual-key confirmation, pinned CAS,
+compromise descendant closure, generation reset and session-bound one-use proofs.
+Physical QR, product P08 authentication/activation, durable transaction, complete
+recovery group retrieval and qualified review remain outstanding. R08/R14/R19/R21
+group roles/epoch/history authority is the next candidate batch; device proof or
+key possession alone does not satisfy it. Earlier requirement rows are product
+gates, not claims that the candidate closes them.

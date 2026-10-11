@@ -20,3 +20,7 @@ fixtures:check`, `npm --prefix packages/protocol run inventory:check` and
 `python3 scripts/check-p02-fixtures.py`. CI runs the same checks plus advisory
 and baseline integrity checks. Regeneration commands `fixtures:write` /
 `inventory:write` change reviewed files and require diff review, never setup.
+
+Subsequent [pinned device-state candidate](../../docs/P02_STATE_CONTRACT.md)
+adds pairing/activation/revoke/reset verification in separate APIs. This does not
+change these original signature-only bytes or grant group policy/history rights.

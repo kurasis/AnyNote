@@ -8,7 +8,7 @@ does not satisfy a feature gate. Production release is not ready.
 | --- | --- | --- |
 | P00 | VERIFIED | Local baseline and four negative cases passed; scope/version/inventory deliverables complete; remote bootstrap and clean-clone verification passed; both baseline Actions runs verified |
 | P01 | IN PROGRESS | Host crypto/KDF/storage/export/fault evidence VERIFIED; owner 0.1.4 fresh-process Hello authentication, WTS lock/STALE, installed-iPhone-PWA selected 1 GB hash and diagnostic recovery PASS; full physical G1/memory/network matrix remains open |
-| P02 | IN PROGRESS | Candidate file/checkpoint + root/kit/identity/certificate/recipient schemas and Node/PHP synthetic crypto implemented; pairing/roster/policy/reset authority, remaining formats and qualified review stay open |
+| P02 | IN PROGRESS | Candidate file/identity plus authenticated pairing, pinned device roster/activation/revoke/reset and simulated sessions verified in Node/PHP; group policy/epoch/history authority, product transactions, remaining formats and qualified review stay open |
 | P03 | IN PROGRESS | Laravel/MariaDB/FPM/Nginx tooling and synthetic integration implemented; final contracts/generated types/errors/logging follow P02; evidence below |
 | P04 | NOT STARTED | P02/P03; signature acceptance also needs P05 fixtures |
 | P05 | NOT STARTED | P01/P02/P03 |
@@ -358,3 +358,26 @@ full Rust/browser/general PHP compatibility and qualified review are outstanding
 P01/G1 and P03 product gates unchanged. No new owner device action is needed.
 Rollback: normal revert of isolated candidate additions, no production migration.
 Next larger batch: P02-ROSTER-AND-RECOVERY-STATE.
+
+## Completed larger slice: P02-ROSTER-AND-RECOVERY-STATE
+
+p02-state-c1 adds libsodium secretstream with a random authenticated QR/OOB key,
+two pairing directions without a PC camera, full signed transcripts and provisional
+approval/dual-key confirmation. Pinned append-only state checks exact predecessor,
+generation, cap and delegated ancestry. Compromise revoke includes descendants;
+root reset revokes all old devices/sessions/pending and activates only a newly
+proved session. Account login/session ledger is explicitly synthetic in-memory;
+no actual product auth, SQL transaction or QR/user ceremony is implemented.
+
+189 Node tests PASS; frozen five-event/seven-frame inputs and both QR directions
+reproduce in Node and pinned PHP/native sodium. Independent fixture serializer
+checks are not a general PHP parser/authorization API. Earlier schema/vector
+bytes, original specification, locks, P01 kits/reference remain preserved. Source
+scan + six fake-token path/eight changed-key negatives PASS. Setup and hosted
+source evidence are recorded in TEST_EVIDENCE and the review PR.
+
+Device roster authority is VERIFIED_FROM_PINNED_CHAIN in new state APIs only;
+group authorization remains NOT_EVALUATED and old signature-only APIs unchanged.
+P02/G2 stays IN PROGRESS; P01/G1 and product P03 gates remain open. No repeated
+owner physical action or deployment. Rollback: normal revert, no production data.
+Next larger batch: P02-GROUP-POLICY-EPOCH-HISTORY-CONTRACT.

@@ -37,7 +37,9 @@ jobs:
           python3 scripts/dev-stack.py up
           python3 scripts/dev-stack.py test
       - name: Verify independent PHP public candidate crypto fixtures
-        run: python3 scripts/check-p02-crypto.py
+        run: |
+          python3 scripts/check-p02-crypto.py
+          python3 scripts/check-p02-state.py
       - name: Preserve content-free foundation evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
