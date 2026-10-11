@@ -8,7 +8,7 @@ does not satisfy a feature gate. Production release is not ready.
 | --- | --- | --- |
 | P00 | VERIFIED | Local baseline and four negative cases passed; scope/version/inventory deliverables complete; remote bootstrap and clean-clone verification passed; both baseline Actions runs verified |
 | P01 | IN PROGRESS | Host crypto/KDF/storage/export/fault evidence VERIFIED; owner 0.1.4 fresh-process Hello authentication, WTS lock/STALE, installed-iPhone-PWA selected 1 GB hash and diagnostic recovery PASS; full physical G1/memory/network matrix remains open |
-| P02 | IN PROGRESS | Candidate file/identity plus authenticated pairing, pinned device roster/activation/revoke/reset and simulated sessions verified in Node/PHP; pinned group policy/epoch/history evaluation verified; product transactions, remaining formats and qualified review stay open |
+| P02 | VERIFIED | Complete five-component registry, exact note/local/native/sync/snapshot/restore/age formats, frozen bytes and independent PHP/Python/Rust-age/Go-age subsets; external review TRACKED_NOT_BOOKED / NOT_RUN; G2/G3 and product phases remain open |
 | P03 | IN PROGRESS | Laravel/MariaDB/FPM/Nginx tooling and synthetic integration implemented; final contracts/generated types/errors/logging follow P02; evidence below |
 | P04 | NOT STARTED | P02/P03; signature acceptance also needs P05 fixtures |
 | P05 | NOT STARTED | P01/P02/P03 |
@@ -405,3 +405,28 @@ Recent-auth ownership transfer is not implemented. Original spec, earlier
 schemas/vectors/locks and P01/release/reference bytes preserved. No new owner
 physical action/deployment/release. Setup/local evidence in TEST_EVIDENCE; hosted
 final source proof on PR. Next larger batch: P02-NOTE-LOCAL-EXPORT-CONTRACT.
+
+## Completed phase: P02 — protocol specification and reviewable security design
+
+Complete the design/fixture scope of original chapter 14 §5. New p02-v1 composes
+unchanged file/identity/state contracts with explicit group c2, preserving c1
+bytes and resolving the required twenty-member default with separate domains.
+Typed encrypted notes/group/thread metadata, tombstones/restore/relationships,
+local L and phrase/PRF/native byte wrappers, stable outbox/receipt/CAS, sync,
+complete snapshots, restore quarantine, fixed errors/negotiation and strict
+standard age v1 USTAR export/import design are frozen. Exact selected source
+inventory, cross-account authors, independent history/kit pins and selected-DEK
+note/file offline recovery precede any live destination mutation.
+
+Qualified review is concretely tracked in P02_REVIEW.md/p02-review.json; unbooked,
+unassigned and NOT_RUN. Correct prior tracking that mistakenly required all
+product SQL/adapters or a performed audit to finish P02 design. P05/P07/P13/P17
+still own product interoperability/custody/utility/release review, and G2/G3
+remain open. No production deployment/migration, site/kit replacement, root-key
+custody, physical provider or fresh-task environment-restoration claim.
+
+See P02_COMPLETE_CONTRACT.md for all normative predicates/limits and test evidence
+for actual command results, initial failures and corrected boundary cases. Roll
+back with an ordinary revert; no production data exists to migrate. Next batch:
+finish P03 contract/type/error/logging drift gates, then product P04/P05 in their
+documented dependency order. No repeated owner physical trial is requested here.

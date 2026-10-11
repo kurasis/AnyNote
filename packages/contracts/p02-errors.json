@@ -1,0 +1,343 @@
+{
+  "profile": "p02-v1",
+  "unauthorized_resource_existence": "NOT_FOUND/404 before any diagnostic details",
+  "maximum_retry_after_ms": 60000,
+  "errors": [
+    {
+      "code": "ACCESS_REVOKED",
+      "http_status": 404,
+      "message_key": "error.access_revoked",
+      "retryable": false,
+      "retry_action": "never",
+      "local_only": false
+    },
+    {
+      "code": "AUTH_REQUIRED",
+      "http_status": 401,
+      "message_key": "error.auth_required",
+      "retryable": false,
+      "retry_action": "authenticate",
+      "local_only": false
+    },
+    {
+      "code": "DEVICE_NOT_TRUSTED",
+      "http_status": 403,
+      "message_key": "error.device_not_trusted",
+      "retryable": false,
+      "retry_action": "explicit-authorize",
+      "local_only": false
+    },
+    {
+      "code": "DEVICE_REVOKED",
+      "http_status": 403,
+      "message_key": "error.device_revoked",
+      "retryable": false,
+      "retry_action": "explicit-authorize",
+      "local_only": false
+    },
+    {
+      "code": "ENROLLMENT_EXPIRED",
+      "http_status": 410,
+      "message_key": "error.enrollment_expired",
+      "retryable": false,
+      "retry_action": "restart-explicit",
+      "local_only": false
+    },
+    {
+      "code": "EXPORT_INTEGRITY_FAILURE",
+      "http_status": null,
+      "message_key": "error.export_integrity_failure",
+      "retryable": false,
+      "retry_action": "never",
+      "local_only": true
+    },
+    {
+      "code": "EXPORT_TRUNCATED",
+      "http_status": null,
+      "message_key": "error.export_truncated",
+      "retryable": false,
+      "retry_action": "never",
+      "local_only": true
+    },
+    {
+      "code": "FILE_LIMIT_EXCEEDED",
+      "http_status": 413,
+      "message_key": "error.file_limit_exceeded",
+      "retryable": false,
+      "retry_action": "reduce-explicit",
+      "local_only": false
+    },
+    {
+      "code": "HISTORY_CLOSURE_REQUIRED",
+      "http_status": 409,
+      "message_key": "error.history_closure_required",
+      "retryable": false,
+      "retry_action": "reconcile",
+      "local_only": false
+    },
+    {
+      "code": "IDEMPOTENCY_MISMATCH",
+      "http_status": 409,
+      "message_key": "error.idempotency_mismatch",
+      "retryable": false,
+      "retry_action": "reconcile",
+      "local_only": false
+    },
+    {
+      "code": "INSUFFICIENT_STORAGE",
+      "http_status": 507,
+      "message_key": "error.insufficient_storage",
+      "retryable": false,
+      "retry_action": "free-space-explicit",
+      "local_only": false
+    },
+    {
+      "code": "INTEGRITY_FAILURE",
+      "http_status": null,
+      "message_key": "error.integrity_failure",
+      "retryable": false,
+      "retry_action": "never",
+      "local_only": true
+    },
+    {
+      "code": "INVALID_CHUNK",
+      "http_status": 400,
+      "message_key": "error.invalid_chunk",
+      "retryable": false,
+      "retry_action": "never",
+      "local_only": false
+    },
+    {
+      "code": "INVALID_REQUEST",
+      "http_status": 400,
+      "message_key": "error.invalid_request",
+      "retryable": false,
+      "retry_action": "never",
+      "local_only": false
+    },
+    {
+      "code": "INVALID_SIGNATURE",
+      "http_status": 422,
+      "message_key": "error.invalid_signature",
+      "retryable": false,
+      "retry_action": "never",
+      "local_only": false
+    },
+    {
+      "code": "KEYS_PENDING",
+      "http_status": 409,
+      "message_key": "error.keys_pending",
+      "retryable": false,
+      "retry_action": "reconcile",
+      "local_only": false
+    },
+    {
+      "code": "MALFORMED_ENVELOPE",
+      "http_status": 400,
+      "message_key": "error.malformed_envelope",
+      "retryable": false,
+      "retry_action": "never",
+      "local_only": false
+    },
+    {
+      "code": "NOT_FOUND",
+      "http_status": 404,
+      "message_key": "error.not_found",
+      "retryable": false,
+      "retry_action": "never",
+      "local_only": false
+    },
+    {
+      "code": "POLICY_CHANGED",
+      "http_status": 409,
+      "message_key": "error.policy_changed",
+      "retryable": false,
+      "retry_action": "reconcile",
+      "local_only": false
+    },
+    {
+      "code": "QUOTA_EXCEEDED",
+      "http_status": 507,
+      "message_key": "error.quota_exceeded",
+      "retryable": false,
+      "retry_action": "free-space-explicit",
+      "local_only": false
+    },
+    {
+      "code": "RATE_LIMITED",
+      "http_status": 429,
+      "message_key": "error.rate_limited",
+      "retryable": true,
+      "retry_action": "bounded-backoff",
+      "local_only": false
+    },
+    {
+      "code": "RECOVERY_GENERATION_CONFLICT",
+      "http_status": 409,
+      "message_key": "error.recovery_generation_conflict",
+      "retryable": false,
+      "retry_action": "reconcile",
+      "local_only": false
+    },
+    {
+      "code": "REKEY_REQUIRED",
+      "http_status": 409,
+      "message_key": "error.rekey_required",
+      "retryable": false,
+      "retry_action": "reconcile",
+      "local_only": false
+    },
+    {
+      "code": "REKEY_RESTART_REQUIRED",
+      "http_status": 409,
+      "message_key": "error.rekey_restart_required",
+      "retryable": false,
+      "retry_action": "reconcile",
+      "local_only": false
+    },
+    {
+      "code": "REQUEST_TOO_LARGE",
+      "http_status": 413,
+      "message_key": "error.request_too_large",
+      "retryable": false,
+      "retry_action": "reduce-explicit",
+      "local_only": false
+    },
+    {
+      "code": "RESOURCE_LIMIT",
+      "http_status": 413,
+      "message_key": "error.resource_limit",
+      "retryable": false,
+      "retry_action": "reduce-explicit",
+      "local_only": false
+    },
+    {
+      "code": "RESTORE_QUARANTINE",
+      "http_status": 409,
+      "message_key": "error.restore_quarantine",
+      "retryable": false,
+      "retry_action": "reconcile",
+      "local_only": false
+    },
+    {
+      "code": "REVISION_ID_CONFLICT",
+      "http_status": 409,
+      "message_key": "error.revision_id_conflict",
+      "retryable": false,
+      "retry_action": "reconcile",
+      "local_only": false
+    },
+    {
+      "code": "ROLE_FORBIDDEN",
+      "http_status": 403,
+      "message_key": "error.role_forbidden",
+      "retryable": false,
+      "retry_action": "explicit-authorize",
+      "local_only": false
+    },
+    {
+      "code": "ROSTER_CHANGED",
+      "http_status": 409,
+      "message_key": "error.roster_changed",
+      "retryable": false,
+      "retry_action": "reconcile",
+      "local_only": false
+    },
+    {
+      "code": "SESSION_DEVICE_PROOF_REQUIRED",
+      "http_status": 401,
+      "message_key": "error.session_device_proof_required",
+      "retryable": false,
+      "retry_action": "authenticate",
+      "local_only": false
+    },
+    {
+      "code": "SESSION_EXPIRED",
+      "http_status": 401,
+      "message_key": "error.session_expired",
+      "retryable": false,
+      "retry_action": "authenticate",
+      "local_only": false
+    },
+    {
+      "code": "SNAPSHOT_EXPIRED",
+      "http_status": 410,
+      "message_key": "error.snapshot_expired",
+      "retryable": false,
+      "retry_action": "restart-explicit",
+      "local_only": false
+    },
+    {
+      "code": "STALE_MEMBERSHIP",
+      "http_status": 409,
+      "message_key": "error.stale_membership",
+      "retryable": false,
+      "retry_action": "reconcile",
+      "local_only": false
+    },
+    {
+      "code": "STALE_REVISION",
+      "http_status": 409,
+      "message_key": "error.stale_revision",
+      "retryable": false,
+      "retry_action": "reconcile",
+      "local_only": false
+    },
+    {
+      "code": "STORAGE_UNAVAILABLE",
+      "http_status": 507,
+      "message_key": "error.storage_unavailable",
+      "retryable": false,
+      "retry_action": "free-space-explicit",
+      "local_only": false
+    },
+    {
+      "code": "SYNC_CURSOR_EXPIRED",
+      "http_status": 410,
+      "message_key": "error.sync_cursor_expired",
+      "retryable": false,
+      "retry_action": "restart-explicit",
+      "local_only": false
+    },
+    {
+      "code": "TEMPORARY_UNAVAILABLE",
+      "http_status": 503,
+      "message_key": "error.temporary_unavailable",
+      "retryable": true,
+      "retry_action": "bounded-backoff",
+      "local_only": false
+    },
+    {
+      "code": "TRANSITION_EXPIRED",
+      "http_status": 410,
+      "message_key": "error.transition_expired",
+      "retryable": false,
+      "retry_action": "restart-explicit",
+      "local_only": false
+    },
+    {
+      "code": "UNANCHORED_HISTORY",
+      "http_status": 409,
+      "message_key": "error.unanchored_history",
+      "retryable": false,
+      "retry_action": "reconcile",
+      "local_only": false
+    },
+    {
+      "code": "UNSUPPORTED_SCHEMA",
+      "http_status": 400,
+      "message_key": "error.unsupported_schema",
+      "retryable": false,
+      "retry_action": "never",
+      "local_only": false
+    },
+    {
+      "code": "UPLOAD_EXPIRED",
+      "http_status": 410,
+      "message_key": "error.upload_expired",
+      "retryable": false,
+      "retry_action": "restart-explicit",
+      "local_only": false
+    }
+  ]
+}

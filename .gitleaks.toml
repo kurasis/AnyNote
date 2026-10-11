@@ -451,6 +451,47 @@ regexes = ['''^\QxyxXQl2AVXuf-IqzVUEdw3rpqi1CQLnzCB0ZT_k7tt2iIS8phXZT2x5u5LWNmMA
                       "device_id": "BwgJCgsMDQ4PEBESExQVFg",
                       "encryption_key_fingerprint": "EmxlFwbk8mBEr3qi_\E$''']
 
+[[rules.allowlists]]
+description = "Exact complete PUBLIC P02 v1 fixture values, verified independently; changed-field and alternate-age-key negatives must reject"
+condition = "AND"
+paths = ['''fixtures/protocol/p02/v1/(?:crypto\.json|bytes/[a-z0-9-]+-[0-9]{4}\.hex)$''']
+regexTarget = "secret"
+regexes = [
+    '''^18ebee0ba2c6e182d78e15fd3f8b39b6ee4ffec4136b9d3800f7c371b90801e8$''',
+    '''^37ba3bf89a398e3057b48ad52a93734595b1d4aa348d09bd16f3d753534cfb4b$''',
+    '''^3Qr\-luku_bRv88XM4Fn\-cuvYB2gN\-sOrEgfgBs\-kdMI$''',
+    '''^434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162e83ad950188597d403ad3bbc1e08051b691e287ada3707b0d4f641bfde3a35dd$''',
+    '''^6896077b0057a9d4ee7ca5d9c430e5d448bc671605c9029a47593a38bae44e6a$''',
+    '''^6DrZUBiFl9QDrTu8HggFG2keKHraNwew1PZBv946Nd0$''',
+    '''^8i7Y_5gieoWBvS8uYKwOJDiRJPEMqIwrPvUs7qwYF4Y$''',
+    '''^AO1GDcDa_K7jIXKNRTRVCtIwIN1WN7w1O\-iSMa4wEE4$''',
+    '''^EmxlFwbk8mBEr3qi_p_t\-DIlQJfRYXNpLPs8e8zp4_A$''',
+    '''^Fk\-71Qh06bc7rQ7CQztyJzGS1uumqNwN59ou6L7RWBc$''',
+    '''^G0NBxyCyVwgQerkeXQqZCTFkSF8Z\-op7e0_u7kQdXCc$''',
+    '''^H9AVmLg2Uzl6UAccNRnkyF8AXL_xWDVhMB7zroedeIA$''',
+    '''^NWwDDz\-oZqPZRAYu0MLx8t3JijFtOP70IfCoHPbMaz4$''',
+    '''^O3KKM5cEFJA4Hty0DM80e97vxGn5zCXU\-ShEUrWJzeM$''',
+    '''^SB7edy2hV4XJ5ZoIYgG4w_nDBxKeP8bX80qk3\-1YFOU$''',
+    '''^SdbvVnjhg5sDrNyZsJP3A_kaflRxh8A6aqy8bYbyT5A$''',
+    '''^VWh_nuFrIct_6XgVANqcg9Tfok\-GmuVgzRn2ixZxkJg$''',
+    '''^YK7K1eoHP_VIjHPkvCgpt6U6VBd\-PIfqDawkzHqcDiM$''',
+    '''^YPiEk\-Fet_AhZpVvhSZl6F9jb9PbbBR5_g57Lrt_T0A$''',
+    '''^ZWS6Z81ol80o9xBr1lqHQBtaMfRWK4tB_iwMY5zxjo8$''',
+    '''^_yvM6uJJs2AtS9suawW1gu8VeoPYN5CHoGGfPv03x00$''',
+    '''^apkElXTvv14iSlZRzdNnZMg5tufBDWWSSWBO0a6v8AA$''',
+    '''^b1GAuBizeAdNkSGoX6Dc21rGiqfsAE4vDKIqJi6jy1E$''',
+    '''^c6B1lvfcX4\-zcNu0oPqNco6gEOeN6BzqfNxumnUameM$''',
+    '''^dDmv1CgLmonHTg9aKOji6u5ZjT6hGZCryypKay7M16I$''',
+    '''^iFhsXQsClU4nvZL06O78Vgixtpq6iBZNcgfyUmJDZC8$''',
+    '''^n9Hn\-VBj69QkCuABzWW2d_fLYuiOzSTO1y1UWhiOsII$''',
+    '''^oO9qVTgCADA9_UNqw2Eo3YVxSKASULY7aH1LeLHQYps$''',
+    '''^s71XrNZZlLSSnoAOuoL50hNmaZlw3DDAtta3JKs4QXs$''',
+    '''^ukB5\-fSLIy_tx4c7E2AVHWMH4kheVtuKVIQGgC7giR4$''',
+    '''^xmGGVRMUGVvM12HpFWB6FHRP4XaVLsk6QUvEjTvsS8s$''',
+    '''^z9DbB8vu7vOWZqlD7S71GICsr28iXUBhDpS0E7NVVlttB9p5MwGGkfq\-giNKvdEOUKCpGG3hhzTv0tJrfUkp5Q$'''
+]
+
+
 [[rules]]
 id = "github-app-token"
 
@@ -460,3 +501,16 @@ condition = "AND"
 paths = ['''fixtures/protocol/p02/group-vectors\.json$''']
 regexTarget = "line"
 regexes = ['''^\s*"sealed_ciphertext": "Wy1_L68P2U5UryBrIsdYSJBRhwmRT0DqPOsE0wlKWwoAvcmF_PfC5AdpkCrYCEkcrP_MFpsH9FUHIRJNxmec4DvOUsA5CSdwcUc2nELSZep5a6ZCJ_NgdD6_oQSB7Y8PqQK_WVREEFkGDSPl4oVE7lyj5d8Eu8jnvdqVnJnfXEoB2IWXrwdrQGYayXszxo0eUh7jAQVc8gxUvZAYGOJxAXtAzrrJBF1kazk1hrmOLOtwTxk0Zj5innKJzUZy9OZOWkktXnDi6oQoeCq97vm0JwD5Of0ggyUh7UZCYk1EsvrvrWuY2RNJeiJOLEhQgDX15CCulWBEUfBwke9LyT5r9tciuUYzIpyiuGU1h7dulzyS3x3pV4V7BU\-uiM_lRT5vsTQzzdAh9fT8MxkCYjKkQjlgv7oPqJyrky_UdRNSlIiBnFi6DYsTWgQ7umQFKOdVhZkdfnIkyiYnz_Wqxid3WouD0IbDh1z3kAi6WHRMfJGOi5RwZKz0gnosM\-hV\-\-\-rhtJLokjDl2ih8NVsGnYdq5aVwOpTlwqsGUPyoH7JY1IwMJ7MT450DprxEHyPHGIF51zsPMytgTuz\-gEH2qVFZGQs4WmG_9ecfzA24RgCnqJlDHr7njy5Fxfz28qCQ4QNny6o45fjX60VJpcFcieroCHCpglh9RR6bAVf63o1ThkVzAua2m\-p\-yfxdnx44o1FFZjLECx\-802JbVDLexR6rvAQwCtAr7HcC6f38xS1Bf4G8hSOcsvF9jP1sfJ6CF_PFN2LdS36xQrP2Z2A_n3jpeLECcE\-6KTv3RR\-CyJeeQcvtLzFYas8SSN616h1y7Z1s1yrLi7Jo6Hqgsql9iZLvNDqWU5TzZDmfgth4lwPuGsR6t9q8_H6Z9syFpv\-sFUjFaEImZ9M1K\-Y6yHUaXXNhrMKRnhAWbCf95fw\-nn2yoqsOxbAN2eXTVOsLFi\-40znUop6GxsufRxT61LqciiHxZ01FEf6prrFngHUFtdnimb0VPBdY30S9RH7z6t9q0HWQYK0Sztrr7VwgXqEcVbLFTpckIf9zeAg1Bu0lFIhl8FOF5mxpDuRaxunT2S4nLemAMjK6PTpWqhAXAI_dK3UDKfzzFy5DxzI\-YGUhXwVuCqGZ7I5sO43TNvLDSbJHyohM5jA7pWMjdM9Bixo9QrwNJyn7GKbPzDX0XagzwI4oRC9DQMwGV0vDgyBzNWIJSceCrQ3_\-RQ5idI649PrfvB3wqfQBIOlzRnPbm\-U1o6lMfuPvfnqmEUSKxwr4HrwrLezLzLFs4YHmOtca1EjTLDWeuu0aPmGahelga6CH3YDEE1Tg3wad8J8tCDNNoMW0xP6rpetonwbAUBYaaqL2Ipf7Th8yyhso4dZhlrcZhtueyVfudDFF2SejXEhVghu_RtsbvyLTpC4uh3liVtfMhLDcGK2hasGLsGmYd_26I3dSa5xDHHzhol8nfwmt5CTB7vNJNDi\-wByDmrNW0SbAPj7\-iN\-TJ4dArrzLHcrHc1VP7sH3QJt\-7cjuuNvyXOIMrEwpMHa4KpSFsuecNWaz6e\-EuppdzPErCZePJQzXiym0vAtmpx0MuBtBdJfw",?\s*$''']
+
+
+[[rules]]
+id = "age-secret-key"
+
+[[rules.allowlists]]
+description = "Exact complete PUBLIC P02 v1 fixture values, verified independently; changed-field and alternate-age-key negatives must reject"
+condition = "AND"
+paths = ['''fixtures/protocol/p02/v1/(?:crypto\.json|bytes/[a-z0-9-]+-[0-9]{4}\.hex)$''']
+regexTarget = "secret"
+regexes = [
+    '''^AGE\-SECRET\-KEY\-14P6XTQUQFMSZFE0PPRU3CDDT0DU55700RGKCA9SLD50AUZNZFLKS5LPYCU$'''
+]

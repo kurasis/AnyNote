@@ -877,3 +877,60 @@ isolated evaluation; public inputs are not physical/audit evidence. Final hosted
 runs, actual checkout SHA and exact full tested/merge tree proof are recorded on
 the review PR before automatic merge. Environment settings must review/save and
 publish the saved draft; persistence is not publication/future-task validation.
+
+## P02 complete design freeze
+
+See [complete contract](P02_COMPLETE_CONTRACT.md), [review tracking/findings](P02_REVIEW.md),
+[actual local receipt](evidence/p02-complete-local.json),
+[controlled setup](evidence/p02-complete-environment-setup.json) and
+[inspected upstream/license sources](evidence/p02-complete-primary-sources.json).
+These local commands ran on base cdd6c84 with the completed **dirty** implementation;
+source-input hashes disambiguate it. They are not a claim that the old clean base
+already contained these changes. Final hosted exact-head/tested-tree evidence
+is recorded in the completion PR before normal merge.
+
+- PASS: 306 Node tests, including existing 249, all new contexts/errors/crypto,
+  2 MiB note boundary, tombstone/restore/ancestor closure, writer/reader/metadata
+  decisions, local profile/credential/native descriptor binding, KDF admission,
+  lock generation, immutable unknown-send reconciliation after receipt expiry
+  and role loss, current removal denial, observed ciphertext commitment before
+  commit, sync gaps/generation, snapshot completeness/revocation and restore fence.
+- PASS: real signed admission for twenty accounts/twenty epochs, exact 800 grants,
+  multiple authenticated greedy pages within 500 records/1 MiB; old c1 remains
+  independently capped at ten and cannot parse/reuse c2 signatures.
+- PASS: 55 complete schema byte vectors / 160 frozen inputs; all old file,
+  identity, state, group and dependency inventory checks. 131 existing original
+  specification/schema/vector/lock/P01/reference files compared byte-for-byte
+  with base, unchanged. npm advisory check: zero vulnerabilities.
+- PASS: independent Python 210 restricted JCS/USTAR/actual two-age-engine checks;
+  native PHP 8.4.26/sodium 1.0.18/OpenSSL 9,648 serialization/Argon/HKDF/XChaCha/
+  Ed25519/AES-GCM checks; independent c2 signed-chain/author subset 3,856 checks /
+  nine decisions. These subsets do not establish a general arbitrary parser.
+- PASS: actual Rust rage 0.12.1 ↔ Go age 1.3.2 recovery of the same authenticated
+  USTAR bytes, original cross-account note and selected-DEK small file using only
+  archive/independent kit. Empty/compact/paginated-evidence cases, wrong identity,
+  changed/truncated/trailing age streams, hostile tar paths/types/padding/counts,
+  missing footer/changed inventory/forged identity/missing independent pins reject.
+  No filesystem extraction or live destination mutation. Reference collection/file
+  limits are 16 MiB / 64 KiB; full 1 GB/100 GB product utility remains P13.
+- PASS: actual owned Laravel/MariaDB/FPM/Nginx integration, 3 PHPUnit tests /
+  7 assertions plus HTTP/outage/origin/path/production-denial checks. No product
+  authorization/storage/schema or production deployment was exercised.
+- PASS: Git-visible source scan with nine fake-token paths, fifteen changed
+  key/digest/encoded negatives, exact legacy fragment mutation and a different
+  synthetic age private identity. Exceptions bind only complete exact PUBLIC
+  values. No new partial-field/arbitrary-hash/path suppression.
+- PASS: complete final saved install script executed twice after the final model
+  correction, exits 0, all 449 then-visible source paths byte-identical before/
+  after. Earlier two successful refreshes were preparatory, not substituted for
+  the final two. Install/start draft saved once and exact readback verified;
+  repository/network/secret/runtime metadata preserved. Publication and actual
+  future-task restoration remain NOT PERFORMED / NOT RUN.
+
+Initial failures are recorded as failures, including the real twenty-account
+page boundary and inherited JCS cap; corrected code, not weakened limits or
+changed legacy inputs, passed. Development writers created new PUBLIC inputs
+before freeze and were never executed by setup/CI. No actual platform/native
+custody, product SQL/import/large-archive/memory acceptance or independent audit
+is claimed. Qualified review is TRACKED_NOT_BOOKED / NOT_RUN, G2/G3 still open;
+this is completion of original P02 chapter 14 §5 design/fixture deliverables.

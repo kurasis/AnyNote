@@ -1,0 +1,12 @@
+{
+  "status": "PINNED_SYNTHETIC_REFERENCE_TOOLS_NOT_A_PRODUCT_RELEASE",
+  "selected_native_library": "Rust age 0.12.1 (rage 0.12.1)",
+  "native_license": "MIT OR Apache-2.0",
+  "independent_implementation": "Go age 1.3.2",
+  "independent_license": "BSD-3-Clause",
+  "digest_provenance": "GitHub release asset digest metadata retrieved over authenticated HTTPS 2026-10-11",
+  "artifacts": [
+    {"name":"rage","version":"0.12.1","url":"https://github.com/str4d/rage/releases/download/v0.12.1/rage-v0.12.1-x86_64-linux.tar.gz","digest_hex":"c5d7ab41fbf1213590e89721fd2b8eb122e84518c155ce35866f1c5759a3a29f","members":{"rage/rage":"rage","rage/rage-keygen":"rage-keygen"}},
+    {"name":"age","version":"1.3.2","url":"https://github.com/FiloSottile/age/releases/download/v1.3.2/age-v1.3.2-linux-amd64.tar.gz","digest_hex":"cbe24006683f8eb669266162894b9a522a1af52f2665fbc63a4bb032ed26ac10","members":{"age/age":"age","age/age-keygen":"age-keygen"}}
+  ]
+}
