@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:anynote:p03:api-foundation:v1",
+  "$defs": {
+    "capabilities": {
+      "type": "object",
+      "properties": {
+        "service_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "negotiation": {
+          "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/negotiation"
+        },
+        "limits": {
+          "type": "object",
+          "properties": {
+            "control_bytes": {
+              "const": "4194304"
+            },
+            "page_bytes": {
+              "const": "1048576"
+            },
+            "file_plaintext_bytes": {
+              "const": "1000000000"
+            },
+            "global_ciphertext_bytes": {
+              "const": "100000000000"
+            },
+            "group_members": {
+              "const": 20
+            }
+          },
+          "required": [
+            "control_bytes",
+            "page_bytes",
+            "file_plaintext_bytes",
+            "global_ciphertext_bytes",
+            "group_members"
+          ],
+          "additionalProperties": false
+        },
+        "features": {
+          "type": "object",
+          "properties": {
+            "account_authentication": {
+              "const": false
+            },
+            "device_activation": {
+              "const": false
+            },
+            "content_storage": {
+              "const": false
+            },
+            "sync": {
+              "const": false
+            },
+            "file_transfer": {
+              "const": false
+            },
+            "production_ready": {
+              "const": false
+            }
+          },
+          "required": [
+            "account_authentication",
+            "device_activation",
+            "content_storage",
+            "sync",
+            "file_transfer",
+            "production_ready"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "service_id",
+        "negotiation",
+        "limits",
+        "features"
+      ],
+      "additionalProperties": false
+    },
+    "liveness": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "const": "live"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "sync-ack": {
+      "type": "object",
+      "properties": {
+        "cursor": {
+          "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/cursor"
+        }
+      },
+      "required": [
+        "cursor"
+      ],
+      "additionalProperties": false
+    },
+    "snapshot-request": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "enum": [
+            "resync",
+            "export"
+          ]
+        },
+        "selection": {
+          "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/export-selection"
+        }
+      },
+      "required": [
+        "purpose",
+        "selection"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

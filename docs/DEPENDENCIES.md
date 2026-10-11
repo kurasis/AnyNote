@@ -135,3 +135,14 @@ no product dependency/lock change or release SBOM/signature/Sigsum claim.
 Existing Node crypto/libsodium and pinned native PHP sodium/OpenSSL reproduce
 new note/local/PRF/Argon/AES-GCM bytes. A transient Prettier 3.6.2 formatting
 invocation changes source formatting only; it is not a product/setup dependency.
+
+## P03 contract tool lock
+
+packages/api-client has a separate frozen npm lock and dependency-inventory.json.
+TypeScript 7.0.2 is Apache-2.0, official npm integrity/git source metadata recorded;
+Ajv 8.20.0 reuses the maintained P02 selection. Inventory retains 26 resolved
+records including optional native compiler platforms, not 26 installed Linux
+packages. Existing Composer/Cargo/P01/P02 npm locks remain byte-identical.
+Pint handles handwritten PHP; exact generated PHP is syntax checked separately.
+Prettier 3.6.2 was a transient developer formatter only. No upstream library,
+compiler or self-review constitutes an independent AnyNote security audit.

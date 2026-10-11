@@ -33,6 +33,19 @@ jobs:
         run: |
           source scripts/runtime-env.sh
           npm --prefix packages/protocol ci --ignore-scripts --cache "$NPM_CONFIG_CACHE" --no-audit --no-fund
+      - name: Install frozen P03 client/typecheck dependencies
+        run: |
+          source scripts/runtime-env.sh
+          npm --prefix packages/api-client ci --ignore-scripts --cache "$NPM_CONFIG_CACHE" --no-audit --no-fund
+      - name: Verify P03 generation, real drift negatives and typed boundaries
+        run: |
+          source scripts/runtime-env.sh
+          python3 scripts/p03-contracts.py
+          python3 scripts/check-p03-drift.py
+          npm --prefix packages/api-client run lint
+          npm --prefix packages/api-client run typecheck
+          npm --prefix packages/api-client test
+          npm --prefix packages/api-client audit --cache "$NPM_CONFIG_CACHE" --audit-level=low
       - name: Install checksum-pinned independent age engines
         run: python3 scripts/install-p02-tools.py
       - name: Validate candidate parser, context, fixture and dependency drift

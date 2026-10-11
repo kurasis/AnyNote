@@ -61,3 +61,12 @@ Future environment settings may need these **additional** destinations:
 No production credentials or signing secrets are required by P00. Windows code
 signing/updater credentials, hosting and independent reviewer availability are
 later gates. Never enter secret values in chat or committed setup files.
+
+## Complete P02/P03 contract checks
+
+P02 design and P03 tooling are verified; product phases and qualified review stay
+open. Follow [P03 commands and boundaries](P03_DEVELOPMENT.md) to install frozen
+protocol/client dependencies and run `bash scripts/p03-checks.sh`. The command
+checks strict types, actual schema drift, safe errors/logs and owned SQL/HTTP
+integration. Generation is an explicit reviewed development action only; setup
+and CI compare existing outputs. Preserve all prior schema/vector/lock bytes.

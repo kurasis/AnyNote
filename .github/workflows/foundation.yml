@@ -17,6 +17,8 @@ jobs:
   foundation:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      ANYNOTE_TOOLCHAINS: /tmp/anynote-p03-toolchains
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
@@ -31,12 +33,21 @@ jobs:
           python3 scripts/install-p03-tools.py
           python3 scripts/install-p02-tools.py
           python3 scripts/check-secrets.py
+      - name: Install checksum-verified Node and frozen HTTP-client dependencies
+        run: |
+          bash scripts/install-p01-toolchains.sh
+          source scripts/runtime-env.sh
+          npm --prefix packages/protocol ci --ignore-scripts --cache /tmp/p03-npm --no-audit --no-fund
+          npm --prefix packages/api-client ci --ignore-scripts --cache /tmp/p03-npm --no-audit --no-fund
+          python3 scripts/p03-contracts.py
       - name: Install frozen dependencies and build verified images
         run: python3 scripts/dev-stack.py install
       - name: Run actual Laravel/MariaDB/FPM/Nginx integration
         run: |
           python3 scripts/dev-stack.py up
           python3 scripts/dev-stack.py test
+          source scripts/runtime-env.sh
+          python3 scripts/check-p03-http.py
       - name: Verify independent PHP public candidate crypto fixtures
         run: |
           python3 scripts/check-p02-crypto.py
@@ -49,7 +60,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: p03-foundation-report
-          path: artifacts/p03/foundation-report.json
+          path: |
+            artifacts/p03/foundation-report.json
+            artifacts/p03/http-contract-report.json
           if-no-files-found: warn
           retention-days: 14
       - name: Stop only this checkout's development services

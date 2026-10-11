@@ -583,3 +583,28 @@ fragment exceptions stay unchanged; no new partial-field/hash/path suppression.
 Changed-key/encoded-field, fake-token and alternate-age-key negatives still fail.
 Rollback is a normal revert without production data/format migration. Frozen
 setup reads/rechecks; deliberate writers never run in setup or Actions.
+
+## ADR-013 — generated P03 foundation and a content-free request boundary
+
+Generate initial OpenAPI 3.1 and shared TS/PHP transport types from unchanged P02
+and a closed supplemental P03 schema. Explicitly mark future phase-owned paths
+unimplemented and transport wrappers unavailable, rather than introducing dummy
+authentication or generic payload acceptance. Input/output receipts bind schema,
+predicate, registry, documentation and dependency changes; setup never generates.
+Use a separate pinned TS 7.0.2/Ajv development lock without changing old locks.
+PHP generated readonly primitives are not full nested/auth/crypto validation.
+
+Use canonical P02 16-byte IDs for service/request correlation, never UUID/hex.
+Common errors derive fixed mappings from generated authoritative metadata, conceal
+unauthorized resources and strip framework exception diagnostics. Raw duplicate/
+UTF-8/depth/size controls precede future DTO-specific acceptance. Nginx overflow
+passes a trusted server-only marker and no request body to the PHP boundary so
+ordinary and chunked 413s have valid IDs/errors. Exact CORS is not CSRF/auth.
+
+One Monolog formatter discards arbitrary message/context/exception/extra fields
+and retains only fixed public request metadata. Seven-day mode-0600 daily logs
+are inspected after hostile body/query/cookie/token inputs; volume monitoring is
+P16. No source-scanner exception is added; hash provenance uses path/hash records.
+Production HTTPS rejects untrusted forwarded headers; real deployment/session
+trust remains phase-owned. P03 exit concerns reproducible tooling, not product
+login/SQL/crypto/hardware or qualified review. Roll back with a normal revert.

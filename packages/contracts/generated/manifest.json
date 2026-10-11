@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "scope": "P03_GENERATION_NOT_PRODUCT_AUTHORIZATION",
+  "inputs": [
+    {
+      "path": "scripts/p03-contracts.py",
+      "sha256": "3d905261535c9c833f92adc310b4b9a5215e2fb7ef936261d75816ed93a225b3"
+    },
+    {
+      "path": "packages/api-client/package.json",
+      "sha256": "40368df3e80d00a7bac62c60f36964338ceb300328b42963d32b62bac288cf87"
+    },
+    {
+      "path": "packages/api-client/client.mjs",
+      "sha256": "df2272fb36ee2ca9894c6ca3bc0d9386df3f7cf8f2f511b3a71d30a9c3f333c4"
+    },
+    {
+      "path": "packages/api-client/package-lock.json",
+      "sha256": "565a9e344affcf59215cdea506c6ed326119a74553b58dff2f8a296ea4fa8af9"
+    },
+    {
+      "path": "packages/api-client/dependency-inventory.json",
+      "sha256": "a741cee97d5d620c5341069d9f266e21d1585cfd330e3175fb6871f6f56d303c"
+    },
+    {
+      "path": "packages/contracts/p03-operations.json",
+      "sha256": "2e58da3926f0cf4d289024e5ba55567d8abb532faaf344f4b7ee0649609dfff5"
+    },
+    {
+      "path": "packages/contracts/p02-errors.json",
+      "sha256": "d902e85fba79437c5916825d2e94e2e10a2d740fbf2ac31db01d709457873d74"
+    },
+    {
+      "path": "packages/contracts/p02-v1.registry.json",
+      "sha256": "a4089b4ba546d4b5ca6d2f090a08e98aa74ff048245e6e1ae16909f843e9e9e7"
+    },
+    {
+      "path": "docs/P02_COMPLETE_CONTRACT.md",
+      "sha256": "8fde349ca74d448aede4f755b15d7dac3e7133de16b6c64fd65342af8abba9d9"
+    },
+    {
+      "path": "packages/protocol/src/protocol-codec.mjs",
+      "sha256": "bdbe5e522f0763d90d2b71a345d2bebe62df3763fef81096e98994d800cef01e"
+    },
+    {
+      "path": "packages/protocol/src/codec.mjs",
+      "sha256": "75ef1ee513d4fc96feab4a2085c9b768f56c60f5a96e24b6d6abd9faea129410"
+    },
+    {
+      "path": "packages/protocol/src/identity-codec.mjs",
+      "sha256": "a90fdfb65fd37e0f8c688c89b96e9566b7e3bd4ad78f9cf531e39a82c4573b34"
+    },
+    {
+      "path": "packages/protocol/src/state-codec.mjs",
+      "sha256": "4e78787c294ec4176c7ab992d08883b47e6f40f07b1ee96251c5021dbb0f8adf"
+    },
+    {
+      "path": "packages/protocol/src/group-codec.mjs",
+      "sha256": "d885ee72cca5ab20aa16e877e1379fbd24676de18da7fa2ce0e7a41b3d7526a1"
+    },
+    {
+      "path": "packages/protocol/src/strict-json.mjs",
+      "sha256": "811b66d787a7b7467bf5c49397d1de161e9d2216f707e20e3244d967ab40b6e8"
+    },
+    {
+      "path": "packages/contracts/p02-file-c1.schema.json",
+      "sha256": "e36d622612accafc633f86279c809761575c731541ca5173bd75871dd12234bb"
+    },
+    {
+      "path": "packages/contracts/p02-identity-c1.schema.json",
+      "sha256": "ef497fb54b899d103b3cd06904e1dbd23d191a586f14b9d358264213af9cfc4e"
+    },
+    {
+      "path": "packages/contracts/p02-state-c1.schema.json",
+      "sha256": "09f428ee820c9c7ab1de40edfe8584d50335d2e103039b98a99e14de4ec671d6"
+    },
+    {
+      "path": "packages/contracts/p02-group-c2.schema.json",
+      "sha256": "b55b186bbb0b94fb9f836fa814daf3641affe62d444f7d9175e1ef8880a52faa"
+    },
+    {
+      "path": "packages/contracts/p02-v1.schema.json",
+      "sha256": "3a9fef9ee152b35b3b1d560d1d724f89fb7dc3864213375d1816a96237649f44"
+    },
+    {
+      "path": "packages/contracts/p03-api.schema.json",
+      "sha256": "3d803c5c9317d2868c2de602bf4786ec5c05048231798151af9f173e07fe4b7d"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "packages/contracts/generated/openapi.json",
+      "sha256": "6d57ed1171d5f73103300ffc8ae345d68a3720a15d095bcc4d930006c74d404b"
+    },
+    {
+      "path": "packages/contracts/generated/protocol.d.ts",
+      "sha256": "fec37cf1fcec4dce7e5a5012a729f5a2decf96ddd47d7ddd98b718a4be23dd3a"
+    },
+    {
+      "path": "packages/contracts/generated/runtime-schemas.json",
+      "sha256": "0c87f01780c0045d894911833c5c8a1df3568c1013b926e8bff4c72e7ebba3e1"
+    },
+    {
+      "path": "apps/api/app/Generated/Dtos.php",
+      "sha256": "0ff8478c68aa761c0b59f8dba8c024fc5bb61598d51d7cc54d43aa960e93f0a0"
+    },
+    {
+      "path": "apps/api/app/Generated/catalogue.json",
+      "sha256": "37a312b8c1f4bcf523ed04fa25c978e983aa6a5fb71b2d96388252e4415cffca"
+    }
+  ],
+  "structures": 157,
+  "operations": 79
+}

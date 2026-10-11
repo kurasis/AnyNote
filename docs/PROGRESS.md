@@ -9,7 +9,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P00 | VERIFIED | Local baseline and four negative cases passed; scope/version/inventory deliverables complete; remote bootstrap and clean-clone verification passed; both baseline Actions runs verified |
 | P01 | IN PROGRESS | Host crypto/KDF/storage/export/fault evidence VERIFIED; owner 0.1.4 fresh-process Hello authentication, WTS lock/STALE, installed-iPhone-PWA selected 1 GB hash and diagnostic recovery PASS; full physical G1/memory/network matrix remains open |
 | P02 | VERIFIED | Complete five-component registry, exact note/local/native/sync/snapshot/restore/age formats, frozen bytes and independent PHP/Python/Rust-age/Go-age subsets; external review TRACKED_NOT_BOOKED / NOT_RUN; G2/G3 and product phases remain open |
-| P03 | IN PROGRESS | Laravel/MariaDB/FPM/Nginx tooling and synthetic integration implemented; final contracts/generated types/errors/logging follow P02; evidence below |
+| P03 | VERIFIED | 79 initial OpenAPI operations / 157 schema-derived types; strict errors/request IDs/content-free logs; frozen setup, drift negatives and actual owned HTTP/SQL integration verified; product operations remain phase-owned |
 | P04 | NOT STARTED | P02/P03; signature acceptance also needs P05 fixtures |
 | P05 | NOT STARTED | P01/P02/P03 |
 | P06 | NOT STARTED | P04 |
@@ -430,3 +430,15 @@ for actual command results, initial failures and corrected boundary cases. Roll
 back with an ordinary revert; no production data exists to migrate. Next batch:
 finish P03 contract/type/error/logging drift gates, then product P04/P05 in their
 documented dependency order. No repeated owner physical trial is requested here.
+
+## Completed phase: P03 contract and request foundation
+
+Complete P03 tooling over frozen P02 without executable dummy auth/crypto. Generate
+closed shared TS/PHP transports, initial OpenAPI and hash-bound predicates; check
+actual drift/strict types. Public capabilities/liveness expose only minimal safe
+foundation state. Common errors conceal resource existence, reject ambiguous raw
+control JSON, preserve canonical request IDs through Nginx 413 and never disclose
+framework diagnostics. Persisted content-free logs pass hostile-request inspection.
+Product routes, SQL tables/authorization and crypto adapters remain P04/P05/P06.
+See P03_DEVELOPMENT.md and TEST_EVIDENCE.md for actual outcomes/remaining gates.
+Rollback: normal revert; no production migration/deployment or P01 kit change.

@@ -1,0 +1,16 @@
+{
+  "name": "@anynote/api-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "UNLICENSED",
+  "engines": { "node": "24.21.0", "npm": "11.19.0" },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "node --check client.mjs && node --check test/contracts.test.mjs",
+    "contracts:check": "python3 ../../scripts/p03-contracts.py"
+  },
+  "dependencies": { "ajv": "8.20.0" },
+  "devDependencies": { "typescript": "7.0.2" }
+}

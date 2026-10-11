@@ -4,13 +4,13 @@ An invite-only, end-to-end encrypted notes and files service for Windows
 (Tauri 2 / WebView2) and iPhone (installed PWA), backed by Laravel, MariaDB,
 Nginx and PHP-FPM.
 
-**Current state:** P00 complete; P01 isolated synthetic feasibility in progress. Rust/Node/Chromium
-cryptographic interoperability, Argon2id, ciphertext storage and selected 1 GB
-disk export host pipelines pass. A scoped native Windows PRF/TPM probe and
-private HTTPS PWA trial harness are prepared; physical Windows/iPhone acceptance
-remains open. P03 adds a reproducible Laravel/MariaDB/Nginx/PHP-FPM development
-foundation; product API/authentication and protocol contracts are pending. Do not store
-real secrets or user data in this repository's future experimental builds.
+**Current state:** P00, P02 protocol design and P03 development foundation are
+complete. P01 has scoped Windows/iPhone and host feasibility evidence; its full
+physical matrix remains open. Initial OpenAPI, generated types, strict common
+errors and content-free logs are verified against synthetic services. Product
+authorization, storage, crypto adapters and deployment follow P04 onward.
+Qualified independent review and production release gates remain open. Do not
+store real secrets or user data in experimental builds.
 
 ## Start here
 
