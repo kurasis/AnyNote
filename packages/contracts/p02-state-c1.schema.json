@@ -1,0 +1,1277 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:anynote:p02:state-contract:c1",
+  "title": "P02 candidate pairing, signed device roster and synthetic server authority; no durable product transactions",
+  "$defs": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "service_id",
+        "account_id",
+        "root_fingerprint"
+      ],
+      "properties": {
+        "service_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "root_fingerprint": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        }
+      }
+    },
+    "device": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "device_id",
+        "signing_key",
+        "encryption_key",
+        "capabilities"
+      ],
+      "properties": {
+        "device_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "signing_key": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "encryption_key": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "capabilities": {
+          "type": "array",
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "delegate-device",
+              "distribute-group-key",
+              "receive-group-key",
+              "sign-content"
+            ]
+          }
+        }
+      }
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "device_id",
+        "certificate_digest"
+      ],
+      "properties": {
+        "device_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "certificate_digest": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        }
+      }
+    },
+    "invitation-body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "contract",
+        "protocol",
+        "protocol_version",
+        "service_id",
+        "account_id",
+        "root_fingerprint",
+        "operation_id",
+        "generation",
+        "roster",
+        "approver",
+        "nonce",
+        "expires_at"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "pairing-invitation"
+        },
+        "contract": {
+          "const": "p02-state-c1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "service_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "root_fingerprint": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "operation_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "generation": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+        },
+        "roster": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/head"
+        },
+        "approver": {
+          "$ref": "#/$defs/actor"
+        },
+        "nonce": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "expires_at": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+        }
+      }
+    },
+    "invitation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "body",
+        "signature"
+      ],
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/invitation-body"
+        },
+        "signature": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/signature"
+        }
+      }
+    },
+    "offer-body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "contract",
+        "protocol",
+        "protocol_version",
+        "service_id",
+        "account_id",
+        "root_fingerprint",
+        "operation_id",
+        "generation",
+        "roster",
+        "session_binding",
+        "device",
+        "nonce",
+        "expires_at",
+        "invitation_digest"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "pairing-offer"
+        },
+        "contract": {
+          "const": "p02-state-c1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "service_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "root_fingerprint": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "operation_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "generation": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+        },
+        "roster": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/head"
+        },
+        "session_binding": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "device": {
+          "$ref": "#/$defs/device"
+        },
+        "nonce": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "expires_at": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+        },
+        "invitation_digest": {
+          "oneOf": [
+            {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "offer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "body",
+        "signature"
+      ],
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/offer-body"
+        },
+        "signature": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/signature"
+        }
+      }
+    },
+    "response-body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "contract",
+        "protocol",
+        "protocol_version",
+        "service_id",
+        "account_id",
+        "root_fingerprint",
+        "operation_id",
+        "generation",
+        "roster",
+        "approver",
+        "offer_digest",
+        "invitation_digest",
+        "nonce",
+        "expires_at"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "pairing-response"
+        },
+        "contract": {
+          "const": "p02-state-c1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "service_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "root_fingerprint": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "operation_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "generation": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+        },
+        "roster": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/head"
+        },
+        "approver": {
+          "$ref": "#/$defs/actor"
+        },
+        "offer_digest": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "invitation_digest": {
+          "oneOf": [
+            {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nonce": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "expires_at": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+        }
+      }
+    },
+    "response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "body",
+        "signature"
+      ],
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/response-body"
+        },
+        "signature": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/signature"
+        }
+      }
+    },
+    "transcript": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "contract",
+        "protocol",
+        "protocol_version",
+        "invitation",
+        "offer",
+        "response"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "pairing-transcript"
+        },
+        "contract": {
+          "const": "p02-state-c1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "invitation": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/invitation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "offer": {
+          "$ref": "#/$defs/offer"
+        },
+        "response": {
+          "$ref": "#/$defs/response"
+        }
+      }
+    },
+    "approval-body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "contract",
+        "protocol",
+        "protocol_version",
+        "service_id",
+        "account_id",
+        "root_fingerprint",
+        "operation_id",
+        "generation",
+        "roster",
+        "session_binding",
+        "transcript_digest",
+        "certificate",
+        "sealed_challenge",
+        "challenge_digest",
+        "expires_at"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "enrollment-approval"
+        },
+        "contract": {
+          "const": "p02-state-c1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "service_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "root_fingerprint": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "operation_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "generation": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+        },
+        "roster": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/head"
+        },
+        "session_binding": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "transcript_digest": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "certificate": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/certificate"
+        },
+        "sealed_challenge": {
+          "type": "string",
+          "format": "bounded-binary-4096"
+        },
+        "challenge_digest": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "expires_at": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "body",
+        "signature"
+      ],
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/approval-body"
+        },
+        "signature": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/signature"
+        }
+      }
+    },
+    "pairing-proof-plaintext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "transcript_digest",
+        "device_id",
+        "secret"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "pairing-encryption-proof"
+        },
+        "transcript_digest": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "device_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "secret": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        }
+      }
+    },
+    "confirmation-body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "contract",
+        "protocol",
+        "protocol_version",
+        "service_id",
+        "account_id",
+        "root_fingerprint",
+        "operation_id",
+        "generation",
+        "roster",
+        "session_binding",
+        "transcript_digest",
+        "certificate_digest",
+        "approval_digest",
+        "challenge_response"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "enrollment-confirmation"
+        },
+        "contract": {
+          "const": "p02-state-c1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "service_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "root_fingerprint": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "operation_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "generation": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+        },
+        "roster": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/head"
+        },
+        "session_binding": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "transcript_digest": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "certificate_digest": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "approval_digest": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "challenge_response": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        }
+      }
+    },
+    "confirmation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "body",
+        "signature"
+      ],
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/confirmation-body"
+        },
+        "signature": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/signature"
+        }
+      }
+    },
+    "qr": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "purpose",
+            "contract",
+            "protocol",
+            "protocol_version",
+            "mode",
+            "channel_key",
+            "record"
+          ],
+          "properties": {
+            "purpose": {
+              "const": "pairing-qr"
+            },
+            "contract": {
+              "const": "p02-state-c1"
+            },
+            "protocol": {
+              "const": "anynote"
+            },
+            "protocol_version": {
+              "const": 1
+            },
+            "mode": {
+              "const": "new-device-offer"
+            },
+            "channel_key": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+            },
+            "record": {
+              "$ref": "#/$defs/offer"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "purpose",
+            "contract",
+            "protocol",
+            "protocol_version",
+            "mode",
+            "channel_key",
+            "record"
+          ],
+          "properties": {
+            "purpose": {
+              "const": "pairing-qr"
+            },
+            "contract": {
+              "const": "p02-state-c1"
+            },
+            "protocol": {
+              "const": "anynote"
+            },
+            "protocol_version": {
+              "const": 1
+            },
+            "mode": {
+              "const": "existing-device-invitation"
+            },
+            "channel_key": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+            },
+            "record": {
+              "$ref": "#/$defs/invitation"
+            }
+          }
+        }
+      ]
+    },
+    "channel-context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "contract",
+        "protocol",
+        "protocol_version",
+        "message",
+        "anchor_digest"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "pairing-channel-frame"
+        },
+        "contract": {
+          "const": "p02-state-c1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "message": {
+          "enum": [
+            "new-device-offer",
+            "approver-response",
+            "approver-approval",
+            "new-device-confirmation"
+          ]
+        },
+        "anchor_digest": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        }
+      }
+    },
+    "frame": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "header",
+        "ciphertext"
+      ],
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/channel-context"
+        },
+        "header": {
+          "type": "string",
+          "format": "base64url-24"
+        },
+        "ciphertext": {
+          "type": "string",
+          "format": "bounded-binary-16384"
+        }
+      }
+    },
+    "challenge-context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "contract",
+        "protocol",
+        "protocol_version",
+        "service_id",
+        "account_id",
+        "root_fingerprint",
+        "intent",
+        "challenge_id",
+        "session_binding",
+        "generation",
+        "roster",
+        "nonce",
+        "device",
+        "expires_at"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "device-possession-challenge"
+        },
+        "contract": {
+          "const": "p02-state-c1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "service_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "root_fingerprint": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "intent": {
+          "enum": [
+            "register",
+            "reset",
+            "device-proof"
+          ]
+        },
+        "challenge_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "session_binding": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "generation": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+        },
+        "roster": {
+          "oneOf": [
+            {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/head"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nonce": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "device": {
+          "$ref": "#/$defs/device"
+        },
+        "expires_at": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+        }
+      }
+    },
+    "challenge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "sealed_challenge",
+        "challenge_digest"
+      ],
+      "properties": {
+        "context": {
+          "$ref": "#/$defs/challenge-context"
+        },
+        "sealed_challenge": {
+          "type": "string",
+          "format": "bounded-binary-4096"
+        },
+        "challenge_digest": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        }
+      }
+    },
+    "challenge-plaintext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "context",
+        "secret"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "device-encryption-proof"
+        },
+        "context": {
+          "$ref": "#/$defs/challenge-context"
+        },
+        "secret": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        }
+      }
+    },
+    "possession-body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purpose",
+        "contract",
+        "protocol",
+        "protocol_version",
+        "service_id",
+        "account_id",
+        "root_fingerprint",
+        "challenge_digest",
+        "device_id",
+        "session_binding",
+        "challenge_response"
+      ],
+      "properties": {
+        "purpose": {
+          "const": "device-possession-proof"
+        },
+        "contract": {
+          "const": "p02-state-c1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "service_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "root_fingerprint": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "challenge_digest": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "device_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "session_binding": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "challenge_response": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        }
+      }
+    },
+    "possession": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "body",
+        "signature"
+      ],
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/possession-body"
+        },
+        "signature": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/signature"
+        }
+      }
+    },
+    "root-payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "challenge",
+        "certificate",
+        "confirmation",
+        "active_device_limit"
+      ],
+      "properties": {
+        "challenge": {
+          "$ref": "#/$defs/challenge"
+        },
+        "certificate": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/certificate"
+        },
+        "confirmation": {
+          "$ref": "#/$defs/possession"
+        },
+        "active_device_limit": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+        }
+      }
+    },
+    "enroll-payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transcript",
+        "approval",
+        "confirmation"
+      ],
+      "properties": {
+        "transcript": {
+          "$ref": "#/$defs/transcript"
+        },
+        "approval": {
+          "$ref": "#/$defs/approval"
+        },
+        "confirmation": {
+          "$ref": "#/$defs/confirmation"
+        }
+      }
+    },
+    "revoke-payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targets",
+        "affected_devices"
+      ],
+      "properties": {
+        "targets": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+          }
+        },
+        "affected_devices": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+          }
+        }
+      }
+    },
+    "event-body": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "purpose",
+            "contract",
+            "protocol",
+            "protocol_version",
+            "service_id",
+            "account_id",
+            "root_fingerprint",
+            "operation_id",
+            "generation",
+            "version",
+            "predecessor",
+            "kind",
+            "signer",
+            "payload"
+          ],
+          "properties": {
+            "purpose": {
+              "const": "device-roster-event"
+            },
+            "contract": {
+              "const": "p02-state-c1"
+            },
+            "protocol": {
+              "const": "anynote"
+            },
+            "protocol_version": {
+              "const": 1
+            },
+            "service_id": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+            },
+            "account_id": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+            },
+            "root_fingerprint": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+            },
+            "operation_id": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+            },
+            "generation": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+            },
+            "version": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+            },
+            "predecessor": {
+              "oneOf": [
+                {
+                  "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/head"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "const": "register"
+            },
+            "signer": {
+              "const": "root"
+            },
+            "payload": {
+              "$ref": "#/$defs/root-payload"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "purpose",
+            "contract",
+            "protocol",
+            "protocol_version",
+            "service_id",
+            "account_id",
+            "root_fingerprint",
+            "operation_id",
+            "generation",
+            "version",
+            "predecessor",
+            "kind",
+            "signer",
+            "payload"
+          ],
+          "properties": {
+            "purpose": {
+              "const": "device-roster-event"
+            },
+            "contract": {
+              "const": "p02-state-c1"
+            },
+            "protocol": {
+              "const": "anynote"
+            },
+            "protocol_version": {
+              "const": 1
+            },
+            "service_id": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+            },
+            "account_id": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+            },
+            "root_fingerprint": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+            },
+            "operation_id": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+            },
+            "generation": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+            },
+            "version": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+            },
+            "predecessor": {
+              "oneOf": [
+                {
+                  "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/head"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "const": "reset"
+            },
+            "signer": {
+              "const": "root"
+            },
+            "payload": {
+              "$ref": "#/$defs/root-payload"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "purpose",
+            "contract",
+            "protocol",
+            "protocol_version",
+            "service_id",
+            "account_id",
+            "root_fingerprint",
+            "operation_id",
+            "generation",
+            "version",
+            "predecessor",
+            "kind",
+            "signer",
+            "payload"
+          ],
+          "properties": {
+            "purpose": {
+              "const": "device-roster-event"
+            },
+            "contract": {
+              "const": "p02-state-c1"
+            },
+            "protocol": {
+              "const": "anynote"
+            },
+            "protocol_version": {
+              "const": 1
+            },
+            "service_id": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+            },
+            "account_id": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+            },
+            "root_fingerprint": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+            },
+            "operation_id": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+            },
+            "generation": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+            },
+            "version": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+            },
+            "predecessor": {
+              "oneOf": [
+                {
+                  "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/head"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "const": "enroll"
+            },
+            "signer": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+            },
+            "payload": {
+              "$ref": "#/$defs/enroll-payload"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "purpose",
+            "contract",
+            "protocol",
+            "protocol_version",
+            "service_id",
+            "account_id",
+            "root_fingerprint",
+            "operation_id",
+            "generation",
+            "version",
+            "predecessor",
+            "kind",
+            "signer",
+            "payload"
+          ],
+          "properties": {
+            "purpose": {
+              "const": "device-roster-event"
+            },
+            "contract": {
+              "const": "p02-state-c1"
+            },
+            "protocol": {
+              "const": "anynote"
+            },
+            "protocol_version": {
+              "const": 1
+            },
+            "service_id": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+            },
+            "account_id": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+            },
+            "root_fingerprint": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+            },
+            "operation_id": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+            },
+            "generation": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+            },
+            "version": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+            },
+            "predecessor": {
+              "oneOf": [
+                {
+                  "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/head"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "const": "revoke"
+            },
+            "signer": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+            },
+            "payload": {
+              "$ref": "#/$defs/revoke-payload"
+            }
+          }
+        }
+      ]
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "body",
+        "signature"
+      ],
+      "properties": {
+        "body": {
+          "$ref": "#/$defs/event-body"
+        },
+        "signature": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/signature"
+        }
+      }
+    },
+    "head": {
+      "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/head"
+    }
+  }
+}

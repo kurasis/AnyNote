@@ -1,0 +1,26 @@
+{
+  "saved_status": "saved",
+  "draft_id": "06e641e5-588c-4150-8c32-487c9910c0b2~cecfgdraft_6acb46857724819f8546ae752e19b115",
+  "revision": 8,
+  "exact_install_readback": true,
+  "exact_start_readback": true,
+  "preserved_network": true,
+  "preserved_repository_membership": true,
+  "requires_publish": true,
+  "publication": "NOT_RUN",
+  "future_task_restoration": "NOT_RUN",
+  "captured_at_utc": "2026-10-11T09:23:12.104508+00:00",
+  "complete_install_script_execution": {
+    "status": "PASS",
+    "exit_code": 0,
+    "log_sha256_base64url": "NyMGHL7yXYx_12Px3n8L6_p04EnVhJ9jxCZ8-A9PqeQ"
+  },
+  "complete_repeated_install_execution": {
+    "status": "PASS",
+    "all_git_visible_source_fixture_lock_bytes_preserved": true,
+    "log_sha256_base64url": "iOokpqgGyronzrxAFS7ebwEnl61ZMPMBTdGG9nV22lI"
+  },
+  "install_script_sha256_base64url": "rh-bxtIl2KeKg1-3rsaWmYm702IpjQ-hsua7LHIY3qk",
+  "earlier_setup_failure": "Scanner random all-letter negative suppressed by upstream default heuristic; changed to fixed public mutation; complete final script rerun twice",
+  "not_publication_or_new_task_acceptance": true
+}

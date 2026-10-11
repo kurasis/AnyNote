@@ -45,3 +45,23 @@ regexes = [
     '''^b1GAuBizeAdNkSGoX6Dc21rGiqfsAE4vDKIqJi6jy1E$''',
     '''^ukB5\-fSLIy_tx4c7E2AVHWMH4kheVtuKVIQGgC7giR4$'''
 ]
+
+[[rules.allowlists]]
+description = "Exact PUBLIC synthetic state fixture keys and frozen one-use QR channel keys; changed-value negatives remain mandatory"
+condition = "AND"
+paths = ['''fixtures/protocol/p02/state-vectors\.json$''']
+regexTarget = "secret"
+regexes = [
+    '''^2cgD1E_PX7Cju4B2cjxOmrhz1ulajLn3eSQVnp_9qVw$''',
+    '''^NddirxaOGM\-sZaLFF\-t0ylDPgus9YRqvPQVhkPaYiDk$''',
+    '''^Q733J4qflto8esvl1qazeWdJPvXKo8mV4g2zaA43NB0$''',
+    '''^Qai7EAb\-DZc7\-8G_RoQ6GlgppORN62OywdbkI\-dWtgY$''',
+    '''^SB7edy2hV4XJ5ZoIYgG4w_nDBxKeP8bX80qk3\-1YFOU$''',
+    '''^TjDlN9oNdK3AZCssMw2ncymUxGBYXjmnCh3VEaYIxHs$''',
+    '''^YPiEk\-Fet_AhZpVvhSZl6F9jb9PbbBR5_g57Lrt_T0A$''',
+    '''^YenByDdHUxznGmK_Dfcw9bSLZymqxuVhtj63Z5YYrBM$''',
+    '''^b1GAuBizeAdNkSGoX6Dc21rGiqfsAE4vDKIqJi6jy1E$''',
+    '''^mICLHAX7jt87KQEfmmhPdtjoFg5n_a8m2UDhGtxgEj0$''',
+    '''^oDvB1i_CBNsdOV0imFPj7sC1_d60SdNqOFWeh4\-rkH4$''',
+    '''^ukB5\-fSLIy_tx4c7E2AVHWMH4kheVtuKVIQGgC7giR4$'''
+]

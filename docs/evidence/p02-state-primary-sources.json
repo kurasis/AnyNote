@@ -1,0 +1,13 @@
+{
+  "checked_at_utc": "2026-10-11T09:14:56.498885+00:00",
+  "selected_construction": "libsodium secretstream, independent random one-use 32-byte authenticated QR/OOB key; single-message TAG_FINAL; no forward-secrecy claim",
+  "primary_source": {
+    "url": "https://raw.githubusercontent.com/jedisct1/libsodium-doc/master/secret-key_cryptography/secretstream.md",
+    "bytes": 16508,
+    "sha256_base64url": "GAhgxXSsA95uvlygfOmoM9SM4i6cMhwo08mhoEadTZY"
+  },
+  "unchanged_versions_licenses_and_integrity": "p02-identity-primary-sources.json and packages/protocol/dependency-inventory.json",
+  "review_scope": "Primary API semantics, existing locked library ISC notice/version; not qualified composition audit",
+  "physical_QR_and_intent": "SIMULATED_NOT_IMPLEMENTED",
+  "native_php": "existing pinned PHP 8.4.26/native sodium 1.0.18; public fixture-only subset"
+}

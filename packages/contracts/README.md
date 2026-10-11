@@ -8,3 +8,8 @@ unknown fields. `docs/protocol-v1.md` defines exact encoding and trust limits.
 
 This registry is not the complete v1 freeze or product OpenAPI/TS/Rust/PHP types.
 There is no API endpoint exposing these incomplete security transitions.
+
+The [p02-state-c1 registry](p02-state-c1.registry.json) and
+[state contract](../../docs/P02_STATE_CONTRACT.md) add synthetic authenticated
+pairing and pinned signed-device state. Account login/SQL durability are simulated;
+group policy/history authorization and physical QR verification remain pending.

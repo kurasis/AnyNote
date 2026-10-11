@@ -43,6 +43,11 @@
       "contract": "p02-identity-c1",
       "registry": "p02-identity-c1.registry.json",
       "status": "CANDIDATE_SYNTHETIC_CRYPTO_AUTHORIZATION_NOT_EVALUATED"
+    },
+    {
+      "contract": "p02-state-c1",
+      "registry": "p02-state-c1.registry.json",
+      "status": "CANDIDATE_PINNED_DEVICE_STATE_GROUP_AUTHORIZATION_NOT_EVALUATED"
     }
   ]
 }

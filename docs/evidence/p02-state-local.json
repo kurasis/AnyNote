@@ -1,0 +1,122 @@
+{
+  "captured_at_utc": "2026-10-11T09:23:11.725271+00:00",
+  "source_base_commit": "ccc5ff6f562aa1b810e8795a702dca75ccab4be4",
+  "source_tree_dirty": true,
+  "node_tests": {
+    "status": "PASS",
+    "tests": 189,
+    "log_sha256_base64url": "HIYJKnibdh-UtEtdACr0UF1Z3wHztOQ20jFKAx--E4I"
+  },
+  "state_vectors": {
+    "status": "PASS",
+    "events": 5,
+    "channel_frames": 7,
+    "qr_directions": 2,
+    "device_roster_authorization": "VERIFIED_FROM_PINNED_CHAIN",
+    "group_authorization": "NOT_EVALUATED"
+  },
+  "independent_php": {
+    "channel_frames": 7,
+    "checks": 4812,
+    "events": 5,
+    "php": "8.4.26",
+    "production_parser_sessions_and_group_authorization": "NOT_EVALUATED",
+    "scope": "PUBLIC_FIXTURE_SUBSET_ONLY",
+    "sodium": "1.0.18",
+    "source_commit": "ccc5ff6f562aa1b810e8795a702dca75ccab4be4",
+    "source_tree_dirty": true,
+    "status": "PASS"
+  },
+  "dependency_inventory": {
+    "status": "PASS",
+    "locked_packages": 10,
+    "new_dependencies": 0,
+    "npm_advisories": 0
+  },
+  "source_scan": {
+    "status": "PASS",
+    "fake_token_paths": 6,
+    "changed_fixture_keys": 8,
+    "reviewed_findings": 28,
+    "complete_public_values": 12,
+    "log_sha256_base64url": "Dbkw1OEx0162w2Rxw4L_T_PdMEEaepDhuaNk27miXuU"
+  },
+  "prior_schema_vectors_and_lock_bytes_preserved": [
+    "packages/contracts/p02-file-c1.schema.json",
+    "packages/contracts/p02-identity-c1.schema.json",
+    "fixtures/protocol/p02/vectors.json",
+    "fixtures/protocol/p02/identity-vectors.json",
+    "packages/protocol/package-lock.json"
+  ],
+  "physical_QR_account_auth_durable_transactions_and_qualified_review": "NOT_RUN_OR_SIMULATED",
+  "inputs": [
+    {
+      "path": "packages/contracts/p02-state-c1.schema.json",
+      "sha256_base64url": "CfQo7oIMnHqx3kDt_oWE1QM10uEDA5uYqZ4U3k7GcdY"
+    },
+    {
+      "path": "packages/contracts/p02-state-c1.registry.json",
+      "sha256_base64url": "QOvmcQNrfSZaASKmpUjltIEH0RWmcjqcrY2Obf8reIM"
+    },
+    {
+      "path": "packages/protocol/package.json",
+      "sha256_base64url": "cLJp8ZX1HQpuK27uu3VJJ3tfQe0uSiJRdQJA0ocyKIc"
+    },
+    {
+      "path": "packages/protocol/src/state-codec.mjs",
+      "sha256_base64url": "Tnh4fClOxBdsermS0IiDtH5vQPB7HuliUcUCHbsPit8"
+    },
+    {
+      "path": "packages/protocol/src/roster.mjs",
+      "sha256_base64url": "EZxYWzukFAZ4XCIqeVGO3nuWOCThPei6ieswQV4pOPI"
+    },
+    {
+      "path": "packages/protocol/src/pairing-channel.mjs",
+      "sha256_base64url": "Y_FFi89rVIjqIgEsaZzzPD_0t_VfHciMp54sZa09XI4"
+    },
+    {
+      "path": "packages/protocol/src/evaluation-authority.mjs",
+      "sha256_base64url": "db40xrHmclX-AgeptzlZtwb5EcIk2aq3hsz1IoCw_hE"
+    },
+    {
+      "path": "packages/protocol/src/enrollment.mjs",
+      "sha256_base64url": "vKbZ_A3BfmmBRdbY0DU3MtO0MyId8DJdlC7fUEMsGjU"
+    },
+    {
+      "path": "packages/protocol/state-fixtures.mjs",
+      "sha256_base64url": "1phacMEeH2cJHgaZ3vYCfxhfnOTqPYvUu1gdG33GLx8"
+    },
+    {
+      "path": "packages/protocol/test/state.test.mjs",
+      "sha256_base64url": "BK1QFhPL8LtiiGJxefpgfQI66UlXMUG_km095aNjsWk"
+    },
+    {
+      "path": "fixtures/protocol/p02/state-vectors.json",
+      "sha256_base64url": "F81puVaVdCb3_DLK8_mHp2qXGr7oQ_MS65DZiRLLaV8"
+    },
+    {
+      "path": "scripts/check-p02-state.php",
+      "sha256_base64url": "z1_W5ZyfYmTRKEDnAfrj4sb8syU-Mrr5g3TET0l5FB4"
+    },
+    {
+      "path": "scripts/check-p02-state.py",
+      "sha256_base64url": "H2-yhrN5x5b0McvzbDsj3VLTfE6VMD146DT7XIJ0MFE"
+    },
+    {
+      "path": "scripts/check-secrets.py",
+      "sha256_base64url": "uZHNb6_ox8TglhGb6u4cPC5zV1dWOUszYdai7q2_Lfc"
+    },
+    {
+      "path": ".gitleaks.toml",
+      "sha256_base64url": "Lp1YutRKpLpTM4xTZ916T3sf1u1G1CMTJs7yuJgPdWM"
+    },
+    {
+      "path": ".github/workflows/protocol-candidate.yml",
+      "sha256_base64url": "PLt3Elc9lUcGyoncNuSS3DPQ_UJUdSWspUORpDAWN-4"
+    },
+    {
+      "path": ".github/workflows/foundation.yml",
+      "sha256_base64url": "REJa3LwToBZBU-hN6hSvK7s2BkGVOWcpSP-Sb1-YWHI"
+    }
+  ]
+}

@@ -222,3 +222,7 @@ best effort: JS strings, JCS/Buffer copies and GC/WASM cannot guarantee erasure.
 Never retain these ephemeral root/recovery keys in everyday client state or
 upload the kit. No production entrypoint is exposed. Normal revert removes the
 candidate; no live content migration, deployment or owner trial is required.
+
+Subsequent [pinned device-state candidate](P02_STATE_CONTRACT.md)
+adds pairing/activation/revoke/reset verification in separate APIs. This does not
+change these original signature-only bytes or grant group policy/history rights.

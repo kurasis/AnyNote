@@ -39,6 +39,7 @@ jobs:
           npm --prefix packages/protocol test
           npm --prefix packages/protocol run fixtures:check
           npm --prefix packages/protocol run crypto:check
+          npm --prefix packages/protocol run state:check
           npm --prefix packages/protocol run inventory:check
           npm --prefix packages/protocol audit --cache "$NPM_CONFIG_CACHE" --audit-level=low
           python3 scripts/check-p02-fixtures.py

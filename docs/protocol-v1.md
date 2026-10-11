@@ -1,6 +1,6 @@
 # P02 protocol candidates: key custody, identity and file context
 
-Status: **CANDIDATE p02-file-c1 + p02-identity-c1**, synthetic evaluation only.
+Status: **CANDIDATE p02-file-c1 + p02-identity-c1 + p02-state-c1**, synthetic evaluation only.
 The file/checkpoint bytes and [identity/recipient contract](P02_IDENTITY_CONTRACT.md)
 are reviewable slices, not the complete v1 protocol freeze.
 Original specification 1.1.0 remains unchanged. The registry and schema are
@@ -274,3 +274,10 @@ Node tests also check external RFC 8785 expected bytes and rejection mutations.
 Fixture/inventory writes are intentional review commands, never setup actions.
 No live keys, authority transition or product endpoint exists to roll back:
 revert candidate additions as a normal commit, preserving original spec and P01.
+
+The [state candidate](P02_STATE_CONTRACT.md) now evaluates authenticated pairing,
+confirmed active devices, compromise descendant revoke and root reset against
+independent pins. This supersedes earlier pairing/device-roster work items only;
+group policy/epoch/history authorization, durable product sessions and complete
+protocol freeze/review remain pending. Signature-only identity APIs keep their
+NOT_EVALUATED status.
