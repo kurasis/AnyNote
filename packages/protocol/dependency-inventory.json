@@ -1,0 +1,56 @@
+{
+  "status": "DEVELOPMENT_CANDIDATE",
+  "root_release_license": "UNSELECTED",
+  "lock_sha256": "dkN96b0SyNyQJpY36SaG8wxLJZ1vEbJCzf5tLzaoolw",
+  "packages": [
+    {
+      "path": "node_modules/ajv",
+      "version": "8.20.0",
+      "license": "MIT",
+      "resolved": "https://registry.npmjs.org/ajv/-/ajv-8.20.0.tgz",
+      "integrity": "sha512-Thbli+OlOj+iMPYFBVBfJ3OmCAnaSyNn4M1vz9T6Gka5Jt9ba/HIR56joy65tY6kx/FCF5VXNB819Y7/GUrBGA=="
+    },
+    {
+      "path": "node_modules/canonicalize",
+      "version": "5.1.0",
+      "license": "Apache-2.0",
+      "resolved": "https://registry.npmjs.org/canonicalize/-/canonicalize-5.1.0.tgz",
+      "integrity": "sha512-bab9+WefZljqQ8jT0qRwVmTyzAUU63K97QIQD3agynIBrb6sa5M2eAy8Hv8K3p4V9+ONVYZKtGYl4Dg+/5Gumw=="
+    },
+    {
+      "path": "node_modules/fast-deep-equal",
+      "version": "3.1.3",
+      "license": "MIT",
+      "resolved": "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz",
+      "integrity": "sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q=="
+    },
+    {
+      "path": "node_modules/fast-uri",
+      "version": "3.1.8",
+      "license": "BSD-3-Clause",
+      "resolved": "https://registry.npmjs.org/fast-uri/-/fast-uri-3.1.8.tgz",
+      "integrity": "sha512-GZMtZUTNRpOVIECoXwLNZS5xUGE+mVNbTB8h/7Rwh2TFWcBQiPzTgyZi05BF9UMZKkLJv8XBRJTlU7zg8+ZfMg=="
+    },
+    {
+      "path": "node_modules/json-schema-traverse",
+      "version": "1.0.0",
+      "license": "MIT",
+      "resolved": "https://registry.npmjs.org/json-schema-traverse/-/json-schema-traverse-1.0.0.tgz",
+      "integrity": "sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug=="
+    },
+    {
+      "path": "node_modules/jsonc-parser",
+      "version": "3.3.1",
+      "license": "MIT",
+      "resolved": "https://registry.npmjs.org/jsonc-parser/-/jsonc-parser-3.3.1.tgz",
+      "integrity": "sha512-HUgH65KyejrUFPvHFPbqOY0rsFip3Bo5wb4ngvdi1EpCYWUQDC5V+Y7mZws+DLkr4M//zQJoanu1SP+87Dv1oQ=="
+    },
+    {
+      "path": "node_modules/require-from-string",
+      "version": "2.0.2",
+      "license": "MIT",
+      "resolved": "https://registry.npmjs.org/require-from-string/-/require-from-string-2.0.2.tgz",
+      "integrity": "sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw=="
+    }
+  ]
+}

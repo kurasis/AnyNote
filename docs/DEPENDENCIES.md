@@ -95,3 +95,14 @@ not an application dependency. Its source/asset SHA-256 is in the installer.
 Three scanner negatives validate narrow reference/source-input checksum allowlists.
 Composer's proprietary root marker expresses no selected redistribution grant,
 not a chosen future release license. P01/GPL boundaries remain unchanged.
+
+## P02 candidate serialization tooling
+
+Node 24.21.0/npm 11.19.0 reference package packages/protocol pins canonicalize
+5.1.0 (Apache-2.0), jsonc-parser 3.3.1 (MIT), Ajv 8.20.0 (MIT) and all four
+transitives in package-lock.json. Seven installed upstream license notices
+inspected; exact registry SRI/source/license inventory is committed. Primary
+metadata/README/RFC evidence: evidence/p02-primary-sources.json. Project release
+license remains UNSELECTED; root package is private UNLICENSED, not an assertion
+that dependencies lack licenses. No new lifecycle scripts, crypto primitives,
+GPL adapter imports or production/native/browser JCS compatibility claim.

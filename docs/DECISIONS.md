@@ -375,3 +375,49 @@ scan/audit claim follows. Frozen-lock inventory drift and meaningful real DB/
 HTTP/outage/production-denial tests run locally and in a fresh hosted checkout.
 P03 tooling can be verified while contracts remain incomplete; P02 key/file
 contract is the next bounded task, with qualified review and P01/G1 still open.
+
+## ADR-008 — bounded candidate file/checkpoint byte contract before product use
+
+Date: 2026-10-11. Status: ACCEPTED for candidate synthetic evaluation only.
+
+Use the explicit p02-file-c1 marker, closed JSON Schema 2020-12 definitions and
+additional codec predicates. Primary metadata/source/license checks select
+canonicalize 5.1.0 Apache-2.0, Microsoft jsonc-parser 3.3.1 MIT and Ajv 8.20.0
+MIT in an isolated private Node reference package. Preserve exact lock/integrity/
+license inventory; no GPL native adapter import. Do not hand-write JCS or crypto.
+Raw bytes/visitor rejection precede JSON.parse/JCS: duplicates, bad syntax/UTF-8/
+Unicode/nonfinite values fail; schema counters are bounded decimal strings.
+Do not normalize Unicode or accept unsigned routing/key-wrap overrides.
+
+Follow specification manifest-only file-data-key delivery: independent manifest
+and file-data keys, group epoch wraps manifest key, data key stays encrypted.
+Context binds pinned author/root/generation/roster, policy/epoch, previous history
+checkpoint and parent envelope digests. AAD precedes its own ciphertext hashes;
+manifest AAD can include already-produced chunk inventory; sign header last.
+Wrap digest includes full canonical nonce/context/ciphertext, not a mutable ID.
+Domain strings end in byte 00; candidate nonce uses 16-byte random prefix and
+uint64 little-endian bounded chunk index. Changed source/context/epoch creates
+new version/keys; no rewrap-as-revocation claim.
+
+Choose complete sorted paginated checkpoint inventory, not unspecified Merkle
+proofs. Fixed binary domain/count/index/byte-length/page-digest framing provides
+noncircular commitment. Full parent closure includes compact evidence after
+payload pruning; reject missing/wrong/cyclic ancestry. Descriptor references
+predecessor only. Future transition intent/commit binds immutable descriptor and
+distribution digests. Signer role, witness completeness, trusted predecessor and
+policy/roster/recipient authentication remain required unimplemented layers; a
+reader cannot certify unanchored history. No server-only freshness/time guarantee.
+Candidate caps need mobile measurement/review before production freeze.
+
+Known fixture key/signature/ciphertext bytes are serialization placeholders, not
+valid cryptographic vectors. Independent restricted Python fixture comparison
+and RFC expected bytes distinguish drift checks from actual interoperability.
+Gitleaks also decodes expected-byte encodings; allow only two exact known public
+values under that one fixture path/generic rule. Whole paths, partial keys and
+blanket hash/entropy rules are not allowed; fake PAT and changed field negatives
+must fail. Source/schema/lock bytes are untouched by frozen setup.
+
+This bounded candidate changes no production trust/key custody, migration or
+endpoint. Other protocol schemas, root HKDF/kit/pairing/recipient constructions
+and qualified review remain open. Full G2/R01/R14/R19 acceptance is not claimed.
+See protocol-v1.md and evidence/p02-primary-sources.json for checked references.

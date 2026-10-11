@@ -1,0 +1,42 @@
+name: P02 candidate file contracts
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: protocol-candidate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  file-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.12.14'
+      - name: Activate checksum-verified repository toolchains
+        run: bash scripts/install-p01-toolchains.sh
+      - name: Install exact candidate dependencies without lifecycle scripts
+        run: |
+          source scripts/runtime-env.sh
+          npm --prefix packages/protocol ci --ignore-scripts --cache /workspace/.cache/npm --no-audit --no-fund
+      - name: Validate candidate parser, context, fixture and dependency drift
+        run: |
+          source scripts/runtime-env.sh
+          npm --prefix packages/protocol test
+          npm --prefix packages/protocol run fixtures:check
+          npm --prefix packages/protocol run inventory:check
+          npm --prefix packages/protocol audit --cache /workspace/.cache/npm --audit-level=low
+          python3 scripts/check-p02-fixtures.py
+          python3 scripts/check_baseline.py
+          git diff --exit-code

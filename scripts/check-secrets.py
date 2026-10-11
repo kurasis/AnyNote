@@ -2,6 +2,7 @@
 """Scan the complete Git-visible source tree, excluding ignored local runtime state."""
 
 from pathlib import Path
+import base64
 import shutil
 import secrets
 import string
@@ -34,7 +35,8 @@ def main():
         if scan(export) != 0:
             raise RuntimeError('Source secret scan failed; findings are redacted')
     for relative in ['sentinel.txt', 'docs/reference/passkeylocal/PROVENANCE.json',
-                     'docs/evidence/p03-foundation-local.json']:
+                     'docs/evidence/p03-foundation-local.json',
+                     'fixtures/protocol/p02/vectors.json']:
         with tempfile.TemporaryDirectory(prefix='anynote-scanner-negative-') as name:
             # Recognizable synthetic PAT shape; no credential is used or committed.
             token = 'ghp_' + ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(36))
@@ -43,7 +45,15 @@ def main():
             sentinel.write_text('github_token = "' + token + '"\n')
             if scan(name) != 1:
                 raise RuntimeError('Scanner did not reject the disposable fake-token sentinel')
-    print('PASS: complete Git-visible source scan; fake tokens rejected normally and at both allowlisted receipt paths')
+    for field in ['file_data_key', 'key_wrap_digest']:
+        with tempfile.TemporaryDirectory(prefix='anynote-scanner-negative-') as name:
+            sentinel = Path(name) / 'fixtures/protocol/p02/vectors.json'
+            sentinel.parent.mkdir(parents=True)
+            value = base64.urlsafe_b64encode(secrets.token_bytes(32)).decode().rstrip('=')
+            sentinel.write_text('{"' + field + '": "' + value + '"}\n')
+            if scan(name) != 1:
+                raise RuntimeError('Scanner did not reject a changed key/digest-shaped fixture sentinel')
+    print('PASS: Git-visible source scan; 4 fake-token path negatives and 2 changed key/digest fixture negatives')
 
 
 if __name__ == '__main__':

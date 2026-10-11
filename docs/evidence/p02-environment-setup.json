@@ -1,0 +1,18 @@
+{
+  "captured_at_utc": "2026-10-11T07:27:38.520584+00:00",
+  "install_script_sha256_base64url": "4bI1Snf63Bkm2er-AyfjpQJTNh99IGaSfKoHlpnaJBw",
+  "full_install_script_execution": "PASS; exit 0",
+  "repeated_new_package_frozen_install_and_checks": "PASS; exit 0",
+  "existing_p03_http_db_readiness": "PASS",
+  "saved_fields": [
+    "install_script",
+    "start_skill"
+  ],
+  "draft_revision": 6,
+  "saved_contents_reread_equal": true,
+  "status": "saved",
+  "requires_publish": true,
+  "publication": "NOT RUN; product-owned environment settings review/save/publish",
+  "future_task_restoration": "NOT RUN",
+  "limits": "No secrets, network or repository membership changes; no deployment. Candidate reference package adds no permanent service."
+}

@@ -678,3 +678,46 @@ install execution, repeated frozen install, full owned stop/start/readiness and
 actual saved install_script/start_skill. Tool returned requires_publish=true:
 review/save/publish in environment settings remains product-owned; no future
 restoration or production deployment is claimed.
+
+## P02-KEY-AND-FILE-CONTRACT — candidate bytes, not application crypto
+
+Local Node 24.21.0/npm 11.19.0/Python 3.12.14, 2026-10-11:
+[raw input-hash/result receipt](evidence/p02-local.json),
+[primary sources](evidence/p02-primary-sources.json),
+[environment save/execution receipt](evidence/p02-environment-setup.json).
+The local source commit is the previous clean main plus precisely hashed dirty
+candidate inputs; do not substitute a later committed SHA into this capture.
+
+| Check | Actual command / result | Outcome |
+| --- | --- | --- |
+| Frozen installation/repetition | Full saved script; repeated npm ci --ignore-scripts for packages/protocol; no source/lock mutation | PASS |
+| Strict parser/schema/context/history bytes | npm --prefix packages/protocol test | PASS: 69 executed, 69 passed, 0 fail/skip |
+| RFC 8785 independent expected cases | Exact numeric/string sample and UTF-16 property-order vector, no Unicode normalization | PASS |
+| Candidate boundary fixture drift | npm --prefix packages/protocol run fixtures:check | PASS: six sizes, 0 through 1,000,000,000 bytes |
+| Independent restricted fixture reference | python3 scripts/check-p02-fixtures.py | PASS: six cases /125 nonce-AAD pairs and two deliberately bad outputs rejected |
+| File/history adversarial framing | Wrong contexts, wrap bytes, inventory/order/length/zero-file, parent digests/cycles, predecessor and greedy byte-capped pages | PASS for candidate consistency, not authority |
+| Dependency/license/integrity drift | inventory:check; seven locked packages, no lifecycle scripts | PASS |
+| npm advisory audit | npm --prefix packages/protocol audit --audit-level=low | PASS: zero reported vulnerabilities at execution; not a security audit |
+| Git-visible source secrets and negatives | scripts/check-secrets.py | PASS: current source plus four PAT path negatives and two changed fixture key/digest values rejected |
+| Original spec / P01 preservation | check_baseline.py; git diff against pre-task main for docs/spec and experiments/p01 | PASS: all 21 checksums/source unchanged |
+| Existing developer service request | python3 scripts/dev-stack.py check | PASS: real Nginx/FPM/Laravel/MariaDB |
+| Saved setup/start configuration | complete install script exit 0, readback exact fields/revision 6 | PASS save only; requires_publish=true |
+| Candidate cryptography / authority / full R01/R14/R19 | No production implementation exposed | NOT RUN |
+| Rust/browser/PHP candidate interoperability / new physical trials / qualified review | Outside this byte-contract slice | NOT RUN |
+
+An initial RFC-order test accidentally supplied a literal control character in
+JSON and correctly failed; fixing the test's escaped input produced its exact
+external expected bytes. Initial source-scan failures were known public fixture
+key/digest bytes, including scanner-decoded expected bytes. Final allowlist is
+rule/path/exact-secret-value scoped to two known values; no partial-value/whole
+path suppression. Six negative sentinels prove changed credentials still fail.
+Self-review found count-only checkpoint packing excluded legal large-ancestry
+records under the byte cap; final greedy count/byte packing and rejection tests
+resolve it. No failed attempt counts as a PASS or qualified independent review.
+
+Complete environment install/start instructions preserve all earlier toolchain/
+service steps and add frozen candidate installation/drift/reference commands.
+Readback confirms saved fields. Publication and future-task restoration NOT RUN;
+review/save/publish in environment settings remains product-owned. No new secret,
+network, live-data, owner Hello or phone-kit action is required for this slice.
+Hosted fresh-checkout/exact-head results are recorded on the PR before merge.
