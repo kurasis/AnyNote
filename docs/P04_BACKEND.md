@@ -163,8 +163,10 @@ native JSON decoding or trust establishment. Rust and the real browser worker
 sign the same PUBLIC encrypted-object header and cross-verify byte equality with
 Node/PHP acceptance. This is the required P05 public-signature fixture slice for
 P04, not completion of P05 general codecs/AEAD/local wrappers/performance.
-Hosted Chromium must run with sandbox enabled. Local cloud sandbox BLOCKED is
-recorded honestly and cannot satisfy that gate; CI uses no allow-block flag.
+Hosted Chromium 154.0.8037.97 passed seven actual worker checks with sandbox
+enabled; native Rust passed four checks over the same corpus accepted by PHP.
+Local cloud sandbox BLOCKED remains recorded honestly; CI uses no allow-block
+flag. Actual hosted input hashes/full source tree are retained in TEST_EVIDENCE.md.
 
 Composer adds four locked package records without changing the previous 99.
 The native adapter has its own frozen Cargo inventory; older P01/P02 locks,

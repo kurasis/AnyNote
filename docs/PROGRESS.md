@@ -10,7 +10,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P01 | IN PROGRESS | Host crypto/KDF/storage/export/fault evidence VERIFIED; owner 0.1.4 fresh-process Hello authentication, WTS lock/STALE, installed-iPhone-PWA selected 1 GB hash and diagnostic recovery PASS; full physical G1/memory/network matrix remains open |
 | P02 | VERIFIED | Complete five-component registry, exact note/local/native/sync/snapshot/restore/age formats, frozen bytes and independent PHP/Python/Rust-age/Go-age subsets; external review TRACKED_NOT_BOOKED / NOT_RUN; G2/G3 and product phases remain open |
 | P03 | VERIFIED | 79 initial OpenAPI operations / 157 schema-derived types; strict errors/request IDs/content-free logs; frozen setup, drift negatives and actual owned HTTP/SQL integration verified; product operations remain phase-owned |
-| P04 | IMPLEMENTED / UNVERIFIED | Actual SQL/model/authorization/transactions verified locally; required P05 Rust/real-browser public-signature slice awaits hosted sandbox verification |
+| P04 | VERIFIED | 21 tests/322 assertions, 578 actual SQL checks, eight-process concurrency/fault recovery and supervised restart; Rust/Node/sandboxed Chromium/PHP public-signature corpus PASS |
 | P05 | IN PROGRESS | P04-required public Ed25519 slice implemented; general codecs/AEAD/wrappers/performance remain open |
 | P06 | NOT STARTED | P04 |
 | P07 | NOT STARTED | P05/P06 |
@@ -457,7 +457,8 @@ retain their phase ownership. See P04_BACKEND.md and TEST_EVIDENCE.md.
 The required P05 public-signature slice uses native sodium, browser locked
 JCS/Ajv/sodium and PHP/Opis over closed public schemas. General arbitrary payload
 canonicalization, native JSON/AEAD/custody and independent review remain open.
-Local Chromium sandbox is BLOCKED; mandatory hosted browser verification is
-pending. P04 is not marked VERIFIED before that result. No owner trial, production
+Local Chromium sandbox remains BLOCKED; the mandatory hosted browser gate passed
+with Chromium sandbox enabled. All six source CI jobs passed at dc41686; actual
+checkout/full-tree/input-hash evidence is retained. No owner trial, production
 migration/deployment, security release or reviewer outreach occurred. Rollback:
 normal source revert; reverse/reset schema only on the explicitly owned test DB.

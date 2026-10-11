@@ -1,0 +1,75 @@
+{
+  "kind": "ACTUAL_HOSTED_FRESH_CHECKOUT",
+  "workflow_head_commit": "dc41686cff5c65eb55a8f7d6501ebab68362dca3",
+  "checkout_merge_commit": "83a1af58d366cee9ab860582574804e67cd8488c",
+  "checkout_merge_parents": [
+    "e22bbee8d6d57b76aaf6ec7529349d71db5e093d",
+    "dc41686cff5c65eb55a8f7d6501ebab68362dca3"
+  ],
+  "tested_tree": "c0456d70e62f8513c7d9ce5799a4b691eb925a23",
+  "checkout_tree_matches_workflow_head": true,
+  "source_tree_dirty": false,
+  "all_source_jobs": "PASS",
+  "checks": [
+    {
+      "name": "publish-device-kit",
+      "status": "COMPLETED",
+      "conclusion": "SKIPPED",
+      "detailsUrl": "https://github.com/kurasis/AnyNote/actions/runs/38149195000/job/114498852967"
+    },
+    {
+      "name": "file-contract",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/kurasis/AnyNote/actions/runs/38149194968/job/114498851845"
+    },
+    {
+      "name": "foundation",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/kurasis/AnyNote/actions/runs/38149194986/job/114498851914"
+    },
+    {
+      "name": "baseline",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/kurasis/AnyNote/actions/runs/38149194983/job/114498851897"
+    },
+    {
+      "name": "static-device-kit",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/kurasis/AnyNote/actions/runs/38149195000/job/114498852034"
+    },
+    {
+      "name": "linux-native-browser",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/kurasis/AnyNote/actions/runs/38149195000/job/114498852177"
+    },
+    {
+      "name": "windows-provider",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/kurasis/AnyNote/actions/runs/38149195000/job/114498852132"
+    }
+  ],
+  "backend_input_hashes_match_candidate": 82,
+  "public_input_hashes_match_candidate": 8,
+  "public_fixture_sha256": "1a375941e08eecd4c14420db4696086a3b7d54efb725cb8931203bd9e0057acd",
+  "reports": [
+    {
+      "path": "docs/evidence/p04-backend-hosted.json",
+      "sha256": "e01d6fd527e4464d61500687458c1d4d5ee1b4bd8311513a08723f6505b4d700"
+    },
+    {
+      "path": "docs/evidence/p04-public-signature-hosted.json",
+      "sha256": "59528ae8db4b15ea1024981b3ff9881c9adb15477976a8312cb146f54bc14cc8"
+    }
+  ],
+  "physical_acceptance": false,
+  "qualified_review": "TRACKED_NOT_BOOKED / NOT_RUN",
+  "production_deployment": "NOT_RUN",
+  "environment_snapshot_publish": "NOT_RUN",
+  "final_tracking_tree_verification": "Fresh CI and exact-head/full-tree ordinary merge are recorded in PR #17"
+}

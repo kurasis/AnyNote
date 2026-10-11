@@ -249,8 +249,8 @@
 
 ## P04 implementation boundary
 
-P04 durable SQL services are implemented and locally checked; required hosted
-real-browser public-signature verification is pending. Authentication issuance
+P04 durable SQL services and required Rust/Node/sandboxed Chromium/PHP public
+signature acceptance are verified; evidence is in TEST_EVIDENCE.md. Authentication issuance
 (P06), roster/policy transition materialization (P08/P10), client E2EE note UI
 (P09), sync/conflicts/snapshots (P11), physical file admission/reconciliation (P12/
 P16) and retention (P13) remain phase-owned. Empty relational scaffolding does
