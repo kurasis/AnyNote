@@ -21,9 +21,10 @@ final class FoundationTest extends TestCase
         $this->assertSame(1, Artisan::call('foundation:check'));
     }
 
-    public function test_temporary_transaction_probe_leaves_no_product_tables(): void
+    public function test_temporary_transaction_probe_preserves_existing_tables(): void
     {
+        $before = DB::select('SHOW TABLES');
         $this->assertSame(0, Artisan::call('foundation:check'));
-        $this->assertSame([], DB::select('SHOW TABLES'));
+        $this->assertSame(json_encode($before), json_encode(DB::select('SHOW TABLES')));
     }
 }

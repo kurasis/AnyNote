@@ -2323,3 +2323,109 @@ final readonly class P03ApiSnapshotRequest implements \JsonSerializable
         return $values;
     }
 }
+
+final readonly class P04ApiReadiness implements \JsonSerializable
+{
+    public function __construct(
+        public string $status,
+        public string $database,
+        public string $queue,
+        public string $scheduler,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P04ApiObjectCommit implements \JsonSerializable
+{
+    public function __construct(
+        public string $group_id,
+        public string $object_id,
+        public string $object_kind,
+        public string $action,
+        public null|string $thread_id,
+        public array $bundle,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P04ApiCommitResult implements \JsonSerializable
+{
+    public function __construct(
+        public array $receipt,
+        public array $heads,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P04ApiQuotaRequest implements \JsonSerializable
+{
+    public function __construct(
+        public string $group_id,
+        public string $reservation_id,
+        public string $bytes,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P04ApiQuotaResult implements \JsonSerializable
+{
+    public function __construct(
+        public string $reservation_id,
+        public string $state,
+        public string $bytes,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P04ApiInviteRequest implements \JsonSerializable
+{
+    public function __construct(
+        public null|string $recipient_binding_hash,
+        public int $valid_hours,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P04ApiInviteResult implements \JsonSerializable
+{
+    public function __construct(
+        public string $invitation_id,
+        public string $token,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}

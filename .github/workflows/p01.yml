@@ -113,6 +113,16 @@ jobs:
           else
             npm run test:large
           fi
+      - name: Verify P04-required public signatures in Rust and real sandboxed browser worker
+        run: |
+          source scripts/runtime-env.sh
+          npm --prefix packages/protocol ci --ignore-scripts --no-audit --no-fund
+          node packages/protocol/p04-fixtures.mjs
+          cargo build --manifest-path packages/crypto-native/Cargo.toml --locked -j 4
+          python3 scripts/p04-native-inventory.py
+          cargo fmt --manifest-path packages/crypto-native/Cargo.toml --check
+          cargo clippy --manifest-path packages/crypto-native/Cargo.toml --locked --all-targets -j 4 -- -D warnings
+          node experiments/p01/p04-public-signatures.mjs
       - name: Preserve actual reports and public fixtures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -121,6 +131,7 @@ jobs:
           path: |
             experiments/p01/artifacts/*.json
             experiments/p01/fixtures/*.json
+            artifacts/p04/public-signature-report.json
           if-no-files-found: error
           retention-days: 14
 

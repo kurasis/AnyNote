@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "phase": "P04",
+  "path": "apps/api/composer.lock",
+  "baseline_path": "docs/reference/p02/composer-p02.lock",
+  "baseline_sha256": "cd7d1bf949830a33c1bb5a73f44b9d7fc0907a811b658923cc245e25c3708ded",
+  "current_sha256": "679c6b23a2ac0ee8b1c9a888a76562649b32c829340ca606cf8bf5f8a69bb568",
+  "predecessor_registry_sha256": "a4089b4ba546d4b5ca6d2f090a08e98aa74ff048245e6e1ae16909f843e9e9e7",
+  "added_packages": {
+    "opis/json-schema": "2.6.0",
+    "opis/string": "2.1.0",
+    "opis/uri": "1.1.0",
+    "truschery/kanon": "v1.0.1"
+  },
+  "reason": "P04 public-schema/canonicalization verification; all 99 previous package records are unchanged. No protocol/schema/vector downgrade or qualified-review claim."
+}

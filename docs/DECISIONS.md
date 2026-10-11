@@ -608,3 +608,44 @@ P16. No source-scanner exception is added; hash provenance uses path/hash record
 Production HTTPS rejects untrusted forwarded headers; real deployment/session
 trust remains phase-owned. P03 exit concerns reproducible tooling, not product
 login/SQL/crypto/hardware or qualified review. Roll back with a normal revert.
+
+## ADR-014 — durable P04 authority and atomic publication
+
+Use explicit query-builder writes/read-only domain DTOs rather than mass assignment.
+Model threads/entries in a single typed routing table with immutable revisions,
+FK scope constraints and SQL immutability triggers. MariaDB projections are the
+honest-service current authority; they are never independent client crypto trust.
+P08/P10 must verify signed transitions before updating them. Trusted sessions
+have no public/test issuer in this phase, and bearer hashes/ownership are rechecked
+under locks. Root/certificate public signatures and current state are distinct.
+
+Serialize account/group/object/quota locks before acquiring the transactional
+sync counter LAST; use no AUTO_INCREMENT transport watermark or external I/O
+under product locks. Fixed global/group/stable-account accounting and the separate
+inaccessible security reserve protect content limits. P12 adds physical-space/
+durable-byte admission, P11 conflict/snapshot flows and P13 safe compaction.
+
+Add maintained Opis 2.6.0 and Kanon 1.0.1 with frozen Composer records, preserving
+all 99 existing records. Kanon is suitable only for the closed public ASCII/
+short-integer subset here; its general ECMAScript float serialization is incomplete
+and cannot become the P05 arbitrary-payload canonicalizer. Reuse locked native
+sodium and browser Ajv/JCS/sodium for the P04-required P05 public-signature slice;
+caller-validated native canonical bytes are not a full native JSON adapter.
+Record the actual real-browser CI separately from the blocked cloud sandbox.
+
+Disposable SQL tests own a separately marked database and may reset only that DB.
+Install/setup never migrate a product DB, regenerate tracked bytes or resolve
+locks. Actual maintenance services run non-root with no published ports and a
+restart policy; fixed jobs and null failed-job storage preserve content-free logs.
+Admin bootstrap promotes an existing identity through console coordination,
+never creates content ownership; invitations persist one-way token hashes only.
+No production rollout/reviewer booking or new physical trial is implied.
+
+ADR-014 compatibility addendum: P02 freezes the original Composer lock checksum.
+Preserve its entire bytes in docs/reference/p02/composer-p02.lock and keep the
+registry unchanged. The explicit P04 compatibility receipt replaces only that
+physical current-lock lookup, still requiring the original checksum, all 99
+identical package records and precisely four named/versioned additions. Four
+real tamper negatives (including recomputing the new current hash) reject an
+altered baseline, changed existing record, new version or extra package. This
+is an explicit backend dependency evolution, not relaxed general drift checking.

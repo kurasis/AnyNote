@@ -1,0 +1,12 @@
+[package]
+name = "anynote-public-signature"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.99"
+publish = false
+description = "P05 public Ed25519 adapter slice for P04 server acceptance"
+
+[dependencies]
+libsodium-rs = "=0.2.5"
+serde_json = "=1.0.151"
+hex = "=0.4.3"

@@ -156,6 +156,13 @@ export type P03ApiCapabilities = { readonly "service_id": P02FileC1Id; readonly 
 export type P03ApiLiveness = { readonly "status": "live" };
 export type P03ApiSyncAck = { readonly "cursor": P02V1Cursor };
 export type P03ApiSnapshotRequest = { readonly "purpose": "resync" | "export"; readonly "selection": P02V1ExportSelection };
+export type P04ApiReadiness = { readonly "status": "ready"; readonly "database": "ready"; readonly "queue": "ready"; readonly "scheduler": "ready" };
+export type P04ApiObjectCommit = { readonly "group_id": P02FileC1Id; readonly "object_id": P02FileC1Id; readonly "object_kind": "group-metadata" | "thread" | "entry"; readonly "action": "create" | "update" | "soft-delete" | "restore"; readonly "thread_id": (P02FileC1Id) | (null); readonly "bundle": P02V1Bundle };
+export type P04ApiCommitResult = { readonly "receipt": P02V1Receipt; readonly "heads": ReadonlyArray<P02FileC1Parent> };
+export type P04ApiQuotaRequest = { readonly "group_id": P02FileC1Id; readonly "reservation_id": P02FileC1Id; readonly "bytes": string };
+export type P04ApiQuotaResult = { readonly "reservation_id": P02FileC1Id; readonly "state": "reserved" | "committed" | "released"; readonly "bytes": P02FileC1Counter };
+export type P04ApiInviteRequest = { readonly "recipient_binding_hash": (string) | (null); readonly "valid_hours": number };
+export type P04ApiInviteResult = { readonly "invitation_id": P02FileC1Id; readonly "token": string };
 export interface Operations {
 "post_accounts_register": { readonly phase: "P08"; readonly implemented: false; readonly request: never; readonly response: never };
 "get_accounts_id_identity": { readonly phase: "P08"; readonly implemented: false; readonly request: never; readonly response: never };
@@ -236,4 +243,5 @@ export interface Operations {
 "get_uploads_id": { readonly phase: "P12"; readonly implemented: false; readonly request: never; readonly response: never };
 "post_uploads_id_commit": { readonly phase: "P12"; readonly implemented: false; readonly request: never; readonly response: never };
 "put_uploads_id_parts_index": { readonly phase: "P12"; readonly implemented: false; readonly request: never; readonly response: never };
+"get_health_ready": { readonly phase: "P04"; readonly implemented: true; readonly request: never; readonly response: P04ApiReadiness };
 }

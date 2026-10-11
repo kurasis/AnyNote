@@ -47,3 +47,8 @@ do not grant a license to this project's own source or the supplied specificatio
 P01 experiment: [commands and boundaries](experiments/p01/README.md).
 Physical trials: [owner actions and required results](docs/P01_OWNER_TRIALS.md).
 Backend foundation: [commands and boundaries](docs/P03_DEVELOPMENT.md).
+
+P04 backend foundation is implemented: scoped current SQL authorization,
+immutable revisions, atomic quota/receipt/event transactions and supervised
+maintenance. See [P04 backend guide](docs/P04_BACKEND.md); hosted public-signature
+verification is pending. Full user operations continue in P05 onward.

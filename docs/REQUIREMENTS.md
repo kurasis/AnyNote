@@ -73,3 +73,5 @@ P02 exact design traceability: [complete contract](P02_COMPLETE_CONTRACT.md),
 [active machine registry](../packages/contracts/p02-v1.registry.json),
 [qualified-review checklist/findings](P02_REVIEW.md). Completing design does not
 check off product feature/physical/security-release acceptance rows above.
+
+P04 backend acceptance uses actual three-account SQL isolation, signature/CAS/quota/receipt/event and supervised-process tests. Client ceremonies, file durability and independent review remain phase-owned; see P04_BACKEND.md.

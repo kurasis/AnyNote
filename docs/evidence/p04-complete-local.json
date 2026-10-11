@@ -1,0 +1,446 @@
+{
+  "purpose": "P04 local actual backend validation; hosted browser gate still pending",
+  "source_commit": "e22bbee8d6d57b76aaf6ec7529349d71db5e093d",
+  "source_tree_dirty": true,
+  "backend": {
+    "status": "PASS",
+    "checks": 575,
+    "tables": 46,
+    "constraints": 164,
+    "parallel_processes": 8,
+    "same_body_retry": "PASS",
+    "competing_parent_cas": "PASS",
+    "cross_group_quota_race": "PASS",
+    "counter_commit_order": "PASS",
+    "counter_rollback_reuse": "PASS",
+    "sql_durability_configuration": "PASS",
+    "plaintext_column_inspection": "PASS",
+    "u63_overflow_rejection": "PASS",
+    "supervised_queue_scheduler": "PASS",
+    "actual_restart_after_kill": "PASS"
+  },
+  "phpunit": {
+    "tests": 21,
+    "assertions": 321,
+    "status": "PASS"
+  },
+  "public_signatures": {
+    "public_fixture_sha256": "1a375941e08eecd4c14420db4696086a3b7d54efb725cb8931203bd9e0057acd",
+    "inputs": [
+      {
+        "path": "experiments/p01/p04-public-signatures.mjs",
+        "sha256": "daf61a09b22fcb76952eaf05d0df7bb4a64200417356abf9f76444da7de92db7"
+      },
+      {
+        "path": "packages/protocol/p04-fixtures.mjs",
+        "sha256": "2faa5a5a7bdc158f9cac119334bc872b9501455cbdf5fa4a45bc45788f09f2a9"
+      },
+      {
+        "path": "packages/protocol/adapters/public-signatures.mjs",
+        "sha256": "5b277d6ca64dda8abba801fb88e55fb1b60122652066a4204d5dfae252bff430"
+      },
+      {
+        "path": "packages/protocol/src/strict-json.mjs",
+        "sha256": "811b66d787a7b7467bf5c49397d1de161e9d2216f707e20e3244d967ab40b6e8"
+      },
+      {
+        "path": "packages/protocol/package-lock.json",
+        "sha256": "6e7286286b0fe2797310c57a8fb4d768c4dae2bec53f58f788b8d0c830fafb7f"
+      },
+      {
+        "path": "packages/crypto-native/src/lib.rs",
+        "sha256": "e56d6d1417f6b25a84c7846f3f512e3db922fc9454463db4e5b0acbbe7a20a3e"
+      },
+      {
+        "path": "packages/crypto-native/src/main.rs",
+        "sha256": "b09937aa61030ec0b58d923339600687b9e3b60c825633f3bbb1fc71ca8d6d23"
+      },
+      {
+        "path": "packages/crypto-native/Cargo.lock",
+        "sha256": "98d48b9647c0d37356f200136d0fd94a1ee67664e818cc98cad8573fb57be185"
+      }
+    ],
+    "purpose": "P04 required P05 public signature interoperability",
+    "native": {
+      "status": "PASS",
+      "checks": 4
+    },
+    "source_commit": "e22bbee8d6d57b76aaf6ec7529349d71db5e093d",
+    "source_tree_dirty": true,
+    "physical_acceptance": false,
+    "browser": {
+      "status": "BLOCKED",
+      "reason": "Cloud browser sandbox unavailable; hosted real-browser check required"
+    },
+    "status": "BLOCKED"
+  },
+  "generated_contracts": {
+    "structures": 164,
+    "operations": 80,
+    "drift_negatives": 13,
+    "status": "PASS"
+  },
+  "compatibility": {
+    "previous_package_records": 99,
+    "new_records": 4,
+    "tamper_negatives": 4,
+    "status": "PASS"
+  },
+  "p03_regression": {
+    "phpunit_tests": 11,
+    "assertions": 215,
+    "http_checks": 16,
+    "node_groups": 5,
+    "status": "PASS"
+  },
+  "native_inventory": {
+    "locked_records": 70,
+    "clippy": "PASS",
+    "format": "PASS"
+  },
+  "setup": {
+    "status": "PASS",
+    "source_files_unchanged": 521,
+    "first_attempt": "FAIL frozen Composer baseline binding; resolved with explicit checked P04 compatibility receipt, no registry rewrite",
+    "install_sha256": "d860529343bd9c91897ac921bfaee24273b772affe75a5079faf5b2cb6bcd52d",
+    "start_skill_sha256": "890953d05d6ad35d03f533cd3b574250966ddee2083115fa2dd167b26f6c61e9",
+    "publication": "NOT_PERFORMED",
+    "fresh_task_restore": "NOT_VERIFIED"
+  },
+  "physical_acceptance": false,
+  "qualified_review": "TRACKED_NOT_BOOKED_NOT_RUN",
+  "limits": [
+    "No production migration/deployment, account login ceremony or independent security review",
+    "P05 general native JSON/AEAD/custody adapters remain open"
+  ],
+  "backend_inputs": [
+    {
+      "path": ".github/workflows/foundation.yml",
+      "sha256": "46606147af0a0c25bc517ccb3a9d6726bf38bb29368a7fd74bd23b15514b2902"
+    },
+    {
+      "path": "apps/api/.env.example",
+      "sha256": "d1113970f17aabcbcbfd506af39886d370f8c32179e4b18422c1d18b1e3ec40c"
+    },
+    {
+      "path": "apps/api/UPSTREAM.md",
+      "sha256": "fbcf4cb279ea4aab6a8ce5baec921b91d741ea88a0ceb34d1d26915972a44a3b"
+    },
+    {
+      "path": "apps/api/app/Backend/AccountAdministration.php",
+      "sha256": "49b6227c3729c10ceb22b1992f28ebb3731d24247707c40c34d1d95f01eaf588"
+    },
+    {
+      "path": "apps/api/app/Backend/Actor.php",
+      "sha256": "c0b1e0ba76e9070149f13cd3426ba484f7abcacc2abbed3431e126796e65a528"
+    },
+    {
+      "path": "apps/api/app/Backend/Authorization.php",
+      "sha256": "9cf5887feeb0c3e5b4a7ec5ea1627830da7f73e7be4c46ec5546348b388e3eb2"
+    },
+    {
+      "path": "apps/api/app/Backend/ObjectService.php",
+      "sha256": "a1ce9bea362263b49a67ecfba5611508251d8fec446ab89fa6ef413170b12d02"
+    },
+    {
+      "path": "apps/api/app/Backend/QuotaLedger.php",
+      "sha256": "96d508721d277845f5ba05f38a2020408715ac5a9ab3b5b325a7dbc14c4d9cff"
+    },
+    {
+      "path": "apps/api/app/Backend/ReservationService.php",
+      "sha256": "53bf9a7e2318afc41d38f29ea1289d758ca863ec244465c7d7f69ed69180bef9"
+    },
+    {
+      "path": "apps/api/app/Backend/ScopedRepository.php",
+      "sha256": "165e7754e145105363e9c4d6366ffdb03af12613ebba591ad3aae035aab3099a"
+    },
+    {
+      "path": "apps/api/app/Backend/SyncWriter.php",
+      "sha256": "ecff8d7fa8ed98a13d078c15ff0f5f3e1e5b8575b674797806386897e4c4d7ea"
+    },
+    {
+      "path": "apps/api/app/Console/Commands/FoundationCheck.php",
+      "sha256": "9d4ad0ee8501c7142b039631bbd75208996f2052ae48ac3248ac1f48470bd12a"
+    },
+    {
+      "path": "apps/api/app/Contracts/Catalogue.php",
+      "sha256": "1eb2d62f1fa8f0475fc5cf26663546f7ef279a38f8c51f2e3648e5acedf6ee43"
+    },
+    {
+      "path": "apps/api/app/Crypto/PublicProtocol.php",
+      "sha256": "7c269e5850564b153a8682eb54606872b6cbf6f156a0678c3627af9ade87eb6b"
+    },
+    {
+      "path": "apps/api/app/Generated/Dtos.php",
+      "sha256": "82d8410abd6571fca7e6f2e662279d703f3ece444563c834d7460b6655cd680c"
+    },
+    {
+      "path": "apps/api/app/Generated/catalogue.json",
+      "sha256": "812112e3b670f1bcd393df66f8e6125b22094674ee1d8fa1531e48b222a63346"
+    },
+    {
+      "path": "apps/api/app/Generated/schemas.json",
+      "sha256": "e915631e0ab52151fafe586ecf1984bb18a86ed68012cd1c7a56785ee6b26374"
+    },
+    {
+      "path": "apps/api/app/Http/ApiErrors.php",
+      "sha256": "50f9c17e6660c7e6a2fbfa157ef11112ebc2ccb5bceb5ee6cd952bdb3ef6df86"
+    },
+    {
+      "path": "apps/api/app/Http/ApiException.php",
+      "sha256": "d991a9ec93689801a7a5c4a026ddc068f6fcb1f81b969834277698ce40d66509"
+    },
+    {
+      "path": "apps/api/app/Http/ControlJson.php",
+      "sha256": "5aad07da0ca9df2d69d4ebee7f56324980d28ef75e9cbae7849c5681d1905127"
+    },
+    {
+      "path": "apps/api/app/Http/Controllers/CapabilitiesController.php",
+      "sha256": "8bdafd53fdc4d41dcc861d48681d658bc93ff3a43a39d4eb53e84c42534c1044"
+    },
+    {
+      "path": "apps/api/app/Http/Controllers/OperatorReadinessController.php",
+      "sha256": "ccca637e7e542132cd7c6d7bbe17d1b119a36210b4d6ed41ed3f1507c4156897"
+    },
+    {
+      "path": "apps/api/app/Http/Controllers/ReadinessController.php",
+      "sha256": "6b67e4e2732abb4da170fed3341a3f2ecbbdfd2a348b9acdf466da4573817534"
+    },
+    {
+      "path": "apps/api/app/Http/Middleware/ApiBoundary.php",
+      "sha256": "5d062c1abbe040892ed728d4920b07f51a20399b9b626cf76f33806afb75d4ec"
+    },
+    {
+      "path": "apps/api/app/Jobs/MaintenanceHeartbeat.php",
+      "sha256": "4b8ec13736b8621f307b8107e68fa0cb843c4c98df97296824d66242c4605b03"
+    },
+    {
+      "path": "apps/api/app/Logging/ContentFreeFormatter.php",
+      "sha256": "021854af63a4c7eaa769f409e924bb52e373f4d18f1c5049789dc7c14a74be2b"
+    },
+    {
+      "path": "apps/api/app/Logging/SafeLogger.php",
+      "sha256": "672d213f799438fd58130364e024d39e34c004ebb2cb96a0e1ac566df868cfa2"
+    },
+    {
+      "path": "apps/api/app/Providers/AppServiceProvider.php",
+      "sha256": "5e1529d619d3521a4dd4b5b990e629636d9bb5c8a423c6bcc58b6b09be68ff9d"
+    },
+    {
+      "path": "apps/api/artisan",
+      "sha256": "f91a517c0c5d3a904c3f390933964a5e08ec1fc68146882730daac4aca4ffcec"
+    },
+    {
+      "path": "apps/api/bootstrap/app.php",
+      "sha256": "9494389c8bc697c33748f167bc1f6f81ffe9e55f5b6acccfd6869c70f0f4a9e0"
+    },
+    {
+      "path": "apps/api/bootstrap/cache/.gitignore",
+      "sha256": "240a3e0d37d2e86b614063f5347eb02d4f99ca6c254de6b82871ff8d95532a7d"
+    },
+    {
+      "path": "apps/api/bootstrap/providers.php",
+      "sha256": "f720e185207a343d4c19fc99dbb317a4187efbcd7d38a303a695bbdd77ffb943"
+    },
+    {
+      "path": "apps/api/composer.json",
+      "sha256": "2a6adb6a5f606a5bd09cceb03c0d375569a771698b6e9863cea9fff257659b25"
+    },
+    {
+      "path": "apps/api/composer.lock",
+      "sha256": "679c6b23a2ac0ee8b1c9a888a76562649b32c829340ca606cf8bf5f8a69bb568"
+    },
+    {
+      "path": "apps/api/config/api.php",
+      "sha256": "3b8464d6e303882178c0b3678b0eb9f43f6e90cef057bd618e2dd23638795667"
+    },
+    {
+      "path": "apps/api/config/app.php",
+      "sha256": "b4b25e15efa76846a7f2e19fd1044fec4945e4e928c4098126a2b0042b034383"
+    },
+    {
+      "path": "apps/api/config/auth.php",
+      "sha256": "04b1a131ccbf232853118a894f7ff63e5aca0fef29fc710f6570c05a80a1a3c4"
+    },
+    {
+      "path": "apps/api/config/cache.php",
+      "sha256": "5030cdf171704e58b96f2cf17f1c6d5921b27d5c63c2cefb730eeb2da49a8240"
+    },
+    {
+      "path": "apps/api/config/database.php",
+      "sha256": "02cd62f589b43d33f9ceac740705dac1dec9740eb2bb9e6e202d4b66a15244cf"
+    },
+    {
+      "path": "apps/api/config/filesystems.php",
+      "sha256": "ba7060d7a23e490c3ce830656f6d24ad3ccf5b868e3293f2a12e411959dc5635"
+    },
+    {
+      "path": "apps/api/config/logging.php",
+      "sha256": "bc0ad6e6d5684f1265e30bca8ce8fc12ffd352d30f4eabcf9a41890c55415e35"
+    },
+    {
+      "path": "apps/api/config/mail.php",
+      "sha256": "c43ff49a31c5f32ce21eb7159f2a4b3cd2f4074eaed5838d265646dbfedd3474"
+    },
+    {
+      "path": "apps/api/config/queue.php",
+      "sha256": "552cbe9f73c57f74e6d57de19ff87c7b96f6746809978d5b62f0089269115a84"
+    },
+    {
+      "path": "apps/api/config/services.php",
+      "sha256": "b7ee786ea1adbc92db9f229f479431c94503527c47051da3862eb0e4d7db70aa"
+    },
+    {
+      "path": "apps/api/config/session.php",
+      "sha256": "64272cfbef6f47c65bf857f1c5b1e853700c0d0278de46b86663fd83ef4aeed8"
+    },
+    {
+      "path": "apps/api/database/migrations/2026_10_11_000001_create_backend_foundation.php",
+      "sha256": "da0104e22fe0babfa327cd768888f37cb9f7d4afe868a8114c90381ddafa0fce"
+    },
+    {
+      "path": "apps/api/database/migrations/2026_10_11_000002_create_relational_service_scaffolding.php",
+      "sha256": "4692fe87946e492f2950f0340308273acf69c1c71e5d5365b9012649d05c6330"
+    },
+    {
+      "path": "apps/api/database/migrations/2026_10_11_000003_enforce_scope_and_counter_bounds.php",
+      "sha256": "ee00f909cccaf6f54aa43eccbc456703e6f97358589c0308e4101ed722c96f33"
+    },
+    {
+      "path": "apps/api/dependency-inventory.json",
+      "sha256": "53322d3e000427e9a188c6a5c70bfdace64494878b64b937420c2bd7ab678eba"
+    },
+    {
+      "path": "apps/api/phpunit.xml",
+      "sha256": "a1ffc560b4f8669d92f95802d47664bad7efdd2373c57734d9319f9a4ec2e178"
+    },
+    {
+      "path": "apps/api/pint.json",
+      "sha256": "5b45b31e1a8fd45622297342e36a6e62acad6274f690f63343205a11ea1339e1"
+    },
+    {
+      "path": "apps/api/public/index.php",
+      "sha256": "eba77cba39695b6bd091fe5211d481f7ebb2ce2d8d26230b5a609465d0a4aff9"
+    },
+    {
+      "path": "apps/api/routes/console.php",
+      "sha256": "dd47c4580b96ac1a5987e2d41050f9ca4eecc730300603e263f6820fcba7553e"
+    },
+    {
+      "path": "apps/api/routes/web.php",
+      "sha256": "b70478d956246bcd1b93a9abcdbd3bff1b4cf356750c4e03eb3a90ca9eab65b6"
+    },
+    {
+      "path": "apps/api/storage/.gitignore",
+      "sha256": "240a3e0d37d2e86b614063f5347eb02d4f99ca6c254de6b82871ff8d95532a7d"
+    },
+    {
+      "path": "apps/api/tests/Feature/ApiBoundaryTest.php",
+      "sha256": "edb9306e6a7cc2a1402e22cf53d800847300b73c1189cca7e26057438b9e28a6"
+    },
+    {
+      "path": "apps/api/tests/Feature/BackendFoundationTest.php",
+      "sha256": "601ae7de64eadd7010a8eea2a80b1eaa90b438eae0e9347971705b5c01797070"
+    },
+    {
+      "path": "apps/api/tests/Feature/FoundationTest.php",
+      "sha256": "6801d2c0185a4f24fdc0919ae0daddd39f2a24fae8881b03c4e6f8969af8343f"
+    },
+    {
+      "path": "apps/api/tests/Support/SyntheticBackend.php",
+      "sha256": "6101360dc85d44bf1793b61970f583179f5e558624a667f4511e12c897f367f2"
+    },
+    {
+      "path": "apps/api/tests/Support/p04-concurrency.php",
+      "sha256": "6f5a77373b8f345b8951306633a3185337a691027a0e9e35616529fcb58ac108"
+    },
+    {
+      "path": "apps/api/tests/TestCase.php",
+      "sha256": "c7c209f5579c42647c1f7b2a79ac828e8b54ac62a98442045a6e94fa2c0d0ebc"
+    },
+    {
+      "path": "infra/dev/compose.yaml",
+      "sha256": "11c2b674719dbb931b6fa263ba9153ca70698235ebc0bb7ec54c5d92de2e9998"
+    },
+    {
+      "path": "infra/dev/nginx.conf",
+      "sha256": "482609dfec4010cbd539abad4f615fd4293e01045080cf1bc3d507790437d000"
+    },
+    {
+      "path": "infra/dev/php/Dockerfile",
+      "sha256": "aaa0b6bec540f6d2b63fdac24d987f52be21da2d1b7b8a66145ee847b9d504be"
+    },
+    {
+      "path": "infra/dev/php/php.ini",
+      "sha256": "e45b586dd5b209636886119dcca2ae5664ff18a8091cbef1a0a4eab54190573c"
+    },
+    {
+      "path": "infra/dev/php/pool.conf",
+      "sha256": "90deaed4b8fb01da576a133f6c17806e071ddc78216096bbacd0e4c23e5de638"
+    },
+    {
+      "path": "infra/dev/php/trust/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "infra/dev/static/index.html",
+      "sha256": "a9ad79655434fb8cf34a44a30a39738680bfd8850d8c8ef2764baa114017ece1"
+    },
+    {
+      "path": "infra/dev/versions.json",
+      "sha256": "d27eba6aa2ed9a46c3fc988dab14e2e550a72a3199b73ae2424b9af9129f8bec"
+    },
+    {
+      "path": "packages/contracts/p04-api.schema.json",
+      "sha256": "30d0c2e77fc889188fe1e1b08051dc52e9b85a00e58d283e90927121fbe001fe"
+    },
+    {
+      "path": "packages/contracts/p04-compatibility.json",
+      "sha256": "f20b38d3c727bd8b60666143ae2f2e558d7b5ca71a8ff617b4fb8113ff8144f9"
+    },
+    {
+      "path": "packages/crypto-native/Cargo.lock",
+      "sha256": "98d48b9647c0d37356f200136d0fd94a1ee67664e818cc98cad8573fb57be185"
+    },
+    {
+      "path": "packages/crypto-native/Cargo.toml",
+      "sha256": "b4495adfa8bc76bf578b3975b869c18966709727aa1766c1376db09730a597bb"
+    },
+    {
+      "path": "packages/crypto-native/dependency-inventory.json",
+      "sha256": "997d118f3a43ca03eca672303557942c62dbb7fdaffc77e7b9c182856ba104dc"
+    },
+    {
+      "path": "packages/crypto-native/src/lib.rs",
+      "sha256": "e56d6d1417f6b25a84c7846f3f512e3db922fc9454463db4e5b0acbbe7a20a3e"
+    },
+    {
+      "path": "packages/crypto-native/src/main.rs",
+      "sha256": "b09937aa61030ec0b58d923339600687b9e3b60c825633f3bbb1fc71ca8d6d23"
+    },
+    {
+      "path": "packages/protocol/adapters/public-signatures.mjs",
+      "sha256": "5b277d6ca64dda8abba801fb88e55fb1b60122652066a4204d5dfae252bff430"
+    },
+    {
+      "path": "packages/protocol/p04-fixtures.mjs",
+      "sha256": "2faa5a5a7bdc158f9cac119334bc872b9501455cbdf5fa4a45bc45788f09f2a9"
+    },
+    {
+      "path": "scripts/check-p04-compatibility.py",
+      "sha256": "d60aa9abc66a6036839d25df87bc643d9cf0b5637e8b2ad266575b60b9b4298c"
+    },
+    {
+      "path": "scripts/p04-checks.py",
+      "sha256": "dc5fefd37d45c3994efc6ba44e22d130b8f86cf27f4b6d3b9f3c9605ce483ea8"
+    },
+    {
+      "path": "scripts/p04-native-inventory.py",
+      "sha256": "54d0db1b913a5285f7d168bb2d963a842c22e5aaf5350614ffb60a6ba6ab7248"
+    },
+    {
+      "path": "scripts/p04_compatibility.py",
+      "sha256": "5cb442d10575c4b1a48371b8995dbc17227f559a84e184811acbd60c2c257fc3"
+    }
+  ]
+}

@@ -53,7 +53,7 @@ for (const schema of schemas) {
   for (const key of Object.keys(schema.$defs)) ajv.compile({ $ref: schema.$id + "#/$defs/" + key });
 }
 
-const api = schemas.at(-1);
+const api = schemas.find(schema => schema.$id === "urn:anynote:p03:api-foundation:v1");
 const capabilities = ajv.compile({ $ref: api.$id + "#/$defs/capabilities" });
 export function decodeCapabilities(bytes, expectedService) {
   const value = strictJson(bytes, 4096);

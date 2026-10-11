@@ -9,8 +9,13 @@ def main():
     for row in registry['components']:
         schema=json.loads((ROOT/row['schema']).read_text())
         assert row['schema_id']==schema['$id'] and row['structures']==list(schema['$defs'])
+    # P04 preserves the exact original lock separately and permits only four
+    # reviewed added package records; every other original input stays in place.
+    from p04_compatibility import verify
+    aliases=verify(ROOT)
     for row in registry['frozen_inputs']:
-        assert hashlib.sha256((ROOT/row['path']).read_bytes()).hexdigest()==row['sha256'], 'Frozen contract/input drift: '+row['path']
+        path=aliases.get(row['path'],ROOT/row['path'])
+        assert hashlib.sha256(path.read_bytes()).hexdigest()==row['sha256'], 'Frozen contract/input drift: '+row['path']
     expected={x['path']for x in registry['frozen_inputs'] if '/v1/' in x['path']}
     actual={str(p.relative_to(ROOT))for p in (ROOT/'fixtures/protocol/p02/v1').rglob('*')if p.is_file()}
     assert actual==expected, 'Missing/extra complete fixture bytes'

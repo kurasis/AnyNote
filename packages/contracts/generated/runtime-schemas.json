@@ -6211,5 +6211,193 @@
         "additionalProperties": false
       }
     }
+  },
+  {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "urn:anynote:p04:api",
+    "$defs": {
+      "readiness": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "const": "ready"
+          },
+          "database": {
+            "const": "ready"
+          },
+          "queue": {
+            "const": "ready"
+          },
+          "scheduler": {
+            "const": "ready"
+          }
+        },
+        "required": [
+          "status",
+          "database",
+          "queue",
+          "scheduler"
+        ],
+        "additionalProperties": false
+      },
+      "object-commit": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "object_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "object_kind": {
+            "enum": [
+              "group-metadata",
+              "thread",
+              "entry"
+            ]
+          },
+          "action": {
+            "enum": [
+              "create",
+              "update",
+              "soft-delete",
+              "restore"
+            ]
+          },
+          "thread_id": {
+            "anyOf": [
+              {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bundle": {
+            "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/bundle"
+          }
+        },
+        "required": [
+          "group_id",
+          "object_id",
+          "object_kind",
+          "action",
+          "thread_id",
+          "bundle"
+        ],
+        "additionalProperties": false
+      },
+      "commit-result": {
+        "type": "object",
+        "properties": {
+          "receipt": {
+            "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/receipt"
+          },
+          "heads": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 32,
+            "items": {
+              "$ref": "urn:anynote:p02:file-contract:c1#/$defs/parent"
+            }
+          }
+        },
+        "required": [
+          "receipt",
+          "heads"
+        ],
+        "additionalProperties": false
+      },
+      "quota-request": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "reservation_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "bytes": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,10}$",
+            "format": "decimal-u63"
+          }
+        },
+        "required": [
+          "group_id",
+          "reservation_id",
+          "bytes"
+        ],
+        "additionalProperties": false
+      },
+      "quota-result": {
+        "type": "object",
+        "properties": {
+          "reservation_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "state": {
+            "enum": [
+              "reserved",
+              "committed",
+              "released"
+            ]
+          },
+          "bytes": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+          }
+        },
+        "required": [
+          "reservation_id",
+          "state",
+          "bytes"
+        ],
+        "additionalProperties": false
+      },
+      "invite-request": {
+        "type": "object",
+        "properties": {
+          "recipient_binding_hash": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "valid_hours": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 168
+          }
+        },
+        "required": [
+          "recipient_binding_hash",
+          "valid_hours"
+        ],
+        "additionalProperties": false
+      },
+      "invite-result": {
+        "type": "object",
+        "properties": {
+          "invitation_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "token": {
+            "type": "string",
+            "format": "base64url-32"
+          }
+        },
+        "required": [
+          "invitation_id",
+          "token"
+        ],
+        "additionalProperties": false
+      }
+    }
   }
 ]

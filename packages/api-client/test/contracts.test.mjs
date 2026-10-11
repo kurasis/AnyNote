@@ -150,9 +150,10 @@ test("OpenAPI local refs and operation signatures resolve; future product paths 
       ids.add(op.operationId);
       for (const parameter of op.parameters)
         assert.ok(path.includes("{" + parameter.name + "}"));
-      assert.equal(op["x-implemented"], op["x-implementation-phase"] === "P03");
+      assert.equal(op["x-implemented"], ["get_capabilities", "get_health_live", "get_health_ready"].includes(op.operationId));
+      if (op.operationId === "get_health_ready") assert.deepEqual(op.security, [{NativeBearer:[]}]);
       if (op["x-implemented"]) assert.ok(["get", "head"].includes(method));
       assert.ok(!path.includes("/search"));
     }
-  assert.equal(ids.size, 79);
+  assert.equal(ids.size, 80);
 });
