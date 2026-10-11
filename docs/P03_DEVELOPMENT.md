@@ -106,6 +106,9 @@ real cookies/bearer/device sessions and native redemption remain P06/P16. CORS
 is not authorization or CSRF protection. PHP cannot serve/write the separate
 static origin; only Nginx publishes loopback port 18080, DB/FPM publish none.
 Set ANYNOTE_DEV_PORT before first project initialization to use another port.
+The targeted HTTP wrapper reads that marked project's persisted port; it never
+requires a duplicate setting or accepts an arbitrary network origin. Alternate
+port native/HTTP checks were exercised and the original owned config restored.
 
 ## Logs, evidence and boundaries
 

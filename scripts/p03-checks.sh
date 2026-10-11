@@ -9,5 +9,5 @@ npm --prefix packages/api-client run typecheck
 npm --prefix packages/api-client test
 python3 scripts/dev-stack.py up
 python3 scripts/dev-stack.py test
-node packages/api-client/http-check.mjs "${ANYNOTE_DEV_PORT:-18080}"
+python3 scripts/check-p03-http.py
 python3 scripts/check_baseline.py

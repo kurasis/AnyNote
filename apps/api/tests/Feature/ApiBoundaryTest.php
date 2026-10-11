@@ -19,11 +19,12 @@ final class ApiBoundaryTest extends TestCase
 {
     public function test_capabilities_and_request_id_do_not_claim_product_auth_or_trust_hostile_headers(): void
     {
-        $one = $this->withHeaders(['X-Request-ID' => 'hostile-synthetic-id', 'Origin' => 'http://app.anynote.test:18080'])->get('http://api.anynote.test/api/v1/capabilities')->assertOk();
+        $origin = config('api.app_origin');
+        $one = $this->withHeaders(['X-Request-ID' => 'hostile-synthetic-id', 'Origin' => $origin])->get('http://api.anynote.test/api/v1/capabilities')->assertOk();
         $one->assertJsonPath('features.production_ready', false)->assertJsonPath('negotiation.components.3', 'p02-group-c2');
         $this->assertNotSame('hostile-synthetic-id', $one->headers->get('X-Request-ID'));
         $this->assertMatchesRegularExpression('/^[A-Za-z0-9_-]{21}[AQgw]$/D', $one->headers->get('X-Request-ID'));
-        $one->assertHeader('Access-Control-Allow-Origin', 'http://app.anynote.test:18080')->assertHeader('Access-Control-Allow-Credentials', 'true');
+        $one->assertHeader('Access-Control-Allow-Origin', $origin)->assertHeader('Access-Control-Allow-Credentials', 'true');
         $two = $this->get('http://api.anynote.test/api/v1/capabilities');
         $this->assertNotSame($one->headers->get('X-Request-ID'), $two->headers->get('X-Request-ID'));
         $this->assertSame(['status' => 'live'], (new P03ApiLiveness('live'))->jsonSerialize());
@@ -31,10 +32,11 @@ final class ApiBoundaryTest extends TestCase
 
     public function test_profile_cors_and_preflight_reject_downgrades_and_hostile_origins(): void
     {
+        $origin = config('api.app_origin');
         $this->withHeaders(['X-AnyNote-Profile' => 'p02-group-c1'])->get('http://api.anynote.test/api/v1/capabilities')->assertStatus(400)->assertJsonPath('error.code', 'UNSUPPORTED_SCHEMA');
         $this->withHeaders(['X-AnyNote-Profile' => 'p02-v1', 'Origin' => 'https://hostile.anynote.test'])->get('http://api.anynote.test/api/v1/capabilities')->assertNotFound()->assertHeaderMissing('Access-Control-Allow-Origin');
-        $this->withHeaders(['Origin' => 'http://app.anynote.test:18080', 'Access-Control-Request-Method' => 'POST', 'Access-Control-Request-Headers' => 'content-type,x-anynote-profile,x-csrf-token'])->options('http://api.anynote.test/api/v1/auth/passkeys/verify')->assertNoContent();
-        $this->withHeaders(['Origin' => 'http://app.anynote.test:18080', 'Access-Control-Request-Headers' => 'x-exfiltrate'])->options('http://api.anynote.test/api/v1/auth/passkeys/verify')->assertNotFound();
+        $this->withHeaders(['Origin' => $origin, 'Access-Control-Request-Method' => 'POST', 'Access-Control-Request-Headers' => 'content-type,x-anynote-profile,x-csrf-token'])->options('http://api.anynote.test/api/v1/auth/passkeys/verify')->assertNoContent();
+        $this->withHeaders(['Origin' => $origin, 'Access-Control-Request-Headers' => 'x-exfiltrate'])->options('http://api.anynote.test/api/v1/auth/passkeys/verify')->assertNotFound();
     }
 
     public function test_missing_and_unauthorized_resources_have_identical_safe_errors(): void

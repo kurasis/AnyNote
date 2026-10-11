@@ -990,3 +990,11 @@ GitHub runner. Use the existing installer's supported ANYNOTE_TOOLCHAINS overrid
 pointing to /tmp/anynote-p03-toolchains. This is a CI configuration correction,
 not a source test PASS or a signature/checksum/TLS bypass. All final checks must
 pass again on the updated head; prior-head successes do not approve the new tree.
+
+Alternate-port robustness: actual owned Compose project moved temporarily to port
+55629; native PHPUnit and all 16 HTTP checks PASS. Exact original synthetic
+configuration/credentials and port were restored in finally. The HTTP wrapper
+reads only the marked project's persisted port before invoking the fixed-loopback
+client; PHP CORS tests use the configured Origin. Updated target command repeated
+strict generation/drift/types, 11 PHP tests / 215 assertions and 16 HTTP checks PASS.
+These are actual development checks, not production network/TLS acceptance.

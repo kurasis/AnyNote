@@ -47,7 +47,7 @@ jobs:
           python3 scripts/dev-stack.py up
           python3 scripts/dev-stack.py test
           source scripts/runtime-env.sh
-          node packages/api-client/http-check.mjs
+          python3 scripts/check-p03-http.py
       - name: Verify independent PHP public candidate crypto fixtures
         run: |
           python3 scripts/check-p02-crypto.py
