@@ -11,7 +11,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P02 | VERIFIED | Complete five-component registry, exact note/local/native/sync/snapshot/restore/age formats, frozen bytes and independent PHP/Python/Rust-age/Go-age subsets; external review TRACKED_NOT_BOOKED / NOT_RUN; G2/G3 and product phases remain open |
 | P03 | VERIFIED | 79 initial OpenAPI operations / 157 schema-derived types; strict errors/request IDs/content-free logs; frozen setup, drift negatives and actual owned HTTP/SQL integration verified; product operations remain phase-owned |
 | P04 | VERIFIED | 21 tests/322 assertions, 578 actual SQL checks, eight-process concurrency/fault recovery and supervised restart; Rust/Node/sandboxed Chromium/PHP public-signature corpus PASS |
-| P05 | IN PROGRESS | P04-required public Ed25519 slice implemented; general codecs/AEAD/wrappers/performance remain open |
+| P05 | IMPLEMENTED / UNVERIFIED | Full native/browser core, 146 frozen frames, RFC8785, wrappers/file/history and PHP public signatures implemented; mandatory hosted Worker/MSVC and measured 1 GB gate pending |
 | P06 | NOT STARTED | P04 |
 | P07 | NOT STARTED | P05/P06 |
 | P08 | NOT STARTED | P05–P07 |
@@ -462,3 +462,15 @@ with Chromium sandbox enabled. All six source CI jobs passed at dc41686; actual
 checkout/full-tree/input-hash evidence is retained. No owner trial, production
 migration/deployment, security release or reviewer outreach occurred. Rollback:
 normal source revert; reverse/reset schema only on the explicitly owned test DB.
+
+## P05 full client core implementation
+
+Native Rust and portable Node/browser modules now implement strict versioned
+decoders, maintained general JCS, signatures/AEAD, root/recipient/local/native
+wrappers, fresh-key sequential file framing and independently pinned complete
+history inclusion. No current authority is inferred from cryptographic validity.
+See P05_CRYPTO_CORE.md for caller/lifecycle/resource boundaries. PHP verifies
+closed public signatures only. Linux actual Worker and Windows/MSVC CI are
+mandatory; local sandbox restrictions cannot satisfy this gate. Frozen prior
+locks/corpora remain unchanged, with exact new crate inventory and RFC fixtures.
+No production migration/deploy/release, reviewer outreach or owner trial occurs.

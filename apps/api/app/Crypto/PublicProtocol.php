@@ -8,7 +8,7 @@ use Opis\JsonSchema\Validator;
 use stdClass;
 use Truschery\Kanon\Json;
 
-/** Closed public frames only: arbitrary payload/local-secret JCS is a P05 gate. */
+/** Closed public frames only. General encrypted-payload JCS belongs to clients. */
 final class PublicProtocol
 {
     private Validator $validator;
@@ -24,6 +24,7 @@ final class PublicProtocol
             $formats->registerCallable('string', 'base64url-'.$size, fn ($s) => self::isBinary($s, $size));
         }
         $formats->registerCallable('string', 'base64url-variable', fn ($s) => self::isBinary($s));
+        $formats->registerCallable('string', 'base64url-sealed', fn ($s) => self::isBinary($s) && strlen(self::binary($s)) >= 48 && strlen(self::binary($s)) <= 4096);
         foreach (['u63' => '9223372036854775807', '119' => '119', '120' => '120', '199' => '199', '200' => '200', '65536' => '65536', '100000' => '100000', '8388608' => '8388608', '8388624' => '8388624', '1000000000' => '1000000000', '9223372036854775807' => '9223372036854775807'] as $suffix => $max) {
             $formats->registerCallable('string', 'decimal-'.$suffix, fn ($s) => self::counter($s, $max));
         }
@@ -57,7 +58,7 @@ final class PublicProtocol
 
     public function decode(string $component, string $kind, string $bytes): stdClass
     {
-        $allowed = ['p02-v1' => ['bundle', 'context', 'header', 'wrap', 'envelope', 'receipt'], 'p02-identity-c1' => ['identity', 'certificate'], 'p04-api' => ['readiness', 'object-commit', 'commit-result', 'quota-request', 'quota-result', 'invite-request', 'invite-result']];
+        $allowed = ['p02-v1' => ['bundle', 'context', 'header', 'wrap', 'envelope', 'receipt', 'export-footer-body'], 'p02-identity-c1' => ['identity', 'certificate', 'identity-body', 'certificate-body', 'grant-body', 'grant'], 'p02-file-c1' => ['header', 'envelope', 'checkpoint'], 'p02-state-c1' => ['invitation-body', 'offer-body', 'response-body', 'approval-body', 'confirmation-body', 'possession-body', 'event-body'], 'p02-group-c2' => ['invitation-body', 'acceptance-body', 'policy-body', 'epoch-intent-body', 'descriptor-body', 'epoch-commit-body', 'history-body'], 'p04-api' => ['readiness', 'object-commit', 'commit-result', 'quota-request', 'quota-result', 'invite-request', 'invite-result']];
         if (! in_array($kind, $allowed[$component] ?? [], true)) {
             throw new ApiException('UNSUPPORTED_SCHEMA');
         }
@@ -66,7 +67,7 @@ final class PublicProtocol
             throw new ApiException('REQUEST_TOO_LARGE');
         }
         $value = ControlJson::decode($bytes);
-        $id = ['p02-v1' => 'urn:anynote:p02:complete-contract:v1', 'p02-identity-c1' => 'urn:anynote:p02:identity-contract:c1', 'p04-api' => 'urn:anynote:p04:api'][$component];
+        $id = ['p02-v1' => 'urn:anynote:p02:complete-contract:v1', 'p02-identity-c1' => 'urn:anynote:p02:identity-contract:c1', 'p02-file-c1' => 'urn:anynote:p02:file-contract:c1', 'p02-state-c1' => 'urn:anynote:p02:state-contract:c1', 'p02-group-c2' => 'urn:anynote:p02:group-contract:c2', 'p04-api' => 'urn:anynote:p04:api'][$component];
         if (! $this->validator->validate($value, $id.'#/$defs/'.$kind)->isValid()) {
             throw new ApiException('MALFORMED_ENVELOPE');
         }
@@ -77,7 +78,8 @@ final class PublicProtocol
     public static function canonical(stdClass $publicFrame): string
     {
         // Only validated closed public DTOs reach this adapter. Their keys are ASCII,
-        // numeric values are version 1, remaining values are typed ASCII strings.
+        // numeric values are schema-bounded small integers. Secret payloads are
+        // never admitted here; general floating-point JCS is implemented by clients.
         return Json::canonicalize($publicFrame);
     }
 
@@ -91,6 +93,20 @@ final class PublicProtocol
         if (! self::isBinary($signature, 64) || ! self::isBinary($publicKey, 32) || ! sodium_crypto_sign_verify_detached(self::binary($signature), 'AnyNote/'.$component.'/sign/'.$purpose."\0".self::canonical($body), self::binary($publicKey))) {
             throw new ApiException('INVALID_SIGNATURE');
         }
+    }
+
+    /** Signature validity alone establishes no role, current policy or trusted key. */
+    public function signedFrame(string $component, string $kind, string $bytes, string $signature, string $pinnedPublicKey): stdClass
+    {
+        $purposes = ['p02-identity-c1' => ['identity-body' => 'account-root-identity', 'certificate-body' => 'provisional-device-certificate', 'grant-body' => 'group-key-distribution'], 'p02-file-c1' => ['header' => 'file-manifest', 'checkpoint' => 'history-checkpoint'], 'p02-v1' => ['header' => 'object-revision', 'export-footer-body' => 'export-footer'], 'p02-state-c1' => array_fill_keys(['invitation-body', 'offer-body', 'response-body', 'approval-body', 'confirmation-body', 'possession-body', 'event-body'], null), 'p02-group-c2' => array_fill_keys(['invitation-body', 'acceptance-body', 'policy-body', 'epoch-intent-body', 'descriptor-body', 'epoch-commit-body', 'history-body'], null)];
+        if (! array_key_exists($kind, $purposes[$component] ?? [])) {
+            throw new ApiException('UNSUPPORTED_SCHEMA');
+        }
+        $body = $this->decode($component, $kind, $bytes);
+        $purpose = $purposes[$component][$kind] ?? $body->purpose;
+        self::verify($component, $purpose, $body, $signature, $pinnedPublicKey);
+
+        return $body;
     }
 
     public function bundle(string $bytes, string $publicKey): stdClass

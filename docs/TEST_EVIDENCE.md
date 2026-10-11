@@ -1080,3 +1080,43 @@ Review/Save -> Publish. Local Chromium remains BLOCKED and is separate from the
 mandatory successful hosted gate. P04 is VERIFIED within its specified backend
 scope; general P05 crypto, P01 physical matrix, qualified review and production
 rollout remain open. No action on an owner device is required for this phase.
+
+## P05 full core local acceptance (2026-10-11)
+
+[Actual dirty local core report](evidence/p05-core-local.json) records the P04
+base commit plus exact implementation input hashes at execution. It is not clean
+or hosted evidence. Native Rust -> Node and Node -> Rust: 146 frozen positive
+frames across five profiles, 21 public signature types, 28 independently expected
+RFC8785 numeric/UTF16 cases and 14 malformed raw byte cases; complete-object,
+local/Argon/PRF/native-AES, root/recovery/device/recipient, file and pinned-history
+round trips/negatives PASS. Native with peer and 1 GB: 504 checks; Node with
+native peer: 525 checks. Actual release native 1,000,000,000-byte ciphertext-only
+disk round trip: 120 chunks, maximum plaintext chunk 8,388,608 bytes, 10,549 ms,
+peak process RSS 89,356 KiB. CSPRNG source and full authenticated plaintext digest
+are checked; only the newly owned temporary directory is removed.
+
+Native unit suite: three meaningful tests PASS, including four real simultaneous
+Argon2id jobs (one correct result, three KDF_BUSY), wrong AEAD AAD/key/nonce/tag,
+preallocation KDF bounds and correctly signed/digested frames with damaged AEAD
+or authenticated invalid decrypted JSON/context. Full native fmt/Clippy and
+156-record inventory, five portable frozen-predicate drift checks PASS. New core
+inputs include deterministic closed-frame unknown-property/version mutations.
+Factories reject repeated completed file index/source retry and choose fresh
+keys/nonces. Immutable durable restart/source-version coordination is P12.
+
+[PHP public-only report](evidence/p05-php-local.json): 227 checks PASS over all
+21 public signable types from Rust and Node, exact canonical bytes, changed/wrong
+signatures/keys, closed unknown fields and all 14 malformed byte cases; secret
+schemas refused. This process receives no group/local/root/private keys or
+payload plaintext. P04 regression: 21 tests/322 assertions plus 578 actual SQL
+checks, eight-process transaction/concurrency and supervised restart PASS. All
+306 old Node reference tests, 160 frozen design inputs, unchanged prior locks,
+read-only contract generation and existing real scanner negatives PASS.
+
+Cloud sandboxed Chromium launch is BLOCKED and no bypass/mock is used. Mandatory
+hosted actual Worker two-way ciphertext/signature acceptance, single-job RPC,
+UI/memory and OPFS files (0, 1, 8,388,607, 8,388,608, 8,388,609, 1,000,000,000),
+plus actual Windows/MSVC core, remain pending before P05 VERIFIED/merge. C04/C16
+use independently supplied authorized issuer/checkpoint pins; complete account/
+policy state authority is P08/P10. G1 physical/mobile memory, G2/G3 qualified
+review and release/deployment gates remain open. No owner-device action is needed.

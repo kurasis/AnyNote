@@ -77,3 +77,12 @@ runs real MariaDB authorization/concurrency/rollback checks and scoped maintenan
 containers, then stops those maintenance services. Product migrations are never
 automatically run by setup. See P04_BACKEND.md for public-signature native/browser
 commands, schema bounds, saved-startup and phase limitations.
+
+P05 full client core: `packages/crypto-core` and
+`packages/protocol/adapters/core.mjs`. See [P05_CRYPTO_CORE.md](P05_CRYPTO_CORE.md)
+for strict byte APIs, maintained dependencies, caller authority and worker/key
+ownership. Frozen installation builds the new crate with `--locked`, verifies
+its inventory and portable codec equivalence, and runs the actual native/Node
+corpus. The optional cloud sandbox block remains explicit; GitHub CI requires
+real sandboxed Worker, PHP public-only and Windows/MSVC acceptance. General PHP
+payload JCS, local persistent vault and product auth routes are not added here.

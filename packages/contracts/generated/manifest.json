@@ -20,7 +20,7 @@
     },
     {
       "path": "apps/api/app/Crypto/PublicProtocol.php",
-      "sha256": "7c269e5850564b153a8682eb54606872b6cbf6f156a0678c3627af9ade87eb6b"
+      "sha256": "edc2099808a097f3ca0bd7660eef82d985fbdc25670c2de87e03ca5a82aa3a8a"
     },
     {
       "path": "apps/api/app/Backend/ObjectService.php",
