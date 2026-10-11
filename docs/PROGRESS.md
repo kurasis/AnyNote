@@ -8,7 +8,7 @@ does not satisfy a feature gate. Production release is not ready.
 | --- | --- | --- |
 | P00 | VERIFIED | Local baseline and four negative cases passed; scope/version/inventory deliverables complete; remote bootstrap and clean-clone verification passed; both baseline Actions runs verified |
 | P01 | IN PROGRESS | Host crypto/KDF/storage/export/fault evidence VERIFIED; owner 0.1.4 fresh-process Hello authentication, WTS lock/STALE, installed-iPhone-PWA selected 1 GB hash and diagnostic recovery PASS; full physical G1/memory/network matrix remains open |
-| P02 | NOT STARTED | Depends on P00/P01 findings; qualified review remains external |
+| P02 | IN PROGRESS | Candidate key/file/checkpoint schemas, strict JCS byte codecs and public serialization fixtures implemented; remaining identity/recipient/pairing/transitions and qualified review stay open |
 | P03 | IN PROGRESS | Laravel/MariaDB/FPM/Nginx tooling and synthetic integration implemented; final contracts/generated types/errors/logging follow P02; evidence below |
 | P04 | NOT STARTED | P02/P03; signature acceptance also needs P05 fixtures |
 | P05 | NOT STARTED | P01/P02/P03 |
@@ -308,3 +308,29 @@ tree; raw report/source receipts archived, clean tree and no generated cache
 tracked. Cloud install_script/start_skill save confirmed; publication/future-task
 restoration NOT RUN. This final evidence addition leaves foundation/P01 code
 unchanged; final PR-head checks must pass before automatic merge.
+
+## Completed slice: P02-KEY-AND-FILE-CONTRACT
+
+Candidate p02-file-c1 key-custody/file context and bounded checkpoint design,
+strict closed schemas, raw-JSON/JCS codecs, exact public boundary fixtures and
+independent restricted fixture reference. Distinct AAD/signature/hash domains
+bind author/root/generation/roster/policy/epoch/parent context, immutable wrap
+bytes and ordered file inventory without circular digests. Complete inventory
+consistency rejects bad pages, missing/wrong/cyclic compact ancestry and wrong
+predecessors. Authentication/authority is an explicit mandatory next layer,
+not a verdict supplied by the codec. No product endpoint or crypto/key operation.
+
+69 Node tests PASS; six deterministic fixtures /125 nonce-AAD pairs and two
+independent reference rejection mutations PASS. Frozen seven-package npm lock/
+license/integrity inventory and advisory audit PASS. Source scanner allows only
+the exact two known public fixture values (also in decoded expected bytes);
+four fake-token path negatives plus two changed key/digest-shaped values PASS.
+Original specification and P01 experiments remain unchanged. Hosted exact-head
+checks and saved environment evidence are tracked in TEST_EVIDENCE.md.
+
+P02/G2 remains IN PROGRESS: full identity/recipient/pairing/roster/policy/epoch/
+recovery/local/export protocol, Rust/browser/PHP crypto interoperability and
+qualified independent review NOT RUN. R01/R14/R19 have byte/framing/design
+evidence only, not full application acceptance. P01/G1 and P03 gates unchanged.
+Rollback is a normal revert of candidate additions, no content migration/data.
+Next: P02-ROOT-IDENTITY-CONTRACT; no repeated owner device trial required.

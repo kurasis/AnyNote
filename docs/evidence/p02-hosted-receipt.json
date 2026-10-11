@@ -1,0 +1,58 @@
+{
+  "captured_at_utc": "2026-10-11T07:32:32.721735+00:00",
+  "purpose": "Actual fresh hosted candidate byte/framing checks; not physical or full security acceptance",
+  "pr_url": "https://github.com/kurasis/AnyNote/pull/11",
+  "workflow_head": "0e19c8627a1bc0a9c2587038188dcea9aa538bb2",
+  "actual_checkout_commit": "6813b0bf9029f982aff776ad0d7369a2e8dbbd9f",
+  "checkout_parents": [
+    "29102ae375420211798b209bc728dce8a5c3f549",
+    "0e19c8627a1bc0a9c2587038188dcea9aa538bb2"
+  ],
+  "actual_checkout_tree": "a36cafd37b2ca803a7b638c7e7f5718a6da15a13",
+  "tree_equals_workflow_head": true,
+  "candidate_run": {
+    "id": 38121514437,
+    "url": "https://github.com/kurasis/AnyNote/actions/runs/38121514437",
+    "outcome": "PASS",
+    "node_tests_executed": 69,
+    "passed": 69,
+    "failed": 0,
+    "skipped": 0,
+    "fixture_cases": 6,
+    "nonce_aad_pairs": 125,
+    "independent_reference_rejection_mutations": 2,
+    "locked_packages": 7,
+    "reported_advisories": 0,
+    "source_drift": "PASS; git diff --exit-code"
+  },
+  "candidate_raw_log_sha256_base64url": "OS2Pg61DfyH8DgjVT-BUzk_GXDPbkjBLL3LOMl2oCx4",
+  "baseline_run": {
+    "id": 38121514433,
+    "outcome": "PASS"
+  },
+  "foundation_run": {
+    "id": 38121514438,
+    "outcome": "PASS"
+  },
+  "p01_run": {
+    "id": 38121514469,
+    "outcome_at_capture": "INCOMPLETE/FAILED; Windows build upstream DNS resolution error, other jobs still running",
+    "windows_job": 114417091718,
+    "windows_failure": "libsodium-sys-stable 1.24.0 build.rs download: Windows error 11002 hostname resolution; no P01 source change",
+    "physical_gate": "UNCHANGED/OPEN"
+  },
+  "initial_candidate_run": {
+    "id": 38121442916,
+    "outcome": "FAIL before tests; cloud path /workspace not writable on hosted runner; corrected owned /tmp toolchain/cache paths"
+  },
+  "local_receipt_comparison": "Core/schema/fixture/document inputs match committed bytes; only recorded hosted workflow path correction differs from older dirty local receipt",
+  "final_head_policy": "This evidence-only commit changes no functional source. Fresh complete final-head checks must pass before merge and are recorded in PR; earlier runs never substitute for final-head acceptance. No failed/cancelled run counted as PASS.",
+  "not_run": [
+    "Candidate signatures/AEAD/key distribution/authorization",
+    "Rust/browser/PHP candidate crypto interoperability",
+    "Qualified independent design review",
+    "Production deployment",
+    "New physical-device trials",
+    "Environment publication/future-task restoration"
+  ]
+}

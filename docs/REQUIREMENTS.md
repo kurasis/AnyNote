@@ -29,3 +29,9 @@ an ADR. Full traceability: [specification chapter 18](spec/18_REQUIREMENTS_TRACE
 - [x] Preserve the original 21 specification files and checksums.
 - [x] Document baseline reproduction and a meaningful integrity check.
 - [ ] Validate production features, physical platforms and independent review.
+
+P02-KEY-AND-FILE-CONTRACT: specification 04/10/20 and R01/R14/R19 now map to
+protocol-v1.md, packages/contracts/p02-file-c1.schema.json, strict candidate
+codecs/tests and fixtures/protocol/p02. Status is candidate byte/framing/design
+evidence only; no complete R01 fresh-recipient crypto, R14 author/reader trust
+state or R19 application thread/signature substitution acceptance.

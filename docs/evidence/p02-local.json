@@ -1,0 +1,114 @@
+{
+  "captured_at_utc": "2026-10-11T07:27:38.515698+00:00",
+  "status": "PASS",
+  "purpose": "P02 candidate byte/framing/reference validation only",
+  "contract": "p02-file-c1",
+  "source_commit": "29102ae375420211798b209bc728dce8a5c3f549",
+  "source_tree_dirty": true,
+  "source_inputs": [
+    {
+      "path": ".github/workflows/protocol-candidate.yml",
+      "sha256_base64url": "FcQi-iOQ-YZPzhOwp_YBKLGtNTNAzXetjjB3rriRIjA"
+    },
+    {
+      "path": ".gitleaks.toml",
+      "sha256_base64url": "TSA20t2y6015rOymdyrfA0Y0y9WlN26xUS9i5SGYd3I"
+    },
+    {
+      "path": "docs/protocol-v1.md",
+      "sha256_base64url": "RiA5vQ7fk_XzlgLJ0cSD5L1YrJL1Zzeipgt-q8Y48Yc"
+    },
+    {
+      "path": "fixtures/protocol/p02/README.md",
+      "sha256_base64url": "YBfCGwzOT9RaRC8hxvr6sIjPVSWnzWgEdt08bpm0iyo"
+    },
+    {
+      "path": "fixtures/protocol/p02/vectors.json",
+      "sha256_base64url": "CxjEUl4gQsqhao1Te7pewadlRF2e5qUhX2kiWsATy-0"
+    },
+    {
+      "path": "packages/contracts/README.md",
+      "sha256_base64url": "6vilakmPbIidtPfIKyoHHImCDWBguL5HsGGtRs9YoUI"
+    },
+    {
+      "path": "packages/contracts/p02-file-c1.schema.json",
+      "sha256_base64url": "421iJhKsyvxjP4YnnICXYVdccxVBylFzvXWHHdEiNLs"
+    },
+    {
+      "path": "packages/contracts/registry.json",
+      "sha256_base64url": "YylRnGZ5fbevPz2SYQ4j9wuaLrABU135WyntuHD2cxI"
+    },
+    {
+      "path": "packages/protocol/README.md",
+      "sha256_base64url": "OUBhy3AJeoOKGD1f3unVQPtO0BJBg7AvhpfS7LzInRM"
+    },
+    {
+      "path": "packages/protocol/dependency-inventory.json",
+      "sha256_base64url": "f78ijiv5aRmZbdL_FVmH5qK6C_i4WRkyO_A9LUl-oKU"
+    },
+    {
+      "path": "packages/protocol/fixtures.mjs",
+      "sha256_base64url": "R4V_BJ9re23Ly_HTgmIY0grgHt6OCklELMlRJsevhuA"
+    },
+    {
+      "path": "packages/protocol/inventory.mjs",
+      "sha256_base64url": "A_4lZYfE7yPg4I8I-qILCeCGQE7ZpG_3GgSJ6LTJu9o"
+    },
+    {
+      "path": "packages/protocol/package-lock.json",
+      "sha256_base64url": "dkN96b0SyNyQJpY36SaG8wxLJZ1vEbJCzf5tLzaoolw"
+    },
+    {
+      "path": "packages/protocol/package.json",
+      "sha256_base64url": "oc5FR2UnZ56kD0PWyW-IGo_-NOyLiz7-EiUpR7SjVkA"
+    },
+    {
+      "path": "packages/protocol/src/codec.mjs",
+      "sha256_base64url": "de8e5RPU_Jb-q0oghcm3aPVsYPWpbiS21qvZ-uoSlBA"
+    },
+    {
+      "path": "packages/protocol/src/strict-json.mjs",
+      "sha256_base64url": "gRtm14ent0Z79cSTl9HeFh6dIhb3B-IOMkTZZ6tAtug"
+    },
+    {
+      "path": "packages/protocol/test/contract.test.mjs",
+      "sha256_base64url": "ktACeROk0boBSqYB5pKmBbfLjK86dE0pzC4SEuDOxNI"
+    },
+    {
+      "path": "scripts/check-p02-fixtures.py",
+      "sha256_base64url": "aDy7kx-YR5WFzefnPNqrVLFanpxm745Z-guWtFzPR4w"
+    },
+    {
+      "path": "scripts/check-secrets.py",
+      "sha256_base64url": "VMH3Li9SnK5VbW75TGx7HKf71CjrC0PWv4I0rs3Y3Z0"
+    }
+  ],
+  "node_tests": {
+    "executed": 69,
+    "passed": 69,
+    "failed": 0,
+    "skipped": 0
+  },
+  "fixtures": {
+    "boundary_cases": 6,
+    "nonce_aad_pairs": 125,
+    "independent_restricted_reference": "PASS",
+    "reference_rejection_mutations": 2
+  },
+  "frozen_install_repeat": "PASS",
+  "locked_dependencies": 7,
+  "advisory_audit": "PASS; 0 reported vulnerabilities at execution",
+  "source_secret_scan": "PASS; 4 fake-token path negatives and 2 changed key/digest-shaped fixture negatives",
+  "original_specification_checksums": "PASS; 21 unchanged originals",
+  "existing_p01_source": "UNCHANGED",
+  "foundation_http_db_readiness": "PASS",
+  "not_run": [
+    "Actual candidate Ed25519/AEAD/key distribution",
+    "Trusted identity/policy/roster/recipient verification",
+    "Historical author/reader/witness authorization",
+    "Rust/browser/PHP candidate interoperability",
+    "New physical-device trials",
+    "Independent qualified protocol review",
+    "Production deployment/migration"
+  ]
+}

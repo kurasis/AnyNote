@@ -1,0 +1,41 @@
+{
+  "status": "CANDIDATE",
+  "contract": "p02-file-c1",
+  "schema": "p02-file-c1.schema.json",
+  "codec": "../protocol/src/codec.mjs",
+  "structures": [
+    "id",
+    "digest",
+    "counter",
+    "head",
+    "author",
+    "parent",
+    "policy",
+    "context",
+    "part",
+    "framing",
+    "wrap-aad",
+    "wrap",
+    "manifest-aad",
+    "chunk-aad",
+    "header",
+    "envelope",
+    "manifest",
+    "inventory-record",
+    "checkpoint-page",
+    "roster-anchor",
+    "checkpoint"
+  ],
+  "maximum_wire_bytes": 1048576,
+  "maximum_json_depth": 32,
+  "signature_alg": "Ed25519",
+  "signature_domains": {
+    "file-manifest": "AnyNote/p02-file-c1/sign/file-manifest\u0000",
+    "history-checkpoint": "AnyNote/p02-file-c1/sign/history-checkpoint\u0000"
+  },
+  "aad_domains": {
+    "file-chunk": "AnyNote/p02-file-c1/aad/file-chunk\u0000",
+    "file-manifest": "AnyNote/p02-file-c1/aad/file-manifest\u0000",
+    "file-manifest-key-wrap": "AnyNote/p02-file-c1/aad/file-manifest-key-wrap\u0000"
+  }
+}

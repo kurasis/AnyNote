@@ -1,0 +1,71 @@
+{
+  "checked_at_utc": "2026-10-11T07:16:34.024967+00:00",
+  "dependency_selection": [
+    {
+      "package": "ajv",
+      "version": "8.20.0",
+      "license": "MIT",
+      "primary_metadata_url": "https://registry.npmjs.org/ajv/8.20.0",
+      "repository": {
+        "url": "git+https://github.com/ajv-validator/ajv.git",
+        "type": "git"
+      },
+      "dist": {
+        "tarball": "https://registry.npmjs.org/ajv/-/ajv-8.20.0.tgz",
+        "integrity": "sha512-Thbli+OlOj+iMPYFBVBfJ3OmCAnaSyNn4M1vz9T6Gka5Jt9ba/HIR56joy65tY6kx/FCF5VXNB819Y7/GUrBGA==",
+        "shasum": "304b3636add88ba7d936760dd50ece006dea95f9"
+      },
+      "metadata_sha256_base64url": "2h6BHEN9yu0yhw5QI-Ch_G5nICcCOgZI_d-8Ei-4TFg"
+    },
+    {
+      "package": "canonicalize",
+      "version": "5.1.0",
+      "license": "Apache-2.0",
+      "primary_metadata_url": "https://registry.npmjs.org/canonicalize/5.1.0",
+      "repository": {
+        "url": "git+https://github.com/erdtman/canonicalize.git",
+        "type": "git"
+      },
+      "dist": {
+        "tarball": "https://registry.npmjs.org/canonicalize/-/canonicalize-5.1.0.tgz",
+        "integrity": "sha512-bab9+WefZljqQ8jT0qRwVmTyzAUU63K97QIQD3agynIBrb6sa5M2eAy8Hv8K3p4V9+ONVYZKtGYl4Dg+/5Gumw==",
+        "shasum": "4e429a81a542933e8db7647b7e916cbdb60d272c"
+      },
+      "metadata_sha256_base64url": "S2ZtzTVx7awe4dsYK15SNwOHnZkCMgTBhpZA30ipXRQ"
+    },
+    {
+      "package": "jsonc-parser",
+      "version": "3.3.1",
+      "license": "MIT",
+      "primary_metadata_url": "https://registry.npmjs.org/jsonc-parser/3.3.1",
+      "repository": {
+        "url": "git+https://github.com/microsoft/node-jsonc-parser.git",
+        "type": "git"
+      },
+      "dist": {
+        "tarball": "https://registry.npmjs.org/jsonc-parser/-/jsonc-parser-3.3.1.tgz",
+        "integrity": "sha512-HUgH65KyejrUFPvHFPbqOY0rsFip3Bo5wb4ngvdi1EpCYWUQDC5V+Y7mZws+DLkr4M//zQJoanu1SP+87Dv1oQ==",
+        "shasum": "f2a524b4f7fd11e3d791e559977ad60b98b798b4"
+      },
+      "metadata_sha256_base64url": "tzsCzhUSTlHe8wc1hUoFB3Yd6CLyOOG7FK9Lu81wqqo"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://www.rfc-editor.org/rfc/rfc8785.txt",
+      "role": "JCS normative format; preserve Unicode, reject lone surrogates/nonfinite and duplicate members",
+      "sha256_base64url": "Y9UilOsOPwAUF0KIGG04i03b8sZ9HOivHZcm6ww6skA"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/erdtman/canonicalize/master/README.md",
+      "role": "Maintainer confirms raw duplicate rejection must precede canonicalize",
+      "sha256_base64url": "MCVaiynNzDn5dzyHZyQ7bxxi73Nf1hsR-F3kSVjD6a8"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/microsoft/node-jsonc-parser/main/README.md",
+      "role": "Maintainer SAX visit callbacks; fault-tolerant parser requires explicit error rejection",
+      "sha256_base64url": "xVSlo_6woUn2G34aac3RuV6Sju9IHw2lQpm53Vom1Ao"
+    }
+  ],
+  "limits": "Primary-source/version/license review, not independent security review. Exact installed dist integrities verified by npm ci; full seven-package lock/license inventory in packages/protocol."
+}

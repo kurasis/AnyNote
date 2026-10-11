@@ -102,3 +102,17 @@ future AnyNote release license remains unselected and upstream licenses unchange
 
 Rollback: revert the foundation addition and stop its own synthetic project.
 No production format/migration or P01 reference/device-kit changes occur.
+
+## P02 candidate contract checks
+
+The separate packages/protocol reference harness adds strict candidate schemas
+and serialization vectors only, not product OpenAPI/auth/server acceptance.
+Read protocol-v1.md. Frozen install: `npm --prefix packages/protocol ci
+--ignore-scripts --cache /workspace/.cache/npm --no-audit --no-fund`. Run
+`npm --prefix packages/protocol test`, `npm --prefix packages/protocol run
+fixtures:check`, `npm --prefix packages/protocol run inventory:check`, and
+`python3 scripts/check-p02-fixtures.py`. The dedicated pinned Actions workflow
+protocol-candidate.yml repeats these checks/advisory audit. Existing foundation
+source scan now tests changed fixture-shaped values as well as fake PAT paths.
+Candidate consistency success never authorizes a product write or historical
+record. Full generated types/OpenAPI/errors/logging remain later P03 work.

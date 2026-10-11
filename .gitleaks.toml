@@ -19,3 +19,11 @@ condition = "AND"
 paths = ['''docs/evidence/p03-foundation-(?:local|hosted)\.json$''']
 regexTarget = "line"
 regexes = ['''^\s*"(?:apps/api/[^"\n]+|infra/dev/[^"\n]+|scripts/[^"\n]+|\.gitleaks\.toml|\.github/workflows/foundation\.yml)": "[0-9a-f]{64}",?\s*$''']
+
+[[rules.allowlists]]
+description = "Exact public candidate wrap digest and sequential 00..1f key bytes, reproduced by fixture and independent reference checks"
+condition = "AND"
+paths = ['''fixtures/protocol/p02/vectors\.json$''']
+regexTarget = "secret"
+regexes = ['''^4W0vDgp41T01ZXPNRdhZfx8GSgRYIJ5CUJ8YeBMa_no$''',
+            '''^AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8$''']

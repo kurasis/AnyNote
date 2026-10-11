@@ -123,3 +123,15 @@
 - Services must restart after environment restoration; saved install/start draft
   is not publication or fresh-task restoration evidence. Generated synthetic DB
   credentials/state must remain consistent with the owned retained volume.
+
+- P02 p02-file-c1 is an executable candidate serialization/consistency contract,
+  not complete protocol freeze or encryption/authentication/authorization. Public
+  fixture signatures/ciphertext are framing-only values. Rust/browser/PHP actual
+  candidate crypto interoperability, trusted identity/recipient and role/witness
+  transition enforcement, pairing/derivation/kit/local/export schemas and qualified
+  independent review remain pending. Never expose codecs as an acceptance API.
+- Complete candidate checkpoint inventories are capped at 100,000 records/200
+  pages, require compact signed ancestry and independently witnessed completeness.
+  Current reference codec materializes the inventory; this is not mobile memory
+  evidence or a production storage/index implementation. No independent global
+  freshness, timestamp trust or single-page/Merkle inclusion guarantee.

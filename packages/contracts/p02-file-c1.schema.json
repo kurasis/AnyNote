@@ -1,0 +1,648 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:anynote:p02:file-contract:c1",
+  "$comment": "Authoritative candidate slice; not a frozen production protocol. Additional codec predicates are mandatory.",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "format": "base64url-16",
+      "minLength": 22,
+      "maxLength": 22
+    },
+    "digest": {
+      "type": "string",
+      "format": "base64url-32",
+      "minLength": 43,
+      "maxLength": 43
+    },
+    "counter": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$",
+      "maxLength": 19,
+      "format": "decimal-9223372036854775807"
+    },
+    "head": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "$ref": "#/$defs/counter"
+        },
+        "digest": {
+          "$ref": "#/$defs/digest"
+        }
+      },
+      "required": [
+        "version",
+        "digest"
+      ],
+      "additionalProperties": false
+    },
+    "author": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "$ref": "#/$defs/id"
+        },
+        "device_id": {
+          "$ref": "#/$defs/id"
+        },
+        "root_fingerprint": {
+          "$ref": "#/$defs/digest"
+        },
+        "recovery_generation": {
+          "$ref": "#/$defs/counter"
+        },
+        "roster": {
+          "$ref": "#/$defs/head"
+        }
+      },
+      "required": [
+        "account_id",
+        "device_id",
+        "root_fingerprint",
+        "recovery_generation",
+        "roster"
+      ],
+      "additionalProperties": false
+    },
+    "parent": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "$ref": "#/$defs/id"
+        },
+        "envelope_digest": {
+          "$ref": "#/$defs/digest"
+        }
+      },
+      "required": [
+        "revision_id",
+        "envelope_digest"
+      ],
+      "additionalProperties": false
+    },
+    "policy": {
+      "type": "object",
+      "properties": {
+        "membership": {
+          "$ref": "#/$defs/head"
+        },
+        "key_epoch": {
+          "$ref": "#/$defs/counter"
+        },
+        "epoch_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "history_checkpoint_digest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "membership",
+        "key_epoch",
+        "epoch_digest",
+        "history_checkpoint_digest"
+      ],
+      "additionalProperties": false
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "contract": {
+          "const": "p02-file-c1"
+        },
+        "service_id": {
+          "$ref": "#/$defs/id"
+        },
+        "group_id": {
+          "$ref": "#/$defs/id"
+        },
+        "file_id": {
+          "$ref": "#/$defs/id"
+        },
+        "file_version_id": {
+          "$ref": "#/$defs/id"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/id"
+        },
+        "author": {
+          "$ref": "#/$defs/author"
+        },
+        "policy": {
+          "$ref": "#/$defs/policy"
+        },
+        "parents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/parent"
+          },
+          "maxItems": 32
+        },
+        "file_format": {
+          "const": "xchacha20poly1305-chunks-c1"
+        },
+        "manifest_schema": {
+          "const": 1
+        }
+      },
+      "required": [
+        "protocol",
+        "protocol_version",
+        "contract",
+        "service_id",
+        "group_id",
+        "file_id",
+        "file_version_id",
+        "operation_id",
+        "author",
+        "policy",
+        "parents",
+        "file_format",
+        "manifest_schema"
+      ],
+      "additionalProperties": false
+    },
+    "part": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 3,
+          "format": "decimal-119"
+        },
+        "ciphertext_bytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 7,
+          "format": "decimal-8388624"
+        },
+        "ciphertext_digest": {
+          "$ref": "#/$defs/digest"
+        }
+      },
+      "required": [
+        "index",
+        "ciphertext_bytes",
+        "ciphertext_digest"
+      ],
+      "additionalProperties": false
+    },
+    "framing": {
+      "type": "object",
+      "properties": {
+        "plaintext_bytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 10,
+          "format": "decimal-1000000000"
+        },
+        "chunk_plaintext_bytes": {
+          "const": "8388608"
+        },
+        "chunk_count": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 3,
+          "format": "decimal-120"
+        },
+        "parts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/part"
+          },
+          "maxItems": 120
+        }
+      },
+      "required": [
+        "plaintext_bytes",
+        "chunk_plaintext_bytes",
+        "chunk_count",
+        "parts"
+      ],
+      "additionalProperties": false
+    },
+    "wrap-aad": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "const": "file-manifest-key-wrap"
+        },
+        "context": {
+          "$ref": "#/$defs/context"
+        }
+      },
+      "required": [
+        "purpose",
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "wrap": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "const": "file-manifest-key-wrap"
+        },
+        "context": {
+          "$ref": "#/$defs/context"
+        },
+        "nonce": {
+          "type": "string",
+          "format": "base64url-24",
+          "minLength": 32,
+          "maxLength": 32
+        },
+        "ciphertext": {
+          "type": "string",
+          "format": "base64url-48",
+          "minLength": 64,
+          "maxLength": 64
+        }
+      },
+      "required": [
+        "purpose",
+        "context",
+        "nonce",
+        "ciphertext"
+      ],
+      "additionalProperties": false
+    },
+    "manifest-aad": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "const": "file-manifest"
+        },
+        "context": {
+          "$ref": "#/$defs/context"
+        },
+        "framing": {
+          "$ref": "#/$defs/framing"
+        }
+      },
+      "required": [
+        "purpose",
+        "context",
+        "framing"
+      ],
+      "additionalProperties": false
+    },
+    "chunk-aad": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "const": "file-chunk"
+        },
+        "context": {
+          "$ref": "#/$defs/context"
+        },
+        "chunk_index": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 3,
+          "format": "decimal-119"
+        },
+        "plaintext_chunk_bytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 7,
+          "format": "decimal-8388608"
+        },
+        "chunk_count": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 3,
+          "format": "decimal-120"
+        }
+      },
+      "required": [
+        "purpose",
+        "context",
+        "chunk_index",
+        "plaintext_chunk_bytes",
+        "chunk_count"
+      ],
+      "additionalProperties": false
+    },
+    "header": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "const": "file-manifest"
+        },
+        "context": {
+          "$ref": "#/$defs/context"
+        },
+        "framing": {
+          "$ref": "#/$defs/framing"
+        },
+        "manifest_nonce": {
+          "type": "string",
+          "format": "base64url-24",
+          "minLength": 32,
+          "maxLength": 32
+        },
+        "manifest_ciphertext_bytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 5,
+          "format": "decimal-65536"
+        },
+        "manifest_ciphertext_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "key_wrap_digest": {
+          "$ref": "#/$defs/digest"
+        }
+      },
+      "required": [
+        "purpose",
+        "context",
+        "framing",
+        "manifest_nonce",
+        "manifest_ciphertext_bytes",
+        "manifest_ciphertext_digest",
+        "key_wrap_digest"
+      ],
+      "additionalProperties": false
+    },
+    "envelope": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "$ref": "#/$defs/header"
+        },
+        "signature": {
+          "type": "string",
+          "format": "base64url-64",
+          "minLength": 86,
+          "maxLength": 86
+        }
+      },
+      "required": [
+        "header",
+        "signature"
+      ],
+      "additionalProperties": false
+    },
+    "manifest": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "const": "file-manifest-plaintext"
+        },
+        "context": {
+          "$ref": "#/$defs/context"
+        },
+        "framing": {
+          "$ref": "#/$defs/framing"
+        },
+        "file_data_key": {
+          "type": "string",
+          "format": "base64url-32",
+          "minLength": 43,
+          "maxLength": 43
+        },
+        "nonce_prefix": {
+          "type": "string",
+          "format": "base64url-16",
+          "minLength": 22,
+          "maxLength": 22
+        },
+        "original_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+        },
+        "client_media_type": {
+          "type": "string",
+          "maxLength": 127,
+          "pattern": "^[\\x20-\\x7e]*$"
+        },
+        "plaintext_digest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "purpose",
+        "context",
+        "framing",
+        "file_data_key",
+        "nonce_prefix",
+        "original_name",
+        "client_media_type",
+        "plaintext_digest"
+      ],
+      "additionalProperties": false
+    },
+    "inventory-record": {
+      "type": "object",
+      "properties": {
+        "object_kind": {
+          "enum": [
+            "group-metadata",
+            "thread",
+            "entry",
+            "file-manifest"
+          ]
+        },
+        "object_id": {
+          "$ref": "#/$defs/id"
+        },
+        "revision_id": {
+          "$ref": "#/$defs/id"
+        },
+        "envelope_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "parents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/parent"
+          },
+          "maxItems": 32
+        },
+        "payload_status": {
+          "enum": [
+            "retained",
+            "pruned",
+            "tombstone"
+          ]
+        }
+      },
+      "required": [
+        "object_kind",
+        "object_id",
+        "revision_id",
+        "envelope_digest",
+        "parents",
+        "payload_status"
+      ],
+      "additionalProperties": false
+    },
+    "checkpoint-page": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "const": "history-inventory-page"
+        },
+        "contract": {
+          "const": "p02-file-c1"
+        },
+        "version": {
+          "const": 1
+        },
+        "service_id": {
+          "$ref": "#/$defs/id"
+        },
+        "group_id": {
+          "$ref": "#/$defs/id"
+        },
+        "page_index": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 3,
+          "format": "decimal-199"
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/inventory-record"
+          },
+          "maxItems": 500,
+          "minItems": 1
+        }
+      },
+      "required": [
+        "purpose",
+        "contract",
+        "version",
+        "service_id",
+        "group_id",
+        "page_index",
+        "records"
+      ],
+      "additionalProperties": false
+    },
+    "roster-anchor": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "$ref": "#/$defs/id"
+        },
+        "root_fingerprint": {
+          "$ref": "#/$defs/digest"
+        },
+        "recovery_generation": {
+          "$ref": "#/$defs/counter"
+        },
+        "roster": {
+          "$ref": "#/$defs/head"
+        }
+      },
+      "required": [
+        "account_id",
+        "root_fingerprint",
+        "recovery_generation",
+        "roster"
+      ],
+      "additionalProperties": false
+    },
+    "checkpoint": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "const": "history-checkpoint"
+        },
+        "contract": {
+          "const": "p02-file-c1"
+        },
+        "version": {
+          "const": 1
+        },
+        "service_id": {
+          "$ref": "#/$defs/id"
+        },
+        "group_id": {
+          "$ref": "#/$defs/id"
+        },
+        "predecessor_checkpoint_digest": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "closed_policy": {
+          "$ref": "#/$defs/policy"
+        },
+        "closed_rosters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/roster-anchor"
+          },
+          "maxItems": 10
+        },
+        "record_count": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 6,
+          "format": "decimal-100000"
+        },
+        "page_count": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 3,
+          "format": "decimal-200"
+        },
+        "inventory_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "signer": {
+          "$ref": "#/$defs/author"
+        }
+      },
+      "required": [
+        "purpose",
+        "contract",
+        "version",
+        "service_id",
+        "group_id",
+        "predecessor_checkpoint_digest",
+        "closed_policy",
+        "closed_rosters",
+        "record_count",
+        "page_count",
+        "inventory_digest",
+        "signer"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
