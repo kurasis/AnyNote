@@ -69,6 +69,13 @@ export class AuthClient {
     return {...verified};
   }
 }
+// Human-readable outer export keeps the frozen P02 kit unchanged. URL is a hint,
+// never authority for recovery connections; import must use independent service pins.
+export function recoveryKitExport(issuer,kit){
+  const u=new URL(issuer);
+  if(u.protocol!=='https:'||u.origin!==issuer||u.username||u.password)throw Error('INVALID_ISSUER');
+  return authValue('recovery-kit-export',{version:1,service_url:issuer,instructions:'Keep this file offline and private. Its checksummed recovery secret restores the account root; authentication recovery codes restore sign-in only. Use your independently trusted service address and verify the service ID, account ID and root fingerprint before recovery. Never send the recovery secret to the API.',kit});
+}
 export function deviceCommitment(device){return hash(Buffer.concat([Buffer.from('AnyNote/P06/device-key-commitment\0'),un64(device.signing_key),un64(device.encryption_key)]));}
 const stateCommon={contract:'p02-state-c1',protocol:'anynote',protocol_version:1};
 const identityCommon={contract:'p02-identity-c1',protocol:'anynote',protocol_version:1};

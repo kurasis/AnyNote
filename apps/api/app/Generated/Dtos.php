@@ -2891,3 +2891,19 @@ final readonly class P06AuthOkResult implements \JsonSerializable
         return $values;
     }
 }
+
+final readonly class P06AuthRecoveryKitExport implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $service_url,
+        public string $instructions,
+        public array $kit,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}

@@ -26,24 +26,29 @@ try{
   if(context){
     const page=await context.newPage(),cdp=await context.newCDPSession(page);await cdp.send('WebAuthn.enable');
     const authenticator=await cdp.send('WebAuthn.addVirtualAuthenticator',{options:{protocol:'ctap2',transport:'internal',hasResidentKey:true,hasUserVerification:true,isUserVerified:true,automaticPresenceSimulation:true}});
-    const errors=[];page.on('pageerror',()=>errors.push('pageerror'));
+    const errors=[],bootstrapDiagnostics=[];let bootstrapped=false;
+    page.on('pageerror',e=>{errors.push(e.name);if(!bootstrapped)bootstrapDiagnostics.push({runtime_error:e.name,message:e.message.slice(0,200)});});
+    page.on('requestfailed',r=>{if(!bootstrapped){const u=new URL(r.url());bootstrapDiagnostics.push({path:u.pathname,failure:r.failure()?.errorText});}});
+    page.on('console',m=>{if(!bootstrapped&&m.type()==='error')bootstrapDiagnostics.push({browser_error:m.text().slice(0,300)});});
     const response=await page.goto('https://app.anynote.test:18443/auth/');
     check(response.status()===200,'STATIC_TLS');const csp=response.headers()['content-security-policy'];check(csp.includes("frame-ancestors 'none'")&&!csp.includes("'unsafe-eval'")&&!csp.includes("'unsafe-inline'"),'STRICT_CSP');
-    await page.waitForFunction(()=>!document.getElementById('status').textContent.includes('unavailable'));
+    await page.waitForFunction(()=>document.getElementById('status').dataset.state, null, {timeout:15000});
+    const bootstrap=await page.locator('#status').evaluate(e=>({state:e.dataset.state,error:e.dataset.error}));
+    check(bootstrap.state==='ready','AUTH_BOOTSTRAP:'+JSON.stringify({bootstrap,diagnostics:bootstrapDiagnostics}));bootstrapped=true;
     const invitation=control('invite').token;await page.locator('#invite').fill(invitation);await page.locator('#handle').fill('p06-browser');await page.locator('#register').click();
     await page.locator('#pending').waitFor({state:'visible',timeout:20000});check(true,'REAL_ATTESTATION');
-    const download=page.waitForEvent('download');await page.locator('#kit').click();await download;await page.locator('#saved').check();
-    await page.locator('#finish').click();await page.waitForFunction(()=>document.getElementById('account').textContent.includes('trusted'),{timeout:20000});check(true,'ROOT_PROOF_TRUSTED');
+    const download=page.waitForEvent('download');await page.locator('#kit').click();const kitDownload=await download;const exported=JSON.parse(readFileSync(await kitDownload.path(),'utf8'));check(exported.version===1&&exported.service_url==='https://api.anynote.test:18443'&&exported.instructions.includes('Never send')&&exported.kit.recovery_secret.startsWith('anr1')&&exported.kit.recovery_secret.length===63,'COMPLETE_OFFLINE_KIT');exported.kit.recovery_secret='';await page.locator('#saved').check();
+    await page.locator('#finish').click();await page.waitForFunction(()=>document.getElementById('account').textContent.includes('trusted'),null,{timeout:20000});check(true,'ROOT_PROOF_TRUSTED');
     const cookies=await context.cookies('https://api.anynote.test:18443');const session=cookies.find(c=>c.name==='__Host-vault_session');check(session&&session.domain==='api.anynote.test'&&session.secure&&session.httpOnly&&session.sameSite==='Strict'&&session.path==='/','HOST_ONLY_STRICT_COOKIE');check(!cookies.some(c=>c.name==='XSRF-TOKEN'),'NO_READABLE_CSRF_COOKIE');
     check(await page.evaluate(()=>localStorage.length===0&&sessionStorage.length===0),'NO_WEB_STORAGE_TOKENS');
-    await page.locator('#add').click();await page.waitForFunction(()=>document.querySelectorAll('#passkeys li').length===2,{timeout:20000});check(true,'MULTIPLE_REAL_PASSKEYS');
+    await page.locator('#add').click();await page.waitForFunction(()=>document.querySelectorAll('#passkeys li').length===2,null,{timeout:20000});check(true,'MULTIPLE_REAL_PASSKEYS');
     await page.locator('#codes').click();await page.locator('#recovery').waitFor({state:'visible'});check((await page.locator('#recovery').textContent()).split('\n').length===11,'AUTH_ONLY_RECOVERY_CODES');
     await page.locator('#logout').click();await page.waitForFunction(()=>document.getElementById('account').textContent==='Signed out');
-    await page.locator('#login').click();await page.waitForFunction(()=>document.getElementById('account').textContent.includes('restricted'),{timeout:20000});check(true,'REAL_ASSERTION_RESTRICTED');
+    await page.locator('#login').click();await page.waitForFunction(()=>document.getElementById('account').textContent.includes('restricted'),null,{timeout:20000});check(true,'REAL_ASSERTION_RESTRICTED');
     const csrfDenial=await page.evaluate(async()=>{const r=await fetch('https://api.anynote.test:18443/api/v1/auth/logout',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({version:1})});return r.status;});check(csrfDenial===400,'REAL_BROWSER_CSRF_DENIAL');
     const publicState=await page.evaluate(async()=>{const {AuthClient}=await import('/auth/client.js');const c=new AuthClient('https://api.anynote.test:18443');const me=await c.call('/me',null,'me-result');return {state:me.session.state,content:me.content_access};});check(publicState.state==='restricted'&&!publicState.content,'NO_CONTENT_AFTER_LOGIN');
     check((await cdp.send('WebAuthn.getCredentials',{authenticatorId:authenticator.authenticatorId})).credentials.length===2,'BROWSER_RESIDENT_KEYS');
     check(errors.length===0,'NO_RUNTIME_OR_CSP_ERRORS');report.status='PASS';report.checks=checks;report.tls_verification='NSS trusted disposable test CA, no bypass';report.chromium_sandbox=true;report.synthetic_authenticator='CDP ctap2 resident UV';
     writeFileSync(root+'/artifacts/p06/browser-report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
   }
-}finally{await context?.close();rmSync(scratch,{recursive:true,force:true});}
+}catch(e){report.status='FAIL';report.checks=checks;report.reason=String(e.message).slice(0,2000);writeFileSync(root+'/artifacts/p06/browser-report.json',JSON.stringify(report,null,2)+'\n');throw e;}finally{await context?.close();rmSync(scratch,{recursive:true,force:true});}

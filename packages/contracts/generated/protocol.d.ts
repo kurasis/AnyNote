@@ -194,6 +194,7 @@ export type P06AuthSessionListItem = { readonly "id": string; readonly "current"
 export type P06AuthSessionsResult = { readonly "version": 1; readonly "sessions": ReadonlyArray<P06AuthSessionListItem> };
 export type P06AuthEmptyRequest = { readonly "version": 1 };
 export type P06AuthOkResult = { readonly "version": 1; readonly "status": "ok"; readonly "csrf_token"?: string };
+export type P06AuthRecoveryKitExport = { readonly "version": 1; readonly "service_url": string; readonly "instructions": "Keep this file offline and private. Its checksummed recovery secret restores the account root; authentication recovery codes restore sign-in only. Use your independently trusted service address and verify the service ID, account ID and root fingerprint before recovery. Never send the recovery secret to the API."; readonly "kit": P02IdentityC1Kit };
 export interface Operations {
 "post_accounts_register": { readonly phase: "P06"; readonly implemented: true; readonly request: P06AuthRegisterRequest; readonly response: P06AuthRegisterResult };
 "get_accounts_id_identity": { readonly phase: "P08"; readonly implemented: false; readonly request: never; readonly response: never };

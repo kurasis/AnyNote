@@ -494,7 +494,7 @@ Next full batch: P06 account authentication and session lifecycle.
 Maintained WebAuthn and League OAuth2, strict PWA cookie/CSRF, atomic invite/root/
 first-device registration, restricted/trusted sessions, recovery, account security
 UI and maintained Rust native PKCE/loopback/rotation adapter are implemented.
-Local actual HTTPS/SQL: 175 checks, eight-request registration/refresh races and
+Local actual HTTPS/SQL: 176 checks, eight-request registration/refresh races and
 actual Rust-to-PHP OAuth transport PASS. Rust: four tests, fmt/clippy PASS. P04:
 21 tests/322 assertions and actual SQL concurrency PASS. Local Chromium remains
 BLOCKED; hosted sandboxed UI/WebAuthn and Windows/MSVC gates are mandatory.

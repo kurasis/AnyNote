@@ -9,5 +9,7 @@ records=[{'name':p['name'],'version':p['version'],'source':p.get('source'),'chec
 value={'purpose':'P06 native-auth exact dependency/license inventory; not independent audit or release SBOM','project_release_license':'UNSELECTED','lock_sha256':hashlib.sha256(lock.read_bytes()).hexdigest(),'packages':records}
 args=argparse.ArgumentParser();args.add_argument('--write',action='store_true');a=args.parse_args();path=crate/'dependency-inventory.json'
 if a.write:path.write_text(json.dumps(value,indent=2)+'\n')
-else:assert json.loads(path.read_text())==value,'Native authentication inventory drift'
+else:
+ expected=json.loads(path.read_text())
+ assert expected==value,'Native authentication inventory drift: '+','.join(k for k in value if expected.get(k)!=value[k])
 print('PASS:',len(records),'frozen native authentication dependency/license records')

@@ -31,7 +31,8 @@ compatibility gate admit only the reviewed locked versions. All **103 P04
 package records** remain identical. There are **23 approved additions**, with
 an exact P04 baseline copy and checksum, a purpose-specific receipt, complete
 126-package inventory and recomputed-checksum tamper negatives. The native
-adapter has its own 188-record lock/license inventory. Prior P02/P04/P05 inputs
+adapter has its own 188-record lock/license inventory. The lock is marked
+`-text` so Windows checkout preserves its exact reviewed SHA-256 bytes. Prior P02/P04/P05 inputs
 remain frozen. These records are not an independent audit or release license.
 
 ## Atomic registration and authentication
@@ -64,7 +65,11 @@ last method requires an unconsumed authentication recovery code. Ten random
 and consumed once. They restore account access and never recover R or content.
 The initial root/R are generated client-side with maintained P05 primitives.
 Only public frames reach the API. A small explicit offline-kit download occurs
-before the account is committed. Root/device private bytes are wiped as practical;
+before the account is committed. A closed P06 outer export adds the service URL
+and explicit offline/recovery instructions while keeping the frozen P02 kit
+unchanged. Its URL is a human hint, never connection authority; future recovery
+must compare independent service/account/root pins. It is client-only, never an
+accepted API request. Root/device private bytes are wiped as practical;
 durable custody and recovery/enrollment UI are P07/P08, not plaintext web storage.
 Private preference-group genesis belongs to P08/P09 before preference writes.
 
@@ -149,7 +154,7 @@ owned token strings; persistent protection/local lock are P07 responsibilities.
 ## Executable contracts, UI and checks
 
 The generated PHP/TypeScript/OpenAPI boundary has 83 declared operations,
-195 types and **23 executable P06 routes**, all with closed typed DTOs. Remaining
+196 types and **23 executable P06 routes**, all with closed typed DTOs. Remaining
 content/pairing/reset/policy routes keep their future phase ownership. The
 account-security static UI supports passkey login/register/add/reauth/removal,
 one-use authentication recovery, session list/revoke/logout and native consent.

@@ -144,7 +144,7 @@
     },
     {
       "path": "packages/contracts/p06-auth.schema.json",
-      "sha256": "dcc962dcc096fccd3d99e74abeb56b1bee39bdc8ecca9a69830b8eeab95f3474"
+      "sha256": "82c275ba04cb28ebdd905c9f1666616335987cb164e2a7137af216e2256a590e"
     },
     {
       "path": "apps/api/bootstrap/app.php",
@@ -220,7 +220,7 @@
     },
     {
       "path": "packages/protocol/auth-client.mjs",
-      "sha256": "f55c891fa117e5fff4a2197928aa42c38a01df83715823532da6d77f199ae3af"
+      "sha256": "7f9099e01dee1917cfeade049a01981db992d5e3955df274fe9b841132f6d15e"
     },
     {
       "path": "packages/protocol/auth-formats.mjs",
@@ -298,19 +298,19 @@
   "outputs": [
     {
       "path": "packages/contracts/generated/openapi.json",
-      "sha256": "bd655ffc46ac4fa85ea65bb72b9e8466462aa662552fda4ded7d2f2ebeb6ae3b"
+      "sha256": "d0aaf4f1f3f05918bafe7850f7df680dcefaf98be5a5e02139eca6c4b9c91427"
     },
     {
       "path": "packages/contracts/generated/protocol.d.ts",
-      "sha256": "930b1cfe77d563a7797fa6eb2c5feedff523cab73be6fbf10ffaabf52cf0813c"
+      "sha256": "3d315b41cf79984cf230569c588eefe97fad2b25b39f0e347050f169c3e022fb"
     },
     {
       "path": "packages/contracts/generated/runtime-schemas.json",
-      "sha256": "c6831630aa2465eaa6d377a1b693528ab70efe5d92a8c6c5ed31aeaa7e996e12"
+      "sha256": "43b265a598fd941d892a1af6914d7d31cb6087eb2d8b26437c68ff1184070e3a"
     },
     {
       "path": "apps/api/app/Generated/Dtos.php",
-      "sha256": "e7593221128d1f17bb827ad0002a478cafbd51680e48b8632aff0839036849a2"
+      "sha256": "b28a670105c715d7767f28da7f8f2ab326bde878f7fd911b8f4572e0894bae67"
     },
     {
       "path": "apps/api/app/Generated/catalogue.json",
@@ -318,9 +318,9 @@
     },
     {
       "path": "apps/api/app/Generated/schemas.json",
-      "sha256": "c6831630aa2465eaa6d377a1b693528ab70efe5d92a8c6c5ed31aeaa7e996e12"
+      "sha256": "43b265a598fd941d892a1af6914d7d31cb6087eb2d8b26437c68ff1184070e3a"
     }
   ],
-  "structures": 195,
+  "structures": 196,
   "operations": 83
 }

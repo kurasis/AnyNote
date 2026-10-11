@@ -7586,6 +7586,32 @@
             "maxLength": 64
           }
         }
+      },
+      "recovery-kit-export": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "service_url",
+          "instructions",
+          "kit"
+        ],
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "service_url": {
+            "type": "string",
+            "minLength": 9,
+            "maxLength": 2048
+          },
+          "instructions": {
+            "const": "Keep this file offline and private. Its checksummed recovery secret restores the account root; authentication recovery codes restore sign-in only. Use your independently trusted service address and verify the service ID, account ID and root fingerprint before recovery. Never send the recovery secret to the API."
+          },
+          "kit": {
+            "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/kit"
+          }
+        }
       }
     }
   }

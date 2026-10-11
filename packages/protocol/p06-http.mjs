@@ -7,7 +7,7 @@ import {generateKeyPairSync,sign,createHash,randomBytes} from 'node:crypto';
 import {readFileSync,mkdirSync,writeFileSync,rmSync} from 'node:fs';
 import {spawnSync,spawn} from 'node:child_process';
 import {resolve} from 'node:path';
-import {initialRoot,registrationRequest,possession,deviceCommitment,authValue} from './auth-client.mjs';
+import {initialRoot,registrationRequest,possession,deviceCommitment,authValue,recoveryKitExport} from './auth-client.mjs';
 import {wire} from './adapters/codecs/identity-codec.mjs';
 const root=resolve(import.meta.dirname,'../..'),issuer='https://api.anynote.test:18443',origin='https://app.anynote.test:18443';
 const ca=readFileSync(root+'/.local/p06/tls/ca.crt');
@@ -52,6 +52,7 @@ async function main(){
   check((await verify(a,o,att)).status===401,'REGISTER_CHALLENGE_REPLAY');
   const initial=await initialRoot('AAAAAAAAAAAAAAAAAAAAAQ',o.account_id);
   try{
+    const exported=recoveryKitExport(issuer,initial.kit);check(exported.service_url===issuer&&exported.kit===initial.kit&&exported.instructions.includes('Never send'),'COMPLETE_OFFLINE_KIT');
     const prepare={version:1,registration_id:o.registration_id,identity:initial.identity,device:initial.device};
     const c=await a.call('/accounts/registration-challenge',prepare);check(c.status===200,'ROOT_PREPARE:'+c.json?.error?.code);
     const register=registrationRequest(o.registration_id,initial,c.json.challenge);

@@ -1212,7 +1212,7 @@ action is required for P05. The next full batch is P06 authentication/sessions.
 
 ## P06 local implementation checks (hosted acceptance pending)
 
-Local actual TLS Nginx -> Laravel -> owned MariaDB authentication passes 175
+Local actual TLS Nginx -> Laravel -> owned MariaDB authentication passes 176
 checks. Both eight-request registration and refresh races have one winner and
 seven denials; refresh reuse revokes the family. Rate admission: 64 requests
 in eight concurrent waves, exactly 60 admitted/four typed denials; expired
@@ -1238,7 +1238,7 @@ The first parallel local P03/P06 attempt was invalidated by P03's deliberate
 shared database outage; sequential P03 rerun passed. Real concurrent admission
 then exposed MariaDB ER_CHECKREAD (1020) after a nonlocking rate-bucket snapshot.
 The corrected implementation locks the current bucket first and retries bounded
-first-insertion deadlocks. All 175 checks, strict one-winner races and the exact
+first-insertion deadlocks. All 176 checks, strict one-winner races and the exact
 64-request rate bound passed after that correction. No error assertion or
 verification control was weakened; temporary metadata-only diagnostics were
 removed from application source before commit.
@@ -1249,3 +1249,15 @@ The Windows-only helper runtime is pinned to maintained CPython 3.14.8, verified
 against the primary actions/python-versions manifest. Linux/cloud remain at
 3.12.14. This does not alter any cryptographic dependency or weaken an assertion.
 The source receipt records the actual helper Python version and platform.
+
+The second Windows job completed Rust fmt/clippy but rejected the raw-lock
+inventory: checkout converted the new Cargo.lock to CRLF. Its Git attribute now
+preserves exact frozen bytes (`-text`) on every platform. The checksum and
+package/license records are unchanged; the checker does not normalize away drift.
+No native test pass is claimed for either failed initial Windows job.
+
+The initial hosted TLS/SQL attack suite passed; the real browser reached the
+strict-CSP static app but account-service bootstrap failed, so WebAuthn acceptance
+was not claimed. The harness now waits for completed SDK bootstrap and retains
+bounded public pre-credential network/runtime diagnostics instead of timing out
+on a generic status. Subsequent hosted acceptance remains required.
