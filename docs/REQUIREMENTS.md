@@ -10,7 +10,7 @@ an ADR. Full traceability: [specification chapter 18](spec/18_REQUIREMENTS_TRACE
 | Invite-only accounts; passkeys separate from decryption/device trust | P04/P06/P08 | Auth isolation, C05/C06, R02/R05/R06 | NOT STARTED |
 | Private and shared groups; threads/entries/checklists | P09/P10 | F01–F10, C09/C12 | NOT STARTED |
 | Encrypted titles, text, filenames, tags, drafts, previews/history | P05/P07/P09/P12/P13 | C01–C04, storage/log leakage inspection | NOT STARTED |
-| Signed roles, recipient authorization and fresh epochs | P02/P05/P10 | C07–C10, R08/R14/R19/R21 | IN PROGRESS: candidate contexts/signatures/coverage only; current authority pending |
+| Signed roles, recipient authorization and fresh epochs | P02/P05/P10 | C07–C10, R08/R14/R19/R21 | IN PROGRESS: pinned group policy/epoch/history candidate; product auth/SQL/review pending |
 | Independent devices, QR approval, offline recovery, no admin master key | P08 | C05/C06/C11/C13, R02/R06/R07 | NOT STARTED |
 | Durable offline drafts/sync, conflict preservation | P07/P11 | S01–S12, R03/R09/R10/R20 | NOT STARTED |
 | Exact 1,000,000,000-byte files; bounded resumable transfer/export | P01/P12/P14/P15 | U01–U17, physical U11/U12 | NOT STARTED |
@@ -56,3 +56,15 @@ recovery group retrieval and qualified review remain outstanding. R08/R14/R19/R2
 group roles/epoch/history authority is the next candidate batch; device proof or
 key possession alone does not satisfy it. Earlier requirement rows are product
 gates, not claims that the candidate closes them.
+
+## P02 group policy, epochs and history candidate evidence
+
+[Pinned group candidate](P02_GROUP_CONTRACT.md) adds C07–C10 and R08/R14/R19/R21
+synthetic evidence: exact current roles, full-history pending admission/recipient
+coverage, fresh mandatory epochs at policy/roster heads, revocation/role-loss
+boundaries, independent historical inventory and refusal of unanchored/backdated
+old-key signatures. Reader key possession does not confer write or history rights.
+R01 has an additional native-PHP/Node 50-byte historical fresh-recipient key path.
+These are candidate evaluations, not complete product/platform acceptance. Actual
+account/session/recent-auth, durable transactions, local/export/note formats,
+full interoperability and qualified independent review remain open.

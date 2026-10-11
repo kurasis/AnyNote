@@ -1,0 +1,140 @@
+{
+  "captured_at_utc": "2026-10-11T10:32:27.459676+00:00",
+  "source_base_commit": "5286ada2a87cf7d1ac41f21c185ac9e9314f3d52",
+  "source_tree_dirty": true,
+  "node_tests": {
+    "status": "PASS",
+    "tests": 249,
+    "log_sha256_base64url": "7BH2pZma-tVtcS0BUEtdvQJsKkB2E3zJ7_PwQAgCN7I"
+  },
+  "group_vectors": {
+    "status": "PASS",
+    "policies": 8,
+    "epochs": 6,
+    "grants": 105,
+    "checkpoints": 5,
+    "historical_file_bytes": 50
+  },
+  "independent_php": {
+    "checkpoints": 5,
+    "checks": 61792,
+    "epochs": 6,
+    "file_bytes": 50,
+    "grants_opened": 105,
+    "php": "8.4.26",
+    "policies": 8,
+    "production_auth_SQL_and_general_verifier": "NOT_IMPLEMENTED",
+    "scope": "PUBLIC_FIXTURE_SUBSET_ONLY",
+    "sodium": "1.0.18",
+    "source_commit": "5286ada2a87cf7d1ac41f21c185ac9e9314f3d52",
+    "source_tree_dirty": true,
+    "status": "PASS"
+  },
+  "source_scan": {
+    "status": "PASS",
+    "fake_PAT_paths": 7,
+    "changed_fixture_negatives": 12,
+    "full_fixture_fragment_mutation": "REJECTED",
+    "reviewed_findings": 228,
+    "complete_public_value_exceptions": 31,
+    "complete_public_field_line_exceptions": 1,
+    "complete_public_scanner_fragment_exceptions": 1,
+    "partial_value_or_whole_path_exceptions": 0
+  },
+  "frozen_dependencies": {
+    "new_runtime_dependencies": 0,
+    "npm_advisories": 0
+  },
+  "protected_prior_files": {
+    "status": "PASS",
+    "count": 125,
+    "original_spec_checksums": 21
+  },
+  "setup_repeat": {
+    "status": "PASS",
+    "executions": 2,
+    "git_visible_files": 282,
+    "source_bytes_preserved": true,
+    "foundation_integration": "PASS"
+  },
+  "foundation": {
+    "status": "PASS",
+    "report_source": "artifacts/p03/foundation-report.json",
+    "product_SQL_authentication": "NOT_IMPLEMENTED"
+  },
+  "input_sha256_base64url": [
+    {
+      "path": "packages/contracts/p02-group-c1.schema.json",
+      "sha256_base64url": "tsaM4tfiusFn8FMAC5l-rZQD_ZvpexnoBKuDMAGaTFQ"
+    },
+    {
+      "path": "packages/contracts/p02-group-c1.registry.json",
+      "sha256_base64url": "Z-6_8REtwjY7RTvKPEQNaw7PpqBdWdwDqEl2vNJ7doM"
+    },
+    {
+      "path": "packages/protocol/src/group-codec.mjs",
+      "sha256_base64url": "rVmhewqcV6JmaV5zH6tM3Uc447mNQ_x1uJExNttayIA"
+    },
+    {
+      "path": "packages/protocol/src/group-state.mjs",
+      "sha256_base64url": "QEsEPQbaE8NvEwNct9oNsMVJogLK93Z7mbJPzmyg1zk"
+    },
+    {
+      "path": "packages/protocol/src/group-builders.mjs",
+      "sha256_base64url": "xDSWmDR4bY1ux0nc_hITunPJoy7XOMHxVPKSzJylE-k"
+    },
+    {
+      "path": "packages/protocol/group-fixtures.mjs",
+      "sha256_base64url": "JlnYfel3TBd4rksYFYHCmYbHHfnLoKde2vC_6E6nOWw"
+    },
+    {
+      "path": "packages/protocol/test/group.test.mjs",
+      "sha256_base64url": "RF9nV1EcK3cpbRdhGvFtBUBB81CnEpOq6YjH_70soAc"
+    },
+    {
+      "path": "fixtures/protocol/p02/group-vectors.json",
+      "sha256_base64url": "X0_2IW45c5iv4s4e1_T_jajVohkFc6Ls65J4FtEfClw"
+    },
+    {
+      "path": "scripts/check-p02-group.php",
+      "sha256_base64url": "P2R_IgtJqLucJPYh_mtvRIJ-_j7xDjdmyxCO3lv4FXU"
+    },
+    {
+      "path": "scripts/check-p02-group.py",
+      "sha256_base64url": "vfQpw20wRR-YdNBzlvmKy7_yRkKBSUwrlP9oB20RI54"
+    },
+    {
+      "path": "scripts/check-secrets.py",
+      "sha256_base64url": "rP0CQ-8_4iJbFnAJQf4gaezuFiv0C3Me9u9JK8eMVnQ"
+    },
+    {
+      "path": ".gitleaks.toml",
+      "sha256_base64url": "QSi38GNwznrDm9BWraL0BSvouy5CNGpL11AofnwokZ8"
+    },
+    {
+      "path": ".github/workflows/foundation.yml",
+      "sha256_base64url": "i2yH7IZV8LnOMisB3C--sVeoFlodHKgm_kOuX-OW0L8"
+    },
+    {
+      "path": ".github/workflows/protocol-candidate.yml",
+      "sha256_base64url": "Qp2G6xMZHtH8zlBshWoKr-zZ8PORuvIpUF-zAoOQLS8"
+    }
+  ],
+  "unimplemented": [
+    "product_account_sessions",
+    "recent_authentication_transfer",
+    "durable_SQL_group_transactions",
+    "general_PHP_group_parser",
+    "full_Rust_browser_physical_group_interoperability",
+    "qualified_independent_review"
+  ],
+  "historical_global_freshness": "NOT_PROVEN",
+  "earlier_failures": [
+    "New multi-page test initially exceeded the 1 MiB byte bound before its 500-record limit; use explicitly unauthenticated bounded serialization records",
+    "After adding unknown-history write quarantine, frozen expected status and independent PHP observer state were inconsistent; corrected metadata/PHP state without altering signed crypto inputs",
+    "Pinned scanner chunk-boundary location returned a truncated fingerprint match in a larger PUBLIC fragment; exception matches only the complete exact frozen fragment; changed full-fixture mutation still rejects"
+  ],
+  "hosted_validation": "RECORDED_ON_FINAL_REVIEW_PR",
+  "physical_acceptance": false,
+  "production_deployment": "NOT_RUN"
+}

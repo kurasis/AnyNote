@@ -834,3 +834,46 @@ hashes. Final hosted source checks and exact tested/merge tree evidence are adde
 to the review PR before automatic merge; do not relabel the dirty local stamp as
 hosted/physical evidence. Save does not publish the environment or establish
 future-task restoration: review/save/publish remains required in its settings.
+
+## P02-GROUP-POLICY-EPOCH-HISTORY-CONTRACT — larger candidate batch
+
+Date: 2026-10-11. Public synthetic data; product/physical/qualified audit gates open.
+Receipts: [local](evidence/p02-group-local.json),
+[saved environment](evidence/p02-group-environment-setup.json).
+Exact bytes/trust/resource boundaries: [group contract](P02_GROUP_CONTRACT.md).
+
+| Check | Actual result / boundary | Outcome |
+| --- | --- | --- |
+| Node | 249 tests (189 prior + 60 group); policy/role/reader denial, provisional admission, complete derived grants, revoke/reset/rekey/CAS/retry/expiry/cancel, wrong-key repair, independent history/pin/old-writer ambiguity and parser bounds | PASS |
+| Frozen group replay | Eight policies, six epochs, 105 sealed grants, five checkpoints; three accounts, enrollment/transfer/archive/reset and real 50-byte historical file through G/manifest/file key path | PASS candidate only |
+| Independent PHP | PHP 8.4.26/sodium 1.0.18; all 105 unwraps, signatures/context/page commitment/history/file bytes and tag/AAD negatives; 61,792 assertions include serializer preconditions | PASS public ASCII subset |
+| Multi-page | 501 cloned serialization records in two count-bounded pages; invalid packing/order/duplicates fail; records do not claim signature/coverage validity | PASS serialization only |
+| Source scan | Seven fake PAT paths, twelve changed fixture field negatives and changed full-fixture fingerprint rejection | PASS |
+| Prior bytes | 125 protected spec/P01/reference/previous schemas/vectors/locks unchanged; all 21 original specification checksums | PASS |
+| Dependencies | Same frozen ten-package inventory, zero npm advisories; no new runtime dependency or lock update | PASS |
+| Full setup twice | Both complete final install scripts reach PHP group; all 282 Git-visible files present at setup preserved byte-for-byte; actual owned service readiness | PASS |
+| Foundation integration | Three PHPUnit tests/seven assertions, actual Laravel/MariaDB transactions, HTTP/origin/path/production-denial and owned DB outage/restart | PASS development foundation |
+| Draft | Revision 9 exact install/start readback, network/repository membership preserved, requires_publish=true | PASS save only |
+| Product account/session/recent-auth/SQL, general PHP group verifier, full physical/Rust/browser group interoperability, qualified independent review | Unimplemented or NOT RUN; no deployment/release/new owner trial | OPEN |
+
+New byte-limit test initially exceeded 1 MiB before reaching 500 records; bounded
+serialization placeholders then exercised two pages without pretending authority.
+Adding unknown-history write quarantine initially made the first frozen expected
+snapshot and PHP observer state inconsistent. Only expected metadata/observer
+state were corrected; signed crypto inputs were not regenerated. Final full Node,
+PHP and both complete installs passed; earlier failed setup is not relabelled PASS.
+
+Scanner review: 228 findings in PUBLIC group fixture. Exceptions require 31
+complete exact public values, one exact complete sealed-ciphertext field line,
+and one complete exact 28,672-byte PUBLIC scanner fragment. Pinned Gitleaks'
+chunk-boundary location returned a truncated fingerprint inside that fragment;
+matching the full literal fragment avoids exempting an arbitrary partial key or
+path. Any changed full fixture field loses that exemption; actual mutation rejects.
+No detector disablement, arbitrary digest/path exemption, verification bypass,
+secret or token was added. Previous rules/negative cases remain active.
+
+Local stamps name the base commit with dirty candidate input hashes. All code is
+isolated evaluation; public inputs are not physical/audit evidence. Final hosted
+runs, actual checkout SHA and exact full tested/merge tree proof are recorded on
+the review PR before automatic merge. Environment settings must review/save and
+publish the saved draft; persistence is not publication/future-task validation.

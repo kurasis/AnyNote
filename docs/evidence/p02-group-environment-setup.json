@@ -1,0 +1,15 @@
+{
+  "saved_status": "saved",
+  "draft_id": "06e641e5-588c-4150-8c32-487c9910c0b2~cecfgdraft_6acb65922660819f90ebd9bd1705c474",
+  "revision": 9,
+  "exact_install_readback": true,
+  "exact_start_readback": true,
+  "preserved_network": true,
+  "preserved_repository_membership": true,
+  "requires_publish": true,
+  "publication": "NOT_RUN",
+  "future_task_restoration": "NOT_RUN",
+  "complete_install_executions": 2,
+  "all_282_git_visible_source_fixture_lock_files_preserved": true,
+  "scope": "Validated current instance and persisted draft; publication belongs to environment settings"
+}

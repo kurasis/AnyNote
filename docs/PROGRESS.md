@@ -8,7 +8,7 @@ does not satisfy a feature gate. Production release is not ready.
 | --- | --- | --- |
 | P00 | VERIFIED | Local baseline and four negative cases passed; scope/version/inventory deliverables complete; remote bootstrap and clean-clone verification passed; both baseline Actions runs verified |
 | P01 | IN PROGRESS | Host crypto/KDF/storage/export/fault evidence VERIFIED; owner 0.1.4 fresh-process Hello authentication, WTS lock/STALE, installed-iPhone-PWA selected 1 GB hash and diagnostic recovery PASS; full physical G1/memory/network matrix remains open |
-| P02 | IN PROGRESS | Candidate file/identity plus authenticated pairing, pinned device roster/activation/revoke/reset and simulated sessions verified in Node/PHP; group policy/epoch/history authority, product transactions, remaining formats and qualified review stay open |
+| P02 | IN PROGRESS | Candidate file/identity plus authenticated pairing, pinned device roster/activation/revoke/reset and simulated sessions verified in Node/PHP; pinned group policy/epoch/history evaluation verified; product transactions, remaining formats and qualified review stay open |
 | P03 | IN PROGRESS | Laravel/MariaDB/FPM/Nginx tooling and synthetic integration implemented; final contracts/generated types/errors/logging follow P02; evidence below |
 | P04 | NOT STARTED | P02/P03; signature acceptance also needs P05 fixtures |
 | P05 | NOT STARTED | P01/P02/P03 |
@@ -381,3 +381,27 @@ group authorization remains NOT_EVALUATED and old signature-only APIs unchanged.
 P02/G2 stays IN PROGRESS; P01/G1 and product P03 gates remain open. No repeated
 owner physical action or deployment. Rollback: normal revert, no production data.
 Next larger batch: P02-GROUP-POLICY-EPOCH-HISTORY-CONTRACT.
+
+## Completed larger slice: P02-GROUP-POLICY-EPOCH-HISTORY-CONTRACT
+
+p02-group-c1 adds pinned signed owner/editor/reader policy and invitations,
+full-history pending admission, complete retained-epoch device/recovery coverage,
+staged pages/finalization/all-head CAS, canceled-key reuse denial, mandatory
+reader roster maintenance, immediate revocation/role loss, shared owner co-sign,
+archive and independently witnessed historical writer acceptance.
+
+249 Node tests PASS (189 prior + 60 group tests); frozen replay covers eight
+policies, six epochs, 105 real sealed grants, five checkpoints, enrollment,
+removal/transfer/recovery and a 50-byte historical file through the full key path.
+Native PHP independently reproduces that public fixture subset; assertion counts
+include serializer checks. New clients without independent history are quarantined.
+Partial/stale/forged/expired grants, reader writes/history endorsement, substituted
+recipients and new backdated old-key revisions fail. Two-page serialization
+coverage does not claim its placeholder records satisfy group authorization.
+
+P02/G2 remains IN PROGRESS: note/local/export formats, complete interoperability,
+qualified review and P03 durable account/session/SQL implementation remain open.
+Recent-auth ownership transfer is not implemented. Original spec, earlier
+schemas/vectors/locks and P01/release/reference bytes preserved. No new owner
+physical action/deployment/release. Setup/local evidence in TEST_EVIDENCE; hosted
+final source proof on PR. Next larger batch: P02-NOTE-LOCAL-EXPORT-CONTRACT.
