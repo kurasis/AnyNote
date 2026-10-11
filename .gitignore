@@ -19,3 +19,5 @@ artifacts/
 /apps/api/storage/**
 !/apps/api/storage/.gitignore
 /infra/dev/php/trust/*.crt
+/apps/api/.phpunit.result.cache
+/apps/api/.phpunit.cache/
