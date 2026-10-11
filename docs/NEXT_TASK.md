@@ -4,24 +4,29 @@
 
 Prerequisite: P00 VERIFIED; P01 host crypto/KDF/storage/export/fault findings
 recorded. P01/G1 physical Windows/iPhone acceptance is OPEN and must remain
-separate. Owner supplied 0.1.1 Windows and physical Safari logs: positive
-Hello/fresh-process authentication/cancellation/cleanup PASS, and owner-confirmed
-Windows lock screen with STALE rejection. Native event attribution is added in
-0.1.2. Phone local checks and diagnostic recovery PASS; the owner selected JSON/
-another file, so actual .bin Files hash and installed-PWA acceptance stay OPEN.
-0.1.2 improves selection/retry and previous-report recovery; no repeated full
-trial is required when that diagnostic record is available. P03 proceeds
+separate. Latest owner 0.1.4 reports match released source 566ec84 and the EXE
+hash: positive Hello/fresh-process authentication/cancellation/cleanup PASS;
+one WTS session-lock event plus STALE rejection PASS. Phone installed_pwa=true,
+local 1 GB/120 chunks and selected 1 GB SHA-256 match PASS, with diagnostic
+recovery, key-free retained export reopen/hash and exact cleanup PASS. These
+are owner-supplied records with narrow scope, not complete G1 acceptance.
+No repeated whole trial or kit update is required for those successful checks.
+Process memory, older-phone, network/resume/low-space, passkey and remaining
+Windows/provider/account/WebView2 gates stay OPEN. P03 proceeds
 independently; no complete P01/G1 result is inferred. Single-EXE/static-ZIP device runbooks
 and the unfilled template are in P01_OWNER_TRIALS.md. The static ZIP requires
 only a trusted existing HTTPS web directory, not Node/PHP or a new certificate. No repeated OS/model
 questions, remote access, device actions or HTTPS deployment are assumed.
 
-Latest 0.1.2 owner run: lock HELLO_CANCELLED/zero events, no Windows lock
+Earlier 0.1.2 owner run: lock HELLO_CANCELLED/zero events, no Windows lock
 screen; phone restarts at 1 GB Share, no new JSON. 0.1.3 adds a scoped stream
 download and explicitly selected one-shot OS lock. 0.1.4 also persists path-scoped synthetic download tickets with atomic
 consumption; actual SW-stop/restart plus full 1 GB download/hash PASS. All
 three source jobs and baseline PASS at 566ec84 (38076947436/38076947435).
-0.1.4 publication/download evidence is recorded on PR #8/release. Actual Files/lock acceptance is OPEN.
+0.1.4 publication/download evidence is recorded on PR #8/release. Latest physical
+owner results and original-upload/redaction receipts are in TEST_EVIDENCE.md.
+Prompt visibility at the instant of lock and Files folder provenance are not
+directly captured; do not ask for an entire repeat of already successful checks.
 
 Read AGENTS.md, progress, decisions, limitations, dependency inventory and
 specification 02/08/13/14/15. Preserve supplied spec bytes, existing experiments,
