@@ -1,0 +1,52 @@
+{
+  "public_fixture_sha256": "1a375941e08eecd4c14420db4696086a3b7d54efb725cb8931203bd9e0057acd",
+  "inputs": [
+    {
+      "path": "experiments/p01/p04-public-signatures.mjs",
+      "sha256": "1195b215bfe4ed30d4a3c0ce3a75108d29318ebf06b7a722629a722848f9a58a"
+    },
+    {
+      "path": "packages/protocol/p04-fixtures.mjs",
+      "sha256": "2faa5a5a7bdc158f9cac119334bc872b9501455cbdf5fa4a45bc45788f09f2a9"
+    },
+    {
+      "path": "packages/protocol/adapters/public-signatures.mjs",
+      "sha256": "5b277d6ca64dda8abba801fb88e55fb1b60122652066a4204d5dfae252bff430"
+    },
+    {
+      "path": "packages/protocol/src/strict-json.mjs",
+      "sha256": "811b66d787a7b7467bf5c49397d1de161e9d2216f707e20e3244d967ab40b6e8"
+    },
+    {
+      "path": "packages/protocol/package-lock.json",
+      "sha256": "6e7286286b0fe2797310c57a8fb4d768c4dae2bec53f58f788b8d0c830fafb7f"
+    },
+    {
+      "path": "packages/crypto-native/src/lib.rs",
+      "sha256": "e56d6d1417f6b25a84c7846f3f512e3db922fc9454463db4e5b0acbbe7a20a3e"
+    },
+    {
+      "path": "packages/crypto-native/src/main.rs",
+      "sha256": "b09937aa61030ec0b58d923339600687b9e3b60c825633f3bbb1fc71ca8d6d23"
+    },
+    {
+      "path": "packages/crypto-native/Cargo.lock",
+      "sha256": "98d48b9647c0d37356f200136d0fd94a1ee67664e818cc98cad8573fb57be185"
+    }
+  ],
+  "purpose": "P04 required P05 public signature interoperability",
+  "native": {
+    "status": "PASS",
+    "checks": 4
+  },
+  "source_commit": "83a1af58d366cee9ab860582574804e67cd8488c",
+  "source_tree_dirty": false,
+  "physical_acceptance": false,
+  "browser": {
+    "status": "PASS",
+    "checks": 7,
+    "version": "154.0.8037.97",
+    "sandbox": true
+  },
+  "status": "PASS"
+}

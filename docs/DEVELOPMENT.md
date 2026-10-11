@@ -70,3 +70,10 @@ protocol/client dependencies and run `bash scripts/p03-checks.sh`. The command
 checks strict types, actual schema drift, safe errors/logs and owned SQL/HTTP
 integration. Generation is an explicit reviewed development action only; setup
 and CI compare existing outputs. Preserve all prior schema/vector/lock bytes.
+
+P04 targeted checks: `source scripts/runtime-env.sh && python3 scripts/p04-checks.py`.
+This resets only the separately marked disposable `anynote_p04_tests` database,
+runs real MariaDB authorization/concurrency/rollback checks and scoped maintenance
+containers, then stops those maintenance services. Product migrations are never
+automatically run by setup. See P04_BACKEND.md for public-signature native/browser
+commands, schema bounds, saved-startup and phase limitations.

@@ -14,7 +14,7 @@ def verify():
     generated,_=module.outputs()
     return all((module.ROOT/path).read_bytes()==content.encode() for path,content in generated.items())
 assert verify(), 'Actual generated sources drift'
-negatives=['packages/contracts/generated/protocol.d.ts','apps/api/app/Generated/Dtos.php','packages/contracts/generated/openapi.json','packages/contracts/generated/runtime-schemas.json','packages/contracts/generated/manifest.json','packages/contracts/p03-api.schema.json','packages/contracts/p02-errors.json','packages/protocol/src/protocol-codec.mjs','packages/api-client/client.mjs']
+negatives=['packages/contracts/p04-api.schema.json','apps/api/app/Generated/schemas.json','apps/api/app/Crypto/PublicProtocol.php','apps/api/app/Backend/ObjectService.php','packages/contracts/generated/protocol.d.ts','apps/api/app/Generated/Dtos.php','packages/contracts/generated/openapi.json','packages/contracts/generated/runtime-schemas.json','packages/contracts/generated/manifest.json','packages/contracts/p03-api.schema.json','packages/contracts/p02-errors.json','packages/protocol/src/protocol-codec.mjs','packages/api-client/client.mjs']
 with tempfile.TemporaryDirectory(prefix='anynote-p03-drift-',dir='/tmp') as temp:
     temp=Path(temp)
     for path in set(products)|{r['path'] for r in manifest['inputs']}:

@@ -1071,6 +1071,19 @@
       "operation_id": "put_uploads_id_parts_index",
       "phase": "P12",
       "implemented": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/health/ready",
+      "summary": "Operator-only database and supervised maintenance readiness",
+      "authorization": "Current trusted admin session, active device, recent authentication; no implicit group membership",
+      "operation_id": "get_health_ready",
+      "phase": "P04",
+      "implemented": true,
+      "response": "p04-api/readiness",
+      "security": [
+        "NativeBearer"
+      ]
     }
   ]
 }

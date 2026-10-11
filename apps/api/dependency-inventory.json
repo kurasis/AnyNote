@@ -2,7 +2,7 @@
   "schema_version": 1,
   "purpose": "P03 resolved development dependency inventory, not a release SBOM",
   "project_release_license": "UNSELECTED",
-  "lock_sha256": "cd7d1bf949830a33c1bb5a73f44b9d7fc0907a811b658923cc245e25c3708ded",
+  "lock_sha256": "679c6b23a2ac0ee8b1c9a888a76562649b32c829340ca606cf8bf5f8a69bb568",
   "packages": [
     {
       "name": "brick/math",
@@ -594,6 +594,63 @@
         "type": "zip",
         "url": "https://api.github.com/repos/nunomaduro/termwind/zipball/712a31b768f5daea284c2169a7d227031001b9a8",
         "reference": "712a31b768f5daea284c2169a7d227031001b9a8",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "opis/json-schema",
+      "version": "2.6.0",
+      "development_only": false,
+      "licenses": [
+        "Apache-2.0"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/opis/json-schema.git",
+        "reference": "8458763e0dd0b6baa310e04f1829fc73da4e8c8a"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/opis/json-schema/zipball/8458763e0dd0b6baa310e04f1829fc73da4e8c8a",
+        "reference": "8458763e0dd0b6baa310e04f1829fc73da4e8c8a",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "opis/string",
+      "version": "2.1.0",
+      "development_only": false,
+      "licenses": [
+        "Apache-2.0"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/opis/string.git",
+        "reference": "3e4d2aaff518ac518530b89bb26ed40f4503635e"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/opis/string/zipball/3e4d2aaff518ac518530b89bb26ed40f4503635e",
+        "reference": "3e4d2aaff518ac518530b89bb26ed40f4503635e",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "opis/uri",
+      "version": "1.1.0",
+      "development_only": false,
+      "licenses": [
+        "Apache-2.0"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/opis/uri.git",
+        "reference": "0f3ca49ab1a5e4a6681c286e0b2cc081b93a7d5a"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/opis/uri/zipball/0f3ca49ab1a5e4a6681c286e0b2cc081b93a7d5a",
+        "reference": "0f3ca49ab1a5e4a6681c286e0b2cc081b93a7d5a",
         "shasum": ""
       }
     },
@@ -1848,6 +1905,25 @@
         "type": "zip",
         "url": "https://api.github.com/repos/tijsverkoyen/CssToInlineStyles/zipball/f0292ccf0ec75843d65027214426b6b163b48b41",
         "reference": "f0292ccf0ec75843d65027214426b6b163b48b41",
+        "shasum": ""
+      }
+    },
+    {
+      "name": "truschery/kanon",
+      "version": "v1.0.1",
+      "development_only": false,
+      "licenses": [
+        "MIT"
+      ],
+      "source": {
+        "type": "git",
+        "url": "https://github.com/truschery/kanon.git",
+        "reference": "abd8fbd3ca39a6a05a40e1d1e49cf868a887dc60"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/truschery/kanon/zipball/abd8fbd3ca39a6a05a40e1d1e49cf868a887dc60",
+        "reference": "abd8fbd3ca39a6a05a40e1d1e49cf868a887dc60",
         "shasum": ""
       }
     },

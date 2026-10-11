@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "git_visible_files_unchanged": 522,
+  "source_commit": "dc41686cff5c65eb55a8f7d6501ebab68362dca3",
+  "source_tree_dirty": false,
+  "browser": "BLOCKED locally; mandatory sandboxed CI separate",
+  "kind": "ACTUAL_CLEAN_LOCAL_SAVED_SETUP_EXECUTION",
+  "install_script_sha256": "d860529343bd9c91897ac921bfaee24273b772affe75a5079faf5b2cb6bcd52d",
+  "draft_revision": 12,
+  "draft_readback": "Exact install/start values verified; unrelated environment bindings preserved",
+  "publication": "NOT_RUN; requires Review/Save -> Publish",
+  "fresh_task_restore": "NOT_RUN"
+}

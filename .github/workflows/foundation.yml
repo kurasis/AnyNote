@@ -1,4 +1,4 @@
-name: P03 development foundation
+name: P03/P04 backend foundation
 
 on:
   pull_request:
@@ -48,6 +48,7 @@ jobs:
           python3 scripts/dev-stack.py test
           source scripts/runtime-env.sh
           python3 scripts/check-p03-http.py
+          python3 scripts/p04-checks.py
       - name: Verify independent PHP public candidate crypto fixtures
         run: |
           python3 scripts/check-p02-crypto.py
@@ -63,6 +64,7 @@ jobs:
           path: |
             artifacts/p03/foundation-report.json
             artifacts/p03/http-contract-report.json
+            artifacts/p04/backend-report.json
           if-no-files-found: warn
           retention-days: 14
       - name: Stop only this checkout's development services

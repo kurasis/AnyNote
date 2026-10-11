@@ -146,3 +146,12 @@ packages. Existing Composer/Cargo/P01/P02 npm locks remain byte-identical.
 Pint handles handwritten PHP; exact generated PHP is syntax checked separately.
 Prettier 3.6.2 was a transient developer formatter only. No upstream library,
 compiler or self-review constitutes an independent AnyNote security audit.
+
+P04 adds Opis JSON Schema 2.6.0 (Apache-2.0), Opis string/URI exact transitives
+(MIT) and Kanon 1.0.1 (MIT). All 99 prior Composer records stay identical; four
+new records and primary source/license receipts are frozen. Kanon is restricted
+to closed public ASCII/short-integer DTOs because general float JCS is incomplete.
+The separate unpublished native public-signature crate has its own frozen Cargo
+inventory and reuses libsodium-rs 0.2.5. Browser dependencies reuse the existing
+P02 lock. Root/project release license remains UNSELECTED; no GPL adapter import
+or independent library review is claimed. See P04_BACKEND.md.

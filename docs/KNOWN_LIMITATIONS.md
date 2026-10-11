@@ -246,3 +246,20 @@
 - Read-only setup/current instance, saved draft, publication and future task
   restoration have separate evidence. No production deploy/migration/release,
   external reviewer booking or new physical trial is performed by P03 completion.
+
+## P04 implementation boundary
+
+P04 durable SQL services and required Rust/Node/sandboxed Chromium/PHP public
+signature acceptance are verified; evidence is in TEST_EVIDENCE.md. Authentication issuance
+(P06), roster/policy transition materialization (P08/P10), client E2EE note UI
+(P09), sync/conflicts/snapshots (P11), physical file admission/reconciliation (P12/
+P16) and retention (P13) remain phase-owned. Empty relational scaffolding does
+not establish those behaviors. Public capabilities still report them unavailable.
+
+The PHP canonicalizer is restricted to closed public ASCII/short-integer shapes;
+general float serialization is incomplete and cannot validate arbitrary decrypted
+payload JCS. Native public signing takes already validated canonical bytes; full
+native strict JSON and AEAD/local wrappers are P05/P07 work. Metadata/self-tests
+are not a qualified audit. SQL durability settings are not a power-loss/PITR proof.
+The 256 MiB security reserve is unreachable by ordinary writes and awaits verified
+P08/P10 maintenance admission; no arbitrary payload can consume it today.

@@ -98,7 +98,7 @@ def test():
     php('composer', 'audit', '--locked', '--no-interaction')
     php('php', '-l', 'app/Generated/Dtos.php')
     php('composer', 'lint')
-    php('composer', 'test')
+    php('php','vendor/bin/phpunit','--exclude-group','backend')
     transaction = json.loads(php('php', 'artisan', 'foundation:check', capture=True))
     assert transaction['status'] == 'PASS'
     status, headers, body = request()
@@ -142,7 +142,7 @@ def test():
     prefixes = ('apps/api/', 'infra/dev/', 'scripts/dev-stack.py', 'scripts/api-inventory.py',
                 'scripts/install-p03-tools.py', 'scripts/check-secrets.py',
                 '.gitleaks.toml', '.github/workflows/foundation.yml', 'packages/contracts/generated/',
-                'packages/contracts/p03-', 'packages/api-client/', 'scripts/p03-', 'scripts/check-p03-')
+                'packages/contracts/p03-', 'packages/contracts/p04-', 'scripts/p04-', 'packages/crypto-public/', 'packages/api-client/', 'scripts/p03-', 'scripts/check-p03-')
     source_inputs = {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest()
                      for p in sorted(set(visible)) if p.startswith(prefixes) and (ROOT / p).is_file()}
     versions = {
@@ -169,9 +169,9 @@ def test():
         'private_path_and_unknown_host_denial': 'PASS', 'database_outage_503_and_recovery': 'PASS',
         'path_denial_statuses': path_denials,
         'loopback_only_bindings': 'PASS',
-        'production_tooling_denial': 'PASS', 'schema': 'NO PRODUCT TABLES',
+        'production_tooling_denial': 'PASS', 'schema': 'P04 foundational product tables; disposable synthetic DB only',
         'physical_acceptance': False,
-        'limits': ['Development foundation only; no account, wire contract, content crypto or production deployment'],
+        'limits': ['Development validation; no real login/device ceremony, deployment, hardware or qualified review'],
     }
     output = ROOT / 'artifacts/p03/foundation-report.json'
     output.parent.mkdir(parents=True, exist_ok=True)

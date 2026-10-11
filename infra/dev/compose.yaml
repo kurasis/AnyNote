@@ -1,6 +1,7 @@
 services:
   db:
     image: mariadb:11.8.9-noble@sha256:6422478cb8e159f080fb1d8ccf65101e26fe51385787fde7d16c3b165a331f15
+    command: [--innodb-flush-log-at-trx-commit=1, --sync-binlog=1]
     environment:
       MARIADB_DATABASE: anynote_synthetic
       MARIADB_USER: anynote_dev
@@ -17,7 +18,7 @@ services:
     logging:
       driver: none
   php:
-    build:
+    build: &php-build
       context: ./php
       args:
         - HTTP_PROXY
@@ -25,7 +26,7 @@ services:
         - NO_PROXY
     image: anynote-p03-php:8.4.26
     user: "${ANYNOTE_DEV_UID:-1000}:${ANYNOTE_DEV_GID:-1000}"
-    environment:
+    environment: &php-environment
       APP_ENV: local
       APP_KEY: ${ANYNOTE_DEV_APP_KEY:?Run scripts/dev-stack.py install first}
       APP_DEBUG: "false"
@@ -44,9 +45,53 @@ services:
       HTTP_PROXY: ${HTTP_PROXY:-}
       HTTPS_PROXY: ${HTTPS_PROXY:-}
       NO_PROXY: ${NO_PROXY:-}
-    volumes:
+    volumes: &php-volumes
       - ../../apps/api:/app
     networks: [frontend, database]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    depends_on:
+      db:
+        condition: service_healthy
+    logging:
+      driver: none
+  queue:
+    profiles: [maintenance]
+    build: *php-build
+    image: anynote-p03-php:8.4.26
+    user: "${ANYNOTE_DEV_UID:-1000}:${ANYNOTE_DEV_GID:-1000}"
+    environment:
+      <<: *php-environment
+      DB_DATABASE: ${ANYNOTE_MAINTENANCE_DB:-anynote_synthetic}
+      QUEUE_CONNECTION: database
+    volumes: *php-volumes
+    networks: [database]
+    entrypoint: [sh, -c, 'exec php artisan queue:work database --queue=default --sleep=1 --timeout=15 --tries=3 --max-time=3600 > /dev/null 2>&1']
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 30s
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    depends_on:
+      db:
+        condition: service_healthy
+    logging:
+      driver: none
+  scheduler:
+    profiles: [maintenance]
+    build: *php-build
+    image: anynote-p03-php:8.4.26
+    user: "${ANYNOTE_DEV_UID:-1000}:${ANYNOTE_DEV_GID:-1000}"
+    environment:
+      <<: *php-environment
+      DB_DATABASE: ${ANYNOTE_MAINTENANCE_DB:-anynote_synthetic}
+      QUEUE_CONNECTION: database
+    volumes: *php-volumes
+    networks: [database]
+    entrypoint: [sh, -c, 'exec php artisan schedule:work > /dev/null 2>&1']
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 30s
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     depends_on:

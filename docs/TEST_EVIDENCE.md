@@ -998,3 +998,85 @@ reads only the marked project's persisted port before invoking the fixed-loopbac
 client; PHP CORS tests use the configured Origin. Updated target command repeated
 strict generation/drift/types, 11 PHP tests / 215 assertions and 16 HTTP checks PASS.
 These are actual development checks, not production network/TLS acceptance.
+
+## P04 actual backend and public-signature slice (2026-10-11)
+
+Local source base e22bbee with an explicitly dirty P04 implementation; exact source
+hashes and scopes are in evidence/p04-complete-local.json. No clean/merged or
+hosted/browser result is inferred from this dirty local run. `p04-checks.py`:
+21 PHPUnit tests / 321 assertions PASS; three-account current authorization,
+signed Node encrypted-object/PHP acceptance, strict errors, CAS/immutable IDs,
+quota/retry/conversion, wrong-scope/reader/admin/device and final SQL failure
+rollback. Separate real SQL harness: 575 checks (including column/engine
+inspection), 46 tables/164 constraints, eight PHP child processes, actual same-body
+retry/CAS/cross-group quota race and counter commit/rollback visibility PASS.
+Actual scheduled/queued heartbeats and restart after killing their own PHP
+processes inside the non-root owned containers PASS. No power-loss/PITR claim.
+
+P03 regression: 11 tests / 215 assertions, five Node groups, 13 changed-input/
+output drift negatives, 16 actual Nginx/FPM HTTP/log checks PASS. Composer audit/
+platform/Pint, frozen native 70-record inventory/fmt/Clippy, original specification,
+all 160 frozen design inputs and prior 306 Node reference tests PASS. Four exact
+P04 compatibility negatives reject lock tampering, including recomputed new hash;
+all 99 prior package records remain identical and four named versions are added.
+Primary source/license receipt exists; no scanner exception or verification bypass.
+
+Rust public signing/verification: four checks PASS, exact Node/PHP header/signature
+bytes. Cloud real-browser launch BLOCKED by the unusable SUID sandbox helper;
+no --no-sandbox or mock substitute. Mandatory hosted real worker is pending and
+P04 remains IMPLEMENTED / UNVERIFIED until it passes. Fixture checksum binds the
+SQL acceptance and native/browser corpus. P05 general codecs/AEAD/custody remain
+open; the PHP canonicalizer is public-only, not general float JCS.
+
+Full saved P04 setup executed successfully with 521 Git-visible files unchanged.
+Its first attempt correctly failed the P02 frozen Composer checksum; explicit
+baseline preservation/compatibility fixed this without editing the frozen registry.
+Setup never writes tracked vectors/contracts or migrates product data. Install/
+startup scripts saved and exact readback verified; repository/network/credential
+bindings preserved. Draft saving is not publication or fresh-task restoration.
+Current owned API/DB readiness verified; no owner trial/deployment/release/reviewer
+outreach performed. CI and final tested-tree evidence will be recorded in the PR.
+
+
+### P04 complete clean-source and hosted acceptance
+
+Candidate dc41686cff5c65eb55a8f7d6501ebab68362dca3 was tested at actual PR checkout
+83a1af58d366cee9ab860582574804e67cd8488c. Both full trees are
+c0456d70e62f8513c7d9ce5799a4b691eb925a23. This supersedes the initial pending
+P04 result above; the dirty historical local record remains unchanged.
+
+[Actual backend report](evidence/p04-backend-hosted.json): 21 PHPUnit tests / 322
+assertions and 578 real SQL checks PASS. The added checks refuse unknown group
+permissions and internal counter/quota calls without a transaction. Eight-process
+CAS/retry/cross-group quota races, commit-order/rollback visibility, SQL fault
+recovery, 46 inspected tables/164 constraints and supervised non-root maintenance
+crash restart PASS. Actual hosted source is clean; all 82 recorded backend input
+hashes match the candidate tree.
+
+[Actual public-signature report](evidence/p04-public-signature-hosted.json): native
+Rust four checks and real Chromium 154.0.8037.97 worker seven checks PASS with
+sandbox enabled. Node-generated signing bytes/signatures match native/browser and
+PHP SQL acceptance over the same PUBLIC fixture hash
+1a375941e08eecd4c14420db4696086a3b7d54efb725cb8931203bd9e0057acd. All eight recorded
+public-adapter input hashes match. No sandbox bypass, mocked-browser result or
+physical acceptance is claimed. The first hosted new-step run failed because the
+fixture was sent before module/crypto initialization installed its message
+listener; an explicit READY handshake fixes it. The passing rerun verifies this
+actual worker behavior.
+
+All six source jobs PASS: [foundation 38149194986](https://github.com/kurasis/AnyNote/actions/runs/38149194986),
+[contracts 38149194968](https://github.com/kurasis/AnyNote/actions/runs/38149194968),
+[baseline 38149194983](https://github.com/kurasis/AnyNote/actions/runs/38149194983),
+and [three platform jobs 38149195000](https://github.com/kurasis/AnyNote/actions/runs/38149195000).
+Publication was SKIPPED as intended. [Hosted receipt](evidence/p04-hosted-receipt.json)
+binds actual check/job URLs, checkout and full tree; final tracking-only changes
+receive fresh CI and exact-tree merge verification recorded in PR #17.
+
+[Complete saved setup rerun](evidence/p04-complete-setup.json) PASS on clean
+dc41686, preserving all 522 Git-visible files. Install/start draft revision 12
+readback matches exactly; unrelated environment settings are preserved. Saving
+is not publication or a fresh-task restore; the environment UI still requires
+Review/Save -> Publish. Local Chromium remains BLOCKED and is separate from the
+mandatory successful hosted gate. P04 is VERIFIED within its specified backend
+scope; general P05 crypto, P01 physical matrix, qualified review and production
+rollout remain open. No action on an owner device is required for this phase.

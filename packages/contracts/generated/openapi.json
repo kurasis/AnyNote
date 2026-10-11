@@ -1,4 +1,21 @@
 {
+  "x-backend-service-contracts": {
+    "object_commit": {
+      "request": "#/components/schemas/P04ApiObjectCommit",
+      "response": "#/components/schemas/P04ApiCommitResult",
+      "http_phase": "P09"
+    },
+    "quota_reservation": {
+      "request": "#/components/schemas/P04ApiQuotaRequest",
+      "response": "#/components/schemas/P04ApiQuotaResult",
+      "http_phase": "P12"
+    },
+    "account_invitation": {
+      "request": "#/components/schemas/P04ApiInviteRequest",
+      "response": "#/components/schemas/P04ApiInviteResult",
+      "http_phase": "P06"
+    }
+  },
   "openapi": "3.1.0",
   "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
   "info": {
@@ -551,7 +568,7 @@
             }
           },
           "200": {
-            "description": "P03 foundation response; product features are explicitly unavailable",
+            "description": "Strict phase-owned response",
             "content": {
               "application/json": {
                 "schema": {
@@ -1575,7 +1592,7 @@
             }
           },
           "200": {
-            "description": "P03 foundation response; product features are explicitly unavailable",
+            "description": "Strict phase-owned response",
             "content": {
               "application/json": {
                 "schema": {
@@ -2971,6 +2988,43 @@
                 "type": "string",
                 "format": "binary",
                 "x-maximum-observed-bytes": 8388624
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health/ready": {
+      "get": {
+        "operationId": "get_health_ready",
+        "summary": "Operator-only database and supervised maintenance readiness",
+        "x-implementation-phase": "P04",
+        "x-implemented": true,
+        "description": "Current trusted admin session, active device, recent authentication; no implicit group membership",
+        "parameters": [],
+        "security": [
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P04ApiReadiness"
+                }
               }
             }
           }
@@ -9149,6 +9203,188 @@
         "required": [
           "purpose",
           "selection"
+        ],
+        "additionalProperties": false
+      },
+      "P04ApiReadiness": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "const": "ready"
+          },
+          "database": {
+            "const": "ready"
+          },
+          "queue": {
+            "const": "ready"
+          },
+          "scheduler": {
+            "const": "ready"
+          }
+        },
+        "required": [
+          "status",
+          "database",
+          "queue",
+          "scheduler"
+        ],
+        "additionalProperties": false
+      },
+      "P04ApiObjectCommit": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "object_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "object_kind": {
+            "enum": [
+              "group-metadata",
+              "thread",
+              "entry"
+            ]
+          },
+          "action": {
+            "enum": [
+              "create",
+              "update",
+              "soft-delete",
+              "restore"
+            ]
+          },
+          "thread_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bundle": {
+            "$ref": "#/components/schemas/P02V1Bundle"
+          }
+        },
+        "required": [
+          "group_id",
+          "object_id",
+          "object_kind",
+          "action",
+          "thread_id",
+          "bundle"
+        ],
+        "additionalProperties": false
+      },
+      "P04ApiCommitResult": {
+        "type": "object",
+        "properties": {
+          "receipt": {
+            "$ref": "#/components/schemas/P02V1Receipt"
+          },
+          "heads": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 32,
+            "items": {
+              "$ref": "#/components/schemas/P02FileC1Parent"
+            }
+          }
+        },
+        "required": [
+          "receipt",
+          "heads"
+        ],
+        "additionalProperties": false
+      },
+      "P04ApiQuotaRequest": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "reservation_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "bytes": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{0,10}$",
+            "format": "decimal-u63"
+          }
+        },
+        "required": [
+          "group_id",
+          "reservation_id",
+          "bytes"
+        ],
+        "additionalProperties": false
+      },
+      "P04ApiQuotaResult": {
+        "type": "object",
+        "properties": {
+          "reservation_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "state": {
+            "enum": [
+              "reserved",
+              "committed",
+              "released"
+            ]
+          },
+          "bytes": {
+            "$ref": "#/components/schemas/P02FileC1Counter"
+          }
+        },
+        "required": [
+          "reservation_id",
+          "state",
+          "bytes"
+        ],
+        "additionalProperties": false
+      },
+      "P04ApiInviteRequest": {
+        "type": "object",
+        "properties": {
+          "recipient_binding_hash": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "valid_hours": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 168
+          }
+        },
+        "required": [
+          "recipient_binding_hash",
+          "valid_hours"
+        ],
+        "additionalProperties": false
+      },
+      "P04ApiInviteResult": {
+        "type": "object",
+        "properties": {
+          "invitation_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "token": {
+            "type": "string",
+            "format": "base64url-32"
+          }
+        },
+        "required": [
+          "invitation_id",
+          "token"
         ],
         "additionalProperties": false
       }

@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-COMPONENTS = ['p02-file-c1', 'p02-identity-c1', 'p02-state-c1', 'p02-group-c2', 'p02-v1', 'p03-api']
+COMPONENTS = ['p02-file-c1', 'p02-identity-c1', 'p02-state-c1', 'p02-group-c2', 'p02-v1', 'p03-api', 'p04-api']
 
 def pascal(value):
     return ''.join(part[:1].upper() + part[1:] for part in re.split('[^A-Za-z0-9]+', value))
@@ -66,8 +66,8 @@ def outputs():
     paths={}
     for op in operations:
         params=[{'name':n,'in':'path','required':True,'schema':(openapi_schema(documents['p02-file-c1']['$defs']['part']['properties']['index'],'p02-file-c1') if n == 'index' and ('/parts/' in op['path'] or '/chunks/' in op['path']) else {'$ref':'#/components/schemas/P02FileC1Counter'} if n == 'index' else {'$ref':'#/components/schemas/P02FileC1Id'})} for n in re.findall(r'\{([^}]+)\}',op['path'])]
-        method={'operationId':op['operation_id'],'summary':op['summary'],'x-implementation-phase':op['phase'],'x-implemented':op['implemented'],'description':op['authorization'],'parameters':params,'security':[] if op['implemented'] else [{'CookieSession':[]},{'NativeBearer':[]}], 'responses':{'default':{'description':'Fixed typed error; unavailable resources are concealed as NOT_FOUND','content':{'application/json':{'schema':{'$ref':'#/components/schemas/P02V1ErrorResponse'}}}}}}
-        if 'response' in op:method['responses']['200']={'description':'P03 foundation response; product features are explicitly unavailable','content':{'application/json':{'schema':{'$ref':'#/components/schemas/'+typename(('p03-api',op['response']))}}}}
+        method={'operationId':op['operation_id'],'summary':op['summary'],'x-implementation-phase':op['phase'],'x-implemented':op['implemented'],'description':op['authorization'],'parameters':params,'security':([{n:[]} for n in op['security']] if 'security' in op else [] if op['implemented'] else [{'CookieSession':[]},{'NativeBearer':[]}]), 'responses':{'default':{'description':'Fixed typed error; unavailable resources are concealed as NOT_FOUND','content':{'application/json':{'schema':{'$ref':'#/components/schemas/P02V1ErrorResponse'}}}}}}
+        if 'response' in op:method['responses']['200']={'description':'Strict phase-owned response','content':{'application/json':{'schema':{'$ref':'#/components/schemas/'+typename(op['response'].split('/') if '/' in op['response'] else ['p03-api',op['response']])}}}}
         if 'request' in op:
             key=op['request'].split('/') if '/' in op['request'] else ['p03-api',op['request']]
             method['requestBody']={'required':True,'content':{'application/json':{'schema':{'$ref':'#/components/schemas/'+typename(key)}}}}
@@ -77,13 +77,13 @@ def outputs():
             method['requestBody']={'required':True,'content':{'application/octet-stream':{'schema':{'type':'string','format':'binary','x-maximum-observed-bytes':8388624}}}}
             method.pop('x-request-dto-state',None)
         paths.setdefault(op['path'],{})[op['method'].lower()]=method
-    spec={'openapi':'3.1.0','jsonSchemaDialect':'https://json-schema.org/draft/2020-12/schema','info':{'title':'AnyNote initial API contract','version':'1.0.0','description':'P03 foundation. Product paths are declarations with explicit future phase ownership, not executable dummy auth/crypto. Semantic authorization and byte predicates remain authoritative P02 requirements.'},'servers':[{'url':'/'}],'paths':paths,'components':{'schemas':schema_components,'securitySchemes':{'CookieSession':{'type':'apiKey','in':'cookie','name':'anynote_session','description':'Future P06 host-only session + synchronizer CSRF + active device proof'},'NativeBearer':{'type':'http','scheme':'bearer','description':'Future P06 fixed-issuer native session'}}},'x-protocol-components':COMPONENTS[:-1],'x-errors':errors['errors']}
+    spec={'x-backend-service-contracts':{'object_commit':{'request':'#/components/schemas/P04ApiObjectCommit','response':'#/components/schemas/P04ApiCommitResult','http_phase':'P09'},'quota_reservation':{'request':'#/components/schemas/P04ApiQuotaRequest','response':'#/components/schemas/P04ApiQuotaResult','http_phase':'P12'},'account_invitation':{'request':'#/components/schemas/P04ApiInviteRequest','response':'#/components/schemas/P04ApiInviteResult','http_phase':'P06'}},'openapi':'3.1.0','jsonSchemaDialect':'https://json-schema.org/draft/2020-12/schema','info':{'title':'AnyNote initial API contract','version':'1.0.0','description':'P03 foundation. Product paths are declarations with explicit future phase ownership, not executable dummy auth/crypto. Semantic authorization and byte predicates remain authoritative P02 requirements.'},'servers':[{'url':'/'}],'paths':paths,'components':{'schemas':schema_components,'securitySchemes':{'CookieSession':{'type':'apiKey','in':'cookie','name':'anynote_session','description':'Future P06 host-only session + synchronizer CSRF + active device proof'},'NativeBearer':{'type':'http','scheme':'bearer','description':'Future P06 fixed-issuer native session'}}},'x-protocol-components':COMPONENTS[:5],'x-errors':errors['errors']}
     tsout='// Generated by scripts/p03-contracts.py; do not edit. Runtime validation remains mandatory.\n'
     tsout+='\n'.join('export type '+typename(k)+' = '+ts(v,k[0])+';' for k,v in definitions.items())+'\n'
     tsout+='export interface Operations {\n'
     for op in operations:
         request=typename(op['request'].split('/') if '/' in op['request'] else ['p03-api',op['request']]) if 'request' in op else 'never'
-        response=typename(('p03-api',op['response'])) if 'response' in op else 'never'
+        response=typename(op['response'].split('/') if '/' in op['response'] else ['p03-api',op['response']]) if 'response' in op else 'never'
         tsout+=json.dumps(op['operation_id'])+': { readonly phase: '+json.dumps(op['phase'])+'; readonly implemented: '+json.dumps(op['implemented'])+'; readonly request: '+request+'; readonly response: '+response+' };\n'
     tsout+='}\n'
     php='<?php\n\n// Generated by scripts/p03-contracts.py. Shapes are transport types, not authorization.\nnamespace App\\Generated;\n\n'
@@ -101,11 +101,11 @@ def outputs():
             if p not in required:php+='        if ($values['+repr(p)+'] === null) { unset($values['+repr(p)+']); }\n'
         php+='        return $values;\n    }\n}\n\n'
     # JSON is a versioned generated data asset; PHP loads bounded trusted source, not network DTOs.
-    catalogue={'components':COMPONENTS[:-1],'errors':errors,'operations':operations}
+    catalogue={'components':COMPONENTS[:5],'errors':errors,'operations':operations}
     def dumped(v):return json.dumps(v,indent=2,ensure_ascii=False)+'\n'
-    products={'packages/contracts/generated/openapi.json':dumped(spec),'packages/contracts/generated/protocol.d.ts':tsout,'packages/contracts/generated/runtime-schemas.json':dumped(list(documents.values())),'apps/api/app/Generated/Dtos.php':php.rstrip()+'\n','apps/api/app/Generated/catalogue.json':dumped(catalogue)}
-    inputs=['scripts/p03-contracts.py','packages/api-client/package.json','packages/api-client/client.mjs','packages/api-client/package-lock.json','packages/api-client/dependency-inventory.json','packages/contracts/p03-operations.json','packages/contracts/p02-errors.json','packages/contracts/p02-v1.registry.json', 'docs/P02_COMPLETE_CONTRACT.md', 'packages/protocol/src/protocol-codec.mjs', 'packages/protocol/src/codec.mjs', 'packages/protocol/src/identity-codec.mjs', 'packages/protocol/src/state-codec.mjs', 'packages/protocol/src/group-codec.mjs', 'packages/protocol/src/strict-json.mjs']+[f'packages/contracts/{c}.schema.json' for c in COMPONENTS]
-    manifest={'version':1,'scope':'P03_GENERATION_NOT_PRODUCT_AUTHORIZATION','inputs':[{'path':p,'sha256':hashlib.sha256((ROOT/p).read_bytes()).hexdigest()} for p in inputs],'outputs':[{'path':p,'sha256':hashlib.sha256(v.encode()).hexdigest()} for p,v in products.items()],'structures':len(definitions),'operations':len(operations)}
+    products={'packages/contracts/generated/openapi.json':dumped(spec),'packages/contracts/generated/protocol.d.ts':tsout,'packages/contracts/generated/runtime-schemas.json':dumped(list(documents.values())),'apps/api/app/Generated/Dtos.php':php.rstrip()+'\n','apps/api/app/Generated/catalogue.json':dumped(catalogue),'apps/api/app/Generated/schemas.json':dumped(list(documents.values()))}
+    inputs=['scripts/p03-contracts.py','scripts/p04_compatibility.py','packages/contracts/p04-compatibility.json','docs/reference/p02/composer-p02.lock','apps/api/app/Crypto/PublicProtocol.php','apps/api/app/Backend/ObjectService.php','apps/api/app/Backend/Authorization.php','apps/api/app/Backend/ReservationService.php','packages/protocol/adapters/public-signatures.mjs','packages/crypto-native/Cargo.toml','packages/crypto-native/Cargo.lock','packages/crypto-native/dependency-inventory.json','apps/api/composer.lock','apps/api/dependency-inventory.json','packages/api-client/package.json','packages/api-client/client.mjs','packages/api-client/package-lock.json','packages/api-client/dependency-inventory.json','packages/contracts/p03-operations.json','packages/contracts/p02-errors.json','packages/contracts/p02-v1.registry.json', 'docs/P02_COMPLETE_CONTRACT.md', 'packages/protocol/src/protocol-codec.mjs', 'packages/protocol/src/codec.mjs', 'packages/protocol/src/identity-codec.mjs', 'packages/protocol/src/state-codec.mjs', 'packages/protocol/src/group-codec.mjs', 'packages/protocol/src/strict-json.mjs']+[f'packages/contracts/{c}.schema.json' for c in COMPONENTS]
+    manifest={'version':1,'scope':'P03_P04_GENERATION_NOT_CLIENT_TRUST_OR_SESSION_ISSUANCE','inputs':[{'path':p,'sha256':hashlib.sha256((ROOT/p).read_bytes()).hexdigest()} for p in inputs],'outputs':[{'path':p,'sha256':hashlib.sha256(v.encode()).hexdigest()} for p,v in products.items()],'structures':len(definitions),'operations':len(operations)}
     products['packages/contracts/generated/manifest.json']=dumped(manifest)
     return products,manifest
 

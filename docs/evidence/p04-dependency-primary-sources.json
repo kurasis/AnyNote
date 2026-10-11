@@ -1,0 +1,78 @@
+{
+  "purpose": "Primary locked dependency/source/license observations, not independent review",
+  "records": [
+    {
+      "package": "opis/json-schema",
+      "version": "2.6.0",
+      "metadata_url": "https://repo.packagist.org/p2/opis/json-schema.json",
+      "metadata_source_matches_lock": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/opis/json-schema.git",
+        "reference": "8458763e0dd0b6baa310e04f1829fc73da4e8c8a"
+      },
+      "license": [
+        "Apache-2.0"
+      ],
+      "license_source": {
+        "url": "https://raw.githubusercontent.com/opis/json-schema/8458763e0dd0b6baa310e04f1829fc73da4e8c8a/LICENSE",
+        "sha256": "59899c6091b540582ed617e8eeaac4919dc985ccfc35459ee9752b699be5205b"
+      }
+    },
+    {
+      "package": "opis/string",
+      "version": "2.1.0",
+      "metadata_url": "https://repo.packagist.org/p2/opis/string.json",
+      "metadata_source_matches_lock": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/opis/string.git",
+        "reference": "3e4d2aaff518ac518530b89bb26ed40f4503635e"
+      },
+      "license": [
+        "Apache-2.0"
+      ],
+      "license_source": {
+        "url": "https://raw.githubusercontent.com/opis/string/3e4d2aaff518ac518530b89bb26ed40f4503635e/LICENSE",
+        "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+      }
+    },
+    {
+      "package": "opis/uri",
+      "version": "1.1.0",
+      "metadata_url": "https://repo.packagist.org/p2/opis/uri.json",
+      "metadata_source_matches_lock": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/opis/uri.git",
+        "reference": "0f3ca49ab1a5e4a6681c286e0b2cc081b93a7d5a"
+      },
+      "license": [
+        "Apache-2.0"
+      ],
+      "license_source": {
+        "url": "https://raw.githubusercontent.com/opis/uri/0f3ca49ab1a5e4a6681c286e0b2cc081b93a7d5a/LICENSE",
+        "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+      }
+    },
+    {
+      "package": "truschery/kanon",
+      "version": "v1.0.1",
+      "metadata_url": "https://repo.packagist.org/p2/truschery/kanon.json",
+      "metadata_source_matches_lock": true,
+      "source": {
+        "type": "git",
+        "url": "https://github.com/truschery/kanon.git",
+        "reference": "abd8fbd3ca39a6a05a40e1d1e49cf868a887dc60"
+      },
+      "license": [
+        "MIT"
+      ],
+      "license_source": {
+        "url": "https://raw.githubusercontent.com/truschery/kanon/abd8fbd3ca39a6a05a40e1d1e49cf868a887dc60/LICENSE",
+        "sha256": "d3c081b8f32132c09f02daa2dbdd10f24856e22d872d6d429898ffbefb17b44b"
+      }
+    }
+  ],
+  "general_jcs_limitation": "Kanon float serialization is incomplete; P04 accepts only closed public ASCII/integer DTOs; P05 general adapters remain open"
+}

@@ -1,10 +1,62 @@
 {
   "version": 1,
-  "scope": "P03_GENERATION_NOT_PRODUCT_AUTHORIZATION",
+  "scope": "P03_P04_GENERATION_NOT_CLIENT_TRUST_OR_SESSION_ISSUANCE",
   "inputs": [
     {
       "path": "scripts/p03-contracts.py",
-      "sha256": "3d905261535c9c833f92adc310b4b9a5215e2fb7ef936261d75816ed93a225b3"
+      "sha256": "1bbd13161231d6f32096c3f3e2547e4ec39965584f7f7433e98a0ab58559d238"
+    },
+    {
+      "path": "scripts/p04_compatibility.py",
+      "sha256": "5cb442d10575c4b1a48371b8995dbc17227f559a84e184811acbd60c2c257fc3"
+    },
+    {
+      "path": "packages/contracts/p04-compatibility.json",
+      "sha256": "f20b38d3c727bd8b60666143ae2f2e558d7b5ca71a8ff617b4fb8113ff8144f9"
+    },
+    {
+      "path": "docs/reference/p02/composer-p02.lock",
+      "sha256": "cd7d1bf949830a33c1bb5a73f44b9d7fc0907a811b658923cc245e25c3708ded"
+    },
+    {
+      "path": "apps/api/app/Crypto/PublicProtocol.php",
+      "sha256": "7c269e5850564b153a8682eb54606872b6cbf6f156a0678c3627af9ade87eb6b"
+    },
+    {
+      "path": "apps/api/app/Backend/ObjectService.php",
+      "sha256": "a1ce9bea362263b49a67ecfba5611508251d8fec446ab89fa6ef413170b12d02"
+    },
+    {
+      "path": "apps/api/app/Backend/Authorization.php",
+      "sha256": "1f0261f134b1a7d45b6b59a3ed2e757b25ff5b0ef75429ef741aae4a1dadc568"
+    },
+    {
+      "path": "apps/api/app/Backend/ReservationService.php",
+      "sha256": "53bf9a7e2318afc41d38f29ea1289d758ca863ec244465c7d7f69ed69180bef9"
+    },
+    {
+      "path": "packages/protocol/adapters/public-signatures.mjs",
+      "sha256": "5b277d6ca64dda8abba801fb88e55fb1b60122652066a4204d5dfae252bff430"
+    },
+    {
+      "path": "packages/crypto-native/Cargo.toml",
+      "sha256": "b4495adfa8bc76bf578b3975b869c18966709727aa1766c1376db09730a597bb"
+    },
+    {
+      "path": "packages/crypto-native/Cargo.lock",
+      "sha256": "98d48b9647c0d37356f200136d0fd94a1ee67664e818cc98cad8573fb57be185"
+    },
+    {
+      "path": "packages/crypto-native/dependency-inventory.json",
+      "sha256": "997d118f3a43ca03eca672303557942c62dbb7fdaffc77e7b9c182856ba104dc"
+    },
+    {
+      "path": "apps/api/composer.lock",
+      "sha256": "679c6b23a2ac0ee8b1c9a888a76562649b32c829340ca606cf8bf5f8a69bb568"
+    },
+    {
+      "path": "apps/api/dependency-inventory.json",
+      "sha256": "53322d3e000427e9a188c6a5c70bfdace64494878b64b937420c2bd7ab678eba"
     },
     {
       "path": "packages/api-client/package.json",
@@ -12,7 +64,7 @@
     },
     {
       "path": "packages/api-client/client.mjs",
-      "sha256": "df2272fb36ee2ca9894c6ca3bc0d9386df3f7cf8f2f511b3a71d30a9c3f333c4"
+      "sha256": "fb78d79286774a5e777e6b70bf8183f401559793a6172b597fc4d80d857c8e5d"
     },
     {
       "path": "packages/api-client/package-lock.json",
@@ -24,7 +76,7 @@
     },
     {
       "path": "packages/contracts/p03-operations.json",
-      "sha256": "2e58da3926f0cf4d289024e5ba55567d8abb532faaf344f4b7ee0649609dfff5"
+      "sha256": "682cda2b300044de8dc2c68ef19799aef072020517c80c3375473b59d5d847f2"
     },
     {
       "path": "packages/contracts/p02-errors.json",
@@ -85,30 +137,38 @@
     {
       "path": "packages/contracts/p03-api.schema.json",
       "sha256": "3d803c5c9317d2868c2de602bf4786ec5c05048231798151af9f173e07fe4b7d"
+    },
+    {
+      "path": "packages/contracts/p04-api.schema.json",
+      "sha256": "30d0c2e77fc889188fe1e1b08051dc52e9b85a00e58d283e90927121fbe001fe"
     }
   ],
   "outputs": [
     {
       "path": "packages/contracts/generated/openapi.json",
-      "sha256": "6d57ed1171d5f73103300ffc8ae345d68a3720a15d095bcc4d930006c74d404b"
+      "sha256": "21ad371468a16a6b0679a0f429615d7b39891133f24f3d2da18d6cf4414d76e2"
     },
     {
       "path": "packages/contracts/generated/protocol.d.ts",
-      "sha256": "fec37cf1fcec4dce7e5a5012a729f5a2decf96ddd47d7ddd98b718a4be23dd3a"
+      "sha256": "0df744dcc8224bdb05f680e473afa68f1d206b8f1b59805c4b24f6caf1a19016"
     },
     {
       "path": "packages/contracts/generated/runtime-schemas.json",
-      "sha256": "0c87f01780c0045d894911833c5c8a1df3568c1013b926e8bff4c72e7ebba3e1"
+      "sha256": "e915631e0ab52151fafe586ecf1984bb18a86ed68012cd1c7a56785ee6b26374"
     },
     {
       "path": "apps/api/app/Generated/Dtos.php",
-      "sha256": "0ff8478c68aa761c0b59f8dba8c024fc5bb61598d51d7cc54d43aa960e93f0a0"
+      "sha256": "82d8410abd6571fca7e6f2e662279d703f3ece444563c834d7460b6655cd680c"
     },
     {
       "path": "apps/api/app/Generated/catalogue.json",
-      "sha256": "37a312b8c1f4bcf523ed04fa25c978e983aa6a5fb71b2d96388252e4415cffca"
+      "sha256": "812112e3b670f1bcd393df66f8e6125b22094674ee1d8fa1531e48b222a63346"
+    },
+    {
+      "path": "apps/api/app/Generated/schemas.json",
+      "sha256": "e915631e0ab52151fafe586ecf1984bb18a86ed68012cd1c7a56785ee6b26374"
     }
   ],
-  "structures": 157,
-  "operations": 79
+  "structures": 164,
+  "operations": 80
 }
