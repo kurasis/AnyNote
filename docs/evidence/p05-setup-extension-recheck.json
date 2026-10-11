@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "kind": "ACTUAL_CLEAN_LOCAL_RECHECK_OF_SETUP_EXTENSION",
+  "source_commit": "1ac93efa0cf7bee9b5a3b8be5f22c54a3a28e80e",
+  "source_tree_dirty": false,
+  "git_visible_files_unchanged": 570,
+  "full_setup_already_passed_on": [
+    "35d3cdcda11d476ed386c0cb0fa137c8504bcf1d",
+    "24b07072b5030fcf5a08f30e01305c718c4b51b0"
+  ],
+  "install_script_sha256": "090f6ba8bf4dc81188b66e278c712cd4c4d1ccf88fa27acaf236fd71c2d0399e",
+  "draft_revision": 13,
+  "draft_readback": "Exact install/start values verified; unrelated bindings preserved",
+  "browser": "BLOCKED locally; actual mandatory hosted result separate",
+  "publication": "NOT_RUN; requires Review/Save -> Publish",
+  "fresh_task_restore": "NOT_RUN"
+}

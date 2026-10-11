@@ -675,3 +675,15 @@ measure actual desktop Worker/1 GB behavior. RAM/GC erasure, P07 generation
 fencing and the P01 physical/mobile matrix retain their explicit limits. Ordinary
 CI creates only synthetic owned resources and metadata artifacts, not a release,
 production rollout, device trial or qualified review.
+
+ADR-015 measured acceptance addendum: require actual two-way fresh Rust/Worker
+bytes, Windows/MSVC and PHP public-signature verification, not a cloud sandbox
+BLOCKED result. Public PHP projection includes all 21 signable types and fresh
+note/file/grant outputs from each runtime; private fixture inputs never enter
+that verifier. Keep startup/pending RPC deadlines and identical ECMAScript
+phrase-word semantics across clients. Fill PUBLIC bulk experiment source via
+WebCrypto in 64 KiB calls, as already measured in P01; keys/nonces remain sodium.
+Use bounded direct sync OPFS handles for ciphertext to avoid Blob/File queues.
+Record the actual high whole-suite Chromium RSS without inferring a hard/mobile
+memory pass; the still-open P01 physical matrix retains that gate. No corpus,
+chunk/file limit, integrity check or browser sandbox is weakened for acceptance.

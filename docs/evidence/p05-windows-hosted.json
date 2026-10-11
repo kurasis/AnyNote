@@ -1,0 +1,49 @@
+{
+  "status": "PASS",
+  "purpose": "P05 actual native/Node PUBLIC interoperability",
+  "platform": "win32",
+  "source_commit": "38c5e3766b0837d0437213c4bffb75b0e1a67b95",
+  "source_tree_dirty": false,
+  "native": {
+    "checks": 505,
+    "frames": 146,
+    "status": "PASS"
+  },
+  "node": {
+    "status": "PASS",
+    "checks": 527,
+    "frames": 146,
+    "jcs": 28
+  },
+  "fixture_inputs": [
+    {
+      "path": "fixtures/protocol/p05/jcs.json",
+      "sha256": "a744aac529c0ce42e2cd37e82141a41bb2b0c32faf92b67dde952ffa99c5046e"
+    },
+    {
+      "path": "fixtures/protocol/p02/v1/crypto.json",
+      "sha256": "68bead540861c7334dc578ae5caba6ea4a6754891e42707cf217da3475c91785"
+    },
+    {
+      "path": "fixtures/protocol/p02/v1/schema-vectors.json",
+      "sha256": "0732197eb24bf3820a9c3d842282913f5220c813188679ceee332ad842d7f935"
+    },
+    {
+      "path": "fixtures/protocol/p02/identity-vectors.json",
+      "sha256": "2537955edbbdf672979ec8b43def356ff9ec2efe19539f964d0a82edce6900ec"
+    },
+    {
+      "path": "fixtures/protocol/p02/vectors.json",
+      "sha256": "fdc9596949ccaa1d955560ba551e793967a22fec1bcce70e34541a97032efb40"
+    },
+    {
+      "path": "fixtures/protocol/p02/state-vectors.json",
+      "sha256": "a143455e2d4dc42fd9600934fa2f7d3ac8da3f0be402ac0e8dfbcb0a19e667ae"
+    },
+    {
+      "path": "fixtures/protocol/p02/group-vectors.json",
+      "sha256": "98c65c37e915b7f2343bc24541530e9176b2ebf4627cb3a1139f364e310fe129"
+    }
+  ],
+  "physical_acceptance": false
+}

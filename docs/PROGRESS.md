@@ -11,7 +11,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P02 | VERIFIED | Complete five-component registry, exact note/local/native/sync/snapshot/restore/age formats, frozen bytes and independent PHP/Python/Rust-age/Go-age subsets; external review TRACKED_NOT_BOOKED / NOT_RUN; G2/G3 and product phases remain open |
 | P03 | VERIFIED | 79 initial OpenAPI operations / 157 schema-derived types; strict errors/request IDs/content-free logs; frozen setup, drift negatives and actual owned HTTP/SQL integration verified; product operations remain phase-owned |
 | P04 | VERIFIED | 21 tests/322 assertions, 578 actual SQL checks, eight-process concurrency/fault recovery and supervised restart; Rust/Node/sandboxed Chromium/PHP public-signature corpus PASS |
-| P05 | IMPLEMENTED / UNVERIFIED | Full native/browser core, 146 frozen frames, RFC8785, wrappers/file/history and PHP public signatures implemented; mandatory hosted Worker/MSVC and measured 1 GB gate pending |
+| P05 | VERIFIED | Full native/browser core; 146 frozen frames, general RFC8785, fresh two-way Worker/Rust bytes and PHP public signatures; all eight hosted jobs PASS, actual native/Worker 1 GB measurements retained; physical memory and independent review remain open |
 | P06 | NOT STARTED | P04 |
 | P07 | NOT STARTED | P05/P06 |
 | P08 | NOT STARTED | P05–P07 |
@@ -463,7 +463,7 @@ checkout/full-tree/input-hash evidence is retained. No owner trial, production
 migration/deployment, security release or reviewer outreach occurred. Rollback:
 normal source revert; reverse/reset schema only on the explicitly owned test DB.
 
-## P05 full client core implementation
+## Completed phase: P05 full client cryptographic core
 
 Native Rust and portable Node/browser modules now implement strict versioned
 decoders, maintained general JCS, signatures/AEAD, root/recipient/local/native
@@ -474,3 +474,17 @@ closed public signatures only. Linux actual Worker and Windows/MSVC CI are
 mandatory; local sandbox restrictions cannot satisfy this gate. Frozen prior
 locks/corpora remain unchanged, with exact new crate inventory and RFC fixtures.
 No production migration/deploy/release, reviewer outreach or owner trial occurs.
+
+Clean source 1ac93ef and actual hosted checkout 38c5e37 have identical complete
+trees. All eight source jobs PASS, including sandboxed Chromium and Windows/MSVC.
+Native/Node/Worker: 506/527/527 checks; PHP: 377 public-only checks, including
+fresh signatures from all three runtimes. Exact 1 GB native round trip: 6,015 ms,
+90,616 KiB peak RSS; Worker: 20,727 ms, UI maximum timer lag 5 ms. The full browser
+suite's sampled aggregate process RSS is 1,312,508 KiB; Wasm heap is 67,371,008
+bytes and one plaintext chunk is at most 8 MiB. This does not close physical
+iPhone/WebView2 memory acceptance. Actual reports and input/tree receipts are in
+TEST_EVIDENCE.md. Read-only setup extension rerun preserved all 570 Git-visible
+files; saved draft revision 13 is not publication or future-task restoration.
+Final tracking changes require fresh CI before ordinary automatic merge.
+Rollback: ordinary source revert; no production data or format migration.
+Next full batch: P06 account authentication and session lifecycle.

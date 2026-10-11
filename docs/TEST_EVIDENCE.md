@@ -1120,3 +1120,92 @@ plus actual Windows/MSVC core, remain pending before P05 VERIFIED/merge. C04/C16
 use independently supplied authorized issuer/checkpoint pins; complete account/
 policy state authority is P08/P10. G1 physical/mobile memory, G2/G3 qualified
 review and release/deployment gates remain open. No owner-device action is needed.
+
+### P05 complete clean-source and hosted acceptance
+
+This successful result supersedes the initial pending hosted gate above; the
+historical dirty local reports remain unchanged. Candidate
+1ac93efa0cf7bee9b5a3b8be5f22c54a3a28e80e and actual clean hosted checkout
+38c5e3766b0837d0437213c4bffb75b0e1a67b95 share complete tree
+78785f7ff5ad46e19000c91c87c3c34483108c9b. The checkout parents are the unchanged
+P04 main and this candidate. [Hosted receipt](evidence/p05-hosted-receipt.json)
+binds all eight successful job URLs and the metadata-only raw reports.
+
+[Core report](evidence/p05-core-hosted.json): native 506, Node 527 and actual
+Chromium Worker 527 checks PASS; Worker -> native 505 checks PASS. The same 146
+frozen frames, 173 closed-frame mutations, 28 independently expected general
+RFC8785 cases and 14 malformed byte inputs run in each client. Fresh bidirectional
+note/local/phrase/PRF/AES/recipient/file bytes are accepted across runtimes.
+Native concurrent KDF, typed AEAD/schema failures, unauthorized issuer/stale epoch,
+new backdated versus independently anchored historical note/file, nonce/index
+reuse and raw closed export framing tests PASS. Phrase FEFF/NEL word semantics
+now agree across Rust/JavaScript without altering the raw phrase KDF bytes.
+Dedicated product Worker/RPC admits one operation, refuses concurrent/unknown
+requests, and has bounded startup and pending-operation deadlines.
+
+Actual release native 1,000,000,000-byte ciphertext-only disk round trip: 120
+chunks, 6,015 ms, peak process RSS 90,616 KiB. Actual sandboxed Chromium
+154.0.8037.97 Worker independently completes 0, 1, 8,388,607, 8,388,608,
+8,388,609 and 1,000,000,000-byte owned OPFS ciphertext round trips, exact lengths
+and authenticated full plaintext hashes. The 1 GB run has 120 chunks, takes
+20,727 ms and uses bounded sync OPFS handles without Blob/File accumulation.
+The maximum plaintext chunk is 8,388,608 bytes and reported Wasm heap is
+67,371,008 bytes. UI heartbeat: 451 ticks, maximum timer lag 5 ms.
+
+Sampled aggregate Chromium process RSS across the full suite is 1,312,508 KiB.
+It includes both workers and the corpus/KDF/file sequence; shared pages may be
+counted twice and 250 ms sampling may miss peaks. It is neither file-only
+incremental RSS nor a hard memory ceiling. Native/browser chunk processing is
+bounded, but this desktop total does not pass physical iPhone/WebView2 memory
+acceptance. Direct sync OPFS improved time relative to the earlier 31,252 ms
+run but did not materially reduce aggregate RSS (earlier 1,308,020 KiB).
+P01 physical memory and its remaining network/provider matrix stay OPEN.
+
+The first full hosted 1 GB attempt timed out: generating the public test source
+with sodium's browser per-byte random bridge dominated the experiment (an 8 MiB
+file took 12 seconds). P01 had already measured this path. The helper now fills
+only PUBLIC incompressible source bytes through maintained WebCrypto CSPRNG in
+at most 64 KiB calls. Cryptographic keys/nonces still use maintained sodium.
+The unchanged 1 GB limit, checks, worker deadline and browser sandbox passed;
+no fixed-zero source, mock browser, weakened gate or sandbox bypass was used.
+
+[Actual PHP report](evidence/p05-php-hosted.json): PHP 8.4.26, 377 public-only
+checks PASS over 24 frames from each actual Rust/Node/Worker source: 21 frozen
+signable types plus fresh note/file/grant signatures. Exact canonical/signing
+bytes, wrong key/signature, unknown fields, malformed raw JSON and refusal of
+private/local schemas PASS. The input projection supplies public frames only,
+never root/group/local/private keys or decrypted payloads. Its SHA-256 is
+cf0decf84c57eb52e64445c2d64559a9fffb648896d6c841d995e7ba0749338d.
+[Actual Windows report](evidence/p05-windows-hosted.json): real MSVC native 505
+and Node 527 checks PASS, plus native fmt/Clippy/unit tests; this is not a
+physical Hello/TPM/WebView2 acceptance result.
+
+All 63 core source-input and seven Linux fixture hashes match candidate Git
+bytes. All seven Windows raw fixture hashes match those same Git bytes after
+ordinary LF-to-CRLF checkout conversion; expected protocol hex bytes are
+unchanged and fixtures were not regenerated. Previous frozen locks/corpora and
+160 P02 design inputs remain unchanged. All eight jobs PASS:
+[P05 Linux/browser/PHP and Windows 38157941999](https://github.com/kurasis/AnyNote/actions/runs/38157941999),
+[foundation 38157942002](https://github.com/kurasis/AnyNote/actions/runs/38157942002),
+[baseline 38157941991](https://github.com/kurasis/AnyNote/actions/runs/38157941991),
+[contracts 38157942000](https://github.com/kurasis/AnyNote/actions/runs/38157942000),
+and [three prior platform jobs 38157942001](https://github.com/kurasis/AnyNote/actions/runs/38157942001).
+Test-release publication is SKIPPED as intended. Tracking-only final changes
+receive fresh CI; exact final-head/tree merge verification is recorded in PR #18.
+
+[Full saved setup](evidence/p05-complete-setup.json) passed with 568 Git-visible
+files unchanged; another complete execution passed on clean 24b0707.
+[Latest extension recheck](evidence/p05-setup-extension-recheck.json) on clean
+1ac93ef passed native build/tests/inventory, portable drift, Node/native 527
+checks, PHP 257 two-source public checks and owned service readiness, preserving
+all 570 Git-visible files. Local Chromium remains explicitly BLOCKED; the
+mandatory hosted result is separate. Exact install/start draft revision 13 was
+saved/read back and unrelated bindings preserved. Publication and fresh-task
+restore are NOT_RUN; environment settings still require Review/Save -> Publish.
+
+P05 is VERIFIED within the specified cryptographic-core scope. C01–C04/C07/C08/
+C10/C16 mapping is in P05_CRYPTO_CORE.md. Current authority, persistent custody,
+durable file source/resume and maximum-scale history indexes remain P08/P10,
+P07, P12 and P11 respectively. Qualified G2/G3 review remains unassigned/unbooked/
+NOT_RUN; production release/deployment are not complete. No new owner-device
+action is required for P05. The next full batch is P06 authentication/sessions.

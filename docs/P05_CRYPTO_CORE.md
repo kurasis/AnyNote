@@ -110,6 +110,20 @@ Browser callers use the dedicated worker for expensive crypto, rather than doing
 Argon2id/file work on the UI thread. The direct module is also used by native/Node
 integration tools. Startup waits for READY with a bounded timeout; closing a
 pending initialization or operation rejects it and terminates the owned worker.
+Initialization is limited to 30 seconds and each pending RPC to 120 seconds;
+timeouts terminate the worker and reject the operation without a fallback.
+Phrase word separation matches ECMAScript whitespace in both runtimes, including
+FEFF and excluding NEL; the exact raw UTF-8 phrase remains the KDF input.
+
+Clean hosted source acceptance is recorded in TEST_EVIDENCE.md: Rust/Node/Worker
+506/527/527 checks and PHP 377 public-only checks. PHP receives the 21 frozen
+public signable types plus freshly produced note/file/grant signatures from
+each runtime. No private fixture inputs are passed to its public verifier.
+Exact 1 GB native/Worker round trips took 6,015/20,727 ms; Worker UI maximum lag
+was 5 ms. Whole-suite sampled aggregate Chromium RSS was 1,312,508 KiB, with
+67,371,008-byte Wasm heap. Owned OPFS sync handles avoid accumulating Blob/File
+objects, but do not prove a small total browser footprint or physical mobile
+acceptance. Read KNOWN_LIMITATIONS.md before interpreting these measurements.
 
 ## Reproduce
 
