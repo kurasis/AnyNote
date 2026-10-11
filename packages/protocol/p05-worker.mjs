@@ -84,8 +84,16 @@ self.onmessage = async ({ data: r }) => {
           : null;
     if (!result) throw Error("INVALID_OPERATION");
     postMessage(result);
-  } catch {
-    postMessage({ status: "FAIL", code: "P05_WORKER_TEST_FAILURE" });
+  } catch (e) {
+    // Test names are fixed PUBLIC corpus labels; never include rejected input.
+    postMessage({
+      status: "FAIL",
+      code:
+        e.code ??
+        (e.message?.startsWith("P05_TEST_FAILURE:")
+          ? e.message.slice(0, 160)
+          : "P05_WORKER_TEST_FAILURE"),
+    });
   } finally {
     busy = false;
   }

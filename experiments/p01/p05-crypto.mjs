@@ -138,6 +138,9 @@ try {
     chromiumSandbox: true,
   });
   const page = await context.newPage();
+  page.on("console", (message) => {
+    if (message.text().startsWith("P05_PROGRESS:")) console.log(message.text());
+  });
   await page.goto(`http://127.0.0.1:${server.address().port}`);
   const session = await context.browser().newBrowserCDPSession();
   let aggregateRss = 0;
@@ -174,9 +177,25 @@ try {
         }, 50);
         const worker = new Worker("/test-worker.js", { type: "module" });
         await new Promise((resolve, reject) => {
-          worker.onmessage = (e) => e.data.status === "READY" && resolve();
-          worker.onerror = () => reject(Error("WORKER_INIT_FAILED"));
+          const deadline = setTimeout(() => {
+            worker.terminate();
+            clearInterval(timer);
+            reject(Error("WORKER_INIT_TIMEOUT"));
+          }, 30000);
+          worker.onmessage = (e) => {
+            if (e.data.status === "READY") {
+              clearTimeout(deadline);
+              resolve();
+            }
+          };
+          worker.onerror = () => {
+            clearTimeout(deadline);
+            worker.terminate();
+            clearInterval(timer);
+            reject(Error("WORKER_INIT_FAILED"));
+          };
         });
+        console.info("P05_PROGRESS:test worker ready");
         const call = (r) =>
           new Promise((resolve, reject) => {
             const deadline = setTimeout(
@@ -184,6 +203,10 @@ try {
               600000,
             );
             worker.onmessage = (e) => {
+              if (e.data.status === "PROGRESS") {
+                console.info("P05_PROGRESS:" + JSON.stringify(e.data));
+                return;
+              }
               clearTimeout(deadline);
               resolve(e.data);
             };
@@ -197,7 +220,9 @@ try {
         let rpc = 0;
         try {
           const suite = await call({ op: "suite", f, peer });
-          if (suite.status !== "PASS") throw Error("SUITE_FAILED");
+          if (suite.status !== "PASS")
+            throw Error("SUITE_FAILED:" + suite.code);
+          console.info("P05_PROGRESS:worker corpus passed");
           const encoded = new TextEncoder().encode(
             JSON.stringify(f.notes.objects.parameters),
           );
@@ -214,6 +239,7 @@ try {
           }
           rpc++;
           const kek = await phrase;
+          console.info("P05_PROGRESS:RPC KDF returned");
           if (
             Array.from(kek, (b) => b.toString(16).padStart(2, "0")).join("") !==
             f.notes.expected.phrase_kek_hex
@@ -221,6 +247,7 @@ try {
             throw Error("RPC_KDF_BYTES");
           kek.fill(0);
           rpc++;
+          console.info("P05_PROGRESS:RPC checks passed");
           try {
             await client.call("notAnOperation", []);
             throw Error("ACCEPTED_UNKNOWN_RPC");
@@ -233,9 +260,11 @@ try {
               : [0, 1, 8388609],
             files = [];
           for (const size of sizes) {
+            console.info("P05_PROGRESS:file started " + size);
             const file = await call({ op: "large", f, size });
-            if (file.status !== "PASS") throw Error("FILE_FAILED");
+            if (file.status !== "PASS") throw Error("FILE_FAILED:" + file.code);
             files.push(file);
+            console.info("P05_PROGRESS:file complete " + size);
           }
           return {
             suite,
@@ -289,6 +318,11 @@ try {
     report.status = "BLOCKED";
   } else {
     report.status = "FAIL";
+    report.browser = {
+      status: "FAIL",
+      reason:
+        "Mandatory actual Worker/resource check failed; see fixed test-stage errors",
+    };
     throw e;
   }
 } finally {

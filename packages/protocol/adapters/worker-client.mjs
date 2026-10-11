@@ -6,13 +6,19 @@ export class CryptoWorker {
   #next = 0;
   #closed = false;
   #rejectReady;
+  #initTimer;
   constructor(url) {
     this.#worker = new Worker(url, { type: "module" });
     this.#ready = new Promise((resolve, reject) => {
       this.#rejectReady = reject;
+      this.#initTimer = setTimeout(
+        () => this.close("WORKER_INIT_TIMEOUT"),
+        30000,
+      );
       this.#worker.onmessage = ({ data: r }) => {
         if (r?.version !== 1) return;
         if (r.status === "READY") {
+          clearTimeout(this.#initTimer);
           resolve();
           return;
         }
@@ -59,6 +65,7 @@ export class CryptoWorker {
   close(code = "WORKER_CLOSED") {
     if (!this.#closed) {
       this.#closed = true;
+      clearTimeout(this.#initTimer);
       this.#worker.terminate();
       this.#rejectReady(new Error(code));
       this.#pending?.reject(new Error(code));

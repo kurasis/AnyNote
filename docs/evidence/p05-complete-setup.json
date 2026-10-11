@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "kind": "ACTUAL_CLEAN_LOCAL_SAVED_SETUP_EXECUTION",
+  "source_commit": "35d3cdcda11d476ed386c0cb0fa137c8504bcf1d",
+  "source_tree_dirty": false,
+  "git_visible_files_unchanged": 568,
+  "install_script_sha256": "090f6ba8bf4dc81188b66e278c712cd4c4d1ccf88fa27acaf236fd71c2d0399e",
+  "browser": "BLOCKED locally; mandatory hosted sandboxed check separate",
+  "publication": "NOT_RUN; requires Review/Save -> Publish",
+  "fresh_task_restore": "NOT_RUN",
+  "draft_revision": 13,
+  "draft_readback": "Exact install/start values verified; repository/network/secret/runtime bindings preserved"
+}
