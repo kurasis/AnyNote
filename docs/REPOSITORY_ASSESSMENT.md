@@ -2,6 +2,12 @@
 
 Observed 2026-10-10, before implementation.
 
+P03 update (2026-10-11): apps/api now contains a minimal Laravel scaffold and
+frozen Composer inventory. infra/dev and scripts/dev-stack.py prepare owned
+loopback MariaDB/FPM/Nginx using Docker 28.4.0/Compose 2.40.3. No host PHP/system
+service, product schema/account, application UI or production deployment is
+installed. Original observations below remain historical.
+
 ## Existing repository
 
 - Checkout: `/workspace/AnyNote`; origin `https://github.com/kurasis/AnyNote.git`.

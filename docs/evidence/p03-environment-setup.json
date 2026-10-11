@@ -1,0 +1,20 @@
+{
+  "kind": "ACTUAL_CLOUD_SETUP_AND_CONFIRMED_DRAFT_SAVE",
+  "recorded_on": "2026-10-11",
+  "complete_install_script_executed": "PASS",
+  "repeated_frozen_install": "PASS",
+  "owned_stop_start_readiness": "PASS",
+  "saved_fields": [
+    "install_script",
+    "start_skill"
+  ],
+  "draft_save_status": "saved",
+  "requires_publish": true,
+  "install_script_sha256": "ab9cedc97b269d1c5020bde1efe8673756bd64ffc9e274acd6c94663db77416a",
+  "start_skill_sha256": "96686dcaf68691ad10d945c425768812760e165092c32cc78de7ba987736103a",
+  "environment_publication": "NOT RUN: product-owned review/save/publish step",
+  "future_task_restoration": "NOT RUN",
+  "network_settings": "Preserved",
+  "secret_requirements": "Preserved; no additional credentials required",
+  "scope": "Prepared actual cloud machine and saved reusable draft; no production deployment"
+}

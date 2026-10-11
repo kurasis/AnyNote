@@ -14,3 +14,8 @@ __pycache__/
 .DS_Store
 Thumbs.db
 artifacts/
+.local/
+/apps/api/bootstrap/cache/*.php
+/apps/api/storage/**
+!/apps/api/storage/.gitignore
+/infra/dev/php/trust/*.crt

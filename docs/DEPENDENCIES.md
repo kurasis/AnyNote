@@ -74,3 +74,24 @@ ZIP bundles only existing exact sodium JS/WASM dependencies, their actual ISC
 license files, original generated PNG icons and local static assets; no native
 GPL adapter is bundled. esbuild/Playwright/Python are build/test tools, not owner
 runtime requirements. Whole-project licensing remains unselected.
+
+## P03 resolved foundation inventory
+
+Primary sources checked 2026-10-11 supersede P00 candidates: PHP 8.4.26,
+Composer 2.10.3, MariaDB 11.8.9 LTS and stable Nginx 1.30.5. PHP/Nginx official
+images use Debian trixie; MariaDB uses Ubuntu 24.04 noble; the cloud host remains
+Debian 13.6. No host packages installed. Exact digests/sources: infra/dev/versions.json.
+Signed Debian libicu-dev 76.1-4 and libzip-dev 1.11.3-2 support PHP builds; indirect
+OS packages remain repository-resolved, not a byte-identical release/SBOM claim.
+
+Laravel 13.35.0 is frozen with 73 runtime/26 development packages in the Composer
+lock. apps/api/dependency-inventory.json has 99 exact source/dist/license records;
+upstream empty dist checksums remain empty, never invented. Pint 1.32.1 MIT and
+PHPUnit 12.5.38 BSD-3-Clause are development-only. Upstream skeleton provenance:
+apps/api/UPSTREAM.md; no default auth model/migrations/Tinker/UI copied.
+
+Gitleaks 8.30.1 MIT is an official checksum-verified Linux x64 development scanner,
+not an application dependency. Its source/asset SHA-256 is in the installer.
+Three scanner negatives validate narrow reference/source-input checksum allowlists.
+Composer's proprietary root marker expresses no selected redistribution grant,
+not a chosen future release license. P01/GPL boundaries remain unchanged.
