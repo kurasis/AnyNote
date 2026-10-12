@@ -135,3 +135,8 @@ P09 derives old-epoch rekey blocking from verified signed revoke/reset events
 after genesis, even if a hostile service clears its unsigned maintenance flags.
 Local drafts and already witnessed reads remain available; P10 implements the
 actual transition rather than bypassing this independent guard.
+
+For faster fault diagnosis, the existing authentication workflow accepts the
+manual notes_browser_only input. It runs the same sandboxed verified-TLS P09
+script without native builds; it does not replace any of the sixteen required
+acceptance jobs. The original P08 diagnostic input remains available.
