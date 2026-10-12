@@ -70,7 +70,9 @@ final class Lifecycle
             }
             Protocol::require(DB::table('enrollment_sessions')->count() < 50000 && DB::table('enrollment_sessions')->where('account_id', $s->account_id)->count() < 4096, 'RESOURCE_LIMIT');
             Protocol::require(DB::table('enrollment_sessions')->where('account_id', $s->account_id)->whereIn('state', ['pending', 'approved'])->where('expires_at', '>', now())->count() < 32, 'RESOURCE_LIMIT');
-            Protocol::require(! DB::table('enrollment_sessions')->where('new_session_id', $s->id)->exists(), 'IDEMPOTENCY_MISMATCH');
+            if ($body->mode === 'new-device-offer') {
+                Protocol::require(! DB::table('enrollment_sessions')->where('new_session_id', $s->id)->exists(), 'IDEMPOTENCY_MISMATCH');
+            }
             DB::table('enrollment_sessions')->insert(['id' => $id, 'account_id' => $s->account_id, 'commitment' => P::digest('p02-state-c1', $body->mode === 'new-device-offer' ? 'offer' : 'invitation', $record), 'state' => 'pending', 'expires_at' => gmdate('Y-m-d H:i:s', (int) ceil((int) $record->body->expires_at / 1000)), 'creator_session_id' => $s->id, 'new_session_id' => $body->mode === 'new-device-offer' ? $s->id : null, 'new_device_id' => $body->mode === 'new-device-offer' ? $record->body->device->device_id : null, 'approver_device_id' => $body->mode === 'existing-device-invitation' ? $s->device_id : null, 'mode' => $body->mode, 'public_record' => P::canonical($record), 'offer_record' => $body->mode === 'new-device-offer' ? P::canonical($record) : null]);
 
             return $this->result($this->pending($s, $id));

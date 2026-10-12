@@ -304,7 +304,7 @@
     },
     {
       "path": "apps/api/app/Devices/Lifecycle.php",
-      "sha256": "0babb26a0a10105faca2a0fbc56eaa3ad9ad36addc83b91da7c09e54835f02c3"
+      "sha256": "04c4573dc8e735bc28138f978f2c73d9bc27ffb384215622bf00693afc6a9649"
     },
     {
       "path": "apps/api/app/Devices/Protocol.php",
