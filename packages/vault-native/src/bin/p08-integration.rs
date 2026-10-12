@@ -15,7 +15,7 @@ use std::{
     path::PathBuf,
     sync::Arc,
 };
-use zeroize::Zeroizing;
+use zeroize::{Zeroize, Zeroizing};
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Init {
@@ -23,6 +23,7 @@ struct Init {
     pins: Value,
     phrase: String,
     secrets: Option<Value>,
+    snapshot: Option<Value>,
 }
 struct Owned(PathBuf);
 impl Drop for Owned {
@@ -50,6 +51,14 @@ fn emit(v: &Value) -> Result<(), Box<dyn std::error::Error>> {
     out.flush()?;
     Ok(())
 }
+fn wipe(value: &mut Value) {
+    match value {
+        Value::String(s) => s.zeroize(),
+        Value::Array(a) => a.iter_mut().for_each(wipe),
+        Value::Object(o) => o.values_mut().for_each(wipe),
+        _ => (),
+    }
+}
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let mut input = std::io::stdin().lock();
     let bytes = line(&mut input)?.ok_or("INIT_REQUIRED")?;
@@ -60,13 +69,32 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     )));
     let vault = Arc::new(Vault::open(&owned.0.join("vault.sqlite"), init.scope)?);
     let phrase = Zeroizing::new(init.phrase);
-    if let Some(secrets) = init.secrets {
-        vault.initialize_phrase(
+    if let Some(snapshot) = init.snapshot {
+        let mut conn = rusqlite::Connection::open(vault.path())?;
+        let tx = conn.transaction()?;
+        tx.execute(
+            "INSERT INTO meta VALUES(1,?1)",
+            [snapshot["state"].to_string()],
+        )?;
+        for row in snapshot["rows"].as_array().ok_or("INVALID_SNAPSHOT")? {
+            tx.execute(
+                "INSERT INTO records VALUES(?1,?2)",
+                rusqlite::params![
+                    row["id"].as_str().ok_or("INVALID_ROW")?,
+                    canonical(&row["frame"])?
+                ],
+            )?;
+        }
+        tx.commit()?;
+    } else if let Some(mut secrets) = init.secrets {
+        let result = vault.initialize_phrase(
             &phrase,
             &Zeroizing::new(canonical(&secrets)?),
             init.pins,
             true,
-        )?;
+        );
+        wipe(&mut secrets);
+        result?;
     } else {
         vault.initialize_device_phrase(&phrase, init.pins, true)?;
     }
@@ -111,9 +139,12 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         } else if request["operation"] != "lock" && request["operation"] != "status" {
             request["capability"] = handle.clone();
         }
-        match endpoint.invoke(&host, &Zeroizing::new(canonical(&request)?)) {
+        let unlock = request["operation"] == "unlock-phrase";
+        let result = endpoint.invoke(&host, &Zeroizing::new(canonical(&request)?));
+        wipe(&mut request);
+        match result {
             Ok(value) => {
-                if request["operation"] == "unlock-phrase" {
+                if unlock {
                     handle = value["capability"].clone();
                     emit(&json!({"state":"unlocked"}))?;
                 } else {

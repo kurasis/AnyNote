@@ -9,5 +9,5 @@ export async function nativeHarness(input){
  child.on('exit',()=>{ended=true;for(const next of waiting)next.reject(Error('NATIVE_PROCESS_ENDED'));waiting=[];});child.stderr.on('data',()=>{});
  const call=request=>new Promise((resolve,reject)=>{if(ended)return reject(Error('NATIVE_PROCESS_ENDED'));waiting.push({resolve,reject});child.stdin.write(JSON.stringify(request)+'\n');});
  const device=await call(input);
- return {device,call,close:async()=>{child.stdin.end();await new Promise(done=>ended?done():child.once('exit',done));lines.close();}};
+ return {device,call,close:async()=>{if(ended){lines.close();return;}child.stdin.end();await new Promise(done=>ended?done():child.once('exit',done));lines.close();}};
 }
