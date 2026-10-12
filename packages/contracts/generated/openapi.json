@@ -12162,6 +12162,9 @@
           },
           "revoke_request": {
             "$ref": "#/components/schemas/P08DevicesEventRequest"
+          },
+          "registration_request": {
+            "$ref": "#/components/schemas/P06AuthRegisterRequest"
           }
         },
         "required": [

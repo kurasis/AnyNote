@@ -1,3 +1,4 @@
+import {bootstrapControl} from '../devices/bootstrap.mjs';
 import {sealLifecycle,openLifecycle,lifecycleHash} from '../devices/local.mjs';
 import {strictJson} from '../src/strict-json.mjs';
 import {DeviceWorkflow,controlId} from '../devices/workflow.mjs';
@@ -21,7 +22,7 @@ export class VaultEngine {
   #authorize(cap){ensure(this.#key&&cap===this.#cap,'VAULT_LOCKED');if(Date.now()-this.#last>300000||Date.now()<this.#last){this.lock();fail('VAULT_LOCKED');}this.#last=Date.now();}
   async #state(tx,cap){this.#authorize(cap);const s=metadata(await tx.get(),this.scope);verifyManifest(s,this.#keys.signing.publicKey);ensure(s.epoch===this.#epoch,'STALE_CAPABILITY');ensure(s.revision>=this.#revision,'ROLLBACK_QUARANTINE');this.#revision=s.revision;return s;}
   #load(frame,key){const p=openLocal(wire(frame),key,wire(frame.context));decode(frame.context.record_kind,bounded(p.data));return p;}
-  async initialize(phrase,secrets,pins){
+  async initialize(phrase,secrets,pins,registration){
     ensure(!this.#key,'VAULT_ALREADY_OPEN');decode('vault-secrets',bounded(secrets));ensure(secrets.group_keys.length===0,'INITIAL_GROUP_KEYS_FORBIDDEN');
     const key=randomKey(),context={...common('local-unlock'),...this.scope,wrapper_id:b64(sodium.randombytes_buf(16)),method:'argon2id13'},parameters={algorithm:'argon2id13',salt:b64(sodium.randombytes_buf(16)),opslimit:3,memlimit:67108864};
     let kek;
@@ -29,7 +30,7 @@ export class VaultEngine {
       kek=await phraseKek(phrase,wire(parameters));const wrapper=decode('phrase-wrapper',wrapLocalKey('phrase-wrapper',wire({context,parameters}),key,kek));
       const c=this.context('vault-secrets',this.vaultId),frame=decode('local-envelope',sealLocal(wire({...common('local-record-plaintext'),context:c,data:secrets}),key));
       const state={manifest:signManifest(this.scope,pins,this.vaultId,un64(secrets.device_signing_secret)),schema:1,scope:this.scope,epoch:1,revision:1,lease:null,rotation:null,wrappers:[wrapper],pins,vault_id:this.vaultId};metadata(state,this.scope);
-      await this.store.transaction(true,async tx=>{ensure(!await tx.get(),'PROFILE_EXISTS');ensure(await tx.count()===0,'INTEGRITY_FAILURE');await tx.put({id:this.vaultId,frame});await tx.set(state);});
+      await this.store.transaction(true,async tx=>{ensure(!await tx.get(),'PROFILE_EXISTS');ensure(await tx.count()===0,'INTEGRITY_FAILURE');await tx.put({id:this.vaultId,frame});if(registration){const signing=un64(secrets.device_signing_secret),encryption=un64(secrets.device_encryption_secret);try{const device={device_id:this.scope.device_id,signing_key:b64(sodium.crypto_sign_ed25519_sk_to_pk(signing)),encryption_key:b64(sodium.crypto_scalarmult_base(encryption))},control=bootstrapControl(registration,pins,device),record_id=controlId(this.scope);await tx.put({id:record_id,frame:sealLifecycle(this.scope,pins,record_id,'device-control',control,key)});}finally{wipe(signing);wipe(encryption);}}await tx.set(state);});
       return {profile:this.scope,state:'locked'};
     }finally{wipe(key);wipe(kek);wipe(secrets);}
   }

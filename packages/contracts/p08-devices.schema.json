@@ -770,6 +770,9 @@
         },
         "revoke_request": {
           "$ref": "urn:anynote:p08:devices:v1#/$defs/event-request"
+        },
+        "registration_request": {
+          "$ref": "urn:anynote:p06:auth:v1#/$defs/register-request"
         }
       },
       "required": [

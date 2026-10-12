@@ -1,4 +1,5 @@
 // Dedicated-worker state machine. Hooks store only encrypted public evidence and vault secrets under L.
+import {canonicalBytes} from '../adapters/core.mjs';
 import {sodium,b64,un64,hash,Buffer} from '../adapters/primitives.mjs';
 import {wire,same} from '../adapters/codecs/identity-codec.mjs';
 import {stateDecode,stateDigest} from '../adapters/codecs/state-codec.mjs';
@@ -12,7 +13,7 @@ import {pairingQr,scannedChannelForEvaluation,generatePairingKey,sealPairingFram
 import {privateGenesis,verifyGenesis} from './genesis.mjs';
 import {ensure,id} from '../vault/store.mjs';
 const parse=bytes=>JSON.parse(new TextDecoder().decode(bytes)),g=groupCodecForProfile('p02-group-c2');
-export const controlId=scope=>b64(un64(hash(Buffer.concat([Buffer.from('AnyNote/P08/local-control\0'),wire(scope)]))).subarray(0,16));
+export const controlId=scope=>b64(un64(hash(Buffer.concat([Buffer.from('AnyNote/P08/local-control\0'),canonicalBytes(wire(scope))]))).subarray(0,16));
 export class DeviceWorkflow {
  #keys;#channel;#stage;#proof;#snapshot;#state;
  constructor({scope,pins,keys,load,persist,anchor=null}){this.scope=scope;this.pins=pins;this.#keys=keys;this.load=load;this.persist=persist;this.anchor=anchor;}
@@ -20,7 +21,7 @@ export class DeviceWorkflow {
  #device(){return {device_id:this.scope.device_id,signing_key:b64(this.#keys.signing.publicKey),encryption_key:b64(this.#keys.encryption.publicKey),capabilities:['delegate-device','distribute-group-key','receive-group-key','sign-content']};}
  #active(capability){ensure(this.#proof,'ROSTER_PROOF_REQUIRED');const cert=activeCertificateForEvaluation(this.#proof.roster,this.scope.device_id,capability),b=certificateDetails(cert).body;ensure(b.device_signing_key===b64(this.#keys.signing.publicKey)&&b.device_encryption_key===b64(this.#keys.encryption.publicKey),'DEVICE_KEY_MISMATCH');return cert;}
  #binding(session){ensure(id(session),'INVALID_SESSION');return hash(Buffer.from('AnyNote/P06/session-binding\0'+session));}
- #ceremony(){const p=this.#state.pending;ensure(p,'PAIRING_REQUIRED');return {service_id:this.pins.service_id,account_id:this.pins.account_id,root_fingerprint:this.pins.root_fingerprint,device:p.offer?.body.device??null,device_fingerprint:p.offer?hash(Buffer.concat([Buffer.from('AnyNote/P08/device-preview\0'),wire(p.offer.body.device)])):null,operation_id:p.operation_id,expires_at:p.expires_at,origin_required:true};}
+ #ceremony(){const p=this.#state.pending;ensure(p,'PAIRING_REQUIRED');return {service_id:this.pins.service_id,account_id:this.pins.account_id,root_fingerprint:this.pins.root_fingerprint,device:p.offer?.body.device??null,device_fingerprint:p.offer?hash(Buffer.concat([Buffer.from('AnyNote/P08/device-preview\0'),canonicalBytes(wire(p.offer.body.device))])):null,operation_id:p.operation_id,expires_at:p.expires_at,origin_required:true};}
  #live(){ensure(this.#channel&&this.#state.pending,'PAIRING_RESTART_REQUIRED');ensure(BigInt(this.#state.pending.expires_at)>BigInt(Date.now()),'ENROLLMENT_EXPIRED');}
  async #commit(extra={}){await this.persist(this.#state,extra);}
  close(){if(this.#channel){try{closePairingChannel(this.#channel);}catch{}}this.#channel=undefined;this.#stage=undefined;this.#proof=undefined;this.#snapshot=undefined;this.#state=undefined;}
@@ -43,6 +44,8 @@ export class DeviceWorkflow {
    const old=this.#state.pages;this.#state.identity=stage.identity;this.#state.head=stage.head;this.#state.generation=stage.generation;this.#state.pages=this.#state.staging.pages;this.#state.staging=null;
    await this.#commit({deletePages:old});this.#proof={identity:stage.identityProof,roster:stage.roster,details};this.#snapshot={identity:stage.identity,head:stage.head,generation:stage.generation,events:stage.events};this.#stage=undefined;return this.command('summary');
   }
+  if(op==='retryRegistration'){ensure(this.#state.registration_request,'REGISTRATION_REQUIRED');return {request:this.#state.registration_request};}
+  if(op==='finishRegistration'){this.#active('sign-content');ensure(this.#state.registration_request&&this.#snapshot.events.some(e=>e.body.operation_id===this.#state.registration_request.operation_id),'ROSTER_CHANGED');delete this.#state.registration_request;await this.#commit();return {state:'registration-completed'};}
   if(op==='publicDevice')return {device:this.#device()};
   if(op==='summary')return {state:this.#proof?.details.devices.find(d=>d.device_id===this.scope.device_id)?.status??'PENDING',head:this.#state.head,generation:this.#state.generation,active_device_limit:this.#proof?.details.active_device_limit??null,devices:this.#proof?.details.devices??[],kit_verified:this.#state.kit_verified,pending:this.#state.pending?{operation_id:this.#state.pending.operation_id,state:this.#state.pending.event?'confirmation-retry':this.#channel?'in-progress':'restart-required',expires_at:this.#state.pending.expires_at}:null};
   if(op==='startInvite'||op==='startOffer'){

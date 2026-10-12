@@ -74,3 +74,12 @@ test('hostile QR/relay key substitution, mutation and reflection cannot produce 
   assert.equal((await run(f.fresh,'summary')).state,'PENDING');await rejection(()=>run(f.old,'approve',[true]),'PAIRING_RESTART_REQUIRED');
  }finally{f.initial.dispose();await f.old.engine.close();await f.fresh.engine.close();}}
 });
+
+test('bootstrap journal and private keys commit atomically and survive interrupted registration',async()=>{
+ const f=await fixture();try{
+  const event=f.snapshot.events[0],request={version:1,registration_id:ident(),operation_id:event.body.operation_id,identity:f.snapshot.identity,roster:event},scope=f.old.scope,secrets=()=>({device_signing_secret:b64(f.initial.keys.signing.privateKey),device_encryption_secret:b64(f.initial.keys.encryption.privateKey),group_keys:[]});
+  const failed=new Store(scope),badEngine=new VaultEngine(failed);failed.failAfter=1;await rejection(()=>badEngine.initialize(phrase,secrets(),f.pins,request),'INSUFFICIENT_STORAGE');assert.equal(failed.state,undefined);assert.equal(failed.rows.size,0);await badEngine.close();
+  const store=new Store(scope),engine=new VaultEngine(store);await engine.initialize(phrase,secrets(),f.pins,request);let cap=(await engine.unlock(phrase)).capability;assert.deepEqual((await engine.devices(cap,'retryRegistration',[])).request,request);await engine.globalLock();const reopened=new VaultEngine(store);cap=(await reopened.unlock(phrase)).capability;assert.deepEqual((await reopened.devices(cap,'retryRegistration',[])).request,request);
+  assert(!JSON.stringify([...store.rows.values()]).includes(f.initial.kit.recovery_secret));await reopened.devices(cap,'snapshotStart',[f.snapshot.identity,f.snapshot.head,'0']);await reopened.devices(cap,'snapshotPage',[f.snapshot.events]);await reopened.devices(cap,'snapshotFinish',[]);await reopened.devices(cap,'finishRegistration',[]);await rejection(()=>reopened.devices(cap,'retryRegistration',[]),'REGISTRATION_REQUIRED');await reopened.close();await engine.close();
+ }finally{f.initial.dispose();await f.old.engine.close();await f.fresh.engine.close();}
+});

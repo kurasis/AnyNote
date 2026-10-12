@@ -3206,6 +3206,7 @@ final readonly class P08DevicesLocalControl implements \JsonSerializable
         public array|null $genesis_request = null,
         public array|null $grant_request = null,
         public array|null $revoke_request = null,
+        public array|null $registration_request = null,
     ) {}
 
     public function jsonSerialize(): array
@@ -3214,6 +3215,7 @@ final readonly class P08DevicesLocalControl implements \JsonSerializable
         if ($values['genesis_request'] === null) { unset($values['genesis_request']); }
         if ($values['grant_request'] === null) { unset($values['grant_request']); }
         if ($values['revoke_request'] === null) { unset($values['revoke_request']); }
+        if ($values['registration_request'] === null) { unset($values['registration_request']); }
         return $values;
     }
 }
