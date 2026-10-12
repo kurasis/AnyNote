@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-COMPONENTS = ['p02-file-c1', 'p02-identity-c1', 'p02-state-c1', 'p02-group-c2', 'p02-v1', 'p03-api', 'p04-api', 'p06-auth', 'p08-devices']
+COMPONENTS = ['p02-file-c1', 'p02-identity-c1', 'p02-state-c1', 'p02-group-c2', 'p02-v1', 'p03-api', 'p04-api', 'p06-auth', 'p08-devices', 'p09-notes']
 
 def pascal(value):
     return ''.join(part[:1].upper() + part[1:] for part in re.split('[^A-Za-z0-9]+', value))

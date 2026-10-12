@@ -55,6 +55,10 @@ enum Request {
         capability: String,
         records: Vec<InputRecord>,
     },
+    Notes {
+        capability: String,
+        request: crate::notes::NotesRequest,
+    },
     DeviceSettings {
         capability: String,
     },
@@ -241,6 +245,15 @@ impl Endpoint {
                 let fence = self.vault.lease(c)?;
                 self.vault.save_batch(c, fence, &values)?;
                 Ok(json!({"state":"local-saved"}))
+            }
+            Request::Notes {
+                capability,
+                request,
+            } => {
+                let h = self.handles.lock().map_err(|_| Error("VAULT_BUSY"))?;
+                let c = h.get(capability).ok_or(Error("VAULT_LOCKED"))?;
+                let value = std::mem::replace(request, crate::notes::NotesRequest::Summary {});
+                self.vault.notes_command(c, value)
             }
             Request::DeviceSettings { capability } => {
                 let h = self.handles.lock().map_err(|_| Error("VAULT_BUSY"))?;

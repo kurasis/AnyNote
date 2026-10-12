@@ -10,6 +10,10 @@ on:
         description: Run the actual P08 browser fault scenario only
         type: boolean
         default: false
+      notes_browser_only:
+        description: Diagnose the actual P09 browser path only; full acceptance remains mandatory
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -20,7 +24,7 @@ concurrency:
 
 jobs:
   auth-linux-http-browser:
-    if: ${{ !inputs.device_browser_only }}
+    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
@@ -41,6 +45,7 @@ jobs:
           npm --prefix experiments/p01 ci --no-audit --no-fund
           npm --prefix packages/api-client ci --ignore-scripts --no-audit --no-fund
           npm --prefix apps/devices-web ci --ignore-scripts --no-audit --no-fund
+          npm --prefix apps/notes-web ci --ignore-scripts --no-audit --no-fund
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends libnss3-tools
           python3 scripts/dev-stack.py install
@@ -86,7 +91,7 @@ jobs:
           python3 scripts/dev-stack.py stop
 
   auth-windows-native:
-    if: ${{ !inputs.device_browser_only }}
+    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only }}
     runs-on: windows-2025
     timeout-minutes: 20
     defaults:
@@ -124,7 +129,7 @@ jobs:
           retention-days: 14
 
   browser-fault-diagnosis:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.device_browser_only }}
+    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.device_browser_only || inputs.notes_browser_only) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -146,6 +151,7 @@ jobs:
           npm --prefix experiments/p01 ci --no-audit --no-fund
           npm --prefix packages/api-client ci --ignore-scripts --no-audit --no-fund
           npm --prefix apps/devices-web ci --ignore-scripts --no-audit --no-fund
+          npm --prefix apps/notes-web ci --ignore-scripts --no-audit --no-fund
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends libnss3-tools
           python3 scripts/dev-stack.py install
@@ -153,13 +159,19 @@ jobs:
       - name: Actual sandboxed CSP and verified-TLS UI
         run: |
           source scripts/runtime-env.sh
-          node experiments/p01/p08-browser.mjs
+          if [ "${{ inputs.notes_browser_only }}" = "true" ]; then
+            node experiments/p01/p09-browser.mjs
+          else
+            node experiments/p01/p08-browser.mjs
+          fi
           git diff --exit-code
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: p08-browser-fault-public-report
-          path: artifacts/p08/browser-report.json
+          name: browser-fault-public-report
+          path: |
+            artifacts/p08/browser-report.json
+            artifacts/p09/browser-report.json
           if-no-files-found: warn
           retention-days: 7
       - name: Stop owned services only

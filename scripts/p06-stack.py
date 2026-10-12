@@ -19,10 +19,14 @@ spec.loader.exec_module(stack)
 
 
 def compose(*args, capture=False):
-    return subprocess.run(['docker', 'compose', '--project-name', stack.PROJECT,
-                           '--env-file', str(stack.ENV), '-f', str(ROOT / 'infra/dev/compose.yaml'),
-                           '-f', str(ROOT / 'infra/dev/p06-compose.yaml'), *args],
-                          cwd=ROOT, check=True, text=True, capture_output=capture).stdout
+    result = subprocess.run(['docker', 'compose', '--project-name', stack.PROJECT,
+                             '--env-file', str(stack.ENV), '-f', str(ROOT / 'infra/dev/compose.yaml'),
+                             '-f', str(ROOT / 'infra/dev/p06-compose.yaml'), *args],
+                            cwd=ROOT, check=False, text=True, capture_output=capture)
+    if result.returncode:
+        # A CalledProcessError traceback would serialize command-line owner/env values.
+        raise SystemExit(f'Owned P06 command failed (exit {result.returncode}); private arguments omitted')
+    return result.stdout
 
 
 def sql(text):
@@ -94,6 +98,10 @@ def main():
         database(args.operation == 'reset')
         subprocess.run(['node', str(ROOT / 'experiments/p01/p06-build.mjs')], cwd=ROOT, check=True)
         compose('up', '-d', 'auth-php', 'auth-nginx', capture=True)
+        # Bind-mounted configuration may change without recreating the container.
+        # Validate and reload only this owned edge, preserving sessions/data.
+        compose('exec', '-T', 'auth-nginx', 'nginx', '-t', capture=True)
+        compose('exec', '-T', 'auth-nginx', 'nginx', '-s', 'reload', capture=True)
         php('php', 'tests/Support/p06-control.php', 'ready')
         ready()
     elif args.operation == 'check':

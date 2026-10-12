@@ -368,3 +368,34 @@ no general product secret-export IPC exists. Synthetic WebAuthn/OS events do not
 close real Hello/TPM/iPhone or qualified G2/G3. Local sandbox remains BLOCKED;
 hosted browser passes retain sandbox/TLS/CSP. Published P07 restore was observed;
 P08 draft saving is distinct from publication and independently proven fresh restore.
+
+## P09 implementation boundary
+
+Private groups, encrypted metadata/entries/preferences, safe Markdown/checklists,
+protected drafts/attempts, conflict handling, immutable versions/trash/restore and
+native/PWA software paths are implemented. All sixteen hosted gates passed; exact-source acceptance is recorded in
+TEST_EVIDENCE and evidence/p09/acceptance.json. The native-to-PWA adapter byte flow uses actual Windows SQLite/MSVC
+in CI; actual shipped strict-CSP PWA UI is independently exercised on Linux. It
+is not complete Windows-host/iPhone packaging or a new owner-device trial.
+
+Limits are explicit: 100 private groups/account, 512 protected local drafts,
+attempts and witnesses, 512 KiB control, 1,000 roster events. P11 owns compaction,
+full snapshot/delta synchronization and automatic convergence. Paginated discovery
+is not a consistent complete snapshot or proof of deletion. P13 owns complete
+search/history pagination/retention/export; the current search covers loaded titles.
+Known locally witnessed history survives author revocation; a fresh client lacking
+independent history anchors surfaces UNANCHORED_HISTORY. General historical proof,
+epoch/key-maintenance and membership are P10/P11, with no flag-clearing shortcut.
+
+The worker caches enumerated static app resources only. Browser eviction, old backups,
+exposed keys and best-effort RAM/GC erasure limits remain. Local cloud sandbox is
+BLOCKED; mandatory hosted browser tests keep sandbox/TLS/CSP enabled. Full physical
+G1/Hello/iPhone and qualified G2/G3 remain open/unbooked/NOT_RUN. No production
+migration/deployment, release, reviewer outreach or new hardware trial occurred.
+Published P08 configuration restoration was observed. P09 draft persistence,
+publication and independently observed fresh restoration are separate facts.
+
+P09 derives old-epoch rekey blocking from verified signed revoke/reset events
+after genesis, even if a hostile service clears its unsigned maintenance flags.
+Local drafts and already witnessed reads remain available; P10 implements the
+actual transition rather than bypassing this independent guard.

@@ -610,19 +610,30 @@
       "method": "GET",
       "path": "/api/v1/groups",
       "summary": "Only groups accessible to the active account/device",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted certified device, current account-private membership; P09 private-group subset only",
       "operation_id": "get_groups",
-      "phase": "P10",
-      "implemented": false
+      "phase": "P09",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p09-notes/groups-page"
     },
     {
       "method": "POST",
       "path": "/api/v1/groups",
       "summary": "Signed private/shared genesis, encrypted metadata, initial envelopes",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted certified device, current account-private membership; P09 private-group subset only",
       "operation_id": "post_groups",
-      "phase": "P10",
-      "implemented": false
+      "phase": "P09",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "request": "p09-notes/group-create",
+      "response": "p09-notes/group-status"
     },
     {
       "method": "POST",
@@ -719,20 +730,30 @@
       "method": "GET",
       "path": "/api/v1/groups/{id}/threads",
       "summary": "Paginated encrypted metadata/references",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted certified device, current account-private membership; P09 private-group subset only",
       "operation_id": "get_groups_id_threads",
       "phase": "P09",
-      "implemented": false
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p09-notes/objects-page"
     },
     {
       "method": "POST",
       "path": "/api/v1/groups/{id}/threads",
       "summary": "Signed creation with encrypted title",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted certified device, current account-private membership; P09 private-group subset only",
       "operation_id": "post_groups_id_threads",
       "phase": "P09",
-      "implemented": false,
-      "request": "p02-v1/envelope"
+      "implemented": true,
+      "request": "p09-notes/commit-request",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p09-notes/receipt-result"
     },
     {
       "method": "POST",
@@ -766,10 +787,15 @@
       "method": "GET",
       "path": "/api/v1/groups/{id}/trash",
       "summary": "Authorized deleted-object metadata/ciphertext",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted certified device, current account-private membership; P09 private-group subset only",
       "operation_id": "get_groups_id_trash",
       "phase": "P09",
-      "implemented": false
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p09-notes/objects-page"
     },
     {
       "method": "POST",
@@ -1038,40 +1064,60 @@
       "method": "POST",
       "path": "/api/v1/objects/{id}/restore",
       "summary": "Signed restore as new state/revision",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted certified device, current account-private membership; P09 private-group subset only",
       "operation_id": "post_objects_id_restore",
       "phase": "P09",
-      "implemented": false,
-      "request": "p02-v1/envelope"
+      "implemented": true,
+      "request": "p09-notes/commit-request",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p09-notes/receipt-result"
     },
     {
       "method": "GET",
       "path": "/api/v1/objects/{id}/revisions",
       "summary": "Authorized retained immutable versions",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted certified device, current account-private membership; P09 private-group subset only",
       "operation_id": "get_objects_id_revisions",
       "phase": "P09",
-      "implemented": false
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p09-notes/revisions-page"
     },
     {
       "method": "POST",
       "path": "/api/v1/objects/{id}/revisions",
       "summary": "Compare-and-swap or explicit conflict branch",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted certified device, current account-private membership; P09 private-group subset only",
       "operation_id": "post_objects_id_revisions",
       "phase": "P09",
-      "implemented": false,
-      "request": "p02-v1/envelope"
+      "implemented": true,
+      "request": "p09-notes/commit-request",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p09-notes/receipt-result"
     },
     {
       "method": "POST",
       "path": "/api/v1/objects/{id}/tombstone",
       "summary": "Signed soft delete",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted certified device, current account-private membership; P09 private-group subset only",
       "operation_id": "post_objects_id_tombstone",
       "phase": "P09",
-      "implemented": false,
-      "request": "p02-v1/envelope"
+      "implemented": true,
+      "request": "p09-notes/commit-request",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p09-notes/receipt-result"
     },
     {
       "method": "POST",
@@ -1133,20 +1179,30 @@
       "method": "GET",
       "path": "/api/v1/threads/{id}/entries",
       "summary": "Paginated encrypted entry heads",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted certified device, current account-private membership; P09 private-group subset only",
       "operation_id": "get_threads_id_entries",
       "phase": "P09",
-      "implemented": false
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p09-notes/objects-page"
     },
     {
       "method": "POST",
       "path": "/api/v1/threads/{id}/entries",
       "summary": "Signed initial revision",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted certified device, current account-private membership; P09 private-group subset only",
       "operation_id": "post_threads_id_entries",
       "phase": "P09",
-      "implemented": false,
-      "request": "p02-v1/envelope"
+      "implemented": true,
+      "request": "p09-notes/commit-request",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p09-notes/receipt-result"
     },
     {
       "method": "DELETE",
@@ -1310,6 +1366,62 @@
       "summary": "get me security notifications",
       "authorization": "Current account session; trusted device for inventory/key access; signed frozen lifecycle records and CAS required for mutation",
       "response": "p08-devices/notifications-result"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/objects/{id}",
+      "summary": "Scoped private-note state or immutable receipt",
+      "authorization": "Current trusted certified device and currently authorized private group; no plaintext response",
+      "operation_id": "get_objects_id",
+      "phase": "P09",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p09-notes/object-state"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/objects/{id}/revisions/{revision}",
+      "summary": "Scoped private-note state or immutable receipt",
+      "authorization": "Current trusted certified device and currently authorized private group; no plaintext response",
+      "operation_id": "get_objects_id_revisions_revision",
+      "phase": "P09",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p09-notes/bundle-result"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/content-receipts/{id}",
+      "summary": "Scoped private-note state or immutable receipt",
+      "authorization": "Current trusted certified device and currently authorized private group; no plaintext response",
+      "operation_id": "get_me_content_receipts_id",
+      "phase": "P09",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p09-notes/receipt-result"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/groups/{id}",
+      "summary": "Current private group with signed genesis evidence",
+      "authorization": "Current trusted device and private owner",
+      "operation_id": "get_groups_id",
+      "phase": "P09",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p09-notes/group-status"
     }
   ]
 }

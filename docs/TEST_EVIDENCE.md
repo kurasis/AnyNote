@@ -1441,3 +1441,47 @@ the new QR codec test. Saving/publishing/fresh restoration remain distinct. No p
 migration/deployment/release, new owner trial or outreach. Physical P01 and qualified
 G2/G3 remain open/unbooked/NOT_RUN. Final tracking/evidence changes require fourteen
 fresh successful jobs before ordinary authorized merge.
+
+## P09 complete private-note vertical slice — software VERIFIED
+
+All sixteen mandatory jobs PASS at
+`a1520167e634c173c5cc56d942417b1faf3648fa`, clean full tree
+`3223224565ec319752b2acb088d9dd35a4473401`. The prior-phase jobs' actual virtual
+merge checkout has the identical complete tree; the P09 workflow checked out the
+exact PR head. [Acceptance](evidence/p09/acceptance.json) retains check/run/job IDs,
+public artifact ZIP hashes and raw report hashes. Final tracking/evidence requires
+fresh full CI before ordinary automatic SHA-guard merge.
+
+| Execution | Actual outcome |
+| --- | --- |
+| Portable protected workflow and closed transport | Eight suites PASS; real maintained crypto, atomic failures, unknown/newer edits, lock/restart, peer ciphertext/tamper, revoked/backdated history and valid signed route substitution |
+| Verified HTTPS/Nginx/Laravel/MariaDB and native SQLite | 131 checks PASS; real maintained WebAuthn/root bootstrap, full private genesis, commit ordering, exact retries, eight-identical and eight-distinct edit races, rollback/quota/isolation, explicit delete/restore, large note and edge bounds, two-way actual native/PWA adapter bytes and SQL/log inspection |
+| Actual shipped PWA UI | 49 checks PASS with Chromium sandbox, trusted CA/hostname TLS and strict CSP; safe Markdown/checklists, encrypted favorites/order/read markers, scoped summary, static-only offline cache, actual commit with lost response, durable offline restart, versions/trash/restore, independent mutual QR enrollment/key delivery, preserved peer conflict/resolution and SQL/IndexedDB/log/ordinary-storage inspection |
+| Native Linux and Windows/MSVC | Six note tests per platform PASS over actual SQLite/WAL, restart, receipt-trigger rollback, immutable/newer drafts, rotation/reserved IDs, closed main-window IPC and independent signed-revoke blocking with false server flags |
+| Native/PWA adapter interoperability | Sixteen checks per platform PASS; independent native device keys generated inside the vault, actual enrollment/roster/genesis, native-to-PWA and reverse verified ciphertext, protected persistence and no general key export |
+| Preserved acceptance | All fourteen prior jobs PASS; nine native device tests and fifteen custody tests/platform, provider/container Linux71/Windows99 plus the explicitly executed official-header ABI test |
+| Exact raw source receipts | 307 inputs/platform verified against Git blobs; Windows304 CRLF working-file inputs and three byte-identical inputs verified without normalizing the reports |
+| Complete frozen installation | PASS: all 747 then-visible source files and marked private-note database state preserved |
+| Complete startup and readiness | PASS: owned services, trusted TLS/API/session, eight-suite P09 target, native inventory and read-only contract comparison; source stays unchanged |
+
+Raw reports: [HTTP](evidence/p09/http-report.json),
+[browser](evidence/p09/browser-report.json),
+[Linux source](evidence/p09/linux-source-report.json),
+[Windows source](evidence/p09/windows-source-report.json),
+[Linux interop](evidence/p09/linux-native-interop-report.json), and
+[Windows interop](evidence/p09/windows-native-interop-report.json).
+Node custody models and native/PWA adapter interop are not substitutes for the
+separately executed persistent PWA UI or actual native SQLite tests. Local cloud
+sandbox remains BLOCKED; no sandbox/TLS/CSP/verification bypass was used. Manual
+browser diagnosis is optional and does not replace any required job. Initial failed
+cases were diagnosed and corrected; they are not acceptance evidence.
+
+P09 leaves original specification, frozen P02 corpora and prior locks unchanged;
+Markdown uses its own seven-record frozen inventory. No new Hello/TPM objects,
+owner-device trial, production migration/deployment, release or reviewer outreach
+occurred. Full physical G1/Hello/iPhone and qualified G2/G3 stay open/unbooked/NOT_RUN.
+Perfect memory erasure and universal hostile-server freshness are not claimed.
+Published P08 restoration was observed; P09 draft persistence, publication and
+independently demonstrated fresh P09 restoration remain distinct. Next full batch
+is P10; scale/convergence, files, complete export/retention and packaging retain
+P11–P15 ownership. No owner action is required for independent P09 software CI.

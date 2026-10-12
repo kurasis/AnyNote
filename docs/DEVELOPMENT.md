@@ -129,3 +129,21 @@ verifies actual HTTP/SQL/native interop, sandboxed verified-TLS/strict-CSP UI an
 Windows/MSVC/official-header ABI. Archive only public clean-source receipts, never
 kit/QR/private fixture values. UI: `/auth/devices.html`. Draft save does not publish
 or establish fresh restoration, authorize production deployment or owner trials.
+
+## P09 private notes development
+
+Read [P09_PRIVATE_NOTES.md](P09_PRIVATE_NOTES.md). Install apps/notes-web with
+frozen npm ci --ignore-scripts and the workspace cache before p06-stack.py up;
+apps/devices-web is also required by the shared build. check-p09.py verifies seven
+Markdown records, generated contracts read-only and eight workflow/transport
+suites. Native tests use all features and --test-threads=1. Mandatory private-notes.yml
+runs actual HTTP/SQL/native interoperability, two enrolled persistent PWA contexts,
+verified TLS/strict CSP/sandbox and actual Windows/MSVC/DPAPI/SQLite plus official ABI.
+
+Readiness preserves the marked P06 database/private TLS/OAuth and validates/reloads
+only its own Nginx edge. Explicit attack resets remain confined to the marked test
+DB and sequential with P03 outages. Original spec, all prior locks and frozen corpora
+remain intact. Offline CacheStorage holds static resources only under an enumerated
+worker CSP; actual encrypted local data remains IndexedDB/SQLite. Do not upload
+kits, QR values, private fixtures or raw storage. Saving setup does not publish or
+prove a fresh P09 task restoration. Next full batch after acceptance is P10.

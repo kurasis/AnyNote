@@ -777,3 +777,33 @@ pass. Concurrency/SQL abort, native/browser JCS/secretstream interop, fresh reco
 and populated legacy upgrade are exercised. No frozen format, verifier, assertion,
 CSP, TLS, sandbox, eligibility or ABI guard is weakened. Qualified composition
 review, physical trials and production security release remain separate/NOT_RUN.
+
+## ADR-019 — protected private-note publication and scoped static offline resources
+
+Reuse frozen P05 object/DEK/signature/AAD formats and full P08 private group-c2
+coverage over the actual P04 publication transaction. Add closed P09 transport and
+p09-local-v1 protected control/genesis only; preserve all previous locks/corpora.
+Random L protects device/group keys, acknowledged drafts, immutable attempts,
+verified witnesses and caches on Worker/IndexedDB and native SQLite. Atomic ACK
+retires only exact unchanged drafts; newer text and failed/unknown/conflicting
+attempts remain recoverable. Current authority and historically witnessed reads
+are distinct; reject unanchored backdated revoked content until actual P10/P11
+history closure exists. Signed summary IDs must resolve in the same group/thread.
+
+Use maintained markdown-it tokens and safe DOM, with literal HTML, no remote image
+fetches and no script/unsafe URLs. Keep page API-only connect-src and grant the
+static worker only enumerated resource URLs under a separate strict CSP. Neither
+API responses nor plaintext/content/authentication enter CacheStorage. Preserve
+owned data on readiness and validate/reload only the owned Nginx configuration,
+so the frozen 4 MiB control ceiling is effective on existing instances. Oversize
+errors retain the canonical trusted edge boundary.
+
+Seven exact Markdown dependency SRI/license records use a new separate lock.
+Actual Linux/Windows/HTTP/browser results and limitations belong in TEST_EVIDENCE;
+no AI review, synthetic OS message or compiled UI constitutes physical/audit
+acceptance. General membership/epoch maintenance is P10, convergence/scale P11.
+
+P09 derives old-epoch rekey blocking from verified signed revoke/reset events
+after genesis, even if a hostile service clears its unsigned maintenance flags.
+Local drafts and already witnessed reads remain available; P10 implements the
+actual transition rather than bypassing this independent guard.

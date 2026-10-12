@@ -3274,3 +3274,374 @@ final readonly class P08DevicesLocalFrame implements \JsonSerializable
         return $values;
     }
 }
+
+final readonly class P09NotesObjectRef implements \JsonSerializable
+{
+    public function __construct(
+        public string $object_id,
+        public string $object_kind,
+        public null|string $thread_id,
+        public bool $archived,
+        public bool $tombstoned,
+        public array $heads,
+        public string $created_sequence,
+        public string $updated_sequence,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesGroupStatus implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $group_id,
+        public string $kind,
+        public string $owner_account_id,
+        public string $state,
+        public array $membership,
+        public string $key_epoch,
+        public string $epoch_digest,
+        public null|string $history_checkpoint_digest,
+        public bool $rekey_required,
+        public bool $history_closure_required,
+        public bool $restore_quarantined,
+        public bool $settings,
+        public array $genesis,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesGroupsPage implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $groups,
+        public null|string $next,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesObjectsPage implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $group_id,
+        public null|string $thread_id,
+        public array $objects,
+        public null|string $next,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesObjectState implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $group_id,
+        public array $object,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesRevisionRef implements \JsonSerializable
+{
+    public function __construct(
+        public string $revision_id,
+        public string $envelope_digest,
+        public string $ciphertext_bytes,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesRevisionsPage implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $group_id,
+        public string $object_id,
+        public array $revisions,
+        public null|string $next,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesBundleResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $group_id,
+        public string $object_id,
+        public string $revision_id,
+        public array $bundle,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesEditContent implements \JsonSerializable
+{
+    public function __construct(
+        public string $title,
+        public array $tags,
+        public string $markdown,
+        public array $checklist,
+        public null|string $summary_entry_id,
+        public string $metadata_kind,
+        public array $preferences,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesEditRequest implements \JsonSerializable
+{
+    public function __construct(
+        public null|string $draft_id,
+        public string $group_id,
+        public null|string $object_id,
+        public string $object_kind,
+        public null|string $thread_id,
+        public string $action,
+        public array $parents,
+        public bool $archived,
+        public array $content,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesOpenRequest implements \JsonSerializable
+{
+    public function __construct(
+        public string $group_id,
+        public string $object_id,
+        public string $revision_id,
+        public array $bundle,
+        public string $object_kind,
+        public null|string $thread_id,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesLocalContext implements \JsonSerializable
+{
+    public function __construct(
+        public string $purpose,
+        public int $version,
+        public string $service_id,
+        public string $account_id,
+        public string $device_id,
+        public string $profile_id,
+        public string $record_id,
+        public string $record_kind,
+        public string $root_fingerprint,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesLocalFrame implements \JsonSerializable
+{
+    public function __construct(
+        public string $contract,
+        public string $protocol,
+        public int $protocol_version,
+        public string $purpose,
+        public array $context,
+        public string $nonce,
+        public string $ciphertext,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesLocalGroup implements \JsonSerializable
+{
+    public function __construct(
+        public string $group_id,
+        public string $record_id,
+        public string $state,
+        public array|null $status,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesLocalDraft implements \JsonSerializable
+{
+    public function __construct(
+        public string $draft_id,
+        public string $record_id,
+        public string $group_id,
+        public string $object_id,
+        public string $object_kind,
+        public null|string $thread_id,
+        public string $saved_digest,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesLocalAttempt implements \JsonSerializable
+{
+    public function __construct(
+        public string $attempt_id,
+        public string $record_id,
+        public string $draft_id,
+        public string $source_digest,
+        public string $state,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesLocalWitness implements \JsonSerializable
+{
+    public function __construct(
+        public string $group_id,
+        public string $object_id,
+        public string $revision_id,
+        public string $envelope_digest,
+        public string $cache_id,
+        public string $object_kind,
+        public null|string $thread_id,
+        public bool $archived,
+        public string $action,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesLocalControl implements \JsonSerializable
+{
+    public function __construct(
+        public string $purpose,
+        public int $version,
+        public array $groups,
+        public array $drafts,
+        public array $attempts,
+        public array $witnesses,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesLocalEvidence implements \JsonSerializable
+{
+    public function __construct(
+        public string $purpose,
+        public int $version,
+        public array $evidence,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P09NotesGroupSummary implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $group_id,
+        public string $kind,
+        public string $owner_account_id,
+        public string $state,
+        public array $membership,
+        public string $key_epoch,
+        public string $epoch_digest,
+        public null|string $history_checkpoint_digest,
+        public bool $rekey_required,
+        public bool $history_closure_required,
+        public bool $restore_quarantined,
+        public bool $settings,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}

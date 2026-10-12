@@ -1,0 +1,177 @@
+{
+  "purpose": "P09 actual software acceptance at an exactly identified clean Git tree",
+  "status": "PASS",
+  "branch_head": "a1520167e634c173c5cc56d942417b1faf3648fa",
+  "source_tree": "3223224565ec319752b2acb088d9dd35a4473401",
+  "checks": [
+    {
+      "name": "auth-linux-http-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "a1520167e634c173c5cc56d942417b1faf3648fa",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38299290415/job/114978369777"
+    },
+    {
+      "name": "auth-windows-native",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "a1520167e634c173c5cc56d942417b1faf3648fa",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38299290415/job/114978369300"
+    },
+    {
+      "name": "baseline",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "a1520167e634c173c5cc56d942417b1faf3648fa",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38299290487/job/114977974712"
+    },
+    {
+      "name": "crypto-linux-browser-php",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "a1520167e634c173c5cc56d942417b1faf3648fa",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38299290508/job/114978333840"
+    },
+    {
+      "name": "crypto-windows-native",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "a1520167e634c173c5cc56d942417b1faf3648fa",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38299290508/job/114978334152"
+    },
+    {
+      "name": "devices-linux-http-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "a1520167e634c173c5cc56d942417b1faf3648fa",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38299290526/job/114978164593"
+    },
+    {
+      "name": "devices-windows-native",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "a1520167e634c173c5cc56d942417b1faf3648fa",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38299290526/job/114978164455"
+    },
+    {
+      "name": "file-contract",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "a1520167e634c173c5cc56d942417b1faf3648fa",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38299290479/job/114977974450"
+    },
+    {
+      "name": "foundation",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "a1520167e634c173c5cc56d942417b1faf3648fa",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38299290436/job/114978331481"
+    },
+    {
+      "name": "linux-native-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "a1520167e634c173c5cc56d942417b1faf3648fa",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38299290485/job/114978325540"
+    },
+    {
+      "name": "notes-linux-http-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "a1520167e634c173c5cc56d942417b1faf3648fa",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38299291923/job/114978005863"
+    },
+    {
+      "name": "notes-windows-native",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "a1520167e634c173c5cc56d942417b1faf3648fa",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38299291923/job/114978005722"
+    },
+    {
+      "name": "static-device-kit",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "a1520167e634c173c5cc56d942417b1faf3648fa",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38299290485/job/114978325903"
+    },
+    {
+      "name": "vault-linux-http-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "a1520167e634c173c5cc56d942417b1faf3648fa",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38299290419/job/114978188230"
+    },
+    {
+      "name": "vault-windows-native",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "a1520167e634c173c5cc56d942417b1faf3648fa",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38299290419/job/114978188306"
+    },
+    {
+      "name": "windows-provider",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "a1520167e634c173c5cc56d942417b1faf3648fa",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38299290485/job/114978326114"
+    }
+  ],
+  "hosted_artifacts": [
+    {
+      "run_id": 38299291923,
+      "artifact_id": 11769278406,
+      "name": "p09-linux-notes-report",
+      "sha256": "2f2a91f400705ce164242420de0f5e133c023bde2bab1c724330582b0478b987"
+    },
+    {
+      "run_id": 38299291923,
+      "artifact_id": 11769633106,
+      "name": "p09-windows-notes-report",
+      "sha256": "be2981a5c823842cb673db4d6a26a09e295d8d53bb5555fb7d45c666d027a15b"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/evidence/p09/browser-report.json",
+      "sha256": "6591c69617ed9470cf5d5b26e84b9ea6d405626d444dcff2625e19aa059576c5"
+    },
+    {
+      "path": "docs/evidence/p09/http-report.json",
+      "sha256": "55e6d1090057f85e67b80434f65edc80464578242fed37f2f7b1654fb107e6fd"
+    },
+    {
+      "path": "docs/evidence/p09/linux-native-interop-report.json",
+      "sha256": "c38133bcbe32c79b01c3c431a29af882911dd44f18d2014e011d52d4d2822c59"
+    },
+    {
+      "path": "docs/evidence/p09/linux-source-report.json",
+      "sha256": "90dd07dc3c9250cf23c9bfc88ecf58f47dc04407ac09b67f56cfc62a83880c21"
+    },
+    {
+      "path": "docs/evidence/p09/windows-native-interop-report.json",
+      "sha256": "ecd0564beb13988fd46518def3f58c18ef9138e33c0cf18082eddb02d4402e56"
+    },
+    {
+      "path": "docs/evidence/p09/windows-source-report.json",
+      "sha256": "27fb6e96d8981e83ceba159ec5375aca94163b5e55ccead597135a537d3f39a6"
+    }
+  ],
+  "source_inputs": {
+    "linux": 307,
+    "windows": 307,
+    "windows_raw_crlf_inputs_verified": 304,
+    "raw_hashes_verified": true
+  },
+  "node_workflow_suites": 8,
+  "native_note_tests_per_platform": 6,
+  "native_interop_checks_per_platform": 16,
+  "http_checks": 131,
+  "browser_checks": 49,
+  "physical_acceptance": false,
+  "hello_tpm_objects_created": false,
+  "independent_review": "NOT_RUN",
+  "deployment": "NOT_PERFORMED",
+  "virtual_merge_checkout": "fca79b00cd8ce4e1a89db658bcafda86345cde12",
+  "virtual_merge_tree_matches": true
+}

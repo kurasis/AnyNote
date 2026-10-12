@@ -15,7 +15,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P06 | VERIFIED | 215 actual HTTPS/SQL attack checks, 18 sandboxed strict-CSP browser checks, four native tests on Linux/Windows; all ten hosted gates PASS; exact-source evidence retained |
 | P07 | VERIFIED | Five Node custody suites, 28 actual HTTPS/SQL and 28 sandboxed browser checks, fifteen native custody tests per Linux/Windows platform plus explicit official-header ABI; all twelve hosted gates PASS |
 | P08 | VERIFIED | Seven Node workflow suites, 16 dense QR round trips, 153 actual HTTPS/SQL checks, 33 sandboxed UI checks and nine native device tests per Linux/Windows; all fourteen hosted gates PASS |
-| P09 | NOT STARTED | P04/P07/P08 |
+| P09 | VERIFIED | Eight workflow/transport suites, 131 actual HTTPS/SQL checks, 49 sandboxed two-PWA UI checks, six native note tests/platform and 16 native/PWA interop checks/platform; all sixteen hosted gates PASS |
 | P10 | NOT STARTED | P09 |
 | P11 | NOT STARTED | P09/P10 |
 | P12 | NOT STARTED | P04/P05/P10/P11 |
@@ -576,3 +576,33 @@ iPhone and qualified G2/G3 remain open/unbooked/NOT_RUN. No production deploymen
 live migration, release, new owner trial or outreach. Rollback: source revert;
 preserve encrypted journals and plan any deployed schema rollback explicitly.
 Next full batch: P09 private groups and encrypted notes.
+
+## Completed phase: P09 private groups and encrypted notes
+
+Private group-c2 genesis, real scoped P04 publication, protected Worker/native
+custody, encrypted metadata/notes/preferences, safe Markdown/checklists and usable
+EN/RU private vault are verified. Immutable unknown attempts, exact ACK retirement,
+newer text, conflicts, tombstones and explicit restore retain acknowledged work.
+Both clients derive rekey blocking from verified signed revoke/reset history,
+even if the service clears unsigned flags. Closed transport rejects route/operation
+substitution before display. Static-only offline resources have an enumerated worker
+CSP, while page/API TLS/CSP/sandbox and local custody guards remain mandatory.
+
+All sixteen hosted gates PASS at a1520167/tree32232245. Eight Node suites,
+131 real HTTPS/SQL checks, 49 sandboxed two-enrolled-PWA checks, six actual native
+SQLite note tests per Linux/Windows platform and sixteen two-way native/PWA adapter
+checks per platform passed. Inherited device/custody/provider/official-header ABI
+checks remain passing. Public reports and 307 raw source inputs per platform are
+archived in TEST_EVIDENCE. Final tracking/evidence changes require fresh sixteen-job
+success before ordinary SHA-guard merge.
+
+Published P08 setup was actually restored. The complete frozen installation
+preserved all 747 then-visible source files and the private-note database state;
+complete startup/readiness passed again. Saving a P09 draft, publication and
+independently observed fresh P09 restoration are separate events. No new owner
+hardware action is needed for this software phase. Full physical G1/Hello/iPhone
+and qualified G2/G3 remain open/unbooked/NOT_RUN. No production migration/deployment,
+release, new owner trial or reviewer outreach occurred. Original specification,
+frozen corpora and prior locks remain unchanged. Rollback: ordinary source revert,
+preserving encrypted local work and separately planning any deployed schema rollback.
+Next full batch: P10 shared groups and membership integrity.

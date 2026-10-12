@@ -64,7 +64,12 @@ fn grant_context(
         json!({"purpose":"group-key-distribution","contract":"p02-identity-c1","protocol":"anynote","protocol_version":1,"service_id":roster.pins["service_id"],"group_id":group["group_id"],"key_epoch":"0","epoch_digest":group["epoch_digest"],"membership_head":group["membership"],"operation_id":operation,"issuer":signer(roster,issuer)?,"recipient":recipient(roster,target)?}),
     )
 }
-fn historical(codec: &Codec, snapshot: &Value, pins: &Value, head: &Value) -> Result<Roster> {
+pub(crate) fn historical(
+    codec: &Codec,
+    snapshot: &Value,
+    pins: &Value,
+    head: &Value,
+) -> Result<Roster> {
     let events = snapshot["events"]
         .as_array()
         .ok_or(Error("SCHEMA_MISMATCH"))?;
@@ -82,7 +87,7 @@ fn historical(codec: &Codec, snapshot: &Value, pins: &Value, head: &Value) -> Re
         None,
     )
 }
-fn verify_genesis(
+pub(crate) fn verify_genesis(
     codec: &Codec,
     evidence: &Value,
     snapshot: &Value,
@@ -234,7 +239,7 @@ fn verify_genesis(
     Ok(group)
 }
 impl Vault {
-    fn snapshot_for_groups(&self, i: &mut Inner, s: &State) -> Result<Value> {
+    pub(crate) fn snapshot_for_groups(&self, i: &mut Inner, s: &State) -> Result<Value> {
         let (control, _) = self.device_saved(i, s)?;
         let mut events = Vec::new();
         for id in control["pages"]
@@ -291,6 +296,13 @@ impl Vault {
             } else {
                 values.push(key.clone());
             }
+            values.sort_by_key(|v| {
+                format!(
+                    "{}/{:0>19}",
+                    v["group_id"].as_str().unwrap(),
+                    v["key_epoch"].as_str().unwrap()
+                )
+            });
             self.codec
                 .validate("p02-v1", "vault-secrets", &plain["data"])?;
             let encrypted =
@@ -341,94 +353,13 @@ impl Vault {
         if let Some(request) = control.get("genesis_request") {
             return Ok(request.clone());
         }
-        let secret = i.secrets.as_ref().unwrap();
-        let scope = json!({"service_id":self.scope.service_id,"group_id":random_id()});
-        let op = random_id();
-        let sender = signer(&roster, &self.scope.device_id)?;
-        let key = Zeroizing::new(libsodium_rs::random::bytes(32));
-        let mut policy = common("group-policy-event", &scope, &op);
-        policy["action"] = json!("genesis");
-        policy["version"] = json!("0");
-        policy["predecessor"] = Value::Null;
-        policy["signer"] = sender.clone();
-        policy["members"] = json!([{"account_id":self.scope.account_id,"root_fingerprint":s.pins["root_fingerprint"],"role":"owner"}]);
-        policy["payload"] = json!({"group_kind":"private"});
-        let policy = public_sign(&self.codec, "policy", policy, &secret.signing)?;
-        let membership = json!({"version":"0","digest":digest("p02-group-c2","policy",&policy)?});
-        let mut intent = common("group-epoch-intent", &scope, &op);
-        intent["reason"] = json!("genesis");
-        intent["expected_policy"] = membership.clone();
-        intent["membership"] = membership.clone();
-        intent["previous_epoch"] = Value::Null;
-        intent["next_epoch"] = json!("0");
-        intent["retained_epochs"] = json!([]);
-        intent["key_commitment"] = json!(key_commitment(&scope, &key)?);
-        intent["rosters"] = json!([{"account_id":self.scope.account_id,"root_fingerprint":s.pins["root_fingerprint"],"recovery_generation":roster.generation,"roster":roster.head}]);
-        intent["history_checkpoint_digest"] = Value::Null;
-        intent["signer"] = sender.clone();
-        intent["expires_at"] = json!((now()? + 540000).to_string());
-        let intent = public_sign(&self.codec, "epoch-intent", intent, &secret.signing)?;
-        let epoch = digest("p02-group-c2", "epoch-intent", &intent)?;
-        let group =
-            json!({"group_id":scope["group_id"],"epoch_digest":epoch,"membership":membership});
-        let mut targets = roster
-            .devices
-            .iter()
-            .filter(|(_, d)| d.active)
-            .map(|(id, _)| Some(id.as_str()))
-            .collect::<Vec<_>>();
-        targets.push(None);
-        let mut records = Vec::new();
-        for target in targets {
-            let context = grant_context(&roster, &self.scope.device_id, target, &group, &op)?;
-            let public = if let Some(id) = target {
-                &roster.active(id, Some("receive-group-key"))?.certificate["body"]["device_encryption_key"]
-            } else {
-                &roster.identity["body"]["recovery_encryption_key"]
-            };
-            records.push(objects::seal_grant(
-                &self.codec,
-                &canonical(&context)?,
-                &key,
-                &un64(text(public)?)?,
-                &secret.signing,
-            )?);
-        }
-        records.sort_by_key(|r| {
-            format!(
-                "{}/{}/{}",
-                r["body"]["context"]["recipient"]["account_id"]
-                    .as_str()
-                    .unwrap(),
-                r["body"]["context"]["recipient"]["kind"].as_str().unwrap(),
-                r["body"]["context"]["recipient"]["device_id"]
-                    .as_str()
-                    .unwrap_or("")
-            )
-        });
-        let mut page = common("group-grant-page", &scope, &op);
-        page["page_index"] = json!("0");
-        page["records"] = json!(records);
-        self.codec.validate("p02-group-c2", "grant-page", &page)?;
-        let mut descriptor = common("group-grant-descriptor", &scope, &op);
-        descriptor["intent_digest"] = json!(epoch);
-        descriptor["membership"] = membership;
-        descriptor["inventory_digest"] = json!(page_commitment(&page)?);
-        descriptor["record_count"] = json!(page["records"].as_array().unwrap().len().to_string());
-        descriptor["page_count"] = json!("1");
-        descriptor["epoch_inventory_digest"] = json!(digest(
-            "p02-group-c2",
-            "epochs",
-            &json!([{"key_epoch":"0","epoch_digest":epoch,"key_commitment":intent["body"]["key_commitment"]}])
-        )?);
-        descriptor["signer"] = sender;
-        let descriptor = public_sign(&self.codec, "descriptor", descriptor, &secret.signing)?;
-        let mut commit = common("group-epoch-commit", &scope, &op);
-        commit["policy"] = policy;
-        commit["intent"] = intent;
-        commit["descriptor"] = descriptor;
-        let commit = public_sign(&self.codec, "epoch-commit", commit, &secret.signing)?;
-        let request = json!({"version":1,"commit":commit,"pages":[page]});
+        let (request, mut key_record) = create_private_genesis(
+            &self.codec,
+            &roster,
+            &self.scope,
+            &s.pins,
+            &i.secrets.as_ref().unwrap().signing,
+        )?;
         verify_genesis(
             &self.codec,
             &request,
@@ -436,7 +367,6 @@ impl Vault {
             &s.pins,
         )?;
         control["genesis_request"] = request.clone();
-        let mut key_record = json!({"service_id":self.scope.service_id,"group_id":scope["group_id"],"key_epoch":"0","epoch_digest":epoch,"group_secret":b64(&key)});
         let result = self.save_group_key(&mut i, cap, &s, fence, &control, &key_record);
         wipe_value(&mut key_record);
         result?;
@@ -605,4 +535,102 @@ impl Vault {
         wipe_value(&mut key_record);
         result
     }
+}
+
+pub(crate) fn create_private_genesis(
+    codec: &Codec,
+    roster: &Roster,
+    installation: &Scope,
+    pins: &Value,
+    signing: &[u8],
+) -> Result<(Value, Value)> {
+    roster.active(&installation.device_id, Some("sign-content"))?;
+    let scope = json!({"service_id":installation.service_id,"group_id":random_id()});
+    let op = random_id();
+    let sender = signer(roster, &installation.device_id)?;
+    let key = Zeroizing::new(libsodium_rs::random::bytes(32));
+    let mut policy = common("group-policy-event", &scope, &op);
+    policy["action"] = json!("genesis");
+    policy["version"] = json!("0");
+    policy["predecessor"] = Value::Null;
+    policy["signer"] = sender.clone();
+    policy["members"] = json!([{"account_id":installation.account_id,"root_fingerprint":pins["root_fingerprint"],"role":"owner"}]);
+    policy["payload"] = json!({"group_kind":"private"});
+    let policy = public_sign(codec, "policy", policy, signing)?;
+    let membership = json!({"version":"0","digest":digest("p02-group-c2","policy",&policy)?});
+    let mut intent = common("group-epoch-intent", &scope, &op);
+    intent["reason"] = json!("genesis");
+    intent["expected_policy"] = membership.clone();
+    intent["membership"] = membership.clone();
+    intent["previous_epoch"] = Value::Null;
+    intent["next_epoch"] = json!("0");
+    intent["retained_epochs"] = json!([]);
+    intent["key_commitment"] = json!(key_commitment(&scope, &key)?);
+    intent["rosters"] = json!([{"account_id":installation.account_id,"root_fingerprint":pins["root_fingerprint"],"recovery_generation":roster.generation,"roster":roster.head}]);
+    intent["history_checkpoint_digest"] = Value::Null;
+    intent["signer"] = sender.clone();
+    intent["expires_at"] = json!((now()? + 540000).to_string());
+    let intent = public_sign(codec, "epoch-intent", intent, signing)?;
+    let epoch = digest("p02-group-c2", "epoch-intent", &intent)?;
+    let group = json!({"group_id":scope["group_id"],"epoch_digest":epoch,"membership":membership});
+    let mut targets = roster
+        .devices
+        .iter()
+        .filter(|(_, d)| d.active)
+        .map(|(id, _)| Some(id.as_str()))
+        .collect::<Vec<_>>();
+    targets.push(None);
+    let mut records = Vec::new();
+    for target in targets {
+        let context = grant_context(roster, &installation.device_id, target, &group, &op)?;
+        let public = if let Some(id) = target {
+            &roster.active(id, Some("receive-group-key"))?.certificate["body"]["device_encryption_key"]
+        } else {
+            &roster.identity["body"]["recovery_encryption_key"]
+        };
+        records.push(objects::seal_grant(
+            codec,
+            &canonical(&context)?,
+            &key,
+            &un64(text(public)?)?,
+            signing,
+        )?);
+    }
+    records.sort_by_key(|r| {
+        format!(
+            "{}/{}/{}",
+            r["body"]["context"]["recipient"]["account_id"]
+                .as_str()
+                .unwrap(),
+            r["body"]["context"]["recipient"]["kind"].as_str().unwrap(),
+            r["body"]["context"]["recipient"]["device_id"]
+                .as_str()
+                .unwrap_or("")
+        )
+    });
+    let mut page = common("group-grant-page", &scope, &op);
+    page["page_index"] = json!("0");
+    page["records"] = json!(records);
+    codec.validate("p02-group-c2", "grant-page", &page)?;
+    let mut descriptor = common("group-grant-descriptor", &scope, &op);
+    descriptor["intent_digest"] = json!(epoch);
+    descriptor["membership"] = membership;
+    descriptor["inventory_digest"] = json!(page_commitment(&page)?);
+    descriptor["record_count"] = json!(page["records"].as_array().unwrap().len().to_string());
+    descriptor["page_count"] = json!("1");
+    descriptor["epoch_inventory_digest"] = json!(digest(
+        "p02-group-c2",
+        "epochs",
+        &json!([{"key_epoch":"0","epoch_digest":epoch,"key_commitment":intent["body"]["key_commitment"]}])
+    )?);
+    descriptor["signer"] = sender;
+    let descriptor = public_sign(codec, "descriptor", descriptor, signing)?;
+    let mut commit = common("group-epoch-commit", &scope, &op);
+    commit["policy"] = policy;
+    commit["intent"] = intent;
+    commit["descriptor"] = descriptor;
+    let commit = public_sign(codec, "epoch-commit", commit, signing)?;
+    let request = json!({"version":1,"commit":commit,"pages":[page]});
+    let key_record = json!({"service_id":installation.service_id,"group_id":scope["group_id"],"key_epoch":"0","epoch_digest":epoch,"group_secret":b64(&key)});
+    Ok((request, key_record))
 }

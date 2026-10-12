@@ -20,6 +20,77 @@ if (! $app->runningInConsole() || ! $app->environment('testing') || config('data
 }
 $op = $argv[1] ?? '';
 $value = match ($op) {
+    'p09-state' => (function () {
+        $counts = [];
+        foreach (['objects', 'object_revisions', 'object_heads', 'object_key_wraps', 'revision_parents', 'private_group_geneses', 'mutation_receipts', 'sync_events'] as $t) {
+            $counts[$t] = DB::table($t)->count();
+        }
+
+        return ['counts' => $counts, 'counter' => (string) DB::table('sync_counters')->value('sequence'), 'quotas' => DB::table('quota_ledgers')->orderBy('scope')->get(['scope', 'committed_bytes', 'reserved_bytes'])->map(fn ($x) => ['scope' => $x->scope, 'committed' => (string) $x->committed_bytes, 'reserved' => (string) $x->reserved_bytes])->all()];
+    })(),
+    'p09-fault-on' => (function () {
+        DB::unprepared("CREATE TRIGGER anynote_p09_commit_fault BEFORE INSERT ON mutation_receipts FOR EACH ROW BEGIN IF NEW.family='object' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='P09_SYNTHETIC_FAULT'; END IF; END");
+
+        return ['status' => 'installed'];
+    })(),
+    'p09-fault-off' => (function () {
+        DB::unprepared('DROP TRIGGER IF EXISTS anynote_p09_commit_fault');
+
+        return ['status' => 'removed'];
+    })(),
+    'p09-quota-on' => (function () {
+        DB::statement("UPDATE quota_ledgers SET limit_bytes=committed_bytes+reserved_bytes WHERE scope='global'");
+
+        return ['status' => 'bounded'];
+    })(),
+    'p09-quota-off' => (function () {
+        DB::table('quota_ledgers')->where('scope', 'global')->update(['limit_bytes' => 100000000000]);
+
+        return ['status' => 'restored'];
+    })(),
+    'p09-inspect' => (function () {
+        $v = json_decode(stream_get_contents(STDIN), true, 33, JSON_THROW_ON_ERROR);
+        $markers = $v['markers'] ?? [];
+        if (! is_array($markers) || ! count($markers) || count($markers) > 32) {
+            throw new LogicException('Invalid inspection');
+        }
+        foreach ($markers as $m) {
+            if (! is_string($m) || strlen($m) < 8 || strlen($m) > 4096) {
+                throw new LogicException('Invalid marker');
+            }
+        }
+        $seen = 0;
+        foreach (DB::select('SHOW TABLES') as $item) {
+            $t = array_values((array) $item)[0];
+            if (! preg_match('/^[a-z0-9_]+$/D', $t)) {
+                throw new LogicException('Invalid table');
+            }
+            foreach (DB::table($t)->cursor() as $row) {
+                $seen++;
+                foreach ((array) $row as $cell) {
+                    if (! is_string($cell)) {
+                        continue;
+                    }foreach ($markers as $m) {
+                        if (str_contains($cell, $m)) {
+                            return ['status' => 'FAIL', 'location' => 'SQL', 'rows' => $seen];
+                        }
+                    }
+                }
+            }
+        }
+        foreach (glob(storage_path('logs/*')) as $path) {
+            if (! is_file($path) || filesize($path) > 8388608) {
+                continue;
+            }$bytes = file_get_contents($path);
+            foreach ($markers as $m) {
+                if (str_contains($bytes, $m)) {
+                    return ['status' => 'FAIL', 'location' => 'log', 'rows' => $seen];
+                }
+            }
+        }
+
+        return ['status' => 'PASS', 'rows' => $seen, 'markers' => count($markers)];
+    })(),
     'ready' => (function () {
         Policy::check();
         if (DB::selectOne('SELECT 1 AS ready')->ready !== 1 || ! Schema::hasTable('sessions')) {

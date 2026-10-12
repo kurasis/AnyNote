@@ -28,6 +28,8 @@ mod dpapi;
 pub mod ipc;
 pub mod lifecycle;
 pub mod native_hello;
+mod note_local;
+pub mod notes;
 // The GPL provider/attestation/TPM/filesystem implementation is shared by source,
 // preserving its independent manifest/lock and synthetic RP. Only for_rp is exposed
 // within the native crate so product credentials have a different exact namespace.
@@ -658,9 +660,13 @@ impl Vault {
         let mut s = state(&tx, &self.codec, &self.scope)?;
         check(s.epoch == state_before.epoch, "STALE_CAPABILITY")?;
         self.fence(&s, fence)?;
+        let note_owned = notes::protected_ids(&self.note_control(&tx, &s, &key)?)?;
         for (r, f) in &frames {
             check(
-                r.id != s.vault_id && r.id != device_local::control_id(&self.scope)?,
+                r.id != s.vault_id
+                    && r.id != device_local::control_id(&self.scope)?
+                    && r.id != note_local::control_id(&self.scope)?
+                    && !note_owned.contains_key(&r.id),
                 "RESERVED_RECORD",
             )?;
             let old: Option<Vec<u8>> = db(tx
@@ -748,7 +754,18 @@ impl Vault {
         let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
         let s = self.authorize(&mut i, cap)?;
         self.fence(&s, fence)?;
-        check(id != s.vault_id, "RESERVED_RECORD")?;
+        let owned = notes::protected_ids(&self.note_control(
+            &i.conn,
+            &s,
+            &i.secrets.as_ref().unwrap().key,
+        )?)?;
+        check(
+            id != s.vault_id
+                && id != device_local::control_id(&self.scope)?
+                && id != note_local::control_id(&self.scope)?
+                && !owned.contains_key(id),
+            "RESERVED_RECORD",
+        )?;
         let f = frame(&i.conn, id)?;
         check(
             f["context"] == self.context("cache", id)?,
@@ -817,8 +834,11 @@ impl Vault {
                 let bytes: Vec<u8> = db(row.get(1))?;
                 let f = strict(&bytes, 8_388_608)?;
                 let kind = text(&f["context"]["record_kind"])?;
+                let note = f["contract"] == "p09-local-v1";
                 let additive = f["contract"] == "p08-local-v1";
-                let mut p = if additive {
+                let mut p = if note {
+                    note_local::open(&self.scope, &s.pins, &id, kind, &f, &old_key)?
+                } else if additive {
                     device_local::open(&self.scope, &s.pins, &id, kind, &f, &old_key)?
                 } else {
                     objects::open_local(
@@ -828,7 +848,9 @@ impl Vault {
                         &canonical(&self.context(kind, &id)?)?,
                     )?
                 };
-                let new = if additive {
+                let new = if note {
+                    note_local::seal(&self.scope, &s.pins, &id, kind, &p, &key)
+                } else if additive {
                     device_local::seal(&self.scope, &s.pins, &id, kind, &p, &key)
                 } else {
                     objects::seal_local(&self.codec, &canonical(&p)?, &key)
