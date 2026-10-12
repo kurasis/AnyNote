@@ -22,13 +22,17 @@ export class NotesClient {
   const parts=path.split('?')[0].split('/');
   // A valid same-account object is still not the object requested by the caller.
   // Bind public routing before any downstream fetch, decryption or display.
-  if(parts[1]==='groups'&&parts[2])ensure(value.group_id===parts[2],'CONTEXT_MISMATCH');
-  if(parts[1]==='threads')ensure(value.thread_id===parts[2],'CONTEXT_MISMATCH');
+  if(parts[1]==='groups'&&parts[2])ensure((value.group_id??body?.group_id)===parts[2],'CONTEXT_MISMATCH');
+  if(parts[1]==='threads')ensure((value.thread_id??body?.thread_id)===parts[2],'CONTEXT_MISMATCH');
   if(parts[1]==='objects'){
    ensure((value.object?.object_id??value.object_id??body?.object_id)===parts[2],'CONTEXT_MISMATCH');
    if(parts[4])ensure(value.revision_id===parts[4],'CONTEXT_MISMATCH');
   }
   if(parts[1]==='me')ensure(value.receipt.operation_id===parts[3],'CONTEXT_MISMATCH');
+  if(requestKind&&responseKind==='receipt-result'){
+   const context=body.bundle.envelope.header.context;
+   ensure(value.receipt.operation_id===context.operation_id&&value.receipt.revision_id===context.revision_id,'CONTEXT_MISMATCH');
+  }
   return value;
  }
  async publish(request){noteValue('commit-request',request);const c=request.bundle.envelope.header.context;
