@@ -217,8 +217,9 @@ const poison = await request("/api/v1/groups?title=" + hostile, {
     Cookie: "anynote_session=" + hostile,
   },
 });
-assert.equal(poison.status, 503);
-assert.equal(decodeError(poison.body, 503).error.code, "TEMPORARY_UNAVAILABLE");
+// The implemented POST route rejects the missing CSRF proof before controller policy.
+assert.equal(poison.status, 400);
+assert.equal(decodeError(poison.body, 400).error.code, "INVALID_REQUEST");
 const logPath = new URL("../../apps/api/storage/logs/", import.meta.url);
 // The logger's owned source has only content-free JSON records; no raw log artifact is uploaded.
 const { readdirSync } = await import("node:fs");
