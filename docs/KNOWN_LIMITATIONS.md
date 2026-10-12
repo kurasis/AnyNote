@@ -319,3 +319,10 @@ settings Review/Save -> Publish. Saving does not publish the P06 snapshot or pro
 restoration in another task. The older P05 publication/restore is separately
 observed. Local cloud Chromium sandbox remains BLOCKED; mandatory hosted browser
 acceptance passed with the sandbox enabled and real certificate trust.
+
+## P07 initial implementation boundary
+
+Local native/Node/HTTPS checks pass separately from pending hosted browser/MSVC
+acceptance. See P07_LOCAL_VAULT.md. Hardware/physical iPhone memory and qualified
+review remain open. The new minimal vault shell does not implement P08 authority
+or P09 content/group UI. No production/deployment/release readiness is claimed.

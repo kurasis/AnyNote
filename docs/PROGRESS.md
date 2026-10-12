@@ -13,7 +13,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P04 | VERIFIED | 21 tests/322 assertions, 578 actual SQL checks, eight-process concurrency/fault recovery and supervised restart; Rust/Node/sandboxed Chromium/PHP public-signature corpus PASS |
 | P05 | VERIFIED | Full native/browser core; 146 frozen frames, general RFC8785, fresh two-way Worker/Rust bytes and PHP public signatures; all eight hosted jobs PASS, actual native/Worker 1 GB measurements retained; physical memory and independent review remain open |
 | P06 | VERIFIED | 215 actual HTTPS/SQL attack checks, 18 sandboxed strict-CSP browser checks, four native tests on Linux/Windows; all ten hosted gates PASS; exact-source evidence retained |
-| P07 | NOT STARTED | P05/P06 |
+| P07 | IMPLEMENTED / UNVERIFIED | Local custody modules, five worker attack suites, fifteen native custody tests and 28 actual HTTP checks; mandatory hosted browser/MSVC acceptance pending |
 | P08 | NOT STARTED | P05–P07 |
 | P09 | NOT STARTED | P04/P07/P08 |
 | P10 | NOT STARTED | P09 |
@@ -518,3 +518,10 @@ private-group genesis. Physical P01 and qualified G2/G3 remain open/unassigned/
 unbooked/NOT_RUN. No production migration/deployment, release or reviewer outreach
 occurred. Rollback: ordinary source revert; any deployed schema rollback requires
 an explicit data-preserving operator plan. Next full batch: complete P07.
+
+## Current phase: P07 full local custody
+
+See P07_LOCAL_VAULT.md. Initial local native/worker/actual HTTPS implementation
+is verified separately from pending hosted Windows/sandboxed browser and final
+source gates. No physical/audit/deployment/release claim follows. Original spec,
+prior frozen corpora and locks are preserved.

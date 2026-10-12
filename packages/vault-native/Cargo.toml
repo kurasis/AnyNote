@@ -1,0 +1,38 @@
+[package]
+name = "anynote-local-vault"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.99"
+license = "GPL-3.0-only"
+publish = false
+description = "P07 encrypted SQLite custody and generation-fenced native boundary"
+
+[features]
+integration-harness = ["anynote-auth-native/integration-harness"]
+
+[[bin]]
+name = "p07-integration"
+path = "src/bin/p07-integration.rs"
+required-features = ["integration-harness"]
+
+[dependencies]
+anynote-crypto-core = { path = "../crypto-core" }
+anynote-auth-native = { path = "../auth-native" }
+rusqlite = { version = "=0.40.2", features = ["bundled"] }
+libsodium-rs = "=0.2.5"
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = { version = "=1.0.151", features = ["float_roundtrip"] }
+zeroize = { version = "=1.9.1", features = ["derive"] }
+hkdf = "=0.12.4"
+base64 = "=0.22.1"
+sha2 = "=0.10.9"
+uuid = { version = "=1.27.0", features = ["v4"] }
+
+[target.'cfg(windows)'.dependencies]
+windows-core = "=0.62.2"
+windows = { version = "=0.62.2", features = ["Security_Credentials_UI", "Win32_System_WinRT", "Win32_Security_Cryptography"] }
+windows-future = "=0.3.2"
+windows-sys = { version = "=0.61.2", features = ["Win32_Foundation", "Win32_System_LibraryLoader", "Win32_System_RemoteDesktop", "Win32_System_Power", "Win32_System_TpmBaseServices", "Win32_UI_WindowsAndMessaging", "Win32_UI_Shell", "Win32_System_SystemServices", "Win32_Storage_FileSystem", "Win32_Security", "Win32_Security_Cryptography", "Win32_Security_Authorization", "Win32_System_Threading", "Win32_Graphics_Gdi"] }
+
+[dev-dependencies]
+tempfile = "=3.27.0"

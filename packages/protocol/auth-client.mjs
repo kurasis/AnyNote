@@ -56,6 +56,9 @@ export class AuthClient {
   async ceremony(ceremony, extra={}) {
     const o=await this.call('/auth/passkeys/options','options-request','options-result',{version:1,ceremony,...extra});
     const p=structuredClone(o.publicKey);p.challenge=un64(p.challenge);
+    // Optional client-only PRF enrollment: never include PRF outputs/KEKs in the
+    // authentication DTO. Ordinary providers may ignore this and still sign in.
+    if(ceremony==='register'||ceremony==='add')p.extensions={...p.extensions,prf:{}};
     // Maintained PHP serialization uses null for absent attachment; WebIDL requires omission.
     if(p.authenticatorSelection?.authenticatorAttachment===null)delete p.authenticatorSelection.authenticatorAttachment;
     if(p.user)p.user.id=un64(p.user.id);

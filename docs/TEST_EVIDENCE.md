@@ -1324,3 +1324,13 @@ fresh-task restore remain NOT_RUN; earlier P05 publication/restore are observed.
 Final source tracking/receipt changes require all ten jobs on the final head
 before ordinary merge. Physical P01 and qualified G2/G3 remain open/unbooked/
 NOT_RUN. No production migration/deployment, release, owner trial or outreach.
+
+## P07 initial local checks (before clean source commit)
+
+Restored published P06 environment and restarted only its owned services with
+actual TLS/SQL readiness. Five Node custody suites PASS; fifteen native SQLite/IPC
+custody tests PASS plus inherited provider/portable container tests. Actual P07
+HTTPS/SQL/native proof/credential storage and maintained rotation: 28 PASS. Local
+Chromium remains sandbox BLOCKED; mandatory hosted acceptance is pending. Local
+reports describe the dirty pre-commit source, not a clean hosted tree. Independent
+review, new physical trials, production migration/deploy/release/outreach NOT_RUN.
