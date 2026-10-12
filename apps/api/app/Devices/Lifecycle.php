@@ -48,6 +48,8 @@ final class Lifecycle
     public function create(Request $r, stdClass $body): array
     {
         return DB::transaction(function () use ($r, $body) {
+            // Global admission precedes account/session locks; serialize the 50,000-row bound.
+            DB::table('operator_coordination')->where('singleton', 1)->lockForUpdate()->first();
             [$s, $i] = $this->context($r, $body->mode === 'existing-device-invitation');
             $record = $body->record;
             $id = $record->body->operation_id;
