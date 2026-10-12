@@ -180,6 +180,14 @@ fn native_note_restart_and_encrypted_sqlite_wal_inspection() {
     let f = Fixture::new();
     let cap = f.vault.unlock_phrase(PHRASE).unwrap();
     let g = group(&f, &cap);
+    let mut wrong_summary = edit(&g, "PUBLIC refused unverified summary");
+    wrong_summary["content"]["summary_entry_id"] = json!(id());
+    let request: NotesRequest =
+        serde_json::from_value(json!({"action":"save","edit":wrong_summary})).unwrap();
+    assert_eq!(
+        f.vault.notes_command(&cap, request).unwrap_err().0,
+        "CONTEXT_MISMATCH"
+    );
     let (saved, queued, sent) = attempt(&f, &cap, &g);
     for path in [
         f.vault.path().to_path_buf(),

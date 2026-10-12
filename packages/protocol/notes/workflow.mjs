@@ -83,6 +83,7 @@ export class NotesWorkflow {
    const object_id=old?.object_id??(edit.object_kind==='group-metadata'?edit.group_id:edit.object_id??random());ensure(edit.object_kind!=='group-metadata'||object_id===edit.group_id,'CONTEXT_MISMATCH');
    ensure(edit.content.metadata_kind!=='account-preferences'||(group.status?.settings===true&&edit.object_kind==='group-metadata'),'PRIVATE_NAMESPACE_REQUIRED');
    ensure(group.status?.settings!==true||edit.content.metadata_kind==='account-preferences','PRIVATE_NAMESPACE_REQUIRED');
+   if(edit.content.summary_entry_id!==null)ensure(edit.object_kind==='thread'&&this.#state.witnesses.some(w=>w.group_id===edit.group_id&&w.object_kind==='entry'&&w.thread_id===object_id&&w.object_id===edit.content.summary_entry_id&&w.action!=='soft-delete'),'CONTEXT_MISMATCH');
    for(const p of edit.parents)ensure(this.#state.witnesses.some(w=>w.group_id===edit.group_id&&w.object_id===object_id&&w.revision_id===p.revision_id&&w.envelope_digest===p.envelope_digest),'UNANCHORED_HISTORY');
    const context={...common('object-context'),service_id:this.scope.service_id,group_id:edit.group_id,object_kind:edit.object_kind,object_id,revision_id:random(),operation_id:random(),thread_id:edit.thread_id,action:edit.action,author:this.#author(true),policy:this.#policy(info),parents:edit.parents,attachments:[],payload_schema:1,archived:edit.archived};
    const payload=decode('payload',wire({...common('object-plaintext'),context,...edit.content})),draft_id=old?.draft_id??random(),data=decode('draft',wire({draft_id,context,payload}));

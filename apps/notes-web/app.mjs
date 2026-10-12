@@ -18,7 +18,7 @@ function mask(){
  $('workspace').hidden=true;$('unlock-panel').hidden=false;$('editor').hidden=true;$('conflict').hidden=true;
  for(const id of ['phrase','group-title','thread-title','note-title','note-body','checklist-text','loaded-search'])$(id).value='';
  for(const id of ['groups','threads','entries','drafts','checklist','preview','versions','trash-items'])$(id).replaceChildren();
- for(const id of ['group-heading','thread-heading','audience','conflict-remote','save-state'])$(id).textContent='';
+ for(const id of ['group-heading','thread-heading','thread-summary','audience','conflict-remote','save-state'])$(id).textContent='';
  $('lock-state').textContent=text('locked');$('status').textContent=text('locked');delete $('status').dataset.error;delete $('status').dataset.busy;
  for(const id of ['unlock','login','create-group','create-thread','save-note','save-local','refresh','retry'])$(id).disabled=false;
 }
@@ -61,7 +61,7 @@ async function loadLocal(){
 }
 function renderGroups(){
  $('groups').replaceChildren();const q=$('loaded-search').value.toLocaleLowerCase();
- for(const [id,g]of groups)if(!g.settings){const name=titles.get(id)??text(g.pending?'pending_group':'pending_title');if(!q||name.toLocaleLowerCase().includes(q))item($('groups'),(preferences.some(p=>p.key==='favorite'&&p.target_id===id&&p.value==='1')?'★ ':'')+name,()=>openGroup(id),id);}
+ for(const [id,g]of [...groups].sort((a,b)=>preferenceOrder('group-order',a[0],b[0])))if(!g.settings){const name=titles.get(id)??text(g.pending?'pending_group':'pending_title');if(!q||name.toLocaleLowerCase().includes(q))item($('groups'),(preferences.some(p=>p.key==='favorite'&&p.target_id===id&&p.value==='1')?'★ ':'')+name,()=>openGroup(id),id);}
 }
 async function login(){await auth.ceremony('login');server=false;}
 async function prove(){
@@ -99,12 +99,19 @@ async function openGroup(id){
 async function loadThreads(more=false){
  if(!groupSelected)throw Error('GROUP_REQUIRED');const page=await api.call('/groups/'+groupSelected+'/threads'+(more&&threadCursor?'?after='+threadCursor:''),null,'objects-page');
  if(page.group_id!==groupSelected||page.thread_id!==null)throw Error('CONTEXT_MISMATCH');threadCursor=page.next;$('more-threads').hidden=threadCursor===null;if(!more)$('threads').replaceChildren();
- for(const ref of page.objects){references.set(ref.object_id,{group_id:groupSelected,...ref});const opened=await openRevision(groupSelected,ref,ref.heads[0]);titles.set(ref.object_id,opened.payload.title);item($('threads'),(ref.archived?'▣ ':'')+(opened.payload.title||text('untitled')),()=>openThread(ref.object_id),ref.object_id);}
+ for(const ref of [...page.objects].sort((a,b)=>preferenceOrder('thread-order',a.object_id,b.object_id))){references.set(ref.object_id,{group_id:groupSelected,...ref});const opened=await openRevision(groupSelected,ref,ref.heads[0]);titles.set(ref.object_id,opened.payload.title);item($('threads'),(ref.archived?'▣ ':'')+(opened.payload.title||text('untitled')),()=>openThread(ref.object_id),ref.object_id);}
 }
 async function openThread(id){
  await flushIfDirty();threadSelected=id;const ref=references.get(id);if(!ref||ref.group_id!==groupSelected||ref.object_kind!=='thread')throw Error('CONTEXT_MISMATCH');
  $('thread-heading').textContent=titles.get(id)??text('untitled');$('entries').replaceChildren();$('editor').hidden=true;entryCursor=null;
- if(server)await loadEntries();else for(const [object,r]of references)if(r.group_id===groupSelected&&r.thread_id===id&&!r.tombstoned)item($('entries'),titles.get(object)??text('untitled'),()=>openEntry(object),object);
+ await threadSummary(ref);if(server)await loadEntries();else for(const [object,r]of references)if(r.group_id===groupSelected&&r.thread_id===id&&!r.tombstoned)item($('entries'),titles.get(object)??text('untitled'),()=>openEntry(object),object);
+}
+function preferenceOrder(key,a,b){const order=id=>BigInt(preferences.find(p=>p.key===key&&p.target_id===id)?.value??'9223372036854775807');return order(a)<order(b)?-1:order(a)>order(b)?1:a<b?-1:1;}
+async function threadSummary(ref){
+ $('thread-summary').textContent='';const opened=await fetchPayload(groupSelected,ref),id=opened.payload.summary_entry_id;if(id===null)return;
+ const state=server?await api.call('/objects/'+id,null,'object-state'):{group_id:groupSelected,object:references.get(id)};
+ if(!state.object||state.group_id!==groupSelected||state.object.object_kind!=='entry'||state.object.thread_id!==ref.object_id)throw Error('CONTEXT_MISMATCH');
+ if(state.object.tombstoned)return;const entry=await fetchPayload(groupSelected,state.object);$('thread-summary').textContent=entry.payload.title;
 }
 async function loadEntries(more=false){
  if(!threadSelected)throw Error('THREAD_REQUIRED');const page=await api.call('/threads/'+threadSelected+'/entries'+(more&&entryCursor?'?after='+entryCursor:''),null,'objects-page');
@@ -179,13 +186,16 @@ async function trash(){
   if(old.context.action==='soft-delete')throw Error('INTEGRITY_FAILURE');await saveFields(edit(groupSelected,ref.object_kind,ref.object_id,ref.thread_id,payloadContent(old),ref.heads,'restore'));await trash();if(threadSelected)await loadEntries();
  },ref.object_id);}
 }
-async function favorite(){
+async function updatePreferences(change){
  if(!groupSelected||!settingsGroup)throw Error('GROUP_REQUIRED');const g=await groupStatus(settingsGroup);await keyFor(g);
  const current=await api.call('/objects/'+settingsGroup,null,'object-state').catch(e=>{if(e.message!=='NOT_FOUND')throw e;return null;});
  if(current){const p=await openRevision(settingsGroup,current.object,current.object.heads[0]);preferences=p.payload.preferences;settingsHeads=current.object.heads;}else settingsHeads=[];
- const old=preferences.find(p=>p.key==='favorite'&&p.target_id===groupSelected);preferences=preferences.filter(p=>!(p.key==='favorite'&&p.target_id===groupSelected));if(!old||old.value==='0')preferences.push({key:'favorite',target_id:groupSelected,value:'1'});preferences.sort((a,b)=>(a.key+'/'+a.target_id)<(b.key+'/'+b.target_id)?-1:1);
+ change();preferences.sort((a,b)=>(a.key+'/'+a.target_id)<(b.key+'/'+b.target_id)?-1:1);
  const fields=content('','','account-preferences');fields.preferences=preferences;const saved=await vault.notes('save',[{...edit(settingsGroup,'group-metadata',settingsGroup,null,fields,settingsHeads),draft_id:preferencesDraft??null}]);preferencesDraft=saved.draft_id;await submitDraft(saved.draft_id);preferencesDraft=undefined;renderGroups();
 }
+function putPreference(key,target_id,value){preferences=preferences.filter(p=>!(p.key===key&&p.target_id===target_id));preferences.push({key,target_id,value});}
+async function favorite(){await updatePreferences(()=>{const old=preferences.find(p=>p.key==='favorite'&&p.target_id===groupSelected);putPreference('favorite',groupSelected,old?.value==='1'?'0':'1');});}
+async function moveFirst(key,id,ids){if(!id)throw Error('GROUP_REQUIRED');await updatePreferences(()=>{[id,...ids.filter(x=>x!==id)].forEach((x,n)=>putPreference(key,x,String(n)));});if(key==='thread-order')await loadThreads();}
 async function rename(kind){
  const id=kind==='group-metadata'?groupSelected:threadSelected;if(!id)throw Error('GROUP_REQUIRED');
  const state=await api.call('/objects/'+id,null,'object-state'),opened=await openRevision(groupSelected,state.object,state.object.heads[0]),title=kind==='group-metadata'?$('group-title').value:$('thread-title').value;if(!title.trim())throw Error('INVALID_REQUEST');
@@ -208,10 +218,13 @@ $('note-title').oninput=dirty;$('note-body').oninput=dirty;
 $('add-checklist').onclick=()=>{if(!editor)return;const value=$('checklist-text').value;if(!value.trim())return;const bytes=crypto.getRandomValues(new Uint8Array(16)),item_id=btoa(String.fromCharCode(...bytes)).replaceAll('+','-').replaceAll('/','_').replaceAll('=','');editor.content.checklist.push({item_id,text:value,checked:false});editor.content.checklist.sort((a,b)=>a.item_id<b.item_id?-1:1);$('checklist-text').value='';drawChecklist();dirty();};
 $('editor').onsubmit=e=>{e.preventDefault();clearTimeout(timer);run(saveNote);};$('save-local').onclick=()=>{clearTimeout(timer);run(flushLocal);};
 $('delete-note').onclick=()=>run(async()=>{await flushIfDirty();if(!editor?.object_id)throw Error('DRAFT_NOT_FOUND');const state=await api.call('/objects/'+editor.object_id,null,'object-state');await openRevision(editor.group_id,state.object,state.object.heads[0]);await saveFields(edit(editor.group_id,editor.object_kind,editor.object_id,editor.thread_id,content(),state.object.heads,'soft-delete'));editor=undefined;$('editor').hidden=true;$('preview').replaceChildren();if(threadSelected)await loadEntries();});
+$('group-first').onclick=()=>run(()=>moveFirst('group-order',groupSelected,[...groups].filter(([,g])=>!g.settings).map(([id])=>id)));
+$('thread-first').onclick=()=>run(()=>moveFirst('thread-order',threadSelected,[...references.values()].filter(r=>r.group_id===groupSelected&&r.object_kind==='thread').map(r=>r.object_id)));
+$('mark-read').onclick=()=>run(async()=>{if(!threadSelected)throw Error('THREAD_REQUIRED');const values=[...references.values()].filter(r=>r.group_id===groupSelected&&r.thread_id===threadSelected).map(r=>BigInt(r.updated_sequence??'0'));await updatePreferences(()=>putPreference('read-marker',threadSelected,String(values.reduce((a,b)=>a>b?a:b,0n))));});
 $('history').onclick=()=>run(versions);$('trash').onclick=()=>run(trash);$('favorite').onclick=()=>run(favorite);
 $('rename-group').onclick=()=>run(()=>rename('group-metadata'));$('rename-thread').onclick=()=>run(()=>rename('thread'));
 $('archive-thread').onclick=()=>run(async()=>{if(!threadSelected)throw Error('THREAD_REQUIRED');const state=await api.call('/objects/'+threadSelected,null,'object-state'),opened=await openRevision(groupSelected,state.object,state.object.heads[0]);await saveFields(edit(groupSelected,'thread',threadSelected,null,payloadContent(opened.payload),state.object.heads,'update',!state.object.archived));await loadThreads();});
-$('pin-summary').onclick=()=>run(async()=>{await saveNote();const state=await api.call('/objects/'+threadSelected,null,'object-state'),opened=await openRevision(groupSelected,state.object,state.object.heads[0]),fields=payloadContent(opened.payload);fields.summary_entry_id=editor.object_id;await saveFields(edit(groupSelected,'thread',threadSelected,null,fields,state.object.heads));});
+$('pin-summary').onclick=()=>run(async()=>{await saveNote();const state=await api.call('/objects/'+threadSelected,null,'object-state'),opened=await openRevision(groupSelected,state.object,state.object.heads[0]),fields=payloadContent(opened.payload);fields.summary_entry_id=editor.object_id;await saveFields(edit(groupSelected,'thread',threadSelected,null,fields,state.object.heads));await threadSummary(references.get(threadSelected));});
 $('resolve-conflict').onclick=()=>run(async()=>{if(!editor||!pendingConflict)throw Error('CONFLICT_REQUIRED');editor.parents=pendingConflict.heads;editor.action='update';$('conflict').hidden=true;pendingConflict=undefined;dirty();await flushLocal();$('status').textContent=text('review');});
 $('keep-both').onclick=()=>run(async()=>{if(!editor||editor.object_kind!=='entry')throw Error('CONFLICT_REQUIRED');const e=capture();e.draft_id=null;e.object_id=null;e.action='create';e.parents=[];showEditor(e);dirty();await saveNote();});
 $('send-group-keys').onclick=()=>run(async()=>{if(!groupSelected)throw Error('GROUP_REQUIRED');const target=$('key-target').value;if(!target)throw Error('INVALID_REQUEST');await devices.sync(vault,selected.account_id);const evidence=await vault.notes('groupEvidence',[groupSelected]),grant=await vault.devices('distribute',[evidence,target,null,true]);await devices.call('/me/device-envelopes','envelope-request','cancel-result',grant.request);$('status').textContent=text('key_done');});

@@ -671,6 +671,19 @@ impl Vault {
                         || edit["content"]["metadata_kind"] == "account-preferences",
                     "PRIVATE_NAMESPACE_REQUIRED",
                 )?;
+                if !edit["content"]["summary_entry_id"].is_null() {
+                    check(
+                        edit["object_kind"] == "thread"
+                            && values(&c, "witnesses")?.iter().any(|w| {
+                                w["group_id"] == edit["group_id"]
+                                    && w["object_kind"] == "entry"
+                                    && w["thread_id"] == object_id
+                                    && w["object_id"] == edit["content"]["summary_entry_id"]
+                                    && w["action"] != "soft-delete"
+                            }),
+                        "CONTEXT_MISMATCH",
+                    )?;
+                }
                 for p in values(edit, "parents")? {
                     check(
                         values(&c, "witnesses")?.iter().any(|w| {

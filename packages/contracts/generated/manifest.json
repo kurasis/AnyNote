@@ -160,7 +160,7 @@
     },
     {
       "path": "apps/api/routes/web.php",
-      "sha256": "3043678f8689cfaab7b519497f75caf9378f324c97130a6258a1bd9ac94e63c2"
+      "sha256": "4e17f565c78ad80e627d7ce305a80afcf37d590534951777cc34f51286d54784"
     },
     {
       "path": "apps/api/routes/console.php",
