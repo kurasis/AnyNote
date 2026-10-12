@@ -12,6 +12,18 @@ rmSync(root+'/artifacts/p09/browser-report.json',{force:true});
 let checks=0,context;const children=[];
 const check=(value,name)=>{if(!value)throw Error(name);checks++;};
 const control=(op,input)=>{const r=spawnSync('python3',['scripts/p06-stack.py','control',op],{cwd:root,encoding:'utf8',input});if(r.status!==0)throw Error('CONTROL_FAILED');return JSON.parse(r.stdout);};
+// Chromium's resolver rules do not configure Node/Playwright's request client.
+// Forward the original authenticated immutable request over verified TLS, then
+// suppress only its response. Errors must not serialize cookies/CSRF headers.
+async function commitBeforeLosingResponse(request){
+  const u=new URL(request.url());if(u.origin!=='https://api.anynote.test:18443'||request.method()!=='POST')throw Error('FAULT_ROUTE_SCOPE');
+  const headers=await request.allHeaders(),body=request.postData();
+  return new Promise((done,reject)=>{
+    const req=https.request({hostname:'127.0.0.1',port:18443,servername:'api.anynote.test',ca:readFileSync(root+'/.local/p06/tls/ca.crt'),path:u.pathname,method:'POST',headers},res=>{
+      let bytes=0;res.on('data',b=>{bytes+=b.length;if(bytes>1048576)req.destroy();});res.on('end',()=>res.statusCode===200?done():reject(Error('FAULT_COMMIT_DENIED')));
+    });req.on('error',()=>reject(Error('FAULT_TRANSPORT_FAILED')));req.setTimeout(15000,()=>req.destroy());req.end(body);
+  });
+}
 try{
   if(process.env.GITHUB_ACTIONS==='true'){
     // Trust the locally generated test CA with real NSS validation; never ignore certificate errors.
@@ -53,7 +65,7 @@ try{
     await page.locator('#lock').click();await page.locator('#workspace').waitFor({state:'hidden'});check(await page.locator('#workspace').isHidden()&&await page.locator('#note-body').inputValue()===''&&await page.locator('#preview').textContent()==='','LOCK_MASKS_AND_CLEARS_PLAINTEXT_DOM');
     await notesPage(page);await page.locator('#groups button').filter({hasText:groupTitle}).click();await page.waitForFunction(()=>!document.getElementById('status').dataset.busy);await page.locator('#threads button').filter({hasText:threadTitle}).click();await page.waitForFunction(()=>!document.getElementById('status').dataset.busy);await page.locator('#entries button').first().click();await page.waitForFunction(()=>document.getElementById('note-body').value.includes('PUBLIC browser secret body'));check(await page.locator('#note-title').inputValue()===entryTitle,'PAGE_RESTART_LOADS_VERIFIED_NOTE');
     await page.locator('#note-body').fill('PUBLIC newer body after lost response');let lost=false;
-    await page.route('https://api.anynote.test:18443/api/v1/objects/*/revisions',async route=>{if(route.request().method()==='POST'&&!lost){lost=true;await route.fetch();await route.abort('failed');}else await route.continue();});
+    await page.route('https://api.anynote.test:18443/api/v1/objects/*/revisions',async route=>{if(route.request().method()==='POST'&&!lost){lost=true;await commitBeforeLosingResponse(route.request());await route.abort('failed');}else await route.continue();});
     await page.locator('#save-note').click();await page.waitForFunction(()=>!!document.getElementById('status').dataset.error,null,{timeout:90000});check(await page.locator('#save-state').getAttribute('data-state')==='SENT_UNKNOWN','ACTUAL_LOST_RESPONSE_RETAINS_ATTEMPT');
     await page.unroute('https://api.anynote.test:18443/api/v1/objects/*/revisions');await notesAction(page,'retry');check(await page.locator('#save-state').getAttribute('data-state')==='COMMITTED','RECEIPT_RECONCILIATION_WITHOUT_DUPLICATE');
     await context.setOffline(true);await page.locator('#note-body').fill('PUBLIC offline unsent text');await notesAction(page,'save-local');check(await page.locator('#save-state').getAttribute('data-state')==='LOCAL_SAVED','OFFLINE_LOCAL_DRAFT');
