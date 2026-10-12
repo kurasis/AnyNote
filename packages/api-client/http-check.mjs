@@ -84,8 +84,12 @@ const failures = [
     404,
     "NOT_FOUND",
   ],
-  ["/api/v1/objects/AAAAAAAAAAAAAAAAAAAAAQ/revisions", {}, 404, "NOT_FOUND"],
-  ["/api/v1/objects/AAAAAAAAAAAAAAAAAAAAAg/revisions", {}, 404, "NOT_FOUND"],
+  // P09 owns these routes. The P03 stack has no configured auth policy:
+  // both existing/unknown object IDs receive the same closed unavailable error.
+  ["/api/v1/objects/AAAAAAAAAAAAAAAAAAAAAQ/revisions", {}, 503, "TEMPORARY_UNAVAILABLE"],
+  ["/api/v1/objects/AAAAAAAAAAAAAAAAAAAAAg/revisions", {}, 503, "TEMPORARY_UNAVAILABLE"],
+  ["/api/v1/groups/AAAAAAAAAAAAAAAAAAAAAQ/members", {}, 404, "NOT_FOUND"],
+  ["/api/v1/groups/AAAAAAAAAAAAAAAAAAAAAg/members", {}, 404, "NOT_FOUND"],
   [
     "/api/v1/auth/passkeys/verify",
     {
@@ -213,8 +217,8 @@ const poison = await request("/api/v1/groups?title=" + hostile, {
     Cookie: "anynote_session=" + hostile,
   },
 });
-assert.equal(poison.status, 404);
-decodeError(poison.body, 404);
+assert.equal(poison.status, 503);
+assert.equal(decodeError(poison.body, 503).error.code, "TEMPORARY_UNAVAILABLE");
 const logPath = new URL("../../apps/api/storage/logs/", import.meta.url);
 // The logger's owned source has only content-free JSON records; no raw log artifact is uploaded.
 const { readdirSync } = await import("node:fs");
