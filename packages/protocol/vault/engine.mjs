@@ -56,7 +56,7 @@ export class VaultEngine {
   }
   lock(){this.#workflow?.close();this.#workflow=undefined;wipe(this.#key);wipe(this.#keys);this.#key=this.#keys=this.#cap=undefined;this.#epoch=(this.#epoch??0)+1;this.#last=0;}
   async globalLock(){this.lock();await this.store.transaction(true,async tx=>{const value=await tx.get();if(!value)return;const s=metadata(value,this.scope);s.epoch++;s.revision++;s.lease=null;await tx.set(s);});}
-  async lease(cap){return this.store.transaction(true,async tx=>{const s=await this.#state(tx,cap),now=Date.now(),l=s.lease;ensure(!l||(now>=l.issued&&(l.owner===this.owner||l.expires<=now)),'WRITER_BUSY');const fence=(l?.fence??0)+1;ensure(Number.isSafeInteger(fence),'RESOURCE_LIMIT');s.lease={owner:this.owner,fence,issued:now,expires:now+10000};s.revision++;await tx.set(s);this.#revision=s.revision;return String(fence);});}
+  async lease(cap){return this.store.transaction(true,async tx=>{const s=await this.#state(tx,cap),now=Date.now(),l=s.lease;if(l&&!(now>=l.issued&&(l.owner===this.owner||l.expires<=now))){const error=Error('WRITER_BUSY');error.vaultReason=now<l.issued?'clock-regression':'other-owner';error.vaultRemaining=Math.min(10000,Math.max(0,l.expires-now));throw error;}const fence=(l?.fence??0)+1;ensure(Number.isSafeInteger(fence),'RESOURCE_LIMIT');s.lease={owner:this.owner,fence,issued:now,expires:now+10000};s.revision++;await tx.set(s);this.#revision=s.revision;return String(fence);});}
   #fence(s,fence){const l=s.lease;ensure(l&&l.owner===this.owner&&String(l.fence)===fence&&Date.now()>=l.issued&&Date.now()<l.expires,'STALE_WRITER');}
   async save(cap,fence,values){
     this.#authorize(cap);ensure(Array.isArray(values)&&values.length>0&&values.length<=16,'RESOURCE_LIMIT');const frames=[];

@@ -23,6 +23,6 @@ self.onmessage=({data:r})=>{
   // The aggregate bound is checked before crypto/IDB work and diagnostic errors never serialize args.
   let bytes;try{bytes=JSON.stringify(r.args).length;}catch{bytes=Infinity;}
   if(bytes>8388608){clean(r.args);postMessage({version:1,id:r.id,error:'RESOURCE_LIMIT',generation:r.generation});return;}
-  queued++;queue=queue.then(async()=>{let result;try{result=structuredClone(await run(r.op,r.args,r.client));postMessage({version:1,id:r.id,generation:r.generation,result});}catch(e){if(['STALE_CAPABILITY','ROLLBACK_QUARANTINE','INTEGRITY_FAILURE','LOCAL_CONTEXT_MISMATCH'].includes(e.message))engine?.lock();postMessage({version:1,id:r.id,generation:r.generation,error:/^[A-Z_]+$/.test(e.message)?e.message:'VAULT_FAILURE'});}finally{clean(r.args);clean(result);queued--;}});
+  queued++;queue=queue.then(async()=>{let result;try{result=structuredClone(await run(r.op,r.args,r.client));postMessage({version:1,id:r.id,generation:r.generation,result});}catch(e){if(['STALE_CAPABILITY','ROLLBACK_QUARANTINE','INTEGRITY_FAILURE','LOCAL_CONTEXT_MISMATCH'].includes(e.message))engine?.lock();postMessage({version:1,id:r.id,generation:r.generation,error:/^[A-Z_]+$/.test(e.message)?e.message:'VAULT_FAILURE',...(e.vaultReason?{hint:e.vaultReason,remaining:e.vaultRemaining}:{})});}finally{clean(r.args);clean(result);queued--;}});
 };
 postMessage({version:1,status:'READY'});

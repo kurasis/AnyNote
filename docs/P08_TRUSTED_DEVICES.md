@@ -9,7 +9,12 @@ packaging belongs to P14/P15. This is not a production security-release claim.
 
 Account registration generates R and both root purposes transiently in the Worker.
 Download the offline kit and verify the selected account/secret information before
-committing independent device keys under random L and completing registration.
+committing independent device keys and an immutable public registration journal
+atomically under random L, then completing registration. A restarted client retries
+that same signed request or verifies the already accepted roster and proves its
+current keys after fresh sign-in. An unaccepted expired attempt needs a new
+registration; acknowledged encrypted state is retained. A crashed writer lease
+expires after ten seconds; it is not bypassed.
 A signed initial roster and private settings group-c2 genesis, including the
 account-recovery envelope, precede preference writes. R/root private keys never
 enter everyday vault records, HTTP requests, telemetry or server storage.
@@ -77,6 +82,8 @@ Frozen P02 records/corpora and every prior dependency lock are unchanged.
 `cache.public-evidence` purpose accepts export-evidence only. Maintained
 XChaCha20-Poly1305 uses L, a fresh nonce and JCS context bound to service/account/
 device/profile/record/root/purpose, with `AnyNote/P08/local-lifecycle\0` AAD domain.
+Deterministic control IDs and displayed device fingerprints also hash JCS bytes,
+so property insertion order cannot change native/browser identity.
 Control/pages and protected secret updates are atomic and writer/generation fenced;
 generic save/evict cannot replace them. L rotation covers both old and additive
 records. Old clients refuse unsupported additive operations rather than erase data.
