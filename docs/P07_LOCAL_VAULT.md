@@ -1,8 +1,9 @@
 # P07 encrypted local persistence and lock boundary
 
-Software implementation follows original 04/05/07/09/11/13/14. Hosted acceptance
-is pending at this initial implementation snapshot; source/evidence/tracking are
-updated after the actual gates. P07 is not device enrollment, group authority,
+Software implementation follows original 04/05/07/09/11/13/14 and is verified.
+All twelve hosted source gates passed; exact reports and source receipts are in
+[acceptance](evidence/p07/acceptance.json) and [test evidence](TEST_EVIDENCE.md).
+P07 is not device enrollment, group authority,
 file publication, a production release or independent review.
 
 ## Custody and formats
@@ -39,7 +40,8 @@ unchanged Argon2id phrase wrapper, binding scope/context as optional entropy.
 DPAPI is account/OS protection, not physical presence. Failure of Hello never
 automatically enables phrase mode. PWA always keeps an explicit strong phrase
 fallback; optional PRF uses the exact credential/salt/context and an actual
-32-byte platform result. Ordinary WebAuthn login does not require PRF, and the
+32-byte platform result selected through the platform passkey picker, without
+manual credential IDs. Ordinary WebAuthn login does not require PRF, and the
 generic auth serializer never sends PRF results/KEKs to the API.
 
 ## Transactions, migration and fencing
@@ -48,7 +50,10 @@ Native SQLite schema 1 has only public JSON control metadata and `(opaque id,
 encrypted frame)` rows. WAL uses FULL synchronization; temporary SQL data stays
 in memory. IndexedDB schema 1 has the corresponding two transactional stores.
 Upgrade/create transactions are atomic. Unknown database/schema versions are
-preserved and refused; no destructive downgrade or erase-on-401 exists.
+preserved and refused, with the rejected IndexedDB connection closed. If an
+installation remains listed but its database was removed, the locked shell
+offers enrollment/recovery instead of an exception loop. There is no destructive
+downgrade or erase-on-401.
 
 Draft/outbox/cache batches commit together before local-save acknowledgement.
 Publication attempts retain immutable IDs/digests/signed bundle bytes; ambiguous
@@ -124,3 +129,24 @@ disposable P06 DB, then run `p07-http.mjs` and `p07-browser.mjs` sequentially.
 Hosted sandboxed Chromium/verified TLS and Windows/MSVC are mandatory; cloud
 sandbox BLOCKED is separate. Physical Hello/iPhone and qualified G2/G3 remain
 open/unbooked/NOT_RUN. No deployment, release, production migration or outreach.
+
+## Verified acceptance and saved setup
+
+Five Node custody attack suites, 28 actual HTTPS/SQL checks, 28 real sandboxed
+strict-CSP/verified-TLS Chromium checks and fifteen native custody tests on each
+of Linux and Windows/MSVC passed. Windows additionally executed the preserved
+official C-header ABI case after generating its independent MSVC reference.
+Synthetic CDP PRF support and injected WTS messages do not establish physical
+Hello/TPM/iPhone acceptance. Both hosted platforms identify the same clean Git
+tree and retain 111 actual working-file hashes; Windows line endings are explicit.
+
+Published P06 setup was actually restored in this task. The read-only P07 setup
+extension preserved 670 source files, then passed again with all 675 files after
+archiving the public reports. Complete
+install/start instructions were saved/read back as draft revision 15; unrelated
+configuration was preserved. Environment settings Review/Save -> Publish and
+a fresh P07 task restore remain separate, NOT_RUN actions.
+
+Rollback is an ordinary source revert. Do not downgrade an existing vault schema
+or delete local work; retain exact pending provider journals for owned cleanup.
+The next full implementation batch is [P08](NEXT_TASK.md).

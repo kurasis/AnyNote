@@ -1,0 +1,462 @@
+{
+  "purpose": "P07 exact-source and actually executed native custody receipt",
+  "status": "PASS",
+  "role": "windows",
+  "source_commit": "1caaa234ef9326664aabe6a92b5be2a78fb4ca07",
+  "source_tree": "407021f7f9216c9826b6b087a88e2e07696a4d51",
+  "source_tree_dirty": false,
+  "timestamp": "2026-10-12T09:40:35.725915+00:00",
+  "python_version": "3.14.8",
+  "native_custody_tests": 15,
+  "portable_container_test": "PASS",
+  "os_message_scope": "Actual WTS registration with injected software messages",
+  "hello_tpm_objects_created": false,
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "inputs": [
+    {
+      "path": "apps/auth-web/app.mjs",
+      "sha256": "01167558ff5b0c64575834eb75e23560e61ffe39de75b77ce36d265f176689aa"
+    },
+    {
+      "path": "apps/auth-web/index.html",
+      "sha256": "005272ba68214b5b057e42de067925b28dbcf4f1508c1ace9c483bdb41808d79"
+    },
+    {
+      "path": "apps/auth-web/style.css",
+      "sha256": "4ddda88a7ea885f4e484319789dd17d8d3f52c8d6f5ab3461fff9d49f3c1293e"
+    },
+    {
+      "path": "apps/vault-web/app.mjs",
+      "sha256": "187359e44a643cacc20323fd0d5ef10cb3da477b83ca31c80ec2e055ac10d108"
+    },
+    {
+      "path": "apps/vault-web/index.html",
+      "sha256": "8fdf15f4908cc2e471b9ab4e7fac2286bd6d1c04c7c5344b703f2c7ba7d85b4a"
+    },
+    {
+      "path": "apps/vault-web/sw.mjs",
+      "sha256": "b142f59dfe1da3291dbee3a3f8a5f34939d21f73500235e5555cbe6de43fb9ab"
+    },
+    {
+      "path": "experiments/p01/p06-build.mjs",
+      "sha256": "70b308702e00960237882531e08d020892418974dd0c75fb82e64c888d7d4a9f"
+    },
+    {
+      "path": "experiments/p01/p07-browser.mjs",
+      "sha256": "904030d74ed8f2d94f911ee3462dcfcdc22ac80a324e51a336335b0979669696"
+    },
+    {
+      "path": "experiments/p01/windows-hello/.cargo/config.toml",
+      "sha256": "398dda418f97b6ce2c16a166cc3c316539614306fc687be7394406c3f3ad5db9"
+    },
+    {
+      "path": "experiments/p01/windows-hello/Cargo.lock",
+      "sha256": "a61847e7403125820a17e5e9a236190869b391220689934cc2dcf03a368708c3"
+    },
+    {
+      "path": "experiments/p01/windows-hello/Cargo.toml",
+      "sha256": "43388398a8de0161ed07752030fa2e242793f42cc0f2a9d0111c29d5e489cfa4"
+    },
+    {
+      "path": "experiments/p01/windows-hello/LICENSE",
+      "sha256": "230184f60bae2feaf244f10a8bac053c8ff33a183bcc365b4d8b876d2b7f4809"
+    },
+    {
+      "path": "experiments/p01/windows-hello/README.md",
+      "sha256": "e943e698bcf2616b33ffa335568fa4af673caa875b5ffe8493b2c13c961bfae8"
+    },
+    {
+      "path": "experiments/p01/windows-hello/UPSTREAM.json",
+      "sha256": "1462bfbe02165d6a67d5eec959f72662ac84f02be753d1f827a099e4fc1482bb"
+    },
+    {
+      "path": "experiments/p01/windows-hello/scripts/check-one-exe.ps1",
+      "sha256": "fd6b4c4b53331b5fef751121533a8197963dc7491a80c619a6a6438fe810250e"
+    },
+    {
+      "path": "experiments/p01/windows-hello/scripts/collect-physical.ps1",
+      "sha256": "d46e70b45cf0b105f221ca387c2b37c3737083bc9ca491110c0f31f3cd766dc1"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/device_kit.rs",
+      "sha256": "2883034bf50201e61b8d6863d14bc07632fb0df697ca29118fba955f6d4dcf73"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/filesystem.rs",
+      "sha256": "4523af9744abf55093c4de339922c2ade706591a961ca767b6c004b6a94f53ae"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello.rs",
+      "sha256": "437614d7963efd300f36ec67561009ae15a3a0db5124d3410dd5b1c509bf2560"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/attestation.rs",
+      "sha256": "55df4c4d45889c1760bae6fb5226f6a8f39101cfc819c5dd13ec809570d141a3"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/attestation/pcp.rs",
+      "sha256": "d2e078e1092d979cb5f83a685b1fdd41a26e74fcdfac2d8a35c78d586cbf5b26"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/attestation/signature.rs",
+      "sha256": "6f3985a6722e26a51a89e568be99cd8c1771bb29dfbc115a7375cd3d0c20995e"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/attestation/tests.rs",
+      "sha256": "fb9ff6845d472551e9745375da5dc113083000ff4789355f9a72d3833620e5a1"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/enrollment.rs",
+      "sha256": "6e66539f2998c99423fb35601cd457748b3088041475382dc6d93149eb8980fb"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/enrollment/tests.rs",
+      "sha256": "2f17587472739c72803bbd7450a7d993e152ab95f8ffb60978210f5c6daf9d5b"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/enrollment/windows.rs",
+      "sha256": "38b06696e2ba970aa75a68273ee6a79de2055de65ffe69471c70cdce0149b611"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/prf.rs",
+      "sha256": "05fc9ba85d95f0c9108e1770c19a679a196106e506eaf7bd88ad96e1c43c32ee"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/prf/abi.rs",
+      "sha256": "07776c1bda68557f3eae7933b3cc4667753414975d51a96e1831482c8c53d1e3"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/prf/bindings.rs",
+      "sha256": "968592f00ad4e083fb0dfccbb002d316c8074452c06b017c17e5efcb57ea143a"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/prf/direct.rs",
+      "sha256": "4370f5f8385a407ce017552fcd2a9c66a032f45f6d0af7deb79bb31da872db6d"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/prf/direct/tests.rs",
+      "sha256": "50f57831359ff4c88e2722c8ae815debd40b73263f645cd7d41c8d3e1b588dc2"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/prf/windows.rs",
+      "sha256": "194b7e67a46692327717fa9d30f68e5d230d953c9c1678978b8cb548588d7a6a"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/prf/windows/combined.rs",
+      "sha256": "b790ca7de10ab043ffa7e137d3d2cc7a8cd917d9c27d38289630e1b1982d9cae"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/proof.rs",
+      "sha256": "71112b4de05b203ef422d9df1b0cfa20408f41c9443704aed20f9b996d665290"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/proof/windows.rs",
+      "sha256": "b07b85560be094bda23db7ec55361a05cdf79224406064cca4d2657e1b9b4245"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/tpm.rs",
+      "sha256": "c578aba9e5f53cdf29bd597f496962713109218300b1939661edc7b3f068815f"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/tpm/read_public.rs",
+      "sha256": "f8e99735df8f33f76abfe6aeb3b2e1a1fdc35f701bba6df26e190eb8316240a6"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/tpm/read_public/tests.rs",
+      "sha256": "09979632d3c898e15e78b32a0f3aa8889927dd009816ea4629d6c941c8983934"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/tpm/windows.rs",
+      "sha256": "37368682fa6dd00a4e3b2637543f22db4ef65bd5a960bcb32358e4af76bc6cc4"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/tpm/windows/combined.rs",
+      "sha256": "491a30414004cd98f742d7619ec5198edaa2de01f570399f63d7a9007d026e17"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/hello/tpm/windows/read_public.rs",
+      "sha256": "bb19af51bdd7bbd547d11aa89a7cbd689358b5af5f84ef4dd04170ef5125965a"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/local_checks.rs",
+      "sha256": "1a8a571616076bba6e23767ea6967ba60fbd5f62ebada7f54e83ca320245dfb2"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/main.rs",
+      "sha256": "4327c7979d6ef607b25ffcbcbe7867e579ecfa247393a0ca5336c774bbf8e59e"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/probe.rs",
+      "sha256": "297cb8f741e2482b0337e0d4237e6871a00a32958ee460163c7c6d48c668a02f"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/storage.rs",
+      "sha256": "571efeaf426f8bef4efe92ef9256c655b9c3fb1b69ab6010163bd5f8ec176e18"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/trial_lifecycle.rs",
+      "sha256": "76c175c745d42c408898fe243df271c7a3a356fdf744f4b8f1716136f0c75a85"
+    },
+    {
+      "path": "experiments/p01/windows-hello/src/trial_route.rs",
+      "sha256": "5d40db7be114d4af778c20bdf2453cf4669dfcee3c23e2aac3a482784612e366"
+    },
+    {
+      "path": "experiments/p01/windows-hello/tests/hello/authenticator-data.json",
+      "sha256": "033da5c19ef1d0429e4f4fae5bbea417a7c46add6e8db381d500f278de375a8f"
+    },
+    {
+      "path": "experiments/p01/windows-hello/tests/hello/authenticator_data_fixture.py",
+      "sha256": "3a34b6a2ee0dce2dafe30684a0f0a3f08a78c775344b004089a2089b40c4d061"
+    },
+    {
+      "path": "experiments/p01/windows-hello/tests/hello/certification_fixture.py",
+      "sha256": "aceaf6e41f75b45f99d73dfac2c292d574e92653b820c054c7fcade4e68f2aa8"
+    },
+    {
+      "path": "experiments/p01/windows-hello/tests/hello/tpm-certification.json",
+      "sha256": "deb9c38bbe4d624a5409d40d67f2bfb1afe0edd546f0dc6045fab9887a4c0eb1"
+    },
+    {
+      "path": "experiments/p01/windows-hello/tests/hello/vendor/LICENSE",
+      "sha256": "dea9265341829002e2c23a7372393eb2ed6e26085fb623f38a4ba0af833f30a6"
+    },
+    {
+      "path": "experiments/p01/windows-hello/tests/hello/vendor/README.md",
+      "sha256": "20a2191154de43e3e734724d68b73547d294d28603760b57c80303e5305e070e"
+    },
+    {
+      "path": "experiments/p01/windows-hello/tests/hello/vendor/webauthn.h",
+      "sha256": "da82d5be6b90a2706185ae44ad93649bcefc0f89c97ab930ec4e6f0abb7b2283"
+    },
+    {
+      "path": "experiments/p01/windows-hello/tests/hello/webauthn-layout.c",
+      "sha256": "a5dbd0f13cec91c7aec4f992b672b8f593a4f11bc6de37abbebb64b6428926ac"
+    },
+    {
+      "path": "experiments/p01/windows-hello/tests/hello/webauthn-layout.ps1",
+      "sha256": "5fcd1acbed114407bd00fba3c146fd6c913793c330ea7a924fe394390537543d"
+    },
+    {
+      "path": "infra/dev/p06-compose.yaml",
+      "sha256": "4c48c721f2e670ab383602fc9a702f7432b34e2dd50852db8248c774d42da96b"
+    },
+    {
+      "path": "infra/dev/p06-nginx.conf",
+      "sha256": "5c7d0e5da8ffcd63183dbaf26ecfcf538ebcdd15045c3efe022d3b246b36d55e"
+    },
+    {
+      "path": "infra/dev/p06-pool.conf",
+      "sha256": "b02738e5ead6495773aba1a0cafc2bf1e70c7297689993e7a7fc8a0e91daccee"
+    },
+    {
+      "path": "packages/auth-native/Cargo.lock",
+      "sha256": "41739f51343b6d20c822c32c8226d142a86b14da51e148efc9daff139dfc7b7c"
+    },
+    {
+      "path": "packages/auth-native/Cargo.toml",
+      "sha256": "f402313c509767532e7edec424212180c6d0de84da932dda731dc50a5e9b8114"
+    },
+    {
+      "path": "packages/auth-native/dependency-inventory.json",
+      "sha256": "9b723e66a2fecb6e696c8ae72e5d762febca7616d4b824431bfc826ae28435aa"
+    },
+    {
+      "path": "packages/auth-native/src/bin/p06-integration.rs",
+      "sha256": "f49b8c45de5677dd056ed4b7a10ff7190e7ab49f2f8951b1123de2af209734b8"
+    },
+    {
+      "path": "packages/auth-native/src/lib.rs",
+      "sha256": "0c99589f5a7f668568111cb6448f9ac60523eb9403cd43ca5237ed55ac8a594a"
+    },
+    {
+      "path": "packages/crypto-core/Cargo.lock",
+      "sha256": "7ce2d6a6f5442f8179f79c2209a023154a867dbc569b82d5b765b67311699174"
+    },
+    {
+      "path": "packages/crypto-core/Cargo.toml",
+      "sha256": "8c823d273f6c7e744e66b507d2648db640a38fd1cdab7dadb31732ae02312346"
+    },
+    {
+      "path": "packages/crypto-core/dependency-inventory.json",
+      "sha256": "d4c69f1fd53c7c495c0011f026aac75b260850b799d6b0b9981da77e89a5a6c6"
+    },
+    {
+      "path": "packages/crypto-core/src/codec.rs",
+      "sha256": "1515a4e6f8d8b0a938ff606902b5724bc8d4fab549560d2feaa0e769396eed94"
+    },
+    {
+      "path": "packages/crypto-core/src/crypto.rs",
+      "sha256": "d14fcb4854e42c4519289293b2bd80cae96bbe1c5594b4543f504053c5831391"
+    },
+    {
+      "path": "packages/crypto-core/src/files.rs",
+      "sha256": "36c5ba27719abfc2846327e83a3b7c46067d37333880161302f6ee85dfeee90a"
+    },
+    {
+      "path": "packages/crypto-core/src/history.rs",
+      "sha256": "6ae4e1a2c0c54054a6b94ffe1aaf18c72ff36b4d3652af059cd237d4f2d0c9e5"
+    },
+    {
+      "path": "packages/crypto-core/src/lib.rs",
+      "sha256": "665d76cefa413bb6b22b84a4ea9e7368187ff3efed0825ec0a558279c00dcfea"
+    },
+    {
+      "path": "packages/crypto-core/src/local.rs",
+      "sha256": "116969f796f63341b152e72792f87e141719f933ef0ea2ce5cfcd771db9779bf"
+    },
+    {
+      "path": "packages/crypto-core/src/main.rs",
+      "sha256": "041b8a699bf5b326be2d1a449d381521f32039af977496a1da9195be8e4b81b9"
+    },
+    {
+      "path": "packages/crypto-core/src/objects.rs",
+      "sha256": "d228c1e9f18cf5c8884b9d351f471a58884c33865a06bb8e4d1c14232e54c568"
+    },
+    {
+      "path": "packages/crypto-core/src/tests.rs",
+      "sha256": "e2da162a9cffbe28f7627ced7b263c349492fd9dd4e9a2e1191d7b286608e03a"
+    },
+    {
+      "path": "packages/protocol/auth-client.mjs",
+      "sha256": "329238b4ac5c306751bbb49a73129ab922b406a37731b3d75db01bbea8afb2e6"
+    },
+    {
+      "path": "packages/protocol/p07-http.mjs",
+      "sha256": "d07021dae3e5992ca0abbe65e43ef602be50fd5589a0dda082903af23805262b"
+    },
+    {
+      "path": "packages/protocol/vault/client.mjs",
+      "sha256": "b55979d019c58f4a91de337cb92d03971fd46258a5bfa09b3953ef7f5f0cbd60"
+    },
+    {
+      "path": "packages/protocol/vault/engine.mjs",
+      "sha256": "861cad5b6a5582c0cf757a540a4735c5d45372b2ddb013f82b48f6129c7fff64"
+    },
+    {
+      "path": "packages/protocol/vault/kdf.mjs",
+      "sha256": "4829e7ba2b0eefbd5f7aa46df1a05820dafa1f0e76956162b8f396bfd51fdf11"
+    },
+    {
+      "path": "packages/protocol/vault/manifest.mjs",
+      "sha256": "799c1387b872d564a18bd5762d8307813195922548573eb9ba8c9387c9765ff4"
+    },
+    {
+      "path": "packages/protocol/vault/registry.mjs",
+      "sha256": "8e525936f1bb1974261aab90f0dbb7ca47c37ca33d029a265c92ec94c86dc013"
+    },
+    {
+      "path": "packages/protocol/vault/store.mjs",
+      "sha256": "d1cc60d814cfd23d015e93ebba5d99ff6a36e3181e34f7dbb88efe39e86de56c"
+    },
+    {
+      "path": "packages/protocol/vault/test-engine.mjs",
+      "sha256": "473fc76646ca87ac6af1477becb62f835fe07cd0407f3f92c81773fd79d99eb7"
+    },
+    {
+      "path": "packages/protocol/vault/worker.mjs",
+      "sha256": "778dd2239e268f54d51172a3df0a893c6ad447dbd5e208c31cdf892345f991c0"
+    },
+    {
+      "path": "packages/vault-native/Cargo.lock",
+      "sha256": "984e6eefccabb99da6033836b0a945bc0f43275826056fa0984cf8ae3f924c07"
+    },
+    {
+      "path": "packages/vault-native/Cargo.toml",
+      "sha256": "ea291b27b391524e71d824c4f1e17c55226d579bad76d66b05745cc31f46a514"
+    },
+    {
+      "path": "packages/vault-native/LICENSE",
+      "sha256": "230184f60bae2feaf244f10a8bac053c8ff33a183bcc365b4d8b876d2b7f4809"
+    },
+    {
+      "path": "packages/vault-native/build.rs",
+      "sha256": "08841d860787ed9fc05fbe9d1dea35d0b7e8e659b2049ecb4f30dbdc57b2005a"
+    },
+    {
+      "path": "packages/vault-native/dependency-inventory.json",
+      "sha256": "81a15940a7b8953fdf3db702427b3e4853264c2a17232a717f7d031139360ff2"
+    },
+    {
+      "path": "packages/vault-native/src/bin/p07-integration.rs",
+      "sha256": "26bc92c199dd419bc1e34cc874e5e2fb7c303ec9781bb162d1243ac67c08b45c"
+    },
+    {
+      "path": "packages/vault-native/src/custody.rs",
+      "sha256": "03e013a5b69a10563c849aabaf76ab13c8640fe823d783ab1ae89effc35e62db"
+    },
+    {
+      "path": "packages/vault-native/src/dpapi.rs",
+      "sha256": "7e5ca85780243279c12e9c7d9fb515d6f7f7e8eab851a62c71386350241e2b99"
+    },
+    {
+      "path": "packages/vault-native/src/ipc.rs",
+      "sha256": "f5f2b34a890bfe80527bc1e67dd4e735db2a4f9a79bc9a53a25771842b54514f"
+    },
+    {
+      "path": "packages/vault-native/src/lib.rs",
+      "sha256": "069c44c0c890c321155b6236a049e42cbadf503bee803afd4817a698b500fcb9"
+    },
+    {
+      "path": "packages/vault-native/src/lifecycle.rs",
+      "sha256": "d03479b837b804f57282f7c2091d00d894e11004760282bafef4454d6d9ab7f4"
+    },
+    {
+      "path": "packages/vault-native/src/native_hello.rs",
+      "sha256": "128508bb326c644ce047e70d0fc1b1e08dbce12aa509c9bc6678fb42bc929a1c"
+    },
+    {
+      "path": "packages/vault-native/tests/hello/authenticator-data.json",
+      "sha256": "033da5c19ef1d0429e4f4fae5bbea417a7c46add6e8db381d500f278de375a8f"
+    },
+    {
+      "path": "packages/vault-native/tests/hello/authenticator_data_fixture.py",
+      "sha256": "3a34b6a2ee0dce2dafe30684a0f0a3f08a78c775344b004089a2089b40c4d061"
+    },
+    {
+      "path": "packages/vault-native/tests/hello/certification_fixture.py",
+      "sha256": "aceaf6e41f75b45f99d73dfac2c292d574e92653b820c054c7fcade4e68f2aa8"
+    },
+    {
+      "path": "packages/vault-native/tests/hello/tpm-certification.json",
+      "sha256": "deb9c38bbe4d624a5409d40d67f2bfb1afe0edd546f0dc6045fab9887a4c0eb1"
+    },
+    {
+      "path": "packages/vault-native/tests/hello/vendor/LICENSE",
+      "sha256": "dea9265341829002e2c23a7372393eb2ed6e26085fb623f38a4ba0af833f30a6"
+    },
+    {
+      "path": "packages/vault-native/tests/hello/vendor/README.md",
+      "sha256": "20a2191154de43e3e734724d68b73547d294d28603760b57c80303e5305e070e"
+    },
+    {
+      "path": "packages/vault-native/tests/hello/vendor/webauthn.h",
+      "sha256": "da82d5be6b90a2706185ae44ad93649bcefc0f89c97ab930ec4e6f0abb7b2283"
+    },
+    {
+      "path": "packages/vault-native/tests/hello/webauthn-layout.c",
+      "sha256": "a5dbd0f13cec91c7aec4f992b672b8f593a4f11bc6de37abbebb64b6428926ac"
+    },
+    {
+      "path": "packages/vault-native/tests/hello/webauthn-layout.ps1",
+      "sha256": "5fcd1acbed114407bd00fba3c146fd6c913793c330ea7a924fe394390537543d"
+    },
+    {
+      "path": "packages/vault-native/tests/vault.rs",
+      "sha256": "6372acd7c2a06173e9deea327f8614c4f3d6c638eae9174af1cebfa0fc4023a7"
+    },
+    {
+      "path": "scripts/check-p07.py",
+      "sha256": "ff4ffe22cf3f6bb81418eff6db311fd3a07fd318cf5da6775869d5f037ae4115"
+    },
+    {
+      "path": "scripts/p07-evidence.py",
+      "sha256": "54367a6481a5f9d4987e4f7c112a45671d73fc489f68dfb09ab9557a20087526"
+    },
+    {
+      "path": "scripts/p07-native-inventory.py",
+      "sha256": "21d9362eed885d7b3dc01412280b94cfbb73227b5181144528e43bf311ffc8e5"
+    }
+  ]
+}

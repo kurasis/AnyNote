@@ -1,0 +1,132 @@
+{
+  "purpose": "P07 hosted software acceptance at an exactly identified clean Git tree",
+  "status": "PASS",
+  "branch_head": "28cb562eee03733baa312a9e8629ed5b572a9b6c",
+  "actual_checkout": "1caaa234ef9326664aabe6a92b5be2a78fb4ca07",
+  "source_tree": "407021f7f9216c9826b6b087a88e2e07696a4d51",
+  "checks": [
+    {
+      "name": "linux-native-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "28cb562eee03733baa312a9e8629ed5b572a9b6c",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38230998457/job/114750160812"
+    },
+    {
+      "name": "static-device-kit",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "28cb562eee03733baa312a9e8629ed5b572a9b6c",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38230998457/job/114750160730"
+    },
+    {
+      "name": "windows-provider",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "28cb562eee03733baa312a9e8629ed5b572a9b6c",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38230998457/job/114750160315"
+    },
+    {
+      "name": "auth-linux-http-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "28cb562eee03733baa312a9e8629ed5b572a9b6c",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38230998178/job/114750160142"
+    },
+    {
+      "name": "crypto-linux-browser-php",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "28cb562eee03733baa312a9e8629ed5b572a9b6c",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38230998305/job/114750159902"
+    },
+    {
+      "name": "auth-windows-native",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "28cb562eee03733baa312a9e8629ed5b572a9b6c",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38230998178/job/114750159614"
+    },
+    {
+      "name": "crypto-windows-native",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "28cb562eee03733baa312a9e8629ed5b572a9b6c",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38230998305/job/114750159567"
+    },
+    {
+      "name": "file-contract",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "28cb562eee03733baa312a9e8629ed5b572a9b6c",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38230997995/job/114750159184"
+    },
+    {
+      "name": "foundation",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "28cb562eee03733baa312a9e8629ed5b572a9b6c",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38230998261/job/114750159048"
+    },
+    {
+      "name": "vault-linux-http-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "28cb562eee03733baa312a9e8629ed5b572a9b6c",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38230997997/job/114750158699"
+    },
+    {
+      "name": "vault-windows-native",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "28cb562eee03733baa312a9e8629ed5b572a9b6c",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38230997997/job/114750158389"
+    },
+    {
+      "name": "baseline",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "28cb562eee03733baa312a9e8629ed5b572a9b6c",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38230997814/job/114750158007"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/evidence/p07/http-report.json",
+      "sha256": "a2f8ba38317f7c774389ab77f81d8f29af63fac997f464f22b10e8084817ebb2"
+    },
+    {
+      "path": "docs/evidence/p07/browser-report.json",
+      "sha256": "b24026149018b683e72e4534dc373e3e2086dfd64acff0519e219bf4a89ea860"
+    },
+    {
+      "path": "docs/evidence/p07/linux-source-report.json",
+      "sha256": "8613d405a5f2a9ef95f5726ae1f97110fc0c1f68eacec9a7aacebb451f175bde"
+    },
+    {
+      "path": "docs/evidence/p07/windows-source-report.json",
+      "sha256": "743b988c2249363e4a88a72dbca0fe67d606bd8ee410acae4c45380b466b96db"
+    }
+  ],
+  "source_inputs": {
+    "linux": 111,
+    "windows": 111,
+    "linux_raw_hashes_match": true,
+    "windows_checkout": "107 text inputs have CRLF working-file bytes; auth-native and vault-native Cargo locks plus the two preserved vendor headers are byte-identical. Actual raw hashes are retained without normalization."
+  },
+  "node_custody_suites": 5,
+  "http_checks": 28,
+  "browser_checks": 28,
+  "native_custody_tests_per_platform": 15,
+  "inherited_provider_container_tests": {
+    "linux": 71,
+    "windows": 99,
+    "windows_official_header_abi_explicit": 1,
+    "abi_default_ignored_but_executed_separately": true
+  },
+  "native_os_message_scope": "Actual WTS registration with injected software messages",
+  "hello_tpm_objects_created": false,
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "deployment": "NOT_PERFORMED"
+}

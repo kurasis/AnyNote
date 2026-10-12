@@ -1331,6 +1331,64 @@ Restored published P06 environment and restarted only its owned services with
 actual TLS/SQL readiness. Five Node custody suites PASS; fifteen native SQLite/IPC
 custody tests PASS plus inherited provider/portable container tests. Actual P07
 HTTPS/SQL/native proof/credential storage and maintained rotation: 28 PASS. Local
-Chromium remains sandbox BLOCKED; mandatory hosted acceptance is pending. Local
+Chromium remains sandbox BLOCKED; hosted acceptance is recorded below. Local
 reports describe the dirty pre-commit source, not a clean hosted tree. Independent
 review, new physical trials, production migration/deploy/release/outreach NOT_RUN.
+
+
+## P07 full hosted local custody acceptance
+
+P07 encrypted local persistence and lock boundary are software VERIFIED. All
+twelve mandatory source jobs passed at branch head
+`28cb562eee03733baa312a9e8629ed5b572a9b6c`. Actual hosted checkout
+`1caaa234ef9326664aabe6a92b5be2a78fb4ca07` and that branch head share complete clean
+Git tree `407021f7f9216c9826b6b087a88e2e07696a4d51`.
+
+- Five actually executed Node custody attack suites cover atomic draft/outbox,
+  immutable attempts, leases/generations, tamper/pins/known rollback, fresh nonce,
+  PRF context/salt/credential binding, fallback and L rotation. Their transactional
+  fault model is distinct from actual persistent storage checks below.
+- Actual HTTPS/SQL: **28** checks use Laravel/MariaDB and maintained Rust OAuth2,
+  native SQLite device proof, server replay rejection, encrypted credential
+  adoption/rotation and refresh-reuse family revocation. No mock verifier or
+  general test token issuer is used.
+- Actual sandboxed Chromium: **28** checks use persistent IndexedDB and shipped
+  Worker/UI, verified TLS/NSS trust and strict CSP. Registration/public manifest,
+  encrypted inspector, abort/preserve, two windows/lease fences, page destruction,
+  stale replies, relogin/fresh proof, actual CDP PRF extension, static-only service
+  worker, L rotation, lost-store recovery and non-destructive unknown-schema refusal
+  pass. CDP is a synthetic platform authenticator, not owner hardware evidence.
+- Native custody: **15** tests on each Linux/Windows platform exercise actual
+  SQLite/WAL faults, restart, capabilities, strict typed IPC, tamper, leases,
+  encrypted credentials and atomic rotation. Preserved provider/container tests:
+  Linux **71**, Windows **99** routine. The default ignored official-header ABI
+  case is separately executed: **1 PASS**, after independent MSVC/C-header
+  reference generation. WTS registration is real; lock/suspend messages are
+  injected software events. No Hello/TPM objects or physical trial were created.
+
+Public raw reports: [HTTP](evidence/p07/http-report.json),
+[browser](evidence/p07/browser-report.json),
+[Linux source](evidence/p07/linux-source-report.json),
+[Windows source](evidence/p07/windows-source-report.json),
+[gate/tree/artifact acceptance](evidence/p07/acceptance.json). All 111 Linux raw
+input hashes match source bytes. Windows preserves 111 actual working-file hashes:
+107 text inputs are CRLF, both native Cargo locks and both preserved vendor headers
+are byte-identical. Full Git trees match; hashes were not normalized to bypass a
+mismatch. Reports contain public source/check metadata, no bearer/private keys.
+
+Earlier failed gates were corrected before acceptance: Worker result/input alias
+wiping, Windows constant/module visibility, legacy Rust-2021 style lint under
+2024, UTF-8 report capture, complete DPAPI-wrapper comparison and official-header
+ABI reference preparation. No assertion, verifier, cryptographic policy, sandbox,
+TLS or physical eligibility was weakened. Clean passing intermediate versions
+3baf162 and 69bc46e preceded the accepted lost-store/unknown-version checks.
+
+Published P06 environment was actually restored in this task. Read-only P07 setup
+preserved 670 then-visible source files and passed again with all 675 files after
+archiving public reports. Complete install/start
+fields were saved/read back as revision 15; unrelated network/credential/repository
+settings were retained. P07 publication/fresh-task restore remain NOT_RUN. Local
+cloud browser sandbox BLOCKED remains separate from hosted PASS. Physical P01,
+qualified G2/G3 review, production migration/deploy/release/owner trial/outreach
+remain open or NOT_RUN. Final source tracking changes require all twelve jobs on
+the final head before ordinary authorized merge.
