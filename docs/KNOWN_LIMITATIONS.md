@@ -373,8 +373,8 @@ P08 draft saving is distinct from publication and independently proven fresh res
 
 Private groups, encrypted metadata/entries/preferences, safe Markdown/checklists,
 protected drafts/attempts, conflict handling, immutable versions/trash/restore and
-native/PWA software paths are implemented. Exact hosted acceptance is recorded in
-TEST_EVIDENCE. The native-to-PWA adapter byte flow uses actual Windows SQLite/MSVC
+native/PWA software paths are implemented. All sixteen hosted gates passed; exact-source acceptance is recorded in
+TEST_EVIDENCE and evidence/p09/acceptance.json. The native-to-PWA adapter byte flow uses actual Windows SQLite/MSVC
 in CI; actual shipped strict-CSP PWA UI is independently exercised on Linux. It
 is not complete Windows-host/iPhone packaging or a new owner-device trial.
 

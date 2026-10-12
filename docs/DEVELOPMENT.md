@@ -135,7 +135,7 @@ or establish fresh restoration, authorize production deployment or owner trials.
 Read [P09_PRIVATE_NOTES.md](P09_PRIVATE_NOTES.md). Install apps/notes-web with
 frozen npm ci --ignore-scripts and the workspace cache before p06-stack.py up;
 apps/devices-web is also required by the shared build. check-p09.py verifies seven
-Markdown records, generated contracts read-only and seven protected workflow
+Markdown records, generated contracts read-only and eight workflow/transport
 suites. Native tests use all features and --test-threads=1. Mandatory private-notes.yml
 runs actual HTTP/SQL/native interoperability, two enrolled persistent PWA contexts,
 verified TLS/strict CSP/sandbox and actual Windows/MSVC/DPAPI/SQLite plus official ABI.

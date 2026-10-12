@@ -140,3 +140,14 @@ For faster fault diagnosis, the existing authentication workflow accepts the
 manual notes_browser_only input. It runs the same sandboxed verified-TLS P09
 script without native builds; it does not replace any of the sixteen required
 acceptance jobs. The original P08 diagnostic input remains available.
+
+## Verified software acceptance
+
+All sixteen hosted gates passed at a1520167/tree32232245: eight Node workflow/
+transport suites, 131 actual HTTPS/SQL checks, 49 sandboxed two-enrolled-PWA UI
+checks, six native note tests per Linux/Windows platform and sixteen two-way
+native/PWA adapter checks per platform. All inherited device/custody/provider/
+explicit official-header ABI gates passed. Public raw reports and 307 source hashes
+per platform are retained in [acceptance](evidence/p09/acceptance.json). Final
+tracking changes require fresh full CI before ordinary merge. Physical owner
+Hello/iPhone, full host packaging and qualified review remain separate gates.
