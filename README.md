@@ -4,10 +4,10 @@ An invite-only, end-to-end encrypted notes and files service for Windows
 (Tauri 2 / WebView2) and iPhone (installed PWA), backed by Laravel, MariaDB,
 Nginx and PHP-FPM.
 
-**Current state:** P00 and P02–P06 are verified. P06 includes passkey account
-authentication, session security, account UI and the native browser/PKCE adapter.
+**Current state:** P00 and P02–P07 are verified. P07 includes encrypted IndexedDB/SQLite
+vaults, protected local unlock, durable drafts/outbox and lifecycle locking.
 P01 has scoped Windows/iPhone and host feasibility evidence; its full physical
-matrix remains open. Encrypted local persistence and locking continue in P07.
+matrix remains open. Trusted-device enrollment and recovery continue in P08.
 Qualified independent review and production release gates remain open. Do not
 store real secrets or user data in experimental builds.
 
@@ -54,3 +54,4 @@ maintenance. See [P04 backend guide](docs/P04_BACKEND.md) and
 
 Client cryptographic core: [P05 guide and boundaries](docs/P05_CRYPTO_CORE.md).
 Account authentication: [P06 API, UI, native adapter and commands](docs/P06_AUTHENTICATION.md).
+Encrypted local custody: [P07 vault, locking and boundaries](docs/P07_LOCAL_VAULT.md).

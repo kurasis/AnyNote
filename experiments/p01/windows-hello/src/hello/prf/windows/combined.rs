@@ -20,7 +20,7 @@ impl<'a> Credential<'a> {
     ) -> Self {
         Self::for_rp(hwnd, current, salt, user, "p01.anynote.desktop.invalid")
     }
-    fn for_rp(
+    pub(crate) fn for_rp(
         hwnd: usize,
         current: &'a (dyn Fn() -> bool + Sync),
         salt: [u8; 32],

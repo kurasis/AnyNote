@@ -97,3 +97,18 @@ remain read-only. Full attack tests explicitly reset only the separately marked
 synthetic P06 database; run them sequentially with P03 outage tests because both
 use the owned MariaDB service. Strict-CSP browser and Windows gates run in CI.
 No production credentials, migrations, deployment or device trial are involved.
+
+
+## P07 encrypted local custody development
+
+Read [P07_LOCAL_VAULT.md](P07_LOCAL_VAULT.md). Activate pinned runtimes; build/test
+`packages/vault-native` with `--locked --all-features`, check formatting/clippy,
+then run `python3 scripts/p07-native-inventory.py` and `python3 scripts/check-p07.py`.
+The latter verifies exact frozen dependency/provider provenance and executes the
+five Node custody suites. Ordinary `p06-stack.py up/check` preserves owned data.
+Actual HTTP/browser attack acceptance explicitly resets only the marked P06
+synthetic database; run sequentially with P03 outage checks. CI requires sandboxed
+Chromium, verified TLS/strict CSP and Windows/MSVC with the independently measured
+ABI reference. Static vault shell: `/auth/vault.html`; no general native key/token
+IPC or production issuer is exposed. Saved P07 setup revision 15 does not by
+itself publish a snapshot or prove fresh-task restoration.

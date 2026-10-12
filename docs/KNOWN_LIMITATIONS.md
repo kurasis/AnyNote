@@ -319,3 +319,29 @@ settings Review/Save -> Publish. Saving does not publish the P06 snapshot or pro
 restoration in another task. The older P05 publication/restore is separately
 observed. Local cloud Chromium sandbox remains BLOCKED; mandatory hosted browser
 acceptance passed with the sandbox enabled and real certificate trust.
+
+## P07 implementation boundary
+
+P07 supersedes the earlier future-local-custody placeholders: persistent encrypted
+IndexedDB/SQLite, native encrypted credential custody, Worker/native locking,
+leases, wrapper rotation and the minimal shell are verified by all twelve hosted
+gates. See P07_LOCAL_VAULT.md and evidence/p07/acceptance.json. Restart/unknown-store
+handling preserves ciphertext and requires enrollment/recovery after origin loss.
+An unknown restored old backup cannot establish universal freshness. Fresh random
+nonces prevent counter rollback reuse; current roster/group freshness remains P08/
+P10. Full group/file UI, disk-source resumption and Windows/iPhone application
+packaging retain their later phase ownership.
+
+Synthetic browser PRF and injected native lock/suspend messages are software
+acceptance. No new physical Hello/TPM/iPhone trial or objects were created. The
+full P01 memory/network/OS matrix and qualified G2/G3 review remain open/unbooked/
+NOT_RUN. DPAPI does not establish physical presence; wrappers cannot revoke
+already exposed device keys or old backups. Perfect RAM/GC/crash-dump erasure is
+not promised. Pending native object journals require exact owned recovery/cleanup.
+The minimal shell does not implement P08 authority or P09 content/group UI.
+No production/deployment/release readiness is claimed.
+
+P06 setup publication/restoration is now observed in this P07 task. The tested
+P07 install/start fields are saved/read back as draft revision 15; publication
+and fresh P07 task restoration remain NOT_RUN. Local cloud Chromium sandbox stays
+BLOCKED while mandatory hosted sandboxed acceptance passed without a bypass.

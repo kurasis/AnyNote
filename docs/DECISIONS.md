@@ -717,3 +717,30 @@ around the unchanged P02 recovery kit; import must not treat that URL as authori
 Windows evidence helpers use maintained Python 3.14.8 and the exact native lock
 is `-text`; raw source receipts preserve platform line endings. No integrity,
 CSRF, TLS, sandbox, physical eligibility or qualified-review gate is relaxed.
+
+## ADR-017 — P07 local custody and additive control containers
+
+Keep frozen local/phrase/PRF/native inner frames. Authenticate public routing/root
+pins with a separate closed device-signed P07 manifest. Hardware native custody
+adds a TPM-wrapped random outer key and maintained XChaCha encryption around the
+frozen PRF AES wrapper; neither PRF-only disk access nor a UI consent flag suffices.
+Explicit Windows phrase mode adds current-user DPAPI, with no physical-presence
+claim or silent fallback. Rotate L and all ciphertext on local method removal,
+retain acknowledged work/unknown refresh markers, terminate workers on lifecycle
+boundaries and enforce transactional leases/epochs without depending on Web Locks.
+Only the new crate unifies P05 syn 3.0.7 to already-reviewed P06 syn 3.0.8; all old
+locks/corpora remain byte-identical. Independent composition review remains NOT_RUN.
+
+
+ADR-017 acceptance addendum: deep-clone every Worker result before recursively
+wiping message buffers, because metadata/bootstrap routing can share arrays with
+an input. A detached result must not erase the live profile/identity. Open an
+existing vault before creating any Hello objects; close refused unknown-version
+IndexedDB handles, and treat a recreated empty database as enrollment/recovery.
+Use the real discoverable platform PRF picker, retaining explicit visible unlock
+continuation and phrase fallback. Compare whole DPAPI-wrapped descriptors in
+rotation tests, generate the official MSVC header reference before executing the
+otherwise ignored ABI case, and capture Windows subprocess output as UTF-8.
+All twelve hosted gates now pass, including unchanged earlier phase regressions.
+These corrections do not relax eligibility, verification, KDF limits, TLS, CSP,
+browser sandbox or ABI checks. Actual physical/composition review remains NOT_RUN.

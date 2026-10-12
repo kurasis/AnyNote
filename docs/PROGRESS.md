@@ -13,7 +13,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P04 | VERIFIED | 21 tests/322 assertions, 578 actual SQL checks, eight-process concurrency/fault recovery and supervised restart; Rust/Node/sandboxed Chromium/PHP public-signature corpus PASS |
 | P05 | VERIFIED | Full native/browser core; 146 frozen frames, general RFC8785, fresh two-way Worker/Rust bytes and PHP public signatures; all eight hosted jobs PASS, actual native/Worker 1 GB measurements retained; physical memory and independent review remain open |
 | P06 | VERIFIED | 215 actual HTTPS/SQL attack checks, 18 sandboxed strict-CSP browser checks, four native tests on Linux/Windows; all ten hosted gates PASS; exact-source evidence retained |
-| P07 | NOT STARTED | P05/P06 |
+| P07 | VERIFIED | Five Node custody suites, 28 actual HTTPS/SQL and 28 sandboxed browser checks, fifteen native custody tests per Linux/Windows platform plus explicit official-header ABI; all twelve hosted gates PASS |
 | P08 | NOT STARTED | P05–P07 |
 | P09 | NOT STARTED | P04/P07/P08 |
 | P10 | NOT STARTED | P09 |
@@ -518,3 +518,35 @@ private-group genesis. Physical P01 and qualified G2/G3 remain open/unassigned/
 unbooked/NOT_RUN. No production migration/deployment, release or reviewer outreach
 occurred. Rollback: ordinary source revert; any deployed schema rollback requires
 an explicit data-preserving operator plan. Next full batch: complete P07.
+
+## Completed phase: P07 full local custody
+
+Random per-installation L protects device keys, draft/outbox/cache records and
+native session credentials in transactional IndexedDB/SQLite. Authenticated
+public manifests pin local routing/root; frozen P02/P05 inner frames are unchanged.
+Protected native Hello uses fresh PRF plus an actual TPM private operation;
+explicit Windows phrase mode adds current-user DPAPI. Optional browser PRF keeps
+strong phrase fallback and uses a human platform picker. Worker termination,
+shared epochs, native OS/idle generation fences and one-writer leases prevent
+stale disclosure/writes while retaining acknowledged work. Wrapper removal rotates
+L and all records atomically; unknown refresh outcomes require fresh login.
+Lost/unknown browser stores produce recovery/refusal without destructive downgrade.
+
+All twelve source jobs PASS at 28cb562. Actual hosted checkout 1caaa234 and branch
+head have the same clean Git tree 407021f7. Five Node suites, 28 actual HTTPS/SQL
+checks, 28 sandboxed verified-TLS/strict-CSP browser checks and fifteen native
+custody tests on each Linux/Windows platform passed. Preserved provider/container
+suite: Linux 71, Windows 99 plus one explicitly executed official-header ABI test.
+Exact public reports and 111 raw source hashes per platform are archived in
+TEST_EVIDENCE.md. Final tracking changes require fresh CI before ordinary merge.
+
+Published P06 setup was actually restored. The read-only P07 extension preserved
+670 then-visible files and all 675 files after archiving reports. Complete
+install/start fields were saved and
+read back as revision 15, with unrelated configuration unchanged. P07 publication
+and fresh-task restoration remain NOT_RUN. No owner action is needed for software
+acceptance. Physical P01/Hello/iPhone and qualified G2/G3 remain open/unbooked/
+NOT_RUN. No production migration, deployment, release, owner trial or outreach.
+Original spec, prior locks and frozen corpora remain unchanged. Rollback: ordinary
+source revert, preserving local data and owned pending cleanup journals.
+Next full batch: P08 trusted devices and recovery.
