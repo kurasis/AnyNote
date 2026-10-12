@@ -12,10 +12,10 @@ final class RateLimits
     {
         $id = hash_hmac('sha256', 'AnyNote/P06/rate/'.$purpose."\0".$binding, (string) config('app.key'));
         $limited = DB::transaction(function () use ($id, $maximum, $seconds) {
-            // Read the current bucket under an exclusive lock before mutation; a
-            // nonlocking snapshot followed by duplicate-key upsert can raise MariaDB
-            // ER_CHECKREAD (1020). Missing-row insertion may deadlock with another
-            // first admission; Laravel rolls back and retries this bounded transaction.
+            // Serialize first-bucket creation and the global bound with maintenance.
+            // Concurrent missing-row gap locks otherwise can exhaust retries before
+            // any first admission commits. This transaction ends before auth/business locks.
+            DB::table('operator_coordination')->where('singleton', 1)->lockForUpdate()->first();
             $row = DB::table('auth_rate_buckets')->where('id', $id)->lockForUpdate()->first();
             if ($row === null) {
                 if (DB::table('auth_rate_buckets')->count() >= 50000) {

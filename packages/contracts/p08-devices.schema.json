@@ -1,0 +1,904 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:anynote:p08:devices:v1",
+  "title": "P08 bounded device lifecycle transport; frozen P02 signed records remain authoritative",
+  "$defs": {
+    "empty-request": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        }
+      },
+      "required": [
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "identity-result": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "identity": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/identity"
+        }
+      },
+      "required": [
+        "version",
+        "identity"
+      ],
+      "additionalProperties": false
+    },
+    "roster-result": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "identity": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/identity"
+        },
+        "head": {
+          "$ref": "urn:anynote:p02:state-contract:c1#/$defs/head"
+        },
+        "generation": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:anynote:p02:state-contract:c1#/$defs/event"
+          },
+          "maxItems": 20
+        },
+        "next": {
+          "anyOf": [
+            {
+              "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "version",
+        "identity",
+        "head",
+        "generation",
+        "events",
+        "next"
+      ],
+      "additionalProperties": false
+    },
+    "create-request": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "mode": {
+          "enum": [
+            "new-device-offer",
+            "existing-device-invitation"
+          ]
+        },
+        "record": {
+          "oneOf": [
+            {
+              "$ref": "urn:anynote:p02:state-contract:c1#/$defs/offer"
+            },
+            {
+              "$ref": "urn:anynote:p02:state-contract:c1#/$defs/invitation"
+            }
+          ]
+        }
+      },
+      "required": [
+        "version",
+        "mode",
+        "record"
+      ],
+      "additionalProperties": false
+    },
+    "pending-result": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "operation_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "state": {
+          "enum": [
+            "pending",
+            "approved",
+            "confirmed",
+            "expired",
+            "cancelled"
+          ]
+        },
+        "expires_at": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        }
+      },
+      "required": [
+        "version",
+        "operation_id",
+        "state",
+        "expires_at"
+      ],
+      "additionalProperties": false
+    },
+    "relay-request": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "frame": {
+          "$ref": "urn:anynote:p02:state-contract:c1#/$defs/frame"
+        },
+        "offer": {
+          "anyOf": [
+            {
+              "$ref": "urn:anynote:p02:state-contract:c1#/$defs/offer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "version",
+        "frame",
+        "offer"
+      ],
+      "additionalProperties": false
+    },
+    "relay-result": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "operation_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "state": {
+          "enum": [
+            "pending",
+            "approved",
+            "confirmed",
+            "expired",
+            "cancelled"
+          ]
+        },
+        "frames": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:anynote:p02:state-contract:c1#/$defs/frame"
+          },
+          "maxItems": 4
+        },
+        "event": {
+          "anyOf": [
+            {
+              "$ref": "urn:anynote:p02:state-contract:c1#/$defs/event"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "version",
+        "operation_id",
+        "state",
+        "frames",
+        "event"
+      ],
+      "additionalProperties": false
+    },
+    "approve-request": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "transcript": {
+          "$ref": "urn:anynote:p02:state-contract:c1#/$defs/transcript"
+        },
+        "approval": {
+          "$ref": "urn:anynote:p02:state-contract:c1#/$defs/approval"
+        },
+        "frame": {
+          "$ref": "urn:anynote:p02:state-contract:c1#/$defs/frame"
+        }
+      },
+      "required": [
+        "version",
+        "transcript",
+        "approval",
+        "frame"
+      ],
+      "additionalProperties": false
+    },
+    "event-request": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "event": {
+          "$ref": "urn:anynote:p02:state-contract:c1#/$defs/event"
+        }
+      },
+      "required": [
+        "version",
+        "event"
+      ],
+      "additionalProperties": false
+    },
+    "event-result": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "session": {
+          "$ref": "urn:anynote:p06:auth:v1#/$defs/session"
+        },
+        "receipt": {
+          "type": "object",
+          "properties": {
+            "version": {
+              "const": 1
+            },
+            "operation_id": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+            },
+            "event_digest": {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+            },
+            "head": {
+              "$ref": "urn:anynote:p02:state-contract:c1#/$defs/head"
+            },
+            "generation": {
+              "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+            },
+            "activated_device_id": {
+              "anyOf": [
+                {
+                  "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "revoked_device_ids": {
+              "type": "array",
+              "items": {
+                "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+              },
+              "maxItems": 1000
+            }
+          },
+          "required": [
+            "version",
+            "operation_id",
+            "event_digest",
+            "head",
+            "generation",
+            "activated_device_id",
+            "revoked_device_ids"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "version",
+        "session",
+        "receipt"
+      ],
+      "additionalProperties": false
+    },
+    "challenge-request": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "device": {
+          "$ref": "urn:anynote:p02:state-contract:c1#/$defs/device"
+        }
+      },
+      "required": [
+        "version",
+        "device"
+      ],
+      "additionalProperties": false
+    },
+    "challenge-result": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "challenge": {
+          "$ref": "urn:anynote:p02:state-contract:c1#/$defs/challenge"
+        }
+      },
+      "required": [
+        "version",
+        "challenge"
+      ],
+      "additionalProperties": false
+    },
+    "cancel-result": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "status": {
+          "const": "ok"
+        }
+      },
+      "required": [
+        "version",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "genesis-request": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "commit": {
+          "$ref": "urn:anynote:p02:group-contract:c2#/$defs/epoch-commit"
+        },
+        "pages": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:anynote:p02:group-contract:c2#/$defs/grant-page"
+          },
+          "maxItems": 1
+        }
+      },
+      "required": [
+        "version",
+        "commit",
+        "pages"
+      ],
+      "additionalProperties": false
+    },
+    "genesis-result": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "group_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "commit": {
+          "$ref": "urn:anynote:p02:group-contract:c2#/$defs/epoch-commit"
+        },
+        "pages": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:anynote:p02:group-contract:c2#/$defs/grant-page"
+          },
+          "maxItems": 1
+        }
+      },
+      "required": [
+        "version",
+        "group_id",
+        "commit",
+        "pages"
+      ],
+      "additionalProperties": false
+    },
+    "envelope-request": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/grant"
+          },
+          "maxItems": 60
+        }
+      },
+      "required": [
+        "version",
+        "records"
+      ],
+      "additionalProperties": false
+    },
+    "envelope-result": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/grant"
+          },
+          "maxItems": 60
+        },
+        "next": {
+          "anyOf": [
+            {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "version",
+        "records",
+        "next"
+      ],
+      "additionalProperties": false
+    },
+    "devices-result": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "devices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "device_id": {
+                "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+              },
+              "status": {
+                "enum": [
+                  "active",
+                  "revoked"
+                ]
+              },
+              "generation": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+              },
+              "certificate": {
+                "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/certificate"
+              },
+              "current": {
+                "type": "boolean"
+              },
+              "platform": {
+                "enum": [
+                  "windows",
+                  "pwa",
+                  "unknown"
+                ]
+              },
+              "enrolled_at": {
+                "type": "string",
+                "maxLength": 32
+              },
+              "last_contact": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 32
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "device_id",
+              "status",
+              "generation",
+              "certificate",
+              "current",
+              "platform",
+              "enrolled_at",
+              "last_contact"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "version",
+        "devices"
+      ],
+      "additionalProperties": false
+    },
+    "notifications-result": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "notifications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+              },
+              "kind": {
+                "enum": [
+                  "device-enrolled",
+                  "device-revoked",
+                  "recovery-reset",
+                  "passkey-added"
+                ]
+              },
+              "created_at": {
+                "type": "string",
+                "maxLength": 32
+              }
+            },
+            "required": [
+              "id",
+              "kind",
+              "created_at"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "version",
+        "notifications"
+      ],
+      "additionalProperties": false
+    },
+    "local-control": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "const": "p08-installation-control"
+        },
+        "version": {
+          "const": 1
+        },
+        "identity": {
+          "anyOf": [
+            {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "head": {
+          "anyOf": [
+            {
+              "$ref": "urn:anynote:p02:state-contract:c1#/$defs/head"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "generation": {
+          "anyOf": [
+            {
+              "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pages": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+          },
+          "maxItems": 1000
+        },
+        "staging": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "pages": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+                  },
+                  "maxItems": 1000
+                }
+              },
+              "required": [
+                "pages"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pending": {
+          "anyOf": [
+            {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "operation_id": {
+                      "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+                    },
+                    "expires_at": {
+                      "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+                    },
+                    "mode": {
+                      "enum": [
+                        "existing-device-invitation",
+                        "new-device-offer"
+                      ]
+                    },
+                    "invitation": {
+                      "anyOf": [
+                        {
+                          "$ref": "urn:anynote:p02:state-contract:c1#/$defs/invitation"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "offer": {
+                      "anyOf": [
+                        {
+                          "$ref": "urn:anynote:p02:state-contract:c1#/$defs/offer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "response": {
+                      "anyOf": [
+                        {
+                          "$ref": "urn:anynote:p02:state-contract:c1#/$defs/response"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "approval": {
+                      "anyOf": [
+                        {
+                          "$ref": "urn:anynote:p02:state-contract:c1#/$defs/approval"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "event": {
+                      "anyOf": [
+                        {
+                          "$ref": "urn:anynote:p02:state-contract:c1#/$defs/event"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "operation_id",
+                    "expires_at",
+                    "mode",
+                    "invitation",
+                    "offer",
+                    "response",
+                    "approval",
+                    "event"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "operation_id": {
+                      "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+                    },
+                    "expires_at": {
+                      "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/counter"
+                    },
+                    "mode": {
+                      "const": "recovery"
+                    },
+                    "event": {
+                      "$ref": "urn:anynote:p02:state-contract:c1#/$defs/event"
+                    }
+                  },
+                  "required": [
+                    "operation_id",
+                    "expires_at",
+                    "mode",
+                    "event"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kit_verified": {
+          "type": "boolean"
+        },
+        "genesis_request": {
+          "$ref": "urn:anynote:p08:devices:v1#/$defs/genesis-request"
+        },
+        "grant_request": {
+          "$ref": "urn:anynote:p08:devices:v1#/$defs/envelope-request"
+        },
+        "revoke_request": {
+          "$ref": "urn:anynote:p08:devices:v1#/$defs/event-request"
+        },
+        "registration_request": {
+          "$ref": "urn:anynote:p06:auth:v1#/$defs/register-request"
+        }
+      },
+      "required": [
+        "purpose",
+        "version",
+        "identity",
+        "head",
+        "generation",
+        "pages",
+        "staging",
+        "pending",
+        "kit_verified"
+      ],
+      "additionalProperties": false
+    },
+    "local-roster-page": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "const": "p08-roster-page"
+        },
+        "version": {
+          "const": 1
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:anynote:p02:state-contract:c1#/$defs/event"
+          },
+          "minItems": 1,
+          "maxItems": 20
+        }
+      },
+      "required": [
+        "purpose",
+        "version",
+        "events"
+      ],
+      "additionalProperties": false
+    },
+    "local-context": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "const": "device-lifecycle-local-context"
+        },
+        "version": {
+          "const": 1
+        },
+        "service_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "account_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "device_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "profile_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "record_id": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/id"
+        },
+        "root_fingerprint": {
+          "$ref": "urn:anynote:p02:identity-contract:c1#/$defs/digest"
+        },
+        "record_kind": {
+          "enum": [
+            "device-control",
+            "roster-page"
+          ]
+        }
+      },
+      "required": [
+        "purpose",
+        "version",
+        "service_id",
+        "account_id",
+        "device_id",
+        "profile_id",
+        "record_id",
+        "root_fingerprint",
+        "record_kind"
+      ],
+      "additionalProperties": false
+    },
+    "local-frame": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "const": "p08-local-v1"
+        },
+        "protocol": {
+          "const": "anynote"
+        },
+        "protocol_version": {
+          "const": 1
+        },
+        "purpose": {
+          "const": "device-lifecycle-local"
+        },
+        "context": {
+          "$ref": "urn:anynote:p08:devices:v1#/$defs/local-context"
+        },
+        "nonce": {
+          "type": "string",
+          "format": "base64url-24"
+        },
+        "ciphertext": {
+          "type": "string",
+          "format": "base64url-variable",
+          "minLength": 22,
+          "maxLength": 349548
+        }
+      },
+      "required": [
+        "contract",
+        "protocol",
+        "protocol_version",
+        "purpose",
+        "context",
+        "nonce",
+        "ciphertext"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

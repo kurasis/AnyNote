@@ -2907,3 +2907,370 @@ final readonly class P06AuthRecoveryKitExport implements \JsonSerializable
         return $values;
     }
 }
+
+final readonly class P08DevicesEmptyRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesIdentityResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $identity,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesRosterResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $identity,
+        public array $head,
+        public string $generation,
+        public array $events,
+        public null|string $next,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesCreateRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $mode,
+        public array $record,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesPendingResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $operation_id,
+        public string $state,
+        public string $expires_at,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesRelayRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $frame,
+        public array|null $offer,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesRelayResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $operation_id,
+        public string $state,
+        public array $frames,
+        public array|null $event,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesApproveRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $transcript,
+        public array $approval,
+        public array $frame,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesEventRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $event,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesEventResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $session,
+        public array $receipt,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesChallengeRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $device,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesChallengeResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $challenge,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesCancelResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $status,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesGenesisRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $commit,
+        public array $pages,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesGenesisResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $group_id,
+        public array $commit,
+        public array $pages,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesEnvelopeRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $records,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesEnvelopeResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $records,
+        public null|string $next,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesDevicesResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $devices,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesNotificationsResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $notifications,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesLocalControl implements \JsonSerializable
+{
+    public function __construct(
+        public string $purpose,
+        public int $version,
+        public array|null $identity,
+        public array|null $head,
+        public null|string $generation,
+        public array $pages,
+        public array|null $staging,
+        public array|null $pending,
+        public bool $kit_verified,
+        public array|null $genesis_request = null,
+        public array|null $grant_request = null,
+        public array|null $revoke_request = null,
+        public array|null $registration_request = null,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        if ($values['genesis_request'] === null) { unset($values['genesis_request']); }
+        if ($values['grant_request'] === null) { unset($values['grant_request']); }
+        if ($values['revoke_request'] === null) { unset($values['revoke_request']); }
+        if ($values['registration_request'] === null) { unset($values['registration_request']); }
+        return $values;
+    }
+}
+
+final readonly class P08DevicesLocalRosterPage implements \JsonSerializable
+{
+    public function __construct(
+        public string $purpose,
+        public int $version,
+        public array $events,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesLocalContext implements \JsonSerializable
+{
+    public function __construct(
+        public string $purpose,
+        public int $version,
+        public string $service_id,
+        public string $account_id,
+        public string $device_id,
+        public string $profile_id,
+        public string $record_id,
+        public string $root_fingerprint,
+        public string $record_kind,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P08DevicesLocalFrame implements \JsonSerializable
+{
+    public function __construct(
+        public string $contract,
+        public string $protocol,
+        public int $protocol_version,
+        public string $purpose,
+        public array $context,
+        public string $nonce,
+        public string $ciphertext,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}

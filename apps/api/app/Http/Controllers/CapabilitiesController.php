@@ -19,8 +19,8 @@ final class CapabilitiesController
         return response()->json([
             'service_id' => $service,
             'negotiation' => ['contract' => 'p02-v1', 'protocol' => 'anynote', 'protocol_version' => 1, 'purpose' => 'protocol-negotiation', 'profile' => 'p02-v1', 'api_version' => 1, 'wire_version' => 1, 'payload_version' => 1, 'local_schema' => 1, 'export_version' => 1, 'minimum_reader' => 1, 'minimum_writer' => 1, 'components' => Catalogue::data()['components']],
-            'limits' => ['control_bytes' => '4194304', 'page_bytes' => '1048576', 'file_plaintext_bytes' => '1000000000', 'global_ciphertext_bytes' => '100000000000', 'group_members' => 20],
-            'features' => ['account_authentication' => Policy::configured(), 'device_activation' => false, 'content_storage' => false, 'sync' => false, 'file_transfer' => false, 'production_ready' => false],
+            'limits' => ['control_bytes' => '4194304', 'page_bytes' => '1048576', 'file_plaintext_bytes' => '1000000000', 'global_ciphertext_bytes' => '100000000000', 'group_members' => 20, 'active_devices' => config('api.active_device_limit', 5)],
+            'features' => ['account_authentication' => Policy::configured(), 'device_activation' => Policy::configured(), 'content_storage' => false, 'sync' => false, 'file_transfer' => false, 'production_ready' => false],
         ]);
     }
 }

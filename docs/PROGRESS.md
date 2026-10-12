@@ -14,7 +14,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P05 | VERIFIED | Full native/browser core; 146 frozen frames, general RFC8785, fresh two-way Worker/Rust bytes and PHP public signatures; all eight hosted jobs PASS, actual native/Worker 1 GB measurements retained; physical memory and independent review remain open |
 | P06 | VERIFIED | 215 actual HTTPS/SQL attack checks, 18 sandboxed strict-CSP browser checks, four native tests on Linux/Windows; all ten hosted gates PASS; exact-source evidence retained |
 | P07 | VERIFIED | Five Node custody suites, 28 actual HTTPS/SQL and 28 sandboxed browser checks, fifteen native custody tests per Linux/Windows platform plus explicit official-header ABI; all twelve hosted gates PASS |
-| P08 | NOT STARTED | P05–P07 |
+| P08 | VERIFIED | Seven Node workflow suites, 16 dense QR round trips, 153 actual HTTPS/SQL checks, 33 sandboxed UI checks and nine native device tests per Linux/Windows; all fourteen hosted gates PASS |
 | P09 | NOT STARTED | P04/P07/P08 |
 | P10 | NOT STARTED | P09 |
 | P11 | NOT STARTED | P09/P10 |
@@ -550,3 +550,29 @@ NOT_RUN. No production migration, deployment, release, owner trial or outreach.
 Original spec, prior locks and frozen corpora remain unchanged. Rollback: ordinary
 source revert, preserving local data and owned pending cleanup journals.
 Next full batch: P08 trusted devices and recovery.
+
+## Completed phase: P08 trusted devices and recovery
+
+Both QR directions bind independent root/service/account pins and mutual intent.
+Independent device keys remain under L; root/R remain transient. Signed rosters,
+atomic CAS/receipts, notifications, cascading descendant/session/code revocation,
+root-signed generation reset, private settings group-c2 genesis and same-account
+G grants are implemented. Fresh recovery activates before fetching envelopes.
+The atomic encrypted public bootstrap journal resolves interrupted registration.
+Additive p08-local-v1 keeps frozen P02 schemas, corpora and all prior locks intact.
+
+All fourteen hosted gates PASS at bb41c0cb, clean tree eccb040a: seven Node suites,
+sixteen dense QR checks, 153 real HTTPS/SQL checks, 33 sandboxed verified-TLS/CSP
+UI checks and nine native device tests per Linux/Windows, alongside inherited
+custody/provider/official-header ABI gates. Public reports and 283 raw inputs per
+platform are archived in TEST_EVIDENCE.md. Final tracking needs fresh fourteen-job
+acceptance before ordinary authorized merge.
+
+Published P07 setup was actually restored. Complete P08 installation ran twice;
+the final complete run preserved all 712 then-tracked files. Updated readiness
+checks remain read-only. Saving a draft, publishing and fresh restoration are
+separate events. No owner action is needed for software P08. Physical P01/Hello/
+iPhone and qualified G2/G3 remain open/unbooked/NOT_RUN. No production deployment,
+live migration, release, new owner trial or outreach. Rollback: source revert;
+preserve encrypted journals and plan any deployed schema rollback explicitly.
+Next full batch: P09 private groups and encrypted notes.

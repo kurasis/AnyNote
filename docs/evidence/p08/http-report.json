@@ -1,0 +1,9 @@
+{
+  "purpose": "P08 actual trusted-device lifecycle over verified HTTPS and MariaDB",
+  "status": "PASS",
+  "source_commit": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+  "source_tree_dirty": false,
+  "checks": 153,
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN"
+}

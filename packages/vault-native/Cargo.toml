@@ -15,6 +15,11 @@ name = "p07-integration"
 path = "src/bin/p07-integration.rs"
 required-features = ["integration-harness"]
 
+[[bin]]
+name = "p08-integration"
+path = "src/bin/p08-integration.rs"
+required-features = ["integration-harness"]
+
 [dependencies]
 anynote-crypto-core = { path = "../crypto-core" }
 anynote-auth-native = { path = "../auth-native" }

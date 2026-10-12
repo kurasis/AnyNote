@@ -345,3 +345,26 @@ P06 setup publication/restoration is now observed in this P07 task. The tested
 P07 install/start fields are saved/read back as draft revision 15; publication
 and fresh P07 task restoration remain NOT_RUN. Local cloud Chromium sandbox stays
 BLOCKED while mandatory hosted sandboxed acceptance passed without a bypass.
+
+## P08 boundary (supersedes earlier pending-device statements)
+
+Trusted enrollment, independent pins, signed roster, cascading revoke, root reset,
+private settings genesis and same-account grants are software VERIFIED by fourteen
+hosted gates. See P08_TRUSTED_DEVICES.md and evidence/p08/acceptance.json. Notes/
+preferences belong to P09, shared membership/epoch maintenance P10, complete Windows/
+PWA hosts P14/P15. Revocation sets rekey/history flags; this UI cannot clear them
+without maintenance. No production/security release readiness is claimed.
+
+Roster replay is bounded at 1,000 events/16 MiB; P11 owns scale/history indexes.
+Independent pins/checkpoints reject known substitution/regression but cannot prove
+universal freshness or reveal every hostile-server fork to an isolated new client.
+Revocation cannot erase previously exposed keys/plaintext/old backups. Lost kit/key
+copies make personal content unrecoverable; stolen R requires new identity/migration.
+PNG fallback needs an independently trusted private channel, not a new password.
+
+The additive local profile requires upgraded clients while leaving P02 unchanged.
+Perfect JS/GC/register erasure is not promised. Native harness features are test-only;
+no general product secret-export IPC exists. Synthetic WebAuthn/OS events do not
+close real Hello/TPM/iPhone or qualified G2/G3. Local sandbox remains BLOCKED;
+hosted browser passes retain sandbox/TLS/CSP. Published P07 restore was observed;
+P08 draft saving is distinct from publication and independently proven fresh restore.

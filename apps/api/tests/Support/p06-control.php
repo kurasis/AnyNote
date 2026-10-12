@@ -96,6 +96,84 @@ $value = match ($op) {
 
         return ['status' => 'ok'];
     })(),
+    // Test-only legacy fixture: refuse any P08/group data; preserve real synthetic P06 rows.
+    'p08-legacy-fixture' => (function () {
+        foreach (['enrollment_sessions', 'device_relay_frames', 'device_transition_receipts', 'account_security_notifications', 'account_settings_genesis', 'groups'] as $table) {
+            if (DB::table($table)->exists()) {
+                throw new LogicException('Legacy fixture requires no P08 or group data');
+            }
+        }
+        foreach (DB::table('account_roster_events')->get() as $event) {
+            if (json_decode($event->signed_record)->body->kind !== 'register') {
+                throw new LogicException('Legacy fixture requires initial P06 rosters only');
+            }
+        }
+        foreach (['device_relay_frames', 'device_transition_receipts', 'account_security_notifications', 'account_settings_genesis'] as $table) {
+            Schema::drop($table);
+        }
+        Schema::table('enrollment_sessions', function ($t) {
+            $t->dropColumn(['creator_session_id', 'new_session_id', 'approver_device_id', 'new_device_id', 'mode', 'public_record', 'offer_record', 'transcript_record', 'approval_record', 'event_record']);
+        });
+        Schema::table('devices', function ($t) {
+            $t->dropColumn(['parent_device_id', 'platform', 'enrolled_at']);
+        });
+        Schema::table('account_identities', function ($t) {
+            $t->dropColumn('device_limit');
+        });
+        DB::table('migrations')->where('migration', '2026_10_12_000005_create_trusted_device_lifecycle')->delete();
+
+        return ['status' => 'owned empty P08 schema removed for legacy-upgrade fixture'];
+    })(),
+    'p08-state' => (function () {
+        $result = [];
+        foreach (['devices', 'account_roster_events', 'device_transition_receipts', 'sync_events', 'key_envelopes'] as $table) {
+            $result[$table] = DB::table($table)->count();
+        }
+        $result['heads'] = DB::table('account_identities')->orderBy('account_id')->get(['account_id', 'roster_sequence', 'roster_digest', 'recovery_generation']);
+        $result['sessions'] = DB::table('auth_sessions')->orderBy('id')->get(['id', 'state', 'device_id', 'recovery_generation']);
+
+        return $result;
+    })(),
+    'p08-fault-on' => (function () {
+        DB::unprepared("CREATE TRIGGER p08_fault BEFORE INSERT ON account_roster_events FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='synthetic P08 write failure'");
+
+        return ['status' => 'armed'];
+    })(),
+    'p08-fault-off' => (function () {
+        DB::unprepared('DROP TRIGGER IF EXISTS p08_fault');
+
+        return ['status' => 'disarmed'];
+    })(),
+    'p08-expire-pending' => (function () {
+        DB::table('enrollment_sessions')->whereIn('state', ['pending', 'approved'])->update(['expires_at' => now()->subMinute()]);
+
+        return ['status' => 'ok'];
+    })(),
+    'p08-fill-content' => (function () {
+        DB::table('quota_ledgers')->where('scope', 'global')->update(['committed_bytes' => DB::raw('limit_bytes')]);
+
+        return ['status' => 'ok'];
+    })(),
+    'p08-exhaust-reserve' => (function () {
+        DB::table('quota_ledgers')->where('scope', 'security')->update(['reserved_bytes' => DB::raw('limit_bytes - committed_bytes')]);
+
+        return ['status' => 'ok'];
+    })(),
+    'p08-release-reserve' => (function () {
+        DB::table('quota_ledgers')->where('scope', 'security')->update(['reserved_bytes' => 0]);
+
+        return ['status' => 'ok'];
+    })(),
+    'p08-remove-membership' => (function () {
+        DB::table('group_memberships')->update(['status' => 'removed']);
+
+        return ['status' => 'ok'];
+    })(),
+    'p08-restore-membership' => (function () {
+        DB::table('group_memberships')->update(['status' => 'active']);
+
+        return ['status' => 'ok'];
+    })(),
     default => throw new LogicException('Unknown synthetic control operation'),
 };
 echo json_encode($value, JSON_THROW_ON_ERROR)."\n";

@@ -170,3 +170,11 @@ checking is read-only. No prior lock changed and no GPL adapter code is imported
 Browser dependencies reuse the exact P02 lock and upstream license receipts.
 Project release license remains UNSELECTED. Checksums, self-tests and upstream
 claims are not author-signature verification, a release SBOM or qualified audit.
+
+## P08 QR codec
+
+apps/devices-web pins @zxing/browser0.2.1 and @zxing/library0.23.0 with two transitives:
+four exact version/source/license/SHA512 records in dependency-inventory.json.
+Maintained QR APIs handle camera/PNG; no new crypto dependency. Native inventory
+remains 313 records, all earlier locks/corpora unchanged. check-p08.py verifies
+inventory read-only. No upstream library/self-test is a qualified protocol audit.

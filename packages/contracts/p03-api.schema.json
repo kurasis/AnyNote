@@ -28,6 +28,11 @@
             },
             "group_members": {
               "const": 20
+            },
+            "active_devices": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 32
             }
           },
           "required": [
@@ -46,7 +51,7 @@
               "type": "boolean"
             },
             "device_activation": {
-              "const": false
+              "type": "boolean"
             },
             "content_storage": {
               "const": false

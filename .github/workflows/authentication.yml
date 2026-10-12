@@ -5,6 +5,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      device_browser_only:
+        description: Run the actual P08 browser fault scenario only
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -15,6 +20,7 @@ concurrency:
 
 jobs:
   auth-linux-http-browser:
+    if: ${{ !inputs.device_browser_only }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
@@ -34,6 +40,7 @@ jobs:
           npm --prefix packages/protocol ci --ignore-scripts --no-audit --no-fund
           npm --prefix experiments/p01 ci --no-audit --no-fund
           npm --prefix packages/api-client ci --ignore-scripts --no-audit --no-fund
+          npm --prefix apps/devices-web ci --ignore-scripts --no-audit --no-fund
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends libnss3-tools
           python3 scripts/dev-stack.py install
@@ -79,6 +86,7 @@ jobs:
           python3 scripts/dev-stack.py stop
 
   auth-windows-native:
+    if: ${{ !inputs.device_browser_only }}
     runs-on: windows-2025
     timeout-minutes: 20
     defaults:
@@ -114,3 +122,48 @@ jobs:
           path: artifacts/p06/source-report.json
           if-no-files-found: error
           retention-days: 14
+
+  browser-fault-diagnosis:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.device_browser_only }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      ANYNOTE_TOOLCHAINS: /tmp/anynote-p08-tools
+      CHROMIUM_EXECUTABLE: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.12.14'
+      - name: Frozen browser dependencies and owned TLS services
+        run: |
+          bash scripts/install-p01-toolchains.sh
+          source scripts/runtime-env.sh
+          npm --prefix packages/protocol ci --ignore-scripts --no-audit --no-fund
+          npm --prefix experiments/p01 ci --no-audit --no-fund
+          npm --prefix packages/api-client ci --ignore-scripts --no-audit --no-fund
+          npm --prefix apps/devices-web ci --ignore-scripts --no-audit --no-fund
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libnss3-tools
+          python3 scripts/dev-stack.py install
+          python3 scripts/p06-stack.py reset
+      - name: Actual sandboxed CSP and verified-TLS UI
+        run: |
+          source scripts/runtime-env.sh
+          node experiments/p01/p08-browser.mjs
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: p08-browser-fault-public-report
+          path: artifacts/p08/browser-report.json
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Stop owned services only
+        if: always()
+        run: |
+          python3 scripts/p06-stack.py stop
+          python3 scripts/dev-stack.py stop

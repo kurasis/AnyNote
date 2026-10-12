@@ -55,6 +55,83 @@ enum Request {
         capability: String,
         records: Vec<InputRecord>,
     },
+    DeviceSettings {
+        capability: String,
+    },
+    DeviceGroupKeys {
+        capability: String,
+        evidence: Value,
+        records: Vec<Value>,
+        kit: Option<Value>,
+        target: Option<String>,
+        confirmed: bool,
+    },
+    DeviceSnapshot {
+        capability: String,
+        snapshot: Value,
+    },
+    DevicePublic {
+        capability: String,
+    },
+    DeviceInvitation {
+        capability: String,
+    },
+    DeviceOffer {
+        capability: String,
+        session_id: String,
+        invitation: Option<Value>,
+    },
+    DeviceResponse {
+        capability: String,
+        offer: Value,
+        invitation: Option<Value>,
+    },
+    DeviceApproval {
+        capability: String,
+        transcript: Value,
+        confirmed: bool,
+    },
+    DeviceConfirmation {
+        capability: String,
+        transcript: Value,
+        approval: Value,
+        session_id: String,
+        confirmed: bool,
+    },
+    DeviceRecovery {
+        capability: String,
+        kit: Value,
+        challenge: Value,
+        session_id: String,
+        confirmed: bool,
+    },
+    DeviceRevoke {
+        capability: String,
+        targets: Vec<String>,
+        confirmed: bool,
+    },
+    DeviceRetry {
+        capability: String,
+        activation: bool,
+    },
+    PairingQr {
+        capability: String,
+        record: Value,
+        mode: String,
+    },
+    PairingScan {
+        capability: String,
+        qr: Value,
+        new_device: bool,
+    },
+    PairingFrame {
+        capability: String,
+        handle: String,
+        message: String,
+        value: Value,
+        anchor: String,
+        seal: bool,
+    },
     DeviceProof {
         capability: String,
         challenge: Value,
@@ -88,7 +165,11 @@ impl Endpoint {
     }
     pub fn invoke(&self, binding: &HostBinding, bytes: &[u8]) -> Result<Value> {
         binding.allowed()?;
-        let parsed = strict(bytes, 8_388_608)?;
+        // The public roster has its own 16 MiB bound; other requests retain P07 limits.
+        let parsed = strict(bytes, 16_781_312)?;
+        if parsed["operation"] != "device-snapshot" {
+            check(bytes.len() <= 8_388_608, "RESOURCE_LIMIT")?;
+        }
         let mut request: Request =
             serde_json::from_value(parsed).map_err(|_| Error("INVALID_IPC"))?;
         match &mut request {
@@ -160,6 +241,156 @@ impl Endpoint {
                 let fence = self.vault.lease(c)?;
                 self.vault.save_batch(c, fence, &values)?;
                 Ok(json!({"state":"local-saved"}))
+            }
+            Request::DeviceSettings { capability } => {
+                let h = self.handles.lock().map_err(|_| Error("VAULT_BUSY"))?;
+                let c = h.get(capability).ok_or(Error("VAULT_LOCKED"))?;
+                self.vault.device_settings_genesis(c)
+            }
+            Request::DeviceGroupKeys {
+                capability,
+                evidence,
+                records,
+                kit,
+                target,
+                confirmed,
+            } => {
+                check(*confirmed, "USER_CONFIRMATION_REQUIRED")?;
+                let h = self.handles.lock().map_err(|_| Error("VAULT_BUSY"))?;
+                let c = h.get(capability).ok_or(Error("VAULT_LOCKED"))?;
+                let result = self.vault.device_group_keys(
+                    c,
+                    evidence,
+                    records,
+                    kit.as_ref(),
+                    target.as_deref(),
+                );
+                if let Some(kit) = kit {
+                    wipe_value(kit);
+                }
+                result
+            }
+            Request::DeviceSnapshot {
+                capability,
+                snapshot,
+            } => {
+                let h = self.handles.lock().map_err(|_| Error("VAULT_BUSY"))?;
+                let c = h.get(capability).ok_or(Error("VAULT_LOCKED"))?;
+                self.vault.record_device_snapshot(c, snapshot)
+            }
+            Request::DevicePublic { capability } => {
+                let h = self.handles.lock().map_err(|_| Error("VAULT_BUSY"))?;
+                let c = h.get(capability).ok_or(Error("VAULT_LOCKED"))?;
+                self.vault.device_public(c)
+            }
+            Request::DeviceInvitation { capability } => {
+                let h = self.handles.lock().map_err(|_| Error("VAULT_BUSY"))?;
+                let c = h.get(capability).ok_or(Error("VAULT_LOCKED"))?;
+                self.vault.device_invitation(c)
+            }
+            Request::DeviceOffer {
+                capability,
+                session_id,
+                invitation,
+            } => {
+                let h = self.handles.lock().map_err(|_| Error("VAULT_BUSY"))?;
+                let c = h.get(capability).ok_or(Error("VAULT_LOCKED"))?;
+                self.vault.device_offer(c, session_id, invitation.as_ref())
+            }
+            Request::DeviceResponse {
+                capability,
+                offer,
+                invitation,
+            } => {
+                let h = self.handles.lock().map_err(|_| Error("VAULT_BUSY"))?;
+                let c = h.get(capability).ok_or(Error("VAULT_LOCKED"))?;
+                self.vault.device_response(c, offer, invitation.as_ref())
+            }
+            Request::DeviceApproval {
+                capability,
+                transcript,
+                confirmed,
+            } => {
+                let h = self.handles.lock().map_err(|_| Error("VAULT_BUSY"))?;
+                let c = h.get(capability).ok_or(Error("VAULT_LOCKED"))?;
+                self.vault.device_approval(c, transcript, *confirmed)
+            }
+            Request::DeviceConfirmation {
+                capability,
+                transcript,
+                approval,
+                session_id,
+                confirmed,
+            } => {
+                let h = self.handles.lock().map_err(|_| Error("VAULT_BUSY"))?;
+                let c = h.get(capability).ok_or(Error("VAULT_LOCKED"))?;
+                self.vault
+                    .device_confirmation(c, transcript, approval, session_id, *confirmed)
+            }
+            Request::DeviceRecovery {
+                capability,
+                kit,
+                challenge,
+                session_id,
+                confirmed,
+            } => {
+                let h = self.handles.lock().map_err(|_| Error("VAULT_BUSY"))?;
+                let c = h.get(capability).ok_or(Error("VAULT_LOCKED"))?;
+                let result = self
+                    .vault
+                    .device_recovery_reset(c, kit, challenge, session_id, *confirmed);
+                wipe_value(kit);
+                result
+            }
+            Request::DeviceRevoke {
+                capability,
+                targets,
+                confirmed,
+            } => {
+                let h = self.handles.lock().map_err(|_| Error("VAULT_BUSY"))?;
+                let c = h.get(capability).ok_or(Error("VAULT_LOCKED"))?;
+                self.vault.device_revoke(c, targets, *confirmed)
+            }
+            Request::DeviceRetry {
+                capability,
+                activation,
+            } => {
+                let h = self.handles.lock().map_err(|_| Error("VAULT_BUSY"))?;
+                let c = h.get(capability).ok_or(Error("VAULT_LOCKED"))?;
+                self.vault.device_retry(c, *activation)
+            }
+            Request::PairingQr {
+                capability,
+                record,
+                mode,
+            } => {
+                let h = self.handles.lock().map_err(|_| Error("VAULT_BUSY"))?;
+                let c = h.get(capability).ok_or(Error("VAULT_LOCKED"))?;
+                self.vault.native_pairing_qr(c, record, mode)
+            }
+            Request::PairingScan {
+                capability,
+                qr,
+                new_device,
+            } => {
+                let h = self.handles.lock().map_err(|_| Error("VAULT_BUSY"))?;
+                let c = h.get(capability).ok_or(Error("VAULT_LOCKED"))?;
+                let result = self.vault.native_pairing_scan(c, qr, *new_device);
+                wipe_value(qr);
+                result
+            }
+            Request::PairingFrame {
+                capability,
+                handle,
+                message,
+                value,
+                anchor,
+                seal,
+            } => {
+                let h = self.handles.lock().map_err(|_| Error("VAULT_BUSY"))?;
+                let c = h.get(capability).ok_or(Error("VAULT_LOCKED"))?;
+                self.vault
+                    .native_pairing_frame(c, handle, message, value, anchor, *seal)
             }
             Request::DeviceProof {
                 capability,

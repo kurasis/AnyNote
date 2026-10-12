@@ -30,6 +30,9 @@ final class Policy
 
     public static function check(): void
     {
+        if (! is_int(config('api.active_device_limit', 5)) || config('api.active_device_limit', 5) < 1 || config('api.active_device_limit', 5) > 32) {
+            throw new ApiException('TEMPORARY_UNAVAILABLE');
+        }
         $app = self::origin((string) config('api.app_origin'));
         $api = self::origin((string) config('passkeys.issuer'));
         if ($app['host'] === $api['host'] || config('passkeys.rp_id') !== $app['host'] || ! P::isBinary((string) config('api.service_id'), 16) || ! is_file((string) config('passkeys.private_key')) || ! is_file((string) config('passkeys.public_key'))) {

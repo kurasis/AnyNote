@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CapabilitiesController;
+use App\Http\Controllers\DevicesController;
 use App\Http\Controllers\OperatorReadinessController;
 use App\Http\Controllers\ReadinessController;
 use Illuminate\Support\Facades\Route;
@@ -36,3 +37,23 @@ Route::post('/api/v1/admin/accounts/{id}/disable', AuthController::class)->name(
 
 Route::post('/api/v1/me/passkeys', AuthController::class)->name('post_me_passkeys');
 Route::delete('/api/v1/me/sessions', AuthController::class)->name('delete_me_sessions');
+
+// P08 current-device lifecycle and account-private settings genesis.
+Route::get('/api/v1/accounts/{id}/identity', DevicesController::class)->name('get_accounts_id_identity');
+Route::get('/api/v1/accounts/{id}/roster', DevicesController::class)->name('get_accounts_id_roster');
+Route::get('/api/v1/me/devices', DevicesController::class)->name('get_me_devices');
+Route::post('/api/v1/me/devices/{id}/revoke', DevicesController::class)->name('post_me_devices_id_revoke');
+Route::post('/api/v1/me/enrollments', DevicesController::class)->name('post_me_enrollments');
+Route::post('/api/v1/me/enrollments/{id}/approve', DevicesController::class)->name('post_me_enrollments_id_approve');
+Route::post('/api/v1/me/enrollments/{id}/confirm', DevicesController::class)->name('post_me_enrollments_id_confirm');
+Route::get('/api/v1/me/enrollments/{id}/relay', DevicesController::class)->name('get_me_enrollments_id_relay');
+Route::post('/api/v1/me/enrollments/{id}/relay', DevicesController::class)->name('post_me_enrollments_id_relay');
+Route::post('/api/v1/me/recovery-challenge', DevicesController::class)->name('post_me_recovery_challenge');
+Route::post('/api/v1/me/recovery-reset', DevicesController::class)->name('post_me_recovery_reset');
+Route::delete('/api/v1/me/enrollments/{id}', DevicesController::class)->name('delete_me_enrollments_id');
+Route::post('/api/v1/me/settings-genesis', DevicesController::class)->name('post_me_settings_genesis');
+Route::get('/api/v1/me/settings-genesis', DevicesController::class)->name('get_me_settings_genesis');
+Route::post('/api/v1/me/device-envelopes', DevicesController::class)->name('post_me_device_envelopes');
+Route::get('/api/v1/me/device-envelopes', DevicesController::class)->name('get_me_device_envelopes');
+Route::get('/api/v1/me/recovery-envelopes', DevicesController::class)->name('get_me_recovery_envelopes');
+Route::get('/api/v1/me/security-notifications', DevicesController::class)->name('get_me_security_notifications');
