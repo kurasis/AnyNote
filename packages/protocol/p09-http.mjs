@@ -4,6 +4,8 @@ import {initialRoot,registrationRequest} from './auth-client.mjs';
 import {wire} from './adapters/codecs/identity-codec.mjs';
 import {sodium,b64,un64} from './adapters/primitives.mjs';
 import {VaultEngine} from './vault/engine.mjs';
+import {readOwnedSecrets} from './notes/test-fixture.mjs';
+import {sealObject} from './adapters/core.mjs';
 import {Store,phrase} from './notes/test-fixture.mjs';
 import {noteValue} from './notes/client.mjs';
 import {stateDigest} from './adapters/codecs/state-codec.mjs';
@@ -79,6 +81,39 @@ try{
  const nodeEntry=await publish(f,edit(ng.group_id,'entry',null,ns.object_id,content('PUBLIC PWA to native title','PUBLIC PWA to native body'))),c=nodeEntry.request.bundle.envelope.header.context;
  const nativeRead=await nativeCall('open',{request:{group_id:ng.group_id,object_id:c.object_id,revision_id:c.revision_id,object_kind:'entry',thread_id:ns.object_id,bundle:nodeEntry.request.bundle}});check(nativeRead.payload.markdown==='PUBLIC PWA to native body','PWA_ADAPTER_TO_ACTUAL_NATIVE_SQLITE');
  const disk=await peer.native.call({operation:'test-inspect-ciphertext'});check(!JSON.stringify(disk).includes('PUBLIC PWA to native body')&&!JSON.stringify(disk).includes('PUBLIC native to PWA title'),'ACTUAL_NATIVE_INSPECTOR');
+
+ // Eight identical real requests commit one immutable result, one quota charge and one event.
+ const repeatedAttempt=await prepared(f,edit(ng.group_id,'entry',null,ns.object_id,content('PUBLIC repeated race','PUBLIC repeated body'))),beforeRepeated=control('p09-state');
+ const repeatedResults=await Promise.all(Array.from({length:8},()=>f.browser.call(pathFor(repeatedAttempt.request),repeatedAttempt.request)));
+ check(repeatedResults.every(r=>r.status===200),'EIGHT_IDENTICAL_REQUESTS_SUCCEED');
+ check(repeatedResults.every(r=>JSON.stringify(r.json)===JSON.stringify(repeatedResults[0].json)),'EIGHT_IDENTICAL_RECEIPTS');
+ const afterRepeated=control('p09-state');check(afterRepeated.counts.object_revisions===beforeRepeated.counts.object_revisions+1&&afterRepeated.counts.mutation_receipts===beforeRepeated.counts.mutation_receipts+1&&BigInt(afterRepeated.counter)===BigInt(beforeRepeated.counter)+1n,'IDENTICAL_RACE_ONE_DURABLE_EFFECT');
+ await notes(f,'ack',[repeatedAttempt.attempt_id,repeatedResults[0].json]);
+ // Distinct signed edits from one base: exactly one winner; every rejected local draft remains.
+ const base=await open(f,nodeEntry.object_id),racing=[];
+ for(let k=0;k<8;k++)racing.push(await prepared(f,edit(ng.group_id,'entry',nodeEntry.object_id,ns.object_id,content('PUBLIC concurrent edit '+k,'PUBLIC preserved concurrent text '+k),base.object.heads)));
+ const raceBefore=control('p09-state'),results=await Promise.all(racing.map(a=>f.browser.call(pathFor(a.request),a.request))),winner=results.findIndex(r=>r.status===200);
+ check(winner>=0&&results.filter(r=>r.status===200).length===1&&results.filter(r=>r.json?.error?.code==='STALE_REVISION').length===7,'EIGHT_DISTINCT_SAME_BASE_ONE_WINNER');
+ const raceAfter=control('p09-state');check(raceAfter.counts.object_revisions===raceBefore.counts.object_revisions+1&&BigInt(raceAfter.counter)===BigInt(raceBefore.counter)+1n,'CAS_RACE_ONE_EVENT_AND_REVISION');
+ for(let k=0;k<racing.length;k++){if(k===winner)await notes(f,'ack',[racing[k].attempt_id,results[k].json]);else{await notes(f,'reject',[racing[k].attempt_id,'STALE_REVISION']);check((await notes(f,'draft',[racing[k].draft_id])).payload.markdown==='PUBLIC preserved concurrent text '+k,'REJECTED_CONCURRENT_EDIT_PRESERVED');}}
+ const latest=await open(f,nodeEntry.object_id),loser=racing.find((_,k)=>k!==winner),oldDraft=await notes(f,'draft',[loser.draft_id]);
+ const resolved=edit(ng.group_id,'entry',nodeEntry.object_id,ns.object_id,{title:oldDraft.payload.title,markdown:oldDraft.payload.markdown,metadata_kind:'content',tags:[],checklist:[],summary_entry_id:null,preferences:[]},latest.object.heads);
+ resolved.draft_id=loser.draft_id;const resolvedAttempt=await prepared(f,resolved),resolvedResult=await ok(f.browser,pathFor(resolvedAttempt.request),resolvedAttempt.request,'receipt-result');await notes(f,'ack',[resolvedAttempt.attempt_id,resolvedResult]);
+ check((await open(f,nodeEntry.object_id)).payload.markdown===oldDraft.payload.markdown,'EXPLICIT_CONFLICT_REBASE_NEW_REVISION');
+ // A correctly encrypted/resigned body still cannot reuse an old immutable operation ID.
+ const secrets=await readOwnedSecrets({store:f.store}),storedKey=secrets.group_keys.find(k=>k.group_id===ng.group_id),changedPayload=structuredClone(base.payload);
+ changedPayload.context.operation_id=nodeEntry.request.bundle.envelope.header.context.operation_id;changedPayload.context.revision_id=ident();changedPayload.context.parents=[];changedPayload.context.action='create';changedPayload.markdown='PUBLIC changed signed body under old operation';
+ const changedBundle=sealObject(wire(changedPayload),un64(storedKey.group_secret),f.initial.keys.signing.privateKey),sameId={group_id:ng.group_id,object_id:changedPayload.context.object_id,object_kind:'entry',thread_id:ns.object_id,action:'create',bundle:changedBundle},sameBefore=control('p09-state');
+ await denied(f.browser,pathFor(sameId),sameId,['IDEMPOTENCY_MISMATCH']);check(JSON.stringify(control('p09-state'))===JSON.stringify(sameBefore),'SIGNED_BODY_CHANGE_NO_SIDE_EFFECT');
+ // Tombstone and explicit restore retain exact immutable ancestry and original content.
+ const deleting=await publish(f,edit(ng.group_id,'entry',nodeEntry.object_id,ns.object_id,content(),resolvedResult.heads,'soft-delete')),trash=await ok(f.browser,'/groups/'+ng.group_id+'/trash',undefined,'objects-page');check(trash.objects.some(o=>o.object_id===nodeEntry.object_id),'REAL_SIGNED_TOMBSTONE');
+ const deletedState=control('p09-state');await ok(f.browser,pathFor(resolvedAttempt.request),resolvedAttempt.request,'receipt-result');check(JSON.stringify(control('p09-state'))===JSON.stringify(deletedState),'EXACT_OLD_RECEIPT_RETRY_DOES_NOT_RESURRECT');
+ const staleAfterDelete=await prepared(f,edit(ng.group_id,'entry',nodeEntry.object_id,ns.object_id,content('PUBLIC stale resurrection','PUBLIC stale body'),resolvedResult.heads));await denied(f.browser,pathFor(staleAfterDelete.request),staleAfterDelete.request,['STALE_REVISION']);check(JSON.stringify(control('p09-state'))===JSON.stringify(deletedState),'STALE_EDIT_CANNOT_IMPLICITLY_RESTORE');await notes(f,'reject',[staleAfterDelete.attempt_id,'STALE_REVISION']);
+ const tomb=await open(f,nodeEntry.object_id);check(tomb.payload.context.action==='soft-delete'&&tomb.payload.markdown==='','EMPTY_TYPED_TOMBSTONE_PAYLOAD');
+ const parent=tomb.payload.context.parents[0],parentBundle=await ok(f.browser,'/objects/'+nodeEntry.object_id+'/revisions/'+parent.revision_id,undefined,'bundle-result'),prior=await notes(f,'open',[{group_id:ng.group_id,object_id:nodeEntry.object_id,revision_id:parent.revision_id,object_kind:'entry',thread_id:ns.object_id,bundle:parentBundle.bundle}]);
+ check(prior.envelope_digest===parent.envelope_digest,'EXACT_PRE_DELETE_PARENT_VERIFIED');
+ const restored=await publish(f,edit(ng.group_id,'entry',nodeEntry.object_id,ns.object_id,{title:prior.payload.title,markdown:prior.payload.markdown,metadata_kind:'content',tags:[],checklist:[],summary_entry_id:null,preferences:[]},deleting.receipt.heads,'restore'));
+ check(restored.request.bundle.envelope.header.context.revision_id!==parent.revision_id&&(await open(f,nodeEntry.object_id)).payload.markdown===prior.payload.markdown,'EXPLICIT_RESTORE_FRESH_IMMUTABLE_REVISION');
  const inspection=control('p09-inspect',JSON.stringify({markers:['PUBLIC synthetic private group title','PUBLIC synthetic private thread title','PUBLIC synthetic private entry title',body,'PUBLIC native to PWA title','PUBLIC PWA to native body',b64(f.initial.keys.signing.privateKey),f.initial.kit.recovery_secret]}));check(inspection.status==='PASS','SQL_AND_LOG_PLAINTEXT_PRIVATE_KEY_ABSENCE');
  mkdirSync(root+'/artifacts/p09',{recursive:true});const report={purpose:'P09 actual verified HTTPS/SQL/native private-note vertical slice',status:'PASS',checks:fixtureCheckCount(),source_commit:spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).stdout.trim(),source_tree_dirty:!!spawnSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}).stdout.trim(),physical_acceptance:false,independent_review:'NOT_RUN',native_storage:'Actual protected SQLite and main-window IPC',node_storage:'Transactional model; actual IndexedDB covered by hosted UI job'};
  writeFileSync(root+'/artifacts/p09/http-report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
