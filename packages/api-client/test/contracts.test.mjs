@@ -150,11 +150,11 @@ test("OpenAPI local refs and operation signatures resolve; future product paths 
       ids.add(op.operationId);
       for (const parameter of op.parameters)
         assert.ok(path.includes("{" + parameter.name + "}"));
-      assert.equal(op["x-implemented"], ["P06", "P08"].includes(op["x-implementation-phase"]) || ["get_capabilities", "get_health_live", "get_health_ready"].includes(op.operationId));
+      assert.equal(op["x-implemented"], ["P06", "P08", "P09"].includes(op["x-implementation-phase"]) || ["get_capabilities", "get_health_live", "get_health_ready"].includes(op.operationId));
       if (op.operationId === "get_health_ready") assert.deepEqual(op.security, [{NativeBearer:[]}]);
-      if (op["x-implemented"] && !["P06", "P08"].includes(op["x-implementation-phase"])) assert.ok(["get", "head"].includes(method));
-      if (["P06", "P08"].includes(op["x-implementation-phase"])) assert.ok(op.responses["200"].content["application/json"].schema.$ref);
+      if (op["x-implemented"] && !["P06", "P08", "P09"].includes(op["x-implementation-phase"])) assert.ok(["get", "head"].includes(method));
+      if (["P06", "P08", "P09"].includes(op["x-implementation-phase"])) assert.ok(op.responses["200"].content["application/json"].schema.$ref);
       assert.ok(!path.includes("/search"));
     }
-  assert.equal(ids.size, 90);
+  assert.equal(ids.size, 94);
 });

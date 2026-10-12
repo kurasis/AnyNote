@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CapabilitiesController;
 use App\Http\Controllers\DevicesController;
+use App\Http\Controllers\NotesController;
 use App\Http\Controllers\OperatorReadinessController;
 use App\Http\Controllers\ReadinessController;
 use Illuminate\Support\Facades\Route;
@@ -59,18 +60,18 @@ Route::get('/api/v1/me/recovery-envelopes', DevicesController::class)->name('get
 Route::get('/api/v1/me/security-notifications', DevicesController::class)->name('get_me_security_notifications');
 
 // P09 account-private E2EE content; shared policy transitions remain P10.
-Route::get('/api/v1/groups', \App\Http\Controllers\NotesController::class)->name('get_groups');
-Route::post('/api/v1/groups', \App\Http\Controllers\NotesController::class)->name('post_groups');
-Route::get('/api/v1/groups/{id}', \App\Http\Controllers\NotesController::class)->name('get_groups_id');
-Route::get('/api/v1/groups/{id}/threads', \App\Http\Controllers\NotesController::class)->name('get_groups_id_threads');
-Route::post('/api/v1/groups/{id}/threads', \App\Http\Controllers\NotesController::class)->name('post_groups_id_threads');
-Route::get('/api/v1/groups/{id}/trash', \App\Http\Controllers\NotesController::class)->name('get_groups_id_trash');
-Route::get('/api/v1/threads/{id}/entries', \App\Http\Controllers\NotesController::class)->name('get_threads_id_entries');
-Route::post('/api/v1/threads/{id}/entries', \App\Http\Controllers\NotesController::class)->name('post_threads_id_entries');
-Route::get('/api/v1/objects/{id}', \App\Http\Controllers\NotesController::class)->name('get_objects_id');
-Route::get('/api/v1/objects/{id}/revisions', \App\Http\Controllers\NotesController::class)->name('get_objects_id_revisions');
-Route::get('/api/v1/objects/{id}/revisions/{revision}', \App\Http\Controllers\NotesController::class)->name('get_objects_id_revisions_revision');
-Route::post('/api/v1/objects/{id}/revisions', \App\Http\Controllers\NotesController::class)->name('post_objects_id_revisions');
-Route::post('/api/v1/objects/{id}/tombstone', \App\Http\Controllers\NotesController::class)->name('post_objects_id_tombstone');
-Route::post('/api/v1/objects/{id}/restore', \App\Http\Controllers\NotesController::class)->name('post_objects_id_restore');
-Route::get('/api/v1/me/content-receipts/{id}', \App\Http\Controllers\NotesController::class)->name('get_me_content_receipts_id');
+Route::get('/api/v1/groups', NotesController::class)->name('get_groups');
+Route::post('/api/v1/groups', NotesController::class)->name('post_groups');
+Route::get('/api/v1/groups/{id}', NotesController::class)->name('get_groups_id');
+Route::get('/api/v1/groups/{id}/threads', NotesController::class)->name('get_groups_id_threads');
+Route::post('/api/v1/groups/{id}/threads', NotesController::class)->name('post_groups_id_threads');
+Route::get('/api/v1/groups/{id}/trash', NotesController::class)->name('get_groups_id_trash');
+Route::get('/api/v1/threads/{id}/entries', NotesController::class)->name('get_threads_id_entries');
+Route::post('/api/v1/threads/{id}/entries', NotesController::class)->name('post_threads_id_entries');
+Route::get('/api/v1/objects/{id}', NotesController::class)->name('get_objects_id');
+Route::get('/api/v1/objects/{id}/revisions', NotesController::class)->name('get_objects_id_revisions');
+Route::get('/api/v1/objects/{id}/revisions/{revision}', NotesController::class)->name('get_objects_id_revisions_revision');
+Route::post('/api/v1/objects/{id}/revisions', NotesController::class)->name('post_objects_id_revisions');
+Route::post('/api/v1/objects/{id}/tombstone', NotesController::class)->name('post_objects_id_tombstone');
+Route::post('/api/v1/objects/{id}/restore', NotesController::class)->name('post_objects_id_restore');
+Route::get('/api/v1/me/content-receipts/{id}', NotesController::class)->name('get_me_content_receipts_id');

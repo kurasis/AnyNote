@@ -19,7 +19,8 @@ function mask(){
  for(const id of ['phrase','group-title','thread-title','note-title','note-body','checklist-text','loaded-search'])$(id).value='';
  for(const id of ['groups','threads','entries','drafts','checklist','preview','versions','trash-items'])$(id).replaceChildren();
  for(const id of ['group-heading','thread-heading','audience','conflict-remote','save-state'])$(id).textContent='';
- $('lock-state').textContent=text('locked');$('status').textContent=text('locked');delete $('status').dataset.error;
+ $('lock-state').textContent=text('locked');$('status').textContent=text('locked');delete $('status').dataset.error;delete $('status').dataset.busy;
+ for(const id of ['unlock','login','create-group','create-thread','save-note','save-local','refresh','retry'])$(id).disabled=false;
 }
 function translate(){
  document.documentElement.lang=language;$('language').value=language;
@@ -41,7 +42,8 @@ function run(action){
   catch(e){if(g===generation)reportError(e);throw e;}
   finally{if(g===generation){delete $('status').dataset.busy;for(const id of ['unlock','login','create-group','create-thread','save-note','save-local','refresh','retry'])$(id).disabled=false;}}
  });
- tail=r.catch(()=>{});return r;
+ // UI failures are reported above, without a second unhandled rejection.
+ tail=r.catch(()=>{});return tail;
 }
 function checkGeneration(g){if(g!==generation||document.hidden)throw Error('STALE_CAPABILITY');}
 function savedState(state){$('save-state').dataset.state=state;$('save-state').textContent=text({SAVING:'saving',LOCAL_SAVED:'local',QUEUED:'local',SENT_UNKNOWN:'unknown',SYNCING:'syncing',COMMITTED:'synced',CONFLICT:'local_conflict'}[state]??'attention');}
@@ -138,7 +140,8 @@ async function submitDraft(draft_id){
   let result=known;if(!result){sent=await vault.notes('send',[queued.attempt_id]);result=await api.publish(sent.request);}
   const ack=await vault.notes('ack',[queued.attempt_id,result]);await summary();
   if(editor?.draft_id===draft_id){if(ack.draft_retired){editor.draft_id=null;editor.action='update';editor.parents=result.heads;savedState(editVersion>0?'SAVING':'COMMITTED');}else{const local=await vault.notes('draft',[draft_id]);editor.parents=local.payload.context.parents;editor.action=local.payload.context.action;savedState('LOCAL_SAVED');}}
-  if(sent){const c=sent.request.bundle.envelope.header.context;references.set(c.object_id,{group_id:c.group_id,object_id:c.object_id,object_kind:c.object_kind,thread_id:c.thread_id,heads:result.heads,archived:c.archived,tombstoned:c.action==='soft-delete'});}return result;
+  const witness=(await vault.notes('summary')).witnesses.find(w=>w.revision_id===ack.revision_id);
+  if(!witness)throw Error('INTEGRITY_FAILURE');references.set(witness.object_id,{...witness,heads:result.heads,tombstoned:witness.action==='soft-delete'});return result;
  }catch(e){
   if(['STALE_REVISION','REKEY_REQUIRED','HISTORY_CLOSURE_REQUIRED','POLICY_CHANGED','ROSTER_CHANGED','DEVICE_REVOKED','DEVICE_NOT_TRUSTED','ROLE_FORBIDDEN','NOT_FOUND','ACCESS_REVOKED'].includes(e.message)){await vault.notes('reject',[queued.attempt_id,e.message]);savedState(e.message==='STALE_REVISION'?'CONFLICT':'NEEDS_ATTENTION');if(e.message==='STALE_REVISION'&&editor?.draft_id===draft_id)await showConflict();}else savedState('SENT_UNKNOWN');throw e;
  }
@@ -157,7 +160,7 @@ async function createThread(){
 async function retryPending(){
  const s=await vault.notes('summary');
  for(const g of s.groups)if(g.state==='GENESIS_PENDING'){const r=await vault.notes('retryGroup',[g.group_id]);const status=await api.call('/groups','group-create','group-status',r.request);await vault.notes('group',[status]);groups.set(g.group_id,status);}
- for(const d of s.drafts)if(d.state==='QUEUED'||d.state==='SENT_UNKNOWN')await submitDraft(d.draft_id);
+ for(const d of s.drafts)if(d.state==='QUEUED'||d.state==='SENT_UNKNOWN'||(d.state==='LOCAL_SAVED'&&d.object_kind==='group-metadata'&&s.groups.some(g=>g.group_id===d.group_id&&g.state==='GENESIS_PENDING')))await submitDraft(d.draft_id);
 }
 async function showConflict(){
  const state=await api.call('/objects/'+editor.object_id,null,'object-state'),opened=await openRevision(editor.group_id,state.object,state.object.heads[0]);pendingConflict={heads:state.object.heads,payload:opened.payload};$('conflict-remote').textContent=opened.payload.title+'\n\n'+opened.payload.markdown;$('conflict').hidden=false;
