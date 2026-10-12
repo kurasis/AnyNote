@@ -6,7 +6,7 @@ from datetime import datetime,timezone
 ROOT=Path(__file__).resolve().parents[1]
 role=sys.argv[1]
 assert role in ['linux','windows'] and (role=='windows')==(sys.platform=='win32')
-tests=subprocess.run(['cargo','test','--manifest-path','packages/vault-native/Cargo.toml','--locked','--all-features','-j','4','--','--test-threads=1'],cwd=ROOT,text=True,capture_output=True,check=True)
+tests=subprocess.run(['cargo','test','--manifest-path','packages/vault-native/Cargo.toml','--locked','--all-features','-j','4','--','--test-threads=1'],cwd=ROOT,text=True,encoding='utf-8',capture_output=True,check=True)
 assert '15 passed; 0 failed; 0 ignored' in tests.stdout,'The 15 native custody tests did not execute'
 assert 'custody::tests::portable_compound_bytes_require_both_keys_and_exact_descriptor ... ok' in tests.stdout
 if role=='windows':assert 'actual_windows_wts_registration_and_message_fences_without_hello_objects ... ok' in tests.stdout
