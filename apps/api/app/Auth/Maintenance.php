@@ -16,6 +16,8 @@ final class Maintenance
                 $count += DB::table($table)->where('expires_at', '<', $table === 'auth_rate_buckets' ? now() : now()->subDay())->limit(1000)->delete();
             }
             $count += DB::table('refresh_tokens')->where('expires_at', '<', now()->subDay())->limit(1000)->delete();
+            $count += DB::table('device_transition_receipts')->where('expires_at', '<', now())->limit(1000)->delete();
+            $count += DB::table('account_security_notifications')->where('created_at', '<', now()->subDays(30))->limit(1000)->delete();
             // Never delete a still-refreshable native family, durable device, root, roster or content.
             $ids = DB::table('auth_sessions')->whereNotNull('absolute_expires_at')->where('absolute_expires_at', '<', now()->subDay())->limit(100)->pluck('id');
             foreach ($ids as $id) {

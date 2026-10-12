@@ -14,7 +14,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P05 | VERIFIED | Full native/browser core; 146 frozen frames, general RFC8785, fresh two-way Worker/Rust bytes and PHP public signatures; all eight hosted jobs PASS, actual native/Worker 1 GB measurements retained; physical memory and independent review remain open |
 | P06 | VERIFIED | 215 actual HTTPS/SQL attack checks, 18 sandboxed strict-CSP browser checks, four native tests on Linux/Windows; all ten hosted gates PASS; exact-source evidence retained |
 | P07 | VERIFIED | Five Node custody suites, 28 actual HTTPS/SQL and 28 sandboxed browser checks, fifteen native custody tests per Linux/Windows platform plus explicit official-header ABI; all twelve hosted gates PASS |
-| P08 | NOT STARTED | P05–P07 |
+| P08 | IN PROGRESS | Signed lifecycle/relay/recovery, protected client/native workflows and UI implemented; attack and hosted acceptance pending |
 | P09 | NOT STARTED | P04/P07/P08 |
 | P10 | NOT STARTED | P09 |
 | P11 | NOT STARTED | P09/P10 |

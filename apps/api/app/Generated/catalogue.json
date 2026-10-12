@@ -369,7 +369,8 @@
       "authorization": "Account/session/device and signed operation; see original chapter 08",
       "operation_id": "get_accounts_id_identity",
       "phase": "P08",
-      "implemented": false
+      "implemented": true,
+      "response": "p08-devices/identity-result"
     },
     {
       "method": "GET",
@@ -378,7 +379,8 @@
       "authorization": "Account/session/device and signed operation; see original chapter 08",
       "operation_id": "get_accounts_id_roster",
       "phase": "P08",
-      "implemented": false
+      "implemented": true,
+      "response": "p08-devices/roster-result"
     },
     {
       "method": "POST",
@@ -809,7 +811,8 @@
       "authorization": "Account/session/device and signed operation; see original chapter 08",
       "operation_id": "get_me_devices",
       "phase": "P08",
-      "implemented": false
+      "implemented": true,
+      "response": "p08-devices/devices-result"
     },
     {
       "method": "POST",
@@ -818,7 +821,9 @@
       "authorization": "Account/session/device and signed operation; see original chapter 08",
       "operation_id": "post_me_devices_id_revoke",
       "phase": "P08",
-      "implemented": false
+      "implemented": true,
+      "response": "p08-devices/event-result",
+      "request": "p08-devices/event-request"
     },
     {
       "method": "POST",
@@ -827,7 +832,9 @@
       "authorization": "Account/session/device and signed operation; see original chapter 08",
       "operation_id": "post_me_enrollments",
       "phase": "P08",
-      "implemented": false
+      "implemented": true,
+      "response": "p08-devices/pending-result",
+      "request": "p08-devices/create-request"
     },
     {
       "method": "POST",
@@ -836,7 +843,9 @@
       "authorization": "Account/session/device and signed operation; see original chapter 08",
       "operation_id": "post_me_enrollments_id_approve",
       "phase": "P08",
-      "implemented": false
+      "implemented": true,
+      "response": "p08-devices/pending-result",
+      "request": "p08-devices/approve-request"
     },
     {
       "method": "POST",
@@ -845,7 +854,9 @@
       "authorization": "Account/session/device and signed operation; see original chapter 08",
       "operation_id": "post_me_enrollments_id_confirm",
       "phase": "P08",
-      "implemented": false
+      "implemented": true,
+      "response": "p08-devices/event-result",
+      "request": "p08-devices/event-request"
     },
     {
       "method": "GET",
@@ -854,7 +865,8 @@
       "authorization": "Account/session/device and signed operation; see original chapter 08",
       "operation_id": "get_me_enrollments_id_relay",
       "phase": "P08",
-      "implemented": false
+      "implemented": true,
+      "response": "p08-devices/relay-result"
     },
     {
       "method": "POST",
@@ -863,7 +875,9 @@
       "authorization": "Account/session/device and signed operation; see original chapter 08",
       "operation_id": "post_me_enrollments_id_relay",
       "phase": "P08",
-      "implemented": false
+      "implemented": true,
+      "response": "p08-devices/relay-result",
+      "request": "p08-devices/relay-request"
     },
     {
       "method": "POST",
@@ -934,7 +948,9 @@
       "authorization": "Account/session/device and signed operation; see original chapter 08",
       "operation_id": "post_me_recovery_challenge",
       "phase": "P08",
-      "implemented": false
+      "implemented": true,
+      "response": "p08-devices/challenge-result",
+      "request": "p08-devices/challenge-request"
     },
     {
       "method": "POST",
@@ -943,7 +959,9 @@
       "authorization": "Account/session/device and signed operation; see original chapter 08",
       "operation_id": "post_me_recovery_reset",
       "phase": "P08",
-      "implemented": false
+      "implemented": true,
+      "response": "p08-devices/event-result",
+      "request": "p08-devices/event-request"
     },
     {
       "method": "DELETE",
@@ -1219,6 +1237,79 @@
         "CookieSession",
         "NativeBearer"
       ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/me/enrollments/{id}",
+      "operation_id": "delete_me_enrollments_id",
+      "phase": "P08",
+      "implemented": true,
+      "summary": "delete me enrollments id",
+      "authorization": "Current account session; trusted device for inventory/key access; signed frozen lifecycle records and CAS required for mutation",
+      "response": "p08-devices/cancel-result",
+      "request": "p08-devices/empty-request"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/me/settings-genesis",
+      "operation_id": "post_me_settings_genesis",
+      "phase": "P08",
+      "implemented": true,
+      "summary": "post me settings genesis",
+      "authorization": "Current account session; trusted device for inventory/key access; signed frozen lifecycle records and CAS required for mutation",
+      "response": "p08-devices/genesis-result",
+      "request": "p08-devices/genesis-request"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/settings-genesis",
+      "operation_id": "get_me_settings_genesis",
+      "phase": "P08",
+      "implemented": true,
+      "summary": "get me settings genesis",
+      "authorization": "Current account session; trusted device for inventory/key access; signed frozen lifecycle records and CAS required for mutation",
+      "response": "p08-devices/genesis-result"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/me/device-envelopes",
+      "operation_id": "post_me_device_envelopes",
+      "phase": "P08",
+      "implemented": true,
+      "summary": "post me device envelopes",
+      "authorization": "Current account session; trusted device for inventory/key access; signed frozen lifecycle records and CAS required for mutation",
+      "response": "p08-devices/cancel-result",
+      "request": "p08-devices/envelope-request"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/device-envelopes",
+      "operation_id": "get_me_device_envelopes",
+      "phase": "P08",
+      "implemented": true,
+      "summary": "get me device envelopes",
+      "authorization": "Current account session; trusted device for inventory/key access; signed frozen lifecycle records and CAS required for mutation",
+      "response": "p08-devices/envelope-result"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/recovery-envelopes",
+      "operation_id": "get_me_recovery_envelopes",
+      "phase": "P08",
+      "implemented": true,
+      "summary": "get me recovery envelopes",
+      "authorization": "Current account session; trusted device for inventory/key access; signed frozen lifecycle records and CAS required for mutation",
+      "response": "p08-devices/envelope-result"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/security-notifications",
+      "operation_id": "get_me_security_notifications",
+      "phase": "P08",
+      "implemented": true,
+      "summary": "get me security notifications",
+      "authorization": "Current account session; trusted device for inventory/key access; signed frozen lifecycle records and CAS required for mutation",
+      "response": "p08-devices/notifications-result"
     }
   ]
 }

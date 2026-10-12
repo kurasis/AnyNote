@@ -90,6 +90,7 @@ pub fn limit(profile: &str, kind: &str) -> usize {
     match profile {
         "p02-identity-c1" => 16384,
         "p02-file-c1" => 1048576,
+        "p08-local-v1" => 524288,
         "p02-state-c1" => {
             if kind == "qr" {
                 8192
@@ -136,6 +137,10 @@ impl Codec {
                 include_str!("../../contracts/p02-group-c2.schema.json"),
             ),
             ("p02-v1", include_str!("../../contracts/p02-v1.schema.json")),
+            (
+                "p08-local-v1",
+                include_str!("../../contracts/p08-devices.schema.json"),
+            ),
         ];
         let values: Vec<_> = schemas
             .iter()
@@ -146,7 +151,12 @@ impl Codec {
                 )
             })
             .collect();
-        let mut registry = jsonschema::Registry::new();
+        let auth_schema: Value =
+            serde_json::from_str(include_str!("../../contracts/p06-auth.schema.json"))
+                .map_err(|_| Error("SCHEMA_CONFIGURATION"))?;
+        let mut registry = jsonschema::Registry::new()
+            .add("urn:anynote:p06:auth:v1", auth_schema)
+            .map_err(|_| Error("SCHEMA_CONFIGURATION"))?;
         for (_, s) in &values {
             registry = registry
                 .add(s["$id"].as_str().unwrap(), s.clone())

@@ -85,6 +85,8 @@ final class Native
             $session = P::b64(random_bytes(16));
             DB::table('auth_sessions')->insert(['id' => $session, 'account_id' => $browser->account_id, 'device_id' => null, 'secret_hash' => hash('sha256', random_bytes(32)), 'recovery_generation' => $browser->recovery_generation, 'state' => 'restricted', 'transport' => 'native', 'family_id' => P::b64(random_bytes(16)), 'device_commitment' => $d->device_commitment, 'expires_at' => now()->addSeconds(60), 'absolute_expires_at' => now()->addDays(30), 'created_at' => now(), 'authenticated_at' => now()]);
             $d->session_id = $session;
+            $d->authorizing_session_id = $browser->id;
+            $d->authorizing_device_id = $browser->device_id;
             $d->id = $id;
             $d->issuer = config('passkeys.issuer');
             $repo = new Repository(DB::table('auth_sessions')->where('id', $session)->first(), $d);

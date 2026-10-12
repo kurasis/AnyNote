@@ -1,1 +1,4 @@
 :root { color-scheme: light dark; font: 17px/1.5 system-ui, sans-serif; } body { margin: 0; } main { max-width: 760px; margin: auto; padding: 24px; } section { border-top: 1px solid #888; padding: 18px 0; } label { display: block; margin: 12px 0; } input { max-width: 95%; padding: 9px; } button { padding: 12px; margin: 6px 8px 6px 0; cursor: pointer; } pre { white-space: pre-wrap; overflow-wrap: anywhere; } #status { min-height: 2em; } li { margin: 12px 0; overflow-wrap: anywhere; }
+
+#qr { background: white; max-width: 100%; overflow: auto; }
+#video { max-width: 100%; }

@@ -19,6 +19,11 @@ use std::{
 use zeroize::{Zeroize, Zeroizing};
 #[cfg_attr(not(windows), allow(dead_code))]
 mod custody;
+mod device_groups;
+mod device_local;
+mod device_pairing;
+mod device_roster;
+mod devices;
 mod dpapi;
 pub mod ipc;
 pub mod lifecycle;
@@ -187,6 +192,7 @@ impl LockSignal {
         self.0.fetch_add(1, Ordering::SeqCst);
         if let Some(inner) = self.1.upgrade() {
             if let Ok(mut guard) = inner.try_lock() {
+                guard.device_channels.clear();
                 guard.secrets = None;
                 return;
             }
@@ -200,6 +206,7 @@ impl LockSignal {
                             .as_ref()
                             .is_some_and(|s| s.generation != generation.load(Ordering::SeqCst))
                     {
+                        guard.device_channels.clear();
                         guard.secrets = None;
                     }
                     pending.store(false, Ordering::SeqCst);
@@ -226,6 +233,8 @@ impl Drop for Secrets {
     }
 }
 struct Inner {
+    device_anchor: Option<Value>,
+    device_channels: std::collections::BTreeMap<String, device_pairing::Channel>,
     conn: Connection,
     secrets: Option<Secrets>,
     observed_revision: u64,
@@ -283,6 +292,8 @@ impl Vault {
         ))?;
         check(count == 2, "UNSUPPORTED_LOCAL_SCHEMA")?;
         let inner = Arc::new(Mutex::new(Inner {
+            device_anchor: None,
+            device_channels: Default::default(),
             conn,
             secrets: None,
             observed_revision: 0,
@@ -307,6 +318,7 @@ impl Vault {
                             || s.generation != generation.load(Ordering::SeqCst)
                     });
                     if stale {
+                        i.device_channels.clear();
                         i.secrets = None;
                         generation.fetch_add(1, Ordering::SeqCst);
                     }
@@ -333,12 +345,14 @@ impl Vault {
     pub fn lock(&self) {
         self.signal.invalidate();
         if let Ok(mut i) = self.inner.lock() {
+            i.device_channels.clear();
             i.secrets = None;
         }
     }
     pub fn lock_all(&self) -> Result<()> {
         self.signal.invalidate();
         let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
+        i.device_channels.clear();
         i.secrets = None;
         let tx = db(i
             .conn
@@ -366,6 +380,7 @@ impl Vault {
         {
             return Ok("unlocked");
         }
+        i.device_channels.clear();
         i.secrets = None;
         Ok("locked")
     }
@@ -546,6 +561,7 @@ impl Vault {
             || s.revision < i.observed_revision
             || !t.checked_sub(secret.last).is_some_and(|v| v < 300000)
         {
+            i.device_channels.clear();
             i.secrets = None;
             return Err(Error("STALE_CAPABILITY"));
         }
@@ -643,7 +659,10 @@ impl Vault {
         check(s.epoch == state_before.epoch, "STALE_CAPABILITY")?;
         self.fence(&s, fence)?;
         for (r, f) in &frames {
-            check(r.id != s.vault_id, "RESERVED_RECORD")?;
+            check(
+                r.id != s.vault_id && r.id != device_local::control_id(&self.scope)?,
+                "RESERVED_RECORD",
+            )?;
             let old: Option<Vec<u8>> = db(tx
                 .query_row("SELECT frame FROM records WHERE id=?1", [&r.id], |row| {
                     row.get(0)
@@ -798,13 +817,22 @@ impl Vault {
                 let bytes: Vec<u8> = db(row.get(1))?;
                 let f = strict(&bytes, 8_388_608)?;
                 let kind = text(&f["context"]["record_kind"])?;
-                let mut p = objects::open_local(
-                    &self.codec,
-                    &bytes,
-                    &old_key,
-                    &canonical(&self.context(kind, &id)?)?,
-                )?;
-                let new = objects::seal_local(&self.codec, &canonical(&p)?, &key);
+                let additive = f["contract"] == "p08-local-v1";
+                let mut p = if additive {
+                    device_local::open(&self.scope, &s.pins, &id, kind, &f, &old_key)?
+                } else {
+                    objects::open_local(
+                        &self.codec,
+                        &bytes,
+                        &old_key,
+                        &canonical(&self.context(kind, &id)?)?,
+                    )?
+                };
+                let new = if additive {
+                    device_local::seal(&self.scope, &s.pins, &id, kind, &p, &key)
+                } else {
+                    objects::seal_local(&self.codec, &canonical(&p)?, &key)
+                };
                 wipe_value(&mut p);
                 let new = new?;
                 check(
@@ -827,6 +855,7 @@ impl Vault {
             "STALE_CAPABILITY",
         )?;
         db(tx.commit())?;
+        i.device_channels.clear();
         i.secrets = None;
         i.anchors.clear();
         i.observed_revision = s.revision;

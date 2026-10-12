@@ -117,13 +117,13 @@ export function possession(challenge, keys, expected) {
 }
 import * as stateExports from './adapters/codecs/state-codec.mjs';
 import {identitySigningInput} from './adapters/codecs/identity-codec.mjs';
-export function registrationRequest(registration,initial,challenge) {
+export function registrationRequest(registration,initial,challenge,activeDeviceLimit='5') {
   const expected={service_id:initial.identity.body.service_id,account_id:initial.identity.body.account_id,root_fingerprint:initial.fingerprint};
   if(challenge.context.intent!=='register'||challenge.context.generation!=='0'||challenge.context.roster!==null)throw Error('INVALID_REGISTER_CHALLENGE');
   const confirmation=possession(challenge,initial.keys,expected);
   const cb={...identityCommon,purpose:'provisional-device-certificate',...expected,recovery_generation:'0',predecessor_roster:null,issuer:{kind:'root',root_fingerprint:initial.fingerprint},device_id:initial.device.device_id,device_signing_key:initial.device.signing_key,device_encryption_key:initial.device.encryption_key,capabilities:initial.device.capabilities,pairing_transcript_digest:stateDigest('challenge',wire(challenge))};
   const certificate={body:cb,signature:b64(sodium.crypto_sign_detached(identitySigningInput('certificate-body',wire(cb)),initial.root.signing.privateKey))};
   const operation=b64(sodium.randombytes_buf(16));
-  const body={...stateCommon,purpose:'device-roster-event',...expected,operation_id:operation,generation:'0',version:'0',predecessor:null,kind:'register',signer:'root',payload:{challenge,certificate,confirmation,active_device_limit:'5'}};
+  const body={...stateCommon,purpose:'device-roster-event',...expected,operation_id:operation,generation:'0',version:'0',predecessor:null,kind:'register',signer:'root',payload:{challenge,certificate,confirmation,active_device_limit:activeDeviceLimit}};
   return authValue('register-request',{version:1,registration_id:registration,operation_id:operation,identity:initial.identity,roster:{body,signature:b64(sodium.crypto_sign_detached(stateExports.stateSigningInput('event-body',wire(body)),initial.root.signing.privateKey))}});
 }

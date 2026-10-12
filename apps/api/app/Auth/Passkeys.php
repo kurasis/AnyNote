@@ -141,6 +141,7 @@ final class Passkeys
                             throw new ApiException('AUTH_REQUIRED');
                         }
                         $this->persist($account, $record);
+                        DB::table('account_security_notifications')->insert(['id' => P::b64(random_bytes(16)), 'account_id' => $account, 'kind' => 'passkey-added']);
 
                         return ['version' => 1, 'status' => 'ok'];
                     }

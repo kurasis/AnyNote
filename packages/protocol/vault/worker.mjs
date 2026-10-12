@@ -2,18 +2,20 @@ import {IndexedVault,ensure,fail,id} from './store.mjs';
 import {withKdf} from './kdf.mjs';
 import {VaultEngine} from './engine.mjs';
 import {initialRoot,registrationRequest} from '../auth-client.mjs';
-import {sodium,b64} from '../adapters/primitives.mjs';
-let engine,initial,queue=Promise.resolve(),queued=0;
-const operations=new Set(['open','info','initialize','unlock','lock','lease','save','read','proof','addPrf','preparePrf','prfOptions','unlockPrf','removeWrapper','evict','prepareRoot','registerRequest','commitRoot','discardRoot']);
+import {sodium,b64,deviceKeys} from '../adapters/primitives.mjs';
+let engine,initial,candidate,queue=Promise.resolve(),queued=0;
+const operations=new Set(['open','info','initialize','unlock','lock','lease','save','read','proof','addPrf','preparePrf','prfOptions','unlockPrf','removeWrapper','evict','prepareRoot','registerRequest','commitRoot','discardRoot','prepareDevice','commitDevice','devices']);
 function clean(v){if(v instanceof Uint8Array)sodium.memzero(v);else if(v&&typeof v==='object')for(const k of Object.keys(v)){clean(v[k]);if(typeof v[k]==='string')v[k]='';}}
 async function run(op,args,client){
   if(op==='open'){await engine?.close();engine=new VaultEngine(await new IndexedVault(args[0]).open());return engine.info();}
+  if(op==='prepareDevice'){clean(candidate?.keys);candidate=undefined;ensure(args.length===1,'INVALID_REQUEST');const {service_id,account_id,root_fingerprint}=args[0];ensure(id(service_id)&&id(account_id)&&typeof root_fingerprint==='string'&&root_fingerprint.length===43&&Object.keys(args[0]).sort().join(',')==='account_id,root_fingerprint,service_id','INVALID_PROFILE');const keys=deviceKeys(),device={device_id:b64(sodium.randombytes_buf(16)),signing_key:b64(keys.signing.publicKey),encryption_key:b64(keys.encryption.publicKey),capabilities:['delegate-device','distribute-group-key','receive-group-key','sign-content']};candidate={keys,device,pins:structuredClone(args[0])};return {device,pins:candidate.pins,profile:{service_id,account_id,device_id:device.device_id,profile_id:b64(sodium.randombytes_buf(16))}};}
   if(op==='prepareRoot'){ensure(id(args[0])&&id(args[1]),'INVALID_PROFILE');initial?.dispose();initial=await initialRoot(...args);return structuredClone({identity:initial.identity,device:initial.device,fingerprint:initial.fingerprint,kit:initial.kit});}
-  if(op==='registerRequest'){ensure(initial,'NO_PREPARATION');return structuredClone(registrationRequest(args[0],initial,args[1]));}
+  if(op==='registerRequest'){ensure(initial,'NO_PREPARATION');return structuredClone(registrationRequest(args[0],initial,args[1],args[2]??'5'));}
   if(op==='discardRoot'){initial?.dispose();initial=undefined;return {state:'discarded'};}
   ensure(engine,'PROFILE_REQUIRED');
+  if(op==='commitDevice'){ensure(candidate&&engine.scope.device_id===candidate.device.device_id&&engine.scope.account_id===candidate.pins.account_id&&engine.scope.service_id===candidate.pins.service_id,'LOCAL_CONTEXT_MISMATCH');try{return await withKdf(()=>engine.initialize(args[0],{device_signing_secret:b64(candidate.keys.signing.privateKey),device_encryption_secret:b64(candidate.keys.encryption.privateKey),group_keys:[]},candidate.pins),client);}finally{clean(candidate.keys);candidate=undefined;}}
   if(op==='commitRoot'){ensure(initial&&engine.scope.device_id===initial.device.device_id&&engine.scope.account_id===initial.identity.body.account_id&&engine.scope.service_id===initial.identity.body.service_id,'LOCAL_CONTEXT_MISMATCH');try{return await withKdf(()=>engine.initialize(args[0],{device_signing_secret:b64(initial.keys.signing.privateKey),device_encryption_secret:b64(initial.keys.encryption.privateKey),group_keys:[]},{service_id:initial.identity.body.service_id,account_id:initial.identity.body.account_id,root_fingerprint:initial.fingerprint}),client);}finally{initial?.dispose();initial=undefined;}}
-  if(op==='lock'){initial?.dispose();initial=undefined;await engine.globalLock();return {state:'locked'};}
+  if(op==='lock'){clean(candidate?.keys);candidate=undefined;initial?.dispose();initial=undefined;await engine.globalLock();return {state:'locked'};}
   ensure(typeof engine[op]==='function','INVALID_VAULT_COMMAND');return ['initialize','unlock','removeWrapper'].includes(op)?withKdf(()=>engine[op](...args),client):engine[op](...args);
 }
 self.onmessage=({data:r})=>{
