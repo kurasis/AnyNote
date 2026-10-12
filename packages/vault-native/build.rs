@@ -29,7 +29,7 @@ fn main() {
     fs::copy(base.join("hello.rs"), out.join("hello/mod.rs")).unwrap();
     println!("cargo:rerun-if-changed={}", base.join("hello.rs").display());
     let glue = format!(
-        "#[path={:?}] #[allow(dead_code,clippy::collapsible_if)] pub(crate) mod filesystem;\n#[path={:?}] #[allow(dead_code)] pub(crate) mod storage;\n#[path={:?}] pub(crate) mod hello;\n",
+        "#[path={:?}] #[allow(dead_code,clippy::collapsible_if)] pub(crate) mod filesystem;\n#[path={:?}] #[allow(dead_code)] pub(crate) mod storage;\n#[path={:?}] #[allow(clippy::collapsible_if)] pub(crate) mod hello;\n",
         out.join("filesystem.rs"),
         out.join("storage.rs"),
         out.join("hello/mod.rs")

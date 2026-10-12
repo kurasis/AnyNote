@@ -108,7 +108,7 @@ unchanged. Unified proc-macro syn 3.0.8 is already pinned in P06, replacing only
 P05's separate 3.0.7 in this new crate. The provider sources are copied byte for
 byte into build output, with conventional Rust module layout; its GPL license
 and official-header/fixture copies are checked. The only legacy lint adaptation
-is its existing Rust-2021 filesystem `collapsible_if` style under Rust 2024;
+is the shared provider/filesystem Rust-2021 `collapsible_if` style under Rust 2024;
 verification/ABI/sandbox/TLS/crypto assertions remain enabled.
 
 P08 owns actual enrollment/delegation/revocation/reset/private-group genesis;
