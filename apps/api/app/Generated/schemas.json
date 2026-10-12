@@ -6141,7 +6141,7 @@
                 "type": "boolean"
               },
               "content_storage": {
-                "const": false
+                "type": "boolean"
               },
               "sync": {
                 "const": false

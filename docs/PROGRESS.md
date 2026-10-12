@@ -15,7 +15,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P06 | VERIFIED | 215 actual HTTPS/SQL attack checks, 18 sandboxed strict-CSP browser checks, four native tests on Linux/Windows; all ten hosted gates PASS; exact-source evidence retained |
 | P07 | VERIFIED | Five Node custody suites, 28 actual HTTPS/SQL and 28 sandboxed browser checks, fifteen native custody tests per Linux/Windows platform plus explicit official-header ABI; all twelve hosted gates PASS |
 | P08 | VERIFIED | Seven Node workflow suites, 16 dense QR round trips, 153 actual HTTPS/SQL checks, 33 sandboxed UI checks and nine native device tests per Linux/Windows; all fourteen hosted gates PASS |
-| P09 | IN PROGRESS | Private-note transport and protected Worker/native implementation underway; full actual HTTP/browser/Windows acceptance pending |
+| P09 | IN PROGRESS | Full private-note transport/Worker/native/UI implemented; seven Node suites, five native tests and 130 exploratory HTTPS/SQL checks passed; final two-PWA/Windows gates pending |
 | P10 | NOT STARTED | P09 |
 | P11 | NOT STARTED | P09/P10 |
 | P12 | NOT STARTED | P04/P05/P10/P11 |
@@ -576,3 +576,16 @@ iPhone and qualified G2/G3 remain open/unbooked/NOT_RUN. No production deploymen
 live migration, release, new owner trial or outreach. Rollback: source revert;
 preserve encrypted journals and plan any deployed schema rollback explicitly.
 Next full batch: P09 private groups and encrypted notes.
+
+## P09 final software acceptance in progress
+
+Private group-c2 genesis, real scoped P04 publication, protected Worker/native
+custody, encrypted metadata/notes/preferences, safe Markdown/checklists and usable
+EN/RU private vault are implemented. Seven portable suites and five actual native
+SQLite tests pass; expanded exploratory HTTPS/SQL passes 130 checks, including
+identical/distinct eight-request races, rollback, quota, isolation, immutable retries,
+explicit tombstone/restore, large note bounds and native/PWA adapter byte flow.
+Initial hosted Windows P09 passed; final-head hosted acceptance remains pending.
+Two independent persistent enrolled PWA clients and all sixteen inherited/new jobs
+are mandatory before VERIFIED and ordinary automatic merge. Exact public receipts
+will be archived without physical/audit claims. Full P10 is prepared in NEXT_TASK.

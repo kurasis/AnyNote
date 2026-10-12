@@ -178,3 +178,13 @@ four exact version/source/license/SHA512 records in dependency-inventory.json.
 Maintained QR APIs handle camera/PNG; no new crypto dependency. Native inventory
 remains 313 records, all earlier locks/corpora unchanged. check-p08.py verifies
 inventory read-only. No upstream library/self-test is a qualified protocol audit.
+
+## P09 Markdown renderer
+
+apps/notes-web pins maintained markdown-it 15.0.2 (MIT), with six exact transitives
+and seven registry/SHA512/license records in its separate dependency-inventory.json.
+check-p09.py validates installed frozen metadata and strict inventory correspondence.
+The safe renderer consumes tokens without raw HTML or remote image requests. No
+new crypto package or existing lock was changed. Native inventory remains the
+preserved 313-record selection. Project release license remains unselected; this
+inventory is not a release SBOM, legal assessment or qualified security audit.

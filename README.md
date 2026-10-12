@@ -4,11 +4,12 @@ An invite-only, end-to-end encrypted notes and files service for Windows
 (Tauri 2 / WebView2) and iPhone (installed PWA), backed by Laravel, MariaDB,
 Nginx and PHP-FPM.
 
-**Current state:** P00 and P02–P08 are software verified. P08 includes independent
+**Current state:** P00 and P02–P08 are software verified. P09 private notes are implemented,
+with final hosted acceptance pending. P08 includes independent
 device enrollment in both QR directions, signed roster verification, cascading
 revocation, root-signed recovery and encrypted same-account key distribution.
 P01 has scoped Windows/iPhone and host feasibility evidence; its full physical
-matrix remains open. The next phase is P09 private groups and encrypted notes.
+matrix remains open. The next full phase after P09 acceptance is P10 shared groups and membership.
 Qualified independent review and production release gates remain open. Do not
 store real secrets or user data in experimental builds.
 
@@ -57,3 +58,5 @@ Client cryptographic core: [P05 guide and boundaries](docs/P05_CRYPTO_CORE.md).
 Account authentication: [P06 API, UI, native adapter and commands](docs/P06_AUTHENTICATION.md).
 Encrypted local custody: [P07 vault, locking and boundaries](docs/P07_LOCAL_VAULT.md).
 Trusted devices and recovery: [P08 workflows and boundaries](docs/P08_TRUSTED_DEVICES.md).
+
+Private notes: [P09 vault, protected publication and commands](docs/P09_PRIVATE_NOTES.md).
