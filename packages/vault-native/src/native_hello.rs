@@ -3,9 +3,8 @@
 use super::*;
 #[cfg(windows)]
 use crate::hello::{
-    prf::windows::combined::Credential,
+    P07Credential as Credential, P07TpmKey as Key,
     proof::{Failure, Outcome},
-    tpm::windows::combined::Key,
 };
 #[cfg(windows)]
 fn mapped(f: Failure) -> Error {
@@ -39,7 +38,11 @@ impl Vault {
         check(!journal(self).exists(), "HELLO_CLEANUP_REQUIRED")?;
         let name = format!("AnyNote.P07.{}.{}", self.scope.profile_id, random_id());
         let salt: [u8; 32] = libsodium_rs::random::bytes(32).try_into().unwrap();
-        let user: [u8; 32] = un64(&hash(&canonical(&self.scope)?))?.try_into().unwrap();
+        let user: [u8; 32] = un64(&hash(&canonical(
+            &serde_json::to_value(&self.scope).unwrap(),
+        )?))?
+        .try_into()
+        .unwrap();
         let mut j = json!({"schema":1,"scope":self.scope,"key_name":name,"user":b64(&user),"salt":b64(&salt),"ready":false,"public":null,"wrapper":null});
         save(self, &j)?;
         let mut credential = Credential::for_rp(hwnd, &current, salt, user, RP);
@@ -133,7 +136,11 @@ impl Vault {
         let salt: [u8; 32] = un64(text(&d["prf_salt"])?)?
             .try_into()
             .map_err(|_| Error("INVALID_WRAPPER"))?;
-        let user: [u8; 32] = un64(&hash(&canonical(&self.scope)?))?.try_into().unwrap();
+        let user: [u8; 32] = un64(&hash(&canonical(
+            &serde_json::to_value(&self.scope).unwrap(),
+        )?))?
+        .try_into()
+        .unwrap();
         let name = text(&j["key_name"])?;
         check(
             name.starts_with(&format!("AnyNote.P07.{}.", self.scope.profile_id)),

@@ -52,3 +52,11 @@ pub mod diagnostics {
         serde_json::json!({"helloConfiguration":if available {"available"} else {"unavailable"}})
     }
 }
+
+// Native P07 shares verified provider methods; these aliases do not expose keys or eligibility flags.
+#[cfg(windows)]
+#[allow(unused_imports)]
+pub(crate) use prf::windows::combined::Credential as P07Credential;
+#[cfg(windows)]
+#[allow(unused_imports)]
+pub(crate) use tpm::windows::combined::Key as P07TpmKey;

@@ -33,12 +33,9 @@ impl WindowsHook {
     }
     /// Called by the trusted native WndProc; frontend JSON cannot mint an OS event.
     pub fn message(&self, message: u32, wparam: usize) {
-        use windows_sys::Win32::{
-            System::RemoteDesktop::WTS_SESSION_LOCK,
-            UI::WindowsAndMessaging::{
-                PBT_APMSUSPEND, WM_CLOSE, WM_DESTROY, WM_ENDSESSION, WM_POWERBROADCAST,
-                WM_WTSSESSION_CHANGE,
-            },
+        use windows_sys::Win32::UI::WindowsAndMessaging::{
+            PBT_APMSUSPEND, WM_CLOSE, WM_DESTROY, WM_ENDSESSION, WM_POWERBROADCAST,
+            WM_WTSSESSION_CHANGE, WTS_SESSION_LOCK,
         };
         if (message == WM_WTSSESSION_CHANGE && wparam == WTS_SESSION_LOCK as usize)
             || (message == WM_POWERBROADCAST && wparam == PBT_APMSUSPEND as usize)

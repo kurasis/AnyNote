@@ -9,7 +9,7 @@ function clean(v){if(v instanceof Uint8Array)sodium.memzero(v);else if(v&&typeof
 async function run(op,args,client){
   if(op==='open'){await engine?.close();engine=new VaultEngine(await new IndexedVault(args[0]).open());return engine.info();}
   if(op==='prepareRoot'){ensure(id(args[0])&&id(args[1]),'INVALID_PROFILE');initial?.dispose();initial=await initialRoot(...args);return structuredClone({identity:initial.identity,device:initial.device,fingerprint:initial.fingerprint,kit:initial.kit});}
-  if(op==='registerRequest'){ensure(initial,'NO_PREPARATION');return registrationRequest(args[0],initial,args[1]);}
+  if(op==='registerRequest'){ensure(initial,'NO_PREPARATION');return structuredClone(registrationRequest(args[0],initial,args[1]));}
   if(op==='discardRoot'){initial?.dispose();initial=undefined;return {state:'discarded'};}
   ensure(engine,'PROFILE_REQUIRED');
   if(op==='commitRoot'){ensure(initial&&engine.scope.device_id===initial.device.device_id&&engine.scope.account_id===initial.identity.body.account_id&&engine.scope.service_id===initial.identity.body.service_id,'LOCAL_CONTEXT_MISMATCH');try{return await withKdf(()=>engine.initialize(args[0],{device_signing_secret:b64(initial.keys.signing.privateKey),device_encryption_secret:b64(initial.keys.encryption.privateKey),group_keys:[]},{service_id:initial.identity.body.service_id,account_id:initial.identity.body.account_id,root_fingerprint:initial.fingerprint}),client);}finally{initial?.dispose();initial=undefined;}}

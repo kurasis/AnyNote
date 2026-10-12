@@ -21,6 +21,7 @@ mod direct;
 #[cfg(windows)]
 pub(super) mod windows;
 #[cfg(windows)]
+#[allow(unused_imports)] // P01 diagnostic entry; P07 calls the verified provider methods.
 pub use windows::run;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
