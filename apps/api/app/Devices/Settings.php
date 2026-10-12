@@ -46,17 +46,23 @@ final class Settings
         DB::table('key_envelopes')->insert(['id' => P::b64(random_bytes(16)), 'group_id' => $c->group_id, 'epoch_number' => $c->key_epoch, 'recipient_account_id' => $c->recipient->account_id, 'recipient_kind' => $c->recipient->kind, 'recipient_key_fingerprint' => $c->recipient->encryption_key_fingerprint, 'signed_record' => P::canonical($record), 'ciphertext_bytes' => strlen(P::binary($record->body->sealed_ciphertext))]);
     }
 
-    public function create(Request $r, stdClass $body): array
+    public function create(Request $r, stdClass $body, bool $settings = true): array
     {
-        return DB::transaction(function () use ($r, $body) {
+        return DB::transaction(function () use ($r, $body, $settings) {
             $s = $this->sessions->current($r, true);
             $this->authorization->actor($this->sessions->secret($r));
             $hash = P::b64(hash('sha256', P::canonical($body), true));
-            $old = DB::table('account_settings_genesis')->where('account_id', $s->account_id)->first();
+            $old = $settings ? DB::table('account_settings_genesis')->where('account_id', $s->account_id)->first() : DB::table('private_group_geneses')->where('group_id', $body->commit->body->group_id)->first();
             if ($old) {
-                Protocol::require($hash === $old->request_digest, 'IDEMPOTENCY_MISMATCH');
+                Protocol::require(($settings || ($old->account_id === $s->account_id && $old->device_id === $s->device_id)) && $hash === $old->request_digest, 'IDEMPOTENCY_MISMATCH');
+                $this->authorization->group($this->authorization->actor($this->sessions->secret($r)), $old->group_id);
 
                 return ['version' => 1, 'group_id' => $old->group_id, 'commit' => json_decode($old->commit_record), 'pages' => [json_decode($old->grant_page)]];
+            }
+            if (! $settings) {
+                Protocol::require(DB::table('account_settings_genesis')->where('account_id', $s->account_id)->exists(), 'KEYS_PENDING');
+                Protocol::require(DB::table('groups')->where('owner_account_id', $s->account_id)->where('kind', 'private')->count() < 100, 'RESOURCE_LIMIT');
+                Protocol::require(! DB::table('private_group_geneses')->where('account_id', $s->account_id)->where('device_id', $s->device_id)->where('operation_id', $body->commit->body->operation_id)->exists() && ! DB::table('mutation_receipts')->where('account_id', $s->account_id)->where('device_id', $s->device_id)->where('operation_id', $body->commit->body->operation_id)->exists(), 'IDEMPOTENCY_MISMATCH');
             }
             Protocol::require(count($body->pages) === 1, 'INVALID_REQUEST');
             [$i, $device, $certificate] = $this->authorization->certifiedDevice($s->account_id, $s->device_id);
@@ -124,8 +130,13 @@ final class Settings
                 self::envelope($record);
             }
             $this->quota->apply($this->quota->lock($s->account_id, $g), $bytes, 0);
-            DB::table('account_settings_genesis')->insert(['account_id' => $s->account_id, 'group_id' => $g, 'request_digest' => $hash, 'commit_record' => P::canonical($commit), 'grant_page' => P::canonical($page)]);
-            $this->sync->append([['group_id' => $g, 'audience_account_id' => $s->account_id, 'kind' => 'settings-genesis', 'object_id' => $g, 'revision_id' => null, 'digest' => P::digest('p02-group-c2', 'epoch-commit', $commit)]]);
+            $genesis = ['account_id' => $s->account_id, 'group_id' => $g, 'request_digest' => $hash, 'commit_record' => P::canonical($commit), 'grant_page' => P::canonical($page)];
+            if (! $settings) {
+                $genesis['device_id'] = $s->device_id;
+                $genesis['operation_id'] = $b->operation_id;
+            }
+            DB::table($settings ? 'account_settings_genesis' : 'private_group_geneses')->insert($genesis);
+            $this->sync->append([['group_id' => $g, 'audience_account_id' => $s->account_id, 'kind' => $settings ? 'settings-genesis' : 'private-group-genesis', 'object_id' => $g, 'revision_id' => null, 'digest' => P::digest('p02-group-c2', 'epoch-commit', $commit)]]);
 
             return ['version' => 1, 'group_id' => $g, 'commit' => $commit, 'pages' => [$page]];
         }, 3);

@@ -4,7 +4,7 @@ import {VaultEngine} from './engine.mjs';
 import {initialRoot,registrationRequest} from '../auth-client.mjs';
 import {sodium,b64,deviceKeys} from '../adapters/primitives.mjs';
 let engine,initial,candidate,queue=Promise.resolve(),queued=0;
-const operations=new Set(['open','info','initialize','unlock','lock','lease','save','read','proof','addPrf','preparePrf','prfOptions','unlockPrf','removeWrapper','evict','prepareRoot','registerRequest','commitRoot','discardRoot','prepareDevice','commitDevice','devices']);
+const operations=new Set(['open','info','initialize','unlock','lock','lease','save','read','proof','addPrf','preparePrf','prfOptions','unlockPrf','removeWrapper','evict','prepareRoot','registerRequest','commitRoot','discardRoot','prepareDevice','commitDevice','devices','notes']);
 function clean(v){if(v instanceof Uint8Array)sodium.memzero(v);else if(v&&typeof v==='object')for(const k of Object.keys(v)){clean(v[k]);if(typeof v[k]==='string')v[k]='';}}
 async function run(op,args,client){
   if(op==='open'){await engine?.close();engine=new VaultEngine(await new IndexedVault(args[0]).open());return engine.info();}

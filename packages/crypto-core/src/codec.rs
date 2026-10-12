@@ -91,6 +91,7 @@ pub fn limit(profile: &str, kind: &str) -> usize {
         "p02-identity-c1" => 16384,
         "p02-file-c1" => 1048576,
         "p08-local-v1" => 524288,
+        "p09-notes" => 4194304,
         "p02-state-c1" => {
             if kind == "qr" {
                 8192
@@ -141,6 +142,10 @@ impl Codec {
                 "p08-local-v1",
                 include_str!("../../contracts/p08-devices.schema.json"),
             ),
+            (
+                "p09-notes",
+                include_str!("../../contracts/p09-notes.schema.json"),
+            ),
         ];
         let values: Vec<_> = schemas
             .iter()
@@ -154,7 +159,12 @@ impl Codec {
         let auth_schema: Value =
             serde_json::from_str(include_str!("../../contracts/p06-auth.schema.json"))
                 .map_err(|_| Error("SCHEMA_CONFIGURATION"))?;
+        let p04_schema: Value =
+            serde_json::from_str(include_str!("../../contracts/p04-api.schema.json"))
+                .map_err(|_| Error("SCHEMA_CONFIGURATION"))?;
         let mut registry = jsonschema::Registry::new()
+            .add("urn:anynote:p04:api", p04_schema)
+            .map_err(|_| Error("SCHEMA_CONFIGURATION"))?
             .add("urn:anynote:p06:auth:v1", auth_schema)
             .map_err(|_| Error("SCHEMA_CONFIGURATION"))?;
         for (_, s) in &values {

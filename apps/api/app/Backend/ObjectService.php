@@ -108,6 +108,7 @@ final class ObjectService
                 DB::table('attachment_refs')->insert(['revision_id' => $c->revision_id, 'file_version_id' => $file->id, 'group_id' => $g->id]);
             }
             $cursor = $this->sync->append([['group_id' => $g->id, 'kind' => $c->object_kind, 'object_id' => $c->object_id, 'revision_id' => $c->revision_id, 'digest' => $envelopeDigest]]);
+            DB::table('objects')->where('id', $c->object_id)->update(['updated_sequence' => $cursor['sequence'], ...($object === null ? ['created_sequence' => $cursor['sequence']] : [])]);
             $result = ['receipt' => ['contract' => 'p02-v1', 'protocol' => 'anynote', 'protocol_version' => 1, 'purpose' => 'mutation-receipt', 'operation_id' => $c->operation_id, 'revision_id' => $c->revision_id, 'envelope_digest' => $envelopeDigest, 'status' => 'COMMITTED', 'cursor' => $cursor], 'heads' => [['revision_id' => $c->revision_id, 'envelope_digest' => $envelopeDigest]]];
             $receiptQuery->insert(['account_id' => $a->accountId, 'device_id' => $a->deviceId, 'operation_id' => $c->operation_id, 'family' => 'object', 'group_id' => $g->id, 'request_digest' => $digest, 'result' => json_encode($result, JSON_THROW_ON_ERROR), 'expires_at' => now()->addDays(30)]);
 

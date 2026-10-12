@@ -1,4 +1,7 @@
 import {bootstrapControl} from '../devices/bootstrap.mjs';
+import {NotesWorkflow} from '../notes/workflow.mjs';
+import {noteControlId,sealNoteLocal,openNoteLocal,noteFrameHash} from '../notes/local.mjs';
+import {noteValue} from '../notes/client.mjs';
 import {sealLifecycle,openLifecycle,lifecycleHash} from '../devices/local.mjs';
 import {strictJson} from '../src/strict-json.mjs';
 import {DeviceWorkflow,controlId} from '../devices/workflow.mjs';
@@ -13,10 +16,10 @@ import {ensure,fail,id,scope,record,metadata,same} from './store.mjs';
 const kinds=new Set(['cache','search','draft','outbox','transfer']);
 const bounded=data=>{const bytes=wire(data);ensure(bytes.length<=4194304,'RESOURCE_LIMIT');return bytes;};
 function wipe(v){if(v instanceof Uint8Array)sodium.memzero(v);else if(v&&typeof v==='object'){for(const k of Object.keys(v)){wipe(v[k]);if(typeof v[k]==='string')v[k]='';}}}
-const frameHash=f=>f?.contract==='p08-local-v1'?lifecycleHash(f):hash(encode('local-envelope',wire(f)));
+const frameHash=f=>f?.contract==='p09-local-v1'?noteFrameHash(f):f?.contract==='p08-local-v1'?lifecycleHash(f):hash(encode('local-envelope',wire(f)));
 const descriptor=w=>{const {nonce,ciphertext,...d}=w;return d;};
 export class VaultEngine {
-  #workflow;#workflowHash;#workflowFence;#deviceAnchor;#key;#keys;#cap;#epoch;#last=0;#revision=0;#anchors=new Map();#busy=false;
+  #notes;#notesHash;#notesFence;#workflow;#workflowHash;#workflowFence;#deviceAnchor;#key;#keys;#cap;#epoch;#last=0;#revision=0;#anchors=new Map();#busy=false;
   constructor(store){this.store=store;this.scope=scope(store.scope);this.owner=b64(sodium.randombytes_buf(16));this.vaultId=b64(sodium.randombytes_buf(16));}
   context(kind,record_id){ensure(id(record_id),'INVALID_RECORD');return {...common('local-record'),...this.scope,record_id,record_kind:kind,local_schema:1};}
   #authorize(cap){ensure(this.#key&&cap===this.#cap,'VAULT_LOCKED');if(Date.now()-this.#last>300000||Date.now()<this.#last){this.lock();fail('VAULT_LOCKED');}this.#last=Date.now();}
@@ -54,7 +57,7 @@ export class VaultEngine {
       this.#epoch=loaded.s.epoch;this.#revision=loaded.s.revision;this.#cap=b64(sodium.randombytes_buf(32));this.#last=Date.now();return {capability:this.#cap,epoch:String(this.#epoch),state:'unlocked'};
     }finally{wipe(secret);}
   }
-  lock(){this.#workflow?.close();this.#workflow=undefined;wipe(this.#key);wipe(this.#keys);this.#key=this.#keys=this.#cap=undefined;this.#epoch=(this.#epoch??0)+1;this.#last=0;}
+  lock(){this.#notes?.close();this.#notes=undefined;this.#workflow?.close();this.#workflow=undefined;wipe(this.#key);wipe(this.#keys);this.#key=this.#keys=this.#cap=undefined;this.#epoch=(this.#epoch??0)+1;this.#last=0;}
   async globalLock(){this.lock();await this.store.transaction(true,async tx=>{const value=await tx.get();if(!value)return;const s=metadata(value,this.scope);s.epoch++;s.revision++;s.lease=null;await tx.set(s);});}
   async lease(cap){return this.store.transaction(true,async tx=>{const s=await this.#state(tx,cap),now=Date.now(),l=s.lease;if(l&&!(now>=l.issued&&(l.owner===this.owner||l.expires<=now))){const error=Error('WRITER_BUSY');error.vaultReason=now<l.issued?'clock-regression':'other-owner';error.vaultRemaining=Math.min(10000,Math.max(0,l.expires-now));throw error;}const fence=(l?.fence??0)+1;ensure(Number.isSafeInteger(fence),'RESOURCE_LIMIT');s.lease={owner:this.owner,fence,issued:now,expires:now+10000};s.revision++;await tx.set(s);this.#revision=s.revision;return String(fence);});}
   #fence(s,fence){const l=s.lease;ensure(l&&l.owner===this.owner&&String(l.fence)===fence&&Date.now()>=l.issued&&Date.now()<l.expires,'STALE_WRITER');}
@@ -85,12 +88,12 @@ export class VaultEngine {
     this.#authorize(cap);const snapshot=await this.store.transaction(false,tx=>this.#state(tx,cap));ensure(snapshot.wrappers.some(w=>w.context.wrapper_id===wrapper_id&&w.context.method==='webauthn-prf'),'PHRASE_FALLBACK_REQUIRED');
     const parameters={algorithm:'argon2id13',salt:b64(sodium.randombytes_buf(16)),opslimit:3,memlimit:67108864},context={...common('local-unlock'),...this.scope,wrapper_id:b64(sodium.randombytes_buf(16)),method:'argon2id13'},key=randomKey();let kek;
     try{kek=await phraseKek(phrase,wire(parameters));const wrapper=decode('phrase-wrapper',wrapLocalKey('phrase-wrapper',wire({context,parameters}),key,kek));
-      await this.store.transaction(true,async tx=>{const s=await this.#state(tx,cap);ensure(s.revision===snapshot.revision,'STALE_WRITER');await tx.each(async row=>{const f=record(this.scope,row.frame);ensure(f.context.record_id===row.id,'LOCAL_CONTEXT_MISMATCH');let p;try{const additive=f.contract==='p08-local-v1';p=additive?openLifecycle(f,this.scope,s.pins,row.id,f.context.record_kind,this.#key):this.#load(f,this.#key);const frame=additive?sealLifecycle(this.scope,s.pins,row.id,f.context.record_kind,p,key):decode('local-envelope',sealLocal(wire(p),key));await tx.put({id:row.id,frame});}finally{wipe(p);}});this.#authorize(cap);s.wrappers=[wrapper];s.epoch++;s.revision++;s.lease=null;await tx.set(s);this.#revision=s.revision;});this.#anchors.clear();this.lock();return {state:'locked',protection:'phrase-only',removed:'all-prf-wrappers'};
+      await this.store.transaction(true,async tx=>{const s=await this.#state(tx,cap);ensure(s.revision===snapshot.revision,'STALE_WRITER');await tx.each(async row=>{const f=record(this.scope,row.frame);ensure(f.context.record_id===row.id,'LOCAL_CONTEXT_MISMATCH');let p;try{const note=f.contract==='p09-local-v1',additive=f.contract==='p08-local-v1';p=note?openNoteLocal(f,this.scope,s.pins,row.id,f.context.record_kind,this.#key):additive?openLifecycle(f,this.scope,s.pins,row.id,f.context.record_kind,this.#key):this.#load(f,this.#key);const frame=note?sealNoteLocal(this.scope,s.pins,row.id,f.context.record_kind,p,key):additive?sealLifecycle(this.scope,s.pins,row.id,f.context.record_kind,p,key):decode('local-envelope',sealLocal(wire(p),key));await tx.put({id:row.id,frame});}finally{wipe(p);}});this.#authorize(cap);s.wrappers=[wrapper];s.epoch++;s.revision++;s.lease=null;await tx.set(s);this.#revision=s.revision;});this.#anchors.clear();this.lock();return {state:'locked',protection:'phrase-only',removed:'all-prf-wrappers'};
     }finally{wipe(key);wipe(kek);}
   }
 
   async #publicControl(tx){const row=await tx.read(controlId(this.scope));if(!row)return null;const s=metadata(await tx.get(),this.scope);return openLifecycle(row.frame,this.scope,s.pins,controlId(this.scope),'device-control',this.#key);}
-  async #reserved(tx,recordId){if(recordId===controlId(this.scope))return true;const c=await this.#publicControl(tx);return !!c&&(c.pages.includes(recordId)||(c.staging?.pages??[]).includes(recordId));}
+  async #reserved(tx,recordId){if(recordId===controlId(this.scope)||recordId===noteControlId(this.scope))return true;const c=await this.#publicControl(tx);if(c&&(c.pages.includes(recordId)||(c.staging?.pages??[]).includes(recordId)))return true;const n=await this.#noteControl(tx);return !!n&&this.#noteIds(n).has(recordId);}
   async #loadDevices(cap,includeSecrets=false){
     return this.store.transaction(false,async tx=>{const s=await this.#state(tx,cap),control=await this.#publicControl(tx),pages=[];let bytes=0;
       for(const pageId of control?.pages??[]){const row=await tx.read(pageId);ensure(row,'INTEGRITY_FAILURE');const page=openLifecycle(row.frame,this.scope,s.pins,pageId,'roster-page',this.#key);bytes+=wire(page.events).length;ensure(bytes<=16777216,'RESOURCE_LIMIT');pages.push(page.events);}
@@ -100,7 +103,7 @@ export class VaultEngine {
     ensure(control.pages.length<=1000&&(control.staging?.pages??[]).length<=1000&&wire(control).length<=262144,'RESOURCE_LIMIT');
     const committed=await this.store.transaction(true,async tx=>{const s=await this.#state(tx,cap);this.#fence(s,this.#workflowFence);const oldControl=await tx.read(controlId(this.scope));ensure((oldControl?frameHash(oldControl.frame):null)===this.#workflowHash,'STALE_WRITER');let controlHash;const put=async(recordId,data,kind)=>{const frame=sealLifecycle(this.scope,s.pins,recordId,kind,data,this.#key);await tx.put({id:recordId,frame});if(recordId===controlId(this.scope))controlHash=frameHash(frame);};
       if(extra.page){ensure(id(extra.page.id)&&extra.page.id!==s.vault_id&&extra.page.id!==controlId(this.scope)&&!await tx.read(extra.page.id),'RESERVED_RECORD');await put(extra.page.id,{purpose:'p08-roster-page',version:1,events:extra.page.events},'roster-page');}
-      if(extra.addKeys){const row=await tx.read(s.vault_id),p=this.#load(row.frame,this.#key);try{for(const value of extra.addKeys){const old=p.data.group_keys.find(k=>k.group_id===value.group_id&&k.key_epoch===value.key_epoch);ensure(!old||(old.epoch_digest===value.epoch_digest&&old.group_secret===value.group_secret),'INTEGRITY_FAILURE');if(!old)p.data.group_keys.push(structuredClone(value));}decode('vault-secrets',bounded(p.data));row.frame=decode('local-envelope',sealLocal(wire(p),this.#key));await tx.put(row);}finally{wipe(p);}}
+      if(extra.addKeys){const row=await tx.read(s.vault_id),p=this.#load(row.frame,this.#key);try{for(const value of extra.addKeys){const old=p.data.group_keys.find(k=>k.group_id===value.group_id&&k.key_epoch===value.key_epoch);ensure(!old||(old.epoch_digest===value.epoch_digest&&old.group_secret===value.group_secret),'INTEGRITY_FAILURE');if(!old)p.data.group_keys.push(structuredClone(value));}p.data.group_keys.sort((a,b)=>{const x=a.group_id+'/'+a.key_epoch.padStart(19,'0'),y=b.group_id+'/'+b.key_epoch.padStart(19,'0');return x<y?-1:x>y?1:0;});decode('vault-secrets',bounded(p.data));row.frame=decode('local-envelope',sealLocal(wire(p),this.#key));await tx.put(row);}finally{wipe(p);}}
       for(const recordId of extra.deletePages??[]){ensure(id(recordId)&&recordId!==s.vault_id&&recordId!==controlId(this.scope)&&!control.pages.includes(recordId)&&!(control.staging?.pages??[]).includes(recordId),'RESERVED_RECORD');const row=await tx.read(recordId);if(row){openLifecycle(row.frame,this.scope,s.pins,recordId,'roster-page',this.#key);await tx.remove(recordId);}}
       ensure(await tx.count()<100000,'RESOURCE_LIMIT');await put(controlId(this.scope),control,'device-control');this.#fence(s,this.#workflowFence);s.revision++;await tx.set(s);return {revision:s.revision,controlHash};});this.#revision=committed.revision;this.#workflowHash=committed.controlHash;return {state:'local-saved'};
   }
@@ -109,6 +112,46 @@ export class VaultEngine {
     if(this.#workflow&&currentHash!==this.#workflowHash){this.#workflow.close();this.#workflow=undefined;}this.#workflowHash=currentHash;this.#workflowFence=await this.lease(cap);
     this.#workflow??=new DeviceWorkflow({scope:this.scope,pins:s.pins,keys:this.#keys,anchor:this.#deviceAnchor,load:includeSecrets=>this.#loadDevices(cap,includeSecrets),persist:(control,extra)=>this.#persistDevices(cap,control,extra)});
     try{const result=await this.#workflow.command(operation,args);this.#authorize(cap);await this.store.transaction(false,tx=>this.#state(tx,cap));if(result?.head)this.#deviceAnchor=structuredClone(result.head);return result;}catch(e){this.#workflow?.close();this.#workflow=undefined;throw e;}
+  }
+  async #noteControl(tx){
+    const row=await tx.read(noteControlId(this.scope));if(!row)return null;const s=metadata(await tx.get(),this.scope);
+    return openNoteLocal(row.frame,this.scope,s.pins,noteControlId(this.scope),'note-control',this.#key);
+  }
+  #noteIds(c){
+    const refs=[...c.groups.map(x=>[x.record_id,'group-evidence']),...c.drafts.map(x=>[x.record_id,'draft']),...c.attempts.map(x=>[x.record_id,'outbox']),...c.witnesses.map(x=>[x.cache_id,'cache'])];
+    ensure(new Set(refs.map(x=>x[0])).size===refs.length,'DUPLICATE_RECORD');return new Map(refs);
+  }
+  async #noteRead(cap,id,kind){
+    return this.store.transaction(false,async tx=>{const s=await this.#state(tx,cap),control=await this.#noteControl(tx);ensure(control&&this.#noteIds(control).get(id)===kind,'RESERVED_RECORD');const row=await tx.read(id);ensure(row,'RECORD_NOT_FOUND');const f=record(this.scope,row.frame);ensure(f.context.record_id===id&&f.context.record_kind===kind,'LOCAL_CONTEXT_MISMATCH');
+      return kind==='group-evidence'?openNoteLocal(f,this.scope,s.pins,id,kind,this.#key):this.#load(f,this.#key).data;
+    });
+  }
+  async #persistNotes(cap,control,extra){
+    noteValue('local-control',control);ensure(wire(control).length<=524288,'RESOURCE_LIMIT');const ids=this.#noteIds(control);
+    const committed=await this.store.transaction(true,async tx=>{
+      const s=await this.#state(tx,cap);this.#fence(s,this.#notesFence);const old=await tx.read(noteControlId(this.scope));ensure((old?frameHash(old.frame):null)===this.#notesHash,'STALE_WRITER');
+      const device=await this.#publicControl(tx),deviceIds=new Set([s.vault_id,controlId(this.scope),noteControlId(this.scope),...(device?.pages??[]),...(device?.staging?.pages??[])]);
+      for(const [id]of ids)ensure(!deviceIds.has(id),'RESERVED_RECORD');
+      const before=await this.#noteControl(tx),oldIds=before?this.#noteIds(before):new Map();
+      const values=extra.records??[];ensure(values.length<=16&&new Set(values.map(v=>v.id)).size===values.length,'RESOURCE_LIMIT');
+      for(const v of values){
+        ensure(ids.get(v.id)===v.kind,'RESERVED_RECORD');const oldRow=await tx.read(v.id);ensure(!oldRow||oldIds.get(v.id)===v.kind,'RESERVED_RECORD');
+        if(v.kind==='outbox'&&oldRow){const p=this.#load(oldRow.frame,this.#key);try{ensure(p.data.attempt_id===v.data.attempt_id&&p.data.revision_id===v.data.revision_id&&p.data.attempt_digest===v.data.attempt_digest&&digest('bundle',wire(p.data.bundle))===digest('bundle',wire(v.data.bundle)),'IMMUTABLE_ATTEMPT');const transitions={QUEUED:['QUEUED','SENT_UNKNOWN','CONFLICT','REKEY_REQUIRED','ACCESS_LOST'],SENT_UNKNOWN:['SENT_UNKNOWN','COMMITTED','CONFLICT','REKEY_REQUIRED','ACCESS_LOST'],CONFLICT:['CONFLICT'],REKEY_REQUIRED:['REKEY_REQUIRED'],ACCESS_LOST:['ACCESS_LOST'],COMMITTED:['COMMITTED']};ensure(transitions[p.data.state].includes(v.data.state),'INVALID_OUTBOX_TRANSITION');}finally{wipe(p);}}
+        let frame;if(v.kind==='group-evidence')frame=sealNoteLocal(this.scope,s.pins,v.id,v.kind,v.data,this.#key);
+        else{decode(v.kind,bounded(v.data));frame=decode('local-envelope',sealLocal(wire({...common('local-record-plaintext'),context:this.context(v.kind,v.id),data:v.data}),this.#key));}
+        await tx.put({id:v.id,frame});
+      }
+      if(extra.addKeys){const row=await tx.read(s.vault_id),p=this.#load(row.frame,this.#key);try{for(const value of extra.addKeys){const old=p.data.group_keys.find(k=>k.group_id===value.group_id&&k.key_epoch===value.key_epoch);ensure(!old||(old.epoch_digest===value.epoch_digest&&old.group_secret===value.group_secret),'INTEGRITY_FAILURE');if(!old)p.data.group_keys.push(structuredClone(value));}p.data.group_keys.sort((a,b)=>{const x=a.group_id+'/'+a.key_epoch.padStart(19,'0'),y=b.group_id+'/'+b.key_epoch.padStart(19,'0');return x<y?-1:x>y?1:0;});decode('vault-secrets',bounded(p.data));row.frame=decode('local-envelope',sealLocal(wire(p),this.#key));await tx.put(row);}finally{wipe(p);}}
+      for(const id of extra.retireDrafts??[]){ensure(oldIds.get(id)==='draft'&&!ids.has(id),'UNSYNCED_WORK_PROTECTED');const ref=before.drafts.find(d=>d.record_id===id),attempt=control.attempts.find(a=>a.draft_id===ref.draft_id&&a.state==='COMMITTED'&&a.source_digest===ref.saved_digest);ensure(attempt&&values.some(v=>v.kind==='outbox'&&v.data.attempt_id===attempt.attempt_id&&v.data.state==='COMMITTED'),'UNSYNCED_WORK_PROTECTED');const old=await tx.read(id);ensure(old,'RECORD_NOT_FOUND');decode('draft',bounded(this.#load(old.frame,this.#key).data));await tx.remove(id);}
+      const frame=sealNoteLocal(this.scope,s.pins,noteControlId(this.scope),'note-control',control,this.#key);await tx.put({id:noteControlId(this.scope),frame});ensure(await tx.count()<=100000,'RESOURCE_LIMIT');this.#authorize(cap);this.#fence(s,this.#notesFence);s.revision++;await tx.set(s);return {revision:s.revision,hash:frameHash(frame)};
+    });this.#revision=committed.revision;this.#notesHash=committed.hash;return {state:'local-saved'};
+  }
+  async notes(cap,operation,args=[]){
+    this.#authorize(cap);ensure(typeof operation==='string'&&Array.isArray(args)&&args.length<=3&&wire(args).length<=4194304,'RESOURCE_LIMIT');
+    const {s,currentHash}=await this.store.transaction(false,async tx=>{const s=await this.#state(tx,cap),row=await tx.read(noteControlId(this.scope));return {s,currentHash:row?frameHash(row.frame):null};});
+    if(this.#notes&&currentHash!==this.#notesHash){this.#notes.close();this.#notes=undefined;}this.#notesHash=currentHash;this.#notesFence=await this.lease(cap);
+    this.#notes??=new NotesWorkflow({scope:this.scope,pins:s.pins,keys:this.#keys,load:()=>this.store.transaction(false,async tx=>{await this.#state(tx,cap);return this.#noteControl(tx);}),read:(id,kind)=>this.#noteRead(cap,id,kind),persist:(c,e)=>this.#persistNotes(cap,c,e),devices:()=>this.#loadDevices(cap,false),secrets:async()=>{const loaded=await this.#loadDevices(cap,true);return loaded.secrets;}});
+    try{const result=structuredClone(await this.#notes.command(operation,args));this.#authorize(cap);await this.store.transaction(false,tx=>this.#state(tx,cap));return result;}catch(e){this.#notes?.close();this.#notes=undefined;throw e;}
   }
   async evict(cap,fence,recordId){return this.store.transaction(true,async tx=>{const s=await this.#state(tx,cap);this.#fence(s,fence);ensure(recordId!==s.vault_id&&!await this.#reserved(tx,recordId),'RESERVED_RECORD');const r=await tx.read(recordId);ensure(r,'RECORD_NOT_FOUND');ensure(record(this.scope,r.frame).context.record_kind==='cache','UNSYNCED_WORK_PROTECTED');await tx.remove(recordId);s.revision++;await tx.set(s);this.#revision=s.revision;this.#anchors.delete(recordId);return {state:'cache-evicted'};});}
   async close(){this.lock();this.store.close();}

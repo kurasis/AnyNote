@@ -57,3 +57,20 @@ Route::post('/api/v1/me/device-envelopes', DevicesController::class)->name('post
 Route::get('/api/v1/me/device-envelopes', DevicesController::class)->name('get_me_device_envelopes');
 Route::get('/api/v1/me/recovery-envelopes', DevicesController::class)->name('get_me_recovery_envelopes');
 Route::get('/api/v1/me/security-notifications', DevicesController::class)->name('get_me_security_notifications');
+
+// P09 account-private E2EE content; shared policy transitions remain P10.
+Route::get('/api/v1/groups', \App\Http\Controllers\NotesController::class)->name('get_groups');
+Route::post('/api/v1/groups', \App\Http\Controllers\NotesController::class)->name('post_groups');
+Route::get('/api/v1/groups/{id}', \App\Http\Controllers\NotesController::class)->name('get_groups_id');
+Route::get('/api/v1/groups/{id}/threads', \App\Http\Controllers\NotesController::class)->name('get_groups_id_threads');
+Route::post('/api/v1/groups/{id}/threads', \App\Http\Controllers\NotesController::class)->name('post_groups_id_threads');
+Route::get('/api/v1/groups/{id}/trash', \App\Http\Controllers\NotesController::class)->name('get_groups_id_trash');
+Route::get('/api/v1/threads/{id}/entries', \App\Http\Controllers\NotesController::class)->name('get_threads_id_entries');
+Route::post('/api/v1/threads/{id}/entries', \App\Http\Controllers\NotesController::class)->name('post_threads_id_entries');
+Route::get('/api/v1/objects/{id}', \App\Http\Controllers\NotesController::class)->name('get_objects_id');
+Route::get('/api/v1/objects/{id}/revisions', \App\Http\Controllers\NotesController::class)->name('get_objects_id_revisions');
+Route::get('/api/v1/objects/{id}/revisions/{revision}', \App\Http\Controllers\NotesController::class)->name('get_objects_id_revisions_revision');
+Route::post('/api/v1/objects/{id}/revisions', \App\Http\Controllers\NotesController::class)->name('post_objects_id_revisions');
+Route::post('/api/v1/objects/{id}/tombstone', \App\Http\Controllers\NotesController::class)->name('post_objects_id_tombstone');
+Route::post('/api/v1/objects/{id}/restore', \App\Http\Controllers\NotesController::class)->name('post_objects_id_restore');
+Route::get('/api/v1/me/content-receipts/{id}', \App\Http\Controllers\NotesController::class)->name('get_me_content_receipts_id');

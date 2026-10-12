@@ -978,9 +978,9 @@
       "get": {
         "operationId": "get_groups",
         "summary": "Only groups accessible to the active account/device",
-        "x-implementation-phase": "P10",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implementation-phase": "P09",
+        "x-implemented": true,
+        "description": "Current trusted certified device, current account-private membership; P09 private-group subset only",
         "parameters": [],
         "security": [
           {
@@ -997,6 +997,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P09NotesGroupsPage"
                 }
               }
             }
@@ -1006,9 +1016,9 @@
       "post": {
         "operationId": "post_groups",
         "summary": "Signed private/shared genesis, encrypted metadata, initial envelopes",
-        "x-implementation-phase": "P10",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implementation-phase": "P09",
+        "x-implemented": true,
+        "description": "Current trusted certified device, current account-private membership; P09 private-group subset only",
         "parameters": [],
         "security": [
           {
@@ -1028,9 +1038,28 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P09NotesGroupStatus"
+                }
+              }
+            }
           }
         },
-        "x-request-dto-state": "Transport wrapper is finalized by P10 before endpoint implementation; no generic body is accepted"
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P09NotesGroupCreate"
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/groups/{id}/epoch-transitions": {
@@ -1444,8 +1473,8 @@
         "operationId": "get_groups_id_threads",
         "summary": "Paginated encrypted metadata/references",
         "x-implementation-phase": "P09",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implemented": true,
+        "description": "Current trusted certified device, current account-private membership; P09 private-group subset only",
         "parameters": [
           {
             "name": "id",
@@ -1471,6 +1500,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P09NotesObjectsPage"
                 }
               }
             }
@@ -1481,8 +1520,8 @@
         "operationId": "post_groups_id_threads",
         "summary": "Signed creation with encrypted title",
         "x-implementation-phase": "P09",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implemented": true,
+        "description": "Current trusted certified device, current account-private membership; P09 private-group subset only",
         "parameters": [
           {
             "name": "id",
@@ -1511,6 +1550,16 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P09NotesReceiptResult"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -1518,7 +1567,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/P02V1Envelope"
+                "$ref": "#/components/schemas/P09NotesCommitRequest"
               }
             }
           }
@@ -1683,8 +1732,8 @@
         "operationId": "get_groups_id_trash",
         "summary": "Authorized deleted-object metadata/ciphertext",
         "x-implementation-phase": "P09",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implemented": true,
+        "description": "Current trusted certified device, current account-private membership; P09 private-group subset only",
         "parameters": [
           {
             "name": "id",
@@ -1710,6 +1759,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P09NotesObjectsPage"
                 }
               }
             }
@@ -2708,8 +2767,8 @@
         "operationId": "post_objects_id_restore",
         "summary": "Signed restore as new state/revision",
         "x-implementation-phase": "P09",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implemented": true,
+        "description": "Current trusted certified device, current account-private membership; P09 private-group subset only",
         "parameters": [
           {
             "name": "id",
@@ -2738,6 +2797,16 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P09NotesReceiptResult"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -2745,7 +2814,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/P02V1Envelope"
+                "$ref": "#/components/schemas/P09NotesCommitRequest"
               }
             }
           }
@@ -2757,8 +2826,8 @@
         "operationId": "get_objects_id_revisions",
         "summary": "Authorized retained immutable versions",
         "x-implementation-phase": "P09",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implemented": true,
+        "description": "Current trusted certified device, current account-private membership; P09 private-group subset only",
         "parameters": [
           {
             "name": "id",
@@ -2784,6 +2853,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P09NotesRevisionsPage"
                 }
               }
             }
@@ -2794,8 +2873,8 @@
         "operationId": "post_objects_id_revisions",
         "summary": "Compare-and-swap or explicit conflict branch",
         "x-implementation-phase": "P09",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implemented": true,
+        "description": "Current trusted certified device, current account-private membership; P09 private-group subset only",
         "parameters": [
           {
             "name": "id",
@@ -2824,6 +2903,16 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P09NotesReceiptResult"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -2831,7 +2920,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/P02V1Envelope"
+                "$ref": "#/components/schemas/P09NotesCommitRequest"
               }
             }
           }
@@ -2843,8 +2932,8 @@
         "operationId": "post_objects_id_tombstone",
         "summary": "Signed soft delete",
         "x-implementation-phase": "P09",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implemented": true,
+        "description": "Current trusted certified device, current account-private membership; P09 private-group subset only",
         "parameters": [
           {
             "name": "id",
@@ -2873,6 +2962,16 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P09NotesReceiptResult"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -2880,7 +2979,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/P02V1Envelope"
+                "$ref": "#/components/schemas/P09NotesCommitRequest"
               }
             }
           }
@@ -3120,8 +3219,8 @@
         "operationId": "get_threads_id_entries",
         "summary": "Paginated encrypted entry heads",
         "x-implementation-phase": "P09",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implemented": true,
+        "description": "Current trusted certified device, current account-private membership; P09 private-group subset only",
         "parameters": [
           {
             "name": "id",
@@ -3147,6 +3246,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P09NotesObjectsPage"
                 }
               }
             }
@@ -3157,8 +3266,8 @@
         "operationId": "post_threads_id_entries",
         "summary": "Signed initial revision",
         "x-implementation-phase": "P09",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implemented": true,
+        "description": "Current trusted certified device, current account-private membership; P09 private-group subset only",
         "parameters": [
           {
             "name": "id",
@@ -3187,6 +3296,16 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P09NotesReceiptResult"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -3194,7 +3313,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/P02V1Envelope"
+                "$ref": "#/components/schemas/P09NotesCommitRequest"
               }
             }
           }
@@ -3817,6 +3936,210 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/P08DevicesNotificationsResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/objects/{id}": {
+      "get": {
+        "operationId": "get_objects_id",
+        "summary": "Scoped private-note state or immutable receipt",
+        "x-implementation-phase": "P09",
+        "x-implemented": true,
+        "description": "Current trusted certified device and currently authorized private group; no plaintext response",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P09NotesObjectState"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/objects/{id}/revisions/{revision}": {
+      "get": {
+        "operationId": "get_objects_id_revisions_revision",
+        "summary": "Scoped private-note state or immutable receipt",
+        "x-implementation-phase": "P09",
+        "x-implemented": true,
+        "description": "Current trusted certified device and currently authorized private group; no plaintext response",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          },
+          {
+            "name": "revision",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P09NotesBundleResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/content-receipts/{id}": {
+      "get": {
+        "operationId": "get_me_content_receipts_id",
+        "summary": "Scoped private-note state or immutable receipt",
+        "x-implementation-phase": "P09",
+        "x-implemented": true,
+        "description": "Current trusted certified device and currently authorized private group; no plaintext response",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P09NotesReceiptResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{id}": {
+      "get": {
+        "operationId": "get_groups_id",
+        "summary": "Current private group with signed genesis evidence",
+        "x-implementation-phase": "P09",
+        "x-implemented": true,
+        "description": "Current trusted device and private owner",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P09NotesGroupStatus"
                 }
               }
             }
@@ -12289,6 +12612,946 @@
           "context",
           "nonce",
           "ciphertext"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesObjectRef": {
+        "type": "object",
+        "properties": {
+          "object_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "object_kind": {
+            "enum": [
+              "group-metadata",
+              "thread",
+              "entry"
+            ]
+          },
+          "thread_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "archived": {
+            "type": "boolean"
+          },
+          "tombstoned": {
+            "type": "boolean"
+          },
+          "heads": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P02FileC1Parent"
+            },
+            "minItems": 0,
+            "maxItems": 32
+          },
+          "created_sequence": {
+            "$ref": "#/components/schemas/P02FileC1Counter"
+          },
+          "updated_sequence": {
+            "$ref": "#/components/schemas/P02FileC1Counter"
+          }
+        },
+        "required": [
+          "object_id",
+          "object_kind",
+          "thread_id",
+          "archived",
+          "tombstoned",
+          "heads",
+          "created_sequence",
+          "updated_sequence"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesGroupStatus": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "kind": {
+            "const": "private"
+          },
+          "owner_account_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "state": {
+            "enum": [
+              "active",
+              "archived"
+            ]
+          },
+          "membership": {
+            "$ref": "#/components/schemas/P02FileC1Head"
+          },
+          "key_epoch": {
+            "$ref": "#/components/schemas/P02FileC1Counter"
+          },
+          "epoch_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "history_checkpoint_digest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Digest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rekey_required": {
+            "type": "boolean"
+          },
+          "history_closure_required": {
+            "type": "boolean"
+          },
+          "restore_quarantined": {
+            "type": "boolean"
+          },
+          "settings": {
+            "type": "boolean"
+          },
+          "genesis": {
+            "$ref": "#/components/schemas/P08DevicesGenesisResult"
+          }
+        },
+        "required": [
+          "version",
+          "group_id",
+          "kind",
+          "owner_account_id",
+          "state",
+          "membership",
+          "key_epoch",
+          "epoch_digest",
+          "history_checkpoint_digest",
+          "rekey_required",
+          "history_closure_required",
+          "restore_quarantined",
+          "settings",
+          "genesis"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesGroupsPage": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P09NotesGroupStatus"
+            },
+            "minItems": 0,
+            "maxItems": 20
+          },
+          "next": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "groups",
+          "next"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesObjectsPage": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "thread_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "objects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P09NotesObjectRef"
+            },
+            "minItems": 0,
+            "maxItems": 100
+          },
+          "next": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "$ref": "#/components/schemas/P02FileC1Counter"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "group_id",
+          "thread_id",
+          "objects",
+          "next"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesObjectState": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "object": {
+            "$ref": "#/components/schemas/P09NotesObjectRef"
+          }
+        },
+        "required": [
+          "version",
+          "group_id",
+          "object"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesRevisionRef": {
+        "type": "object",
+        "properties": {
+          "revision_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "envelope_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "ciphertext_bytes": {
+            "$ref": "#/components/schemas/P02FileC1Counter"
+          }
+        },
+        "required": [
+          "revision_id",
+          "envelope_digest",
+          "ciphertext_bytes"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesRevisionsPage": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "object_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "revisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P09NotesRevisionRef"
+            },
+            "minItems": 0,
+            "maxItems": 100
+          },
+          "next": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "group_id",
+          "object_id",
+          "revisions",
+          "next"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesBundleResult": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "object_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "revision_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "bundle": {
+            "$ref": "#/components/schemas/P02V1Bundle"
+          }
+        },
+        "required": [
+          "version",
+          "group_id",
+          "object_id",
+          "revision_id",
+          "bundle"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesReceiptResult": {
+        "$ref": "#/components/schemas/P04ApiCommitResult"
+      },
+      "P09NotesCommitRequest": {
+        "$ref": "#/components/schemas/P04ApiObjectCommit"
+      },
+      "P09NotesGroupCreate": {
+        "$ref": "#/components/schemas/P08DevicesGenesisRequest"
+      },
+      "P09NotesEditContent": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 64
+            },
+            "maxItems": 50,
+            "uniqueItems": true
+          },
+          "markdown": {
+            "type": "string",
+            "maxLength": 2097152
+          },
+          "checklist": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P02V1ChecklistItem"
+            },
+            "maxItems": 10000
+          },
+          "summary_entry_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "metadata_kind": {
+            "enum": [
+              "content",
+              "account-preferences"
+            ]
+          },
+          "preferences": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "enum": [
+                    "favorite",
+                    "group-order",
+                    "thread-order",
+                    "read-marker"
+                  ]
+                },
+                "target_id": {
+                  "$ref": "#/components/schemas/P02FileC1Id"
+                },
+                "value": {
+                  "$ref": "#/components/schemas/P02FileC1Counter"
+                }
+              },
+              "required": [
+                "key",
+                "target_id",
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 10000
+          }
+        },
+        "required": [
+          "title",
+          "tags",
+          "markdown",
+          "checklist",
+          "summary_entry_id",
+          "metadata_kind",
+          "preferences"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesEditRequest": {
+        "type": "object",
+        "properties": {
+          "draft_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "object_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "object_kind": {
+            "enum": [
+              "group-metadata",
+              "thread",
+              "entry"
+            ]
+          },
+          "thread_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "action": {
+            "enum": [
+              "create",
+              "update",
+              "soft-delete",
+              "restore"
+            ]
+          },
+          "parents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P02FileC1Parent"
+            },
+            "minItems": 0,
+            "maxItems": 32
+          },
+          "archived": {
+            "type": "boolean"
+          },
+          "content": {
+            "$ref": "#/components/schemas/P09NotesEditContent"
+          }
+        },
+        "required": [
+          "draft_id",
+          "group_id",
+          "object_id",
+          "object_kind",
+          "thread_id",
+          "action",
+          "parents",
+          "archived",
+          "content"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesOpenRequest": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "object_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "revision_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "bundle": {
+            "$ref": "#/components/schemas/P02V1Bundle"
+          },
+          "object_kind": {
+            "enum": [
+              "group-metadata",
+              "thread",
+              "entry"
+            ]
+          },
+          "thread_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "group_id",
+          "object_id",
+          "revision_id",
+          "bundle",
+          "object_kind",
+          "thread_id"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesLocalContext": {
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "const": "private-content-local-context"
+          },
+          "version": {
+            "const": 1
+          },
+          "service_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "account_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "device_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "profile_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "record_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "record_kind": {
+            "enum": [
+              "note-control",
+              "group-evidence"
+            ]
+          },
+          "root_fingerprint": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          }
+        },
+        "required": [
+          "purpose",
+          "version",
+          "service_id",
+          "account_id",
+          "device_id",
+          "profile_id",
+          "record_id",
+          "record_kind",
+          "root_fingerprint"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesLocalFrame": {
+        "type": "object",
+        "properties": {
+          "contract": {
+            "const": "p09-local-v1"
+          },
+          "protocol": {
+            "const": "anynote"
+          },
+          "protocol_version": {
+            "const": 1
+          },
+          "purpose": {
+            "const": "private-content-local"
+          },
+          "context": {
+            "$ref": "#/components/schemas/P09NotesLocalContext"
+          },
+          "nonce": {
+            "type": "string",
+            "format": "base64url-24"
+          },
+          "ciphertext": {
+            "type": "string",
+            "format": "base64url-variable",
+            "minLength": 22,
+            "maxLength": 699072
+          }
+        },
+        "required": [
+          "contract",
+          "protocol",
+          "protocol_version",
+          "purpose",
+          "context",
+          "nonce",
+          "ciphertext"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesLocalGroup": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "record_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "state": {
+            "enum": [
+              "GENESIS_PENDING",
+              "COMMITTED"
+            ]
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P09NotesGroupSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "group_id",
+          "record_id",
+          "state",
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesLocalDraft": {
+        "type": "object",
+        "properties": {
+          "draft_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "record_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "object_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "object_kind": {
+            "enum": [
+              "group-metadata",
+              "thread",
+              "entry"
+            ]
+          },
+          "thread_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "saved_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          }
+        },
+        "required": [
+          "draft_id",
+          "record_id",
+          "group_id",
+          "object_id",
+          "object_kind",
+          "thread_id",
+          "saved_digest"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesLocalAttempt": {
+        "type": "object",
+        "properties": {
+          "attempt_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "record_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "draft_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "source_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "state": {
+            "enum": [
+              "QUEUED",
+              "SENT_UNKNOWN",
+              "CONFLICT",
+              "REKEY_REQUIRED",
+              "ACCESS_LOST",
+              "COMMITTED"
+            ]
+          }
+        },
+        "required": [
+          "attempt_id",
+          "record_id",
+          "draft_id",
+          "source_digest",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesLocalWitness": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "object_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "revision_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "envelope_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "cache_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "object_kind": {
+            "enum": [
+              "group-metadata",
+              "thread",
+              "entry"
+            ]
+          },
+          "thread_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "archived": {
+            "type": "boolean"
+          },
+          "action": {
+            "enum": [
+              "create",
+              "update",
+              "soft-delete",
+              "restore"
+            ]
+          }
+        },
+        "required": [
+          "group_id",
+          "object_id",
+          "revision_id",
+          "envelope_digest",
+          "cache_id",
+          "object_kind",
+          "thread_id",
+          "archived",
+          "action"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesLocalControl": {
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "const": "p09-private-control"
+          },
+          "version": {
+            "const": 1
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P09NotesLocalGroup"
+            },
+            "minItems": 0,
+            "maxItems": 100
+          },
+          "drafts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P09NotesLocalDraft"
+            },
+            "minItems": 0,
+            "maxItems": 512
+          },
+          "attempts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P09NotesLocalAttempt"
+            },
+            "minItems": 0,
+            "maxItems": 512
+          },
+          "witnesses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P09NotesLocalWitness"
+            },
+            "minItems": 0,
+            "maxItems": 512
+          }
+        },
+        "required": [
+          "purpose",
+          "version",
+          "groups",
+          "drafts",
+          "attempts",
+          "witnesses"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesLocalEvidence": {
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "const": "p09-private-genesis"
+          },
+          "version": {
+            "const": 1
+          },
+          "evidence": {
+            "$ref": "#/components/schemas/P08DevicesGenesisResult"
+          }
+        },
+        "required": [
+          "purpose",
+          "version",
+          "evidence"
+        ],
+        "additionalProperties": false
+      },
+      "P09NotesGroupSummary": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "kind": {
+            "const": "private"
+          },
+          "owner_account_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "state": {
+            "enum": [
+              "active",
+              "archived"
+            ]
+          },
+          "membership": {
+            "$ref": "#/components/schemas/P02FileC1Head"
+          },
+          "key_epoch": {
+            "$ref": "#/components/schemas/P02FileC1Counter"
+          },
+          "epoch_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "history_checkpoint_digest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Digest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rekey_required": {
+            "type": "boolean"
+          },
+          "history_closure_required": {
+            "type": "boolean"
+          },
+          "restore_quarantined": {
+            "type": "boolean"
+          },
+          "settings": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "version",
+          "group_id",
+          "kind",
+          "owner_account_id",
+          "state",
+          "membership",
+          "key_epoch",
+          "epoch_digest",
+          "history_checkpoint_digest",
+          "rekey_required",
+          "history_closure_required",
+          "restore_quarantined",
+          "settings"
         ],
         "additionalProperties": false
       }
