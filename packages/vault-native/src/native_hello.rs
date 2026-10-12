@@ -32,6 +32,7 @@ impl Vault {
     /// supplied by renderer data. Provider callbacks also check the OS window.
     #[cfg(windows)]
     pub fn initialize_hello(&self, hwnd: usize, secrets: &[u8], pins: Value) -> Result<()> {
+        check(self.status()? == "enrollment-required", "PROFILE_EXISTS")?;
         let _attempt = hello::Attempt::begin().map_err(|_| Error("VAULT_BUSY"))?;
         let generation = self.signal.generation();
         let current = || self.signal.generation() == generation;

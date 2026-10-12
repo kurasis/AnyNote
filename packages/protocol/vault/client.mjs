@@ -39,8 +39,8 @@ export class LocalVault {
 export async function credentialPrf(credential_id,salt,rpId){
   ensure(rpId===location.hostname,'INVALID_RP');ensure(navigator.credentials&&globalThis.PublicKeyCredential,'PRF_UNAVAILABLE');
   const un64=s=>Uint8Array.from(atob(s.replaceAll('-','+').replaceAll('_','/')),c=>c.charCodeAt(0)),challenge=crypto.getRandomValues(new Uint8Array(32));
-  const c=await navigator.credentials.get({publicKey:{challenge,rpId,allowCredentials:[{type:'public-key',id:un64(credential_id)}],userVerification:'required',timeout:60000,extensions:{prf:{eval:{first:un64(salt)}}}}});
+  const c=await navigator.credentials.get({publicKey:{challenge,rpId,...(credential_id?{allowCredentials:[{type:'public-key',id:un64(credential_id)}]}:{}),userVerification:'required',timeout:60000,extensions:{prf:{eval:{first:un64(salt)}}}}});
   const r=c?.getClientExtensionResults()?.prf?.results?.first;
-  ensure(c?.id===credential_id&&r instanceof ArrayBuffer&&r.byteLength===32,'PRF_UNAVAILABLE');
-  return new Uint8Array(r);
+  ensure(c&&(!credential_id||c.id===credential_id)&&/^[A-Za-z0-9_-]{1,1366}$/.test(c.id)&&r instanceof ArrayBuffer&&r.byteLength===32,'PRF_UNAVAILABLE');
+  return {credential_id:c.id,bytes:new Uint8Array(r)};
 }
