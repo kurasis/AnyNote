@@ -744,3 +744,36 @@ otherwise ignored ABI case, and capture Windows subprocess output as UTF-8.
 All twelve hosted gates now pass, including unchanged earlier phase regressions.
 These corrections do not relax eligibility, verification, KDF limits, TLS, CSP,
 browser sandbox or ABI checks. Actual physical/composition review remains NOT_RUN.
+
+## ADR-018 — independently pinned device lifecycle and protected recovery
+
+Use both frozen QR directions and a privately transferred QR PNG fallback; no
+invented short-code/SAS scheme. Keep channel keys transient, relay ciphertext
+bounded, intent mutual and signed attempts immutable. Full roster replay uses
+independent pins/known checkpoints. Global pending/rate admission locks precede
+account/session locks; CAS, trust, receipts, notifications and sync commit together.
+Revoke recorded descendants and derived sessions/codes, marking group maintenance.
+Recovery requires separate login plus the offline kit; activate before envelopes.
+An administrator receives no plaintext or recovery secret.
+
+Preserve frozen cache.public-evidence semantics. Additive p08-local-v1 uses closed
+maintained schemas and XChaCha20 under L, fresh nonce and JCS context/control IDs.
+Protected control/pages/G updates are atomic/fenced and excluded from generic
+mutation/eviction. Old clients refuse unsupported operations. First-device keys,
+immutable public registration journal and verified-kit marker commit atomically;
+restart retries after genuine lease expiry, without persisting R. Native IPC is
+closed and capability/origin/window/generation bound.
+
+Signed active-device cap: 1–32, default5, materialized at registration; existing
+caps remain. Account roster: 1,000 events/16 MiB. QR TTL: ten minutes; pending:
+32/account, 50,000 global. Group policy/epoch maintenance is P10. QR project pins
+ZXing browser0.2.1/library0.23.0, four exact SRI/license records. Dense export uses
+an integer-grid verified PNG and maintained pure-image decoder; camera retains
+the perspective decoder. Actual PNG import and both enrollment directions pass.
+
+Acceptance: seven Node suites, sixteen QR checks, 153 real HTTPS/SQL checks, 33
+sandboxed UI checks and nine native tests per platform; all fourteen hosted gates
+pass. Concurrency/SQL abort, native/browser JCS/secretstream interop, fresh recovery
+and populated legacy upgrade are exercised. No frozen format, verifier, assertion,
+CSP, TLS, sandbox, eligibility or ABI guard is weakened. Qualified composition
+review, physical trials and production security release remain separate/NOT_RUN.

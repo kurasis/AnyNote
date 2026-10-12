@@ -1392,3 +1392,52 @@ cloud browser sandbox BLOCKED remains separate from hosted PASS. Physical P01,
 qualified G2/G3 review, production migration/deploy/release/owner trial/outreach
 remain open or NOT_RUN. Final source tracking changes require all twelve jobs on
 the final head before ordinary authorized merge.
+
+## P08 full trusted-device software acceptance
+
+All fourteen required hosted jobs PASS at clean branch/actual checkout
+`bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc`, Git tree
+`eccb040a0c584f7d808c5a9be986d4381b0bbdc8`. Exact public reports:
+[HTTP](evidence/p08/http-report.json), [browser](evidence/p08/browser-report.json),
+[Linux source](evidence/p08/linux-source-report.json),
+[Windows source](evidence/p08/windows-source-report.json),
+[checks/tree/artifact acceptance](evidence/p08/acceptance.json).
+
+Seven Node attack/custody suites and sixteen randomized dense maintained QR codec
+round trips pass. Real HTTPS/MariaDB/native-process interop: **153 checks**,
+including two QR directions, immutable confirmation races, actual SQL-trigger abort/
+retry, recipient substitution, security-reserve limits, cap/expiry, independent
+siblings/transitive descendants, derived native session/code revocation and distinct
+concurrent root resets with exactly one winner. Native/Node secretstream and JCS
+ID/AAD agree; a fresh native process reopens encrypted SQLite without key export.
+A populated legacy-schema upgrade preserves all original counts under normal
+owner-validated additive migration. The original P06 215-check race suite also passes.
+
+Actual persistent sandboxed Chromium UI: **33 checks**, with verified TLS/strict
+CSP, CDP synthetic resident UV providers, downloaded PNG encoding/decoding, mutual
+approval/confirmation, G distribution, descendant revoke and fresh kit recovery.
+Network abort after the atomic bootstrap journal, real ten-second lease expiry
+and page restart resolve the original signed request without R persistence.
+Provider counters, writer guards and QR payload validation remain enforced.
+Native: **nine** new tests on each Linux/Windows, plus prior **15** custody tests,
+provider/container **71 Linux / 99 Windows**, and **one** explicitly prepared/run
+official-header ABI case. Native SQL abort/two connections, lock/restart, closed
+IPC/capability/epoch, tamper, rotation and fresh-root recovery pass. Physical
+Hello/TPM objects are not created; OS event injections are software evidence.
+
+All 283 Linux raw source hashes match Git blobs. Windows retains 283 actual raw
+working-file hashes: 280 CRLF text inputs and three byte-identical inputs. Complete
+Git trees agree. Downloaded artifact ZIP SHA256 equals GitHub artifact digests;
+archived reports exclude private fixtures, R, QR values and credentials.
+Prior spec/corpora/locks remain unchanged. No failed assertion, verifier, CSP,
+TLS, sandbox, ABI or eligibility guard is bypassed. QR detector reliability was
+fixed using the maintained pure-image path for dense exported grids, with exact
+text self-verification; camera uses the ordinary perspective detector.
+
+Published P07 environment was restored. Full P08 install ran twice and preserved
+all 712 tracked source files on its final complete run; current read-only readiness
+runs separately and passed while preserving all 713 then-tracked files, including
+the new QR codec test. Saving/publishing/fresh restoration remain distinct. No production
+migration/deployment/release, new owner trial or outreach. Physical P01 and qualified
+G2/G3 remain open/unbooked/NOT_RUN. Final tracking/evidence changes require fourteen
+fresh successful jobs before ordinary authorized merge.

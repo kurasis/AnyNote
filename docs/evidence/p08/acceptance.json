@@ -1,0 +1,160 @@
+{
+  "branch_head": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+  "checks": [
+    {
+      "name": "auth-linux-http-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38271895895/job/114887921137"
+    },
+    {
+      "name": "auth-windows-native",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38271895895/job/114887921500"
+    },
+    {
+      "name": "baseline",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38271895822/job/114887921309"
+    },
+    {
+      "name": "crypto-linux-browser-php",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38271895847/job/114888387087"
+    },
+    {
+      "name": "crypto-windows-native",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38271895847/job/114888387347"
+    },
+    {
+      "name": "devices-linux-http-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38271895849/job/114888448012"
+    },
+    {
+      "name": "devices-windows-native",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38271895849/job/114888447675"
+    },
+    {
+      "name": "file-contract",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38271895834/job/114887920630"
+    },
+    {
+      "name": "foundation",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38271895833/job/114888012266"
+    },
+    {
+      "name": "linux-native-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38271895838/job/114888343055"
+    },
+    {
+      "name": "static-device-kit",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38271895838/job/114888343264"
+    },
+    {
+      "name": "vault-linux-http-browser",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38271895841/job/114888550133"
+    },
+    {
+      "name": "vault-windows-native",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38271895841/job/114888549675"
+    },
+    {
+      "name": "windows-provider",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38271895838/job/114888342786"
+    }
+  ],
+  "purpose": "P08 hosted software acceptance at an exactly identified clean Git tree",
+  "status": "PASS",
+  "source_tree": "eccb040a0c584f7d808c5a9be986d4381b0bbdc8",
+  "actual_checkout": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+  "artifacts": [
+    {
+      "path": "docs/evidence/p08/http-report.json",
+      "sha256": "f842b3444ad3609af78b354af0df59a714441f0d59e44f66e881c688f997ff8e"
+    },
+    {
+      "path": "docs/evidence/p08/browser-report.json",
+      "sha256": "6136b61d6a363797661a5efd12d973eff82a676a904b0883baa0285c5e0ba6a0"
+    },
+    {
+      "path": "docs/evidence/p08/linux-source-report.json",
+      "sha256": "059369062fd3230bd141bc661cbbe41bdfcdaf44f26ac25792a866a8e7766a79"
+    },
+    {
+      "path": "docs/evidence/p08/windows-source-report.json",
+      "sha256": "1e445265a452509ec8c2f47c91aad92a6140a034b7e859306eeb0afe3d313ad7"
+    }
+  ],
+  "hosted_artifacts": [
+    {
+      "run_id": 38271895849,
+      "artifact_id": 11757029860,
+      "name": "p08-linux-devices-report",
+      "sha256": "09c41378db899fea4cdd17d2570880ea5888db36ae3527ab416a37165e5d6b43"
+    },
+    {
+      "run_id": 38271895849,
+      "artifact_id": 11756768999,
+      "name": "p08-windows-devices-report",
+      "sha256": "eebe8278daa2be457f6adeb80a950e7a6ee0cea6c90a05961eab36ff60f27c38"
+    }
+  ],
+  "source_inputs": {
+    "linux": 283,
+    "windows": 283,
+    "linux_raw_hashes_match": true,
+    "windows_checkout": "280 CRLF text working-file inputs; three byte-identical inputs retained. All actual raw hashes verified against Git blob bytes or its CRLF checkout, without normalizing reports."
+  },
+  "node_workflow_suites": 7,
+  "qr_dense_codec_checks": 16,
+  "http_checks": 153,
+  "browser_checks": 33,
+  "native_device_tests_per_platform": 9,
+  "preserved_native_custody_tests_per_platform": 15,
+  "inherited_provider_container_tests": {
+    "linux": 71,
+    "windows": 99,
+    "windows_official_header_abi_explicit": 1
+  },
+  "physical_acceptance": false,
+  "hello_tpm_objects_created": false,
+  "independent_review": "NOT_RUN",
+  "deployment": "NOT_PERFORMED"
+}

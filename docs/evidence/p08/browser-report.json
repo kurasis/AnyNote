@@ -1,0 +1,12 @@
+{
+  "purpose": "P08 actual UI enrollment, QR PNG, cascading revoke and fresh recovery",
+  "status": "PASS",
+  "source_commit": "bb41c0cbfb67bdcaab1b08785fc221bd8f5fe6cc",
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "checks": 33,
+  "chromium_sandbox": true,
+  "tls_verification": "Trusted disposable CA with real hostname/TLS validation",
+  "qr": "Actual maintained SVG encoder -> PNG -> maintained decoder",
+  "source_tree_dirty": false
+}

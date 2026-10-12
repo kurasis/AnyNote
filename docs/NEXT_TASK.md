@@ -1,55 +1,65 @@
 # Next implementation batch
 
-## Complete P08 trusted devices and recovery
+## Complete P09 private groups and encrypted notes
 
-P07 is software verified: five Node custody suites, 28 actual HTTPS/SQL checks,
-28 sandboxed verified-TLS/strict-CSP browser checks, fifteen native custody tests
-per Linux/Windows platform plus preserved provider/official-header ABI gates.
-All twelve hosted jobs pass at the exact clean tree recorded in evidence/p07.
-Confirm final tracking and CI before making changes. Published P06 setup was
-actually restored; P07 complete install/start draft revision 15 is saved, with
-publication/new-task restoration separately NOT_RUN. Start owned services using
-the saved read-only instructions; do not reset ordinary user data.
+Confirm final P08 tracking, acceptance receipts and passing final CI first. Read
+AGENTS.md, PROGRESS.md, TEST_EVIDENCE.md, DECISIONS.md, KNOWN_LIMITATIONS.md,
+P04_BACKEND.md, P05_CRYPTO_CORE.md, P07_LOCAL_VAULT.md, P08_TRUSTED_DEVICES.md,
+and original specification 01, 04, 07–09, 13, 14 and relevant 20 criteria.
+Use the existing checkout, Russian chat and English source/docs/commits. Ordinary
+passing PRs and automatic push/merge are already authorized; no worktrees or
+subagents unless expressly requested. No production deployment/migration, release,
+new owner-device trial or reviewer outreach.
 
-Read AGENTS.md, tracking, original 04–06, 08, 13, 14 and relevant 20 criteria,
-P05_CRYPTO_CORE.md, P06_AUTHENTICATION.md and P07_LOCAL_VAULT.md. Russian chat,
-English repository; existing checkout; normal passing PR and automatically
-authorized push/merge. No production deployment, release, new owner-device trial,
-real user-data mutation or reviewer outreach.
+Restore owned services with runtime-env.sh, dev-stack.py up/check and
+p06-stack.py up/check. The published P07 setup was actually restored; the tested
+P08 draft is distinct from publication/fresh P08 snapshot restoration. Preserve
+owner-marked credentials/TLS/OAuth files and SQL volumes. Source setup is read-only;
+never regenerate frozen corpora, old locks or generated contract outputs for a
+pass. P03 outage tests must run sequentially with auth/device HTTP tests.
 
-Complete the whole P08 batch: root bootstrap/kit generation and verification;
-current signed account-roster chain and independent identity pins; both QR pairing
-directions with bounded hostile-relay transport, TTL, rate limits, human intent
-and single-use approval; independent device signing/encryption keys; authenticated
-manual fallback only if allowed by the chosen original contract; same-account key
-distribution; enrollment/activation/revoke and root-signed recovery reset with
-CAS/receipts and security notifications. Implement enrollment/recovery UI, signed
-lifecycle records, clear offline recovery instructions and fresh-client traces.
+Implement the complete first private-note vertical slice: real private groups,
+encrypted group/thread titles, entries, safe Markdown/checklists, encrypted account
+preferences, and clear local-save/server-save/unknown/conflict states. Root bootstrap
+already creates the private settings group and full device+recovery grant coverage.
+Extend that verified group-c2 machinery to actual private-group creation; do not
+replace it with a placeholder group or server plaintext. Use random group/object
+keys and maintained P05 frozen codecs, signatures, AAD and recipient contexts.
+Device/session trust, local unlock and group authority remain distinct.
 
-Integrate P07 encrypted custody and lifecycle cancellation. Generate new private
-device keys on the new installation; keep them under random L with the current
-hardware/explicit-phrase policy. R/root secrets are transient recovery/bootstrap
-inputs, never everyday state. Bind pairing to independently verified account/root/
-service/device identities; never trust a new root solely because the API supplied
-it. Recovery requires separate server access plus the offline secret. Root reset
-must reject old-generation device sessions/authorizations and cannot give an
-administrator plaintext. Fresh P06 both-key proof upgrades only current session
-trust, not local unlock or group authority. Do not equate passkey login with key
-recovery or silently invent current roster/group state.
+Connect real P04 scoped persistence, authorization and atomic revision/quota/
+receipt/sync-event publication to typed implemented API operations. Validate current
+roster/policy/epoch at publication and historical evidence at read. Existing P07
+acknowledged encrypted drafts/outbox must survive failed requests and restart;
+immutable attempts and receipts resolve unknown results without duplicate writes.
+Keep signed parents/author/context and decrypted internal references consistent.
+Respect revocation/rekey/history-closure flags; general membership/epoch maintenance
+is P10, never bypass those flags to satisfy a note test. Retain unresolved work and
+provide an explicit blocked state where later-phase maintenance is required.
 
-Materialize a complete current account roster and private preference-group genesis
-before preference writes, preserving original ownership/signature/key-distribution
-rules. Group membership authority stays P10 and usable note flows P09; no fake
-roster/group placeholder satisfies P08. Keep bounded durable transitions, precise
-pending/crash/retry behavior, cancellation/stale-result fences, revoked-device
-exclusion and content-free diagnostics. Preserve original spec, frozen corpora
-and prior locks; any additive dependency/format is explicit and inventoried.
+Build a small usable private-vault UI and corresponding protected native commands
+without exporting L/device/group private keys through general IPC. Render user
+content through safe components, never arbitrary HTML/script or a relaxed CSP.
+Support a note created by actual native Windows/core custody and read by an enrolled
+PWA client, and the reverse; full host/PWA packaging is P14/P15. Inspect real SQL,
+IndexedDB/SQLite, caches, logs and errors for plaintext/key/token leakage. Include
+meaningful cross-account/current-access/tamper/replay/unknown-result/concurrent-edit/
+quota/lock-restart and unsafe-Markdown tests over actual HTTP and persistent storage.
 
-Run hostile relay mutation/key-swap/replay/expiry and independent-pin tests, fresh
-client recovery, SQL concurrency/rollback, actual HTTPS and persistent Worker/
-native custody integration, sandboxed browser and Windows regressions. Close
-original C05/C06/C11/C13 for this scope; retain real physical/audit limits. Update
-progress/decisions/limits/evidence and exact next task; require all final source
-jobs before ordinary automatic merge. P11 owns sync/history, P12 file-source/resume,
-P14/P15 full native/PWA product packaging, P16 operations and P17 qualified review.
-The full P01 physical matrix and qualified G2/G3 remain open/unbooked/NOT_RUN.
+Preserve P08 independent root pins, both QR directions, one-use approvals,
+transitive revoke and root-signed CAS recovery. Do not authorize recipients or
+historical writers from signature validity alone. Keep root/R transient, private
+keys under random L, epoch/writer/generation fencing and original strong-phrase/
+Hello/PRF eligibility. Native/browser local control IDs and AAD hash JCS bytes.
+The public bootstrap journal commits atomically with keys and resolves interrupted
+registration without persisting R. An old whole backup cannot establish universal
+freshness. Current bounded account roster is 1,000 events, signed device cap 1–32
+(default5), QR transport rather than an invented short-code/SAS scheme.
+
+Run all prior required jobs plus appropriate mandatory P09 browser/native/Windows
+acceptance at the exact final head/tree. Archive only public exact-source receipts;
+update README, progress, decisions, limitations, evidence, development/setup and
+NEXT_TASK for full P10. Physical G1/Hello/iPhone and qualified G2/G3 review remain
+open/unbooked/NOT_RUN; software CI is not production security-release acceptance.
+P11 owns sync/history scale, P12 file-source/resume, P13 export/restore, P14/P15
+product packaging, P16 operations and P17 qualified adversarial review.

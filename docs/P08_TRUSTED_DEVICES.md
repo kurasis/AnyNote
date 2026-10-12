@@ -35,6 +35,12 @@ private; the channel key is transient and never uploaded to the relay. Relayed
 frames are bounded secretstream ciphertext with exact purpose/direction/anchor,
 expiry and replay checks. A pending approval supplies neither active trust nor keys.
 
+Export uses an integer-grid 1024-pixel PNG and verifies exact QR text before
+download. Maintained ZXing's pure-image path handles exported dense grids; imported
+PNG falls back to its perspective detector, while camera decoding retains the
+standard detector. Sixteen randomized dense SVG/bitmap round trips and the actual
+download/import UI pass without relaxing payload validation or independent trust.
+
 Both parties explicitly confirm. SQL serializes account/head CAS, activation,
 receipt, session trust and the audience-scoped notification/sync event. Retry the
 same immutable signed activation after an unknown result. A committed receipt

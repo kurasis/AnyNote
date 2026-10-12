@@ -112,3 +112,20 @@ Chromium, verified TLS/strict CSP and Windows/MSVC with the independently measur
 ABI reference. Static vault shell: `/auth/vault.html`; no general native key/token
 IPC or production issuer is exposed. Saved P07 setup revision 15 does not by
 itself publish a snapshot or prove fresh-task restoration.
+
+## P08 trusted devices development
+
+Read [P08_TRUSTED_DEVICES.md](P08_TRUSTED_DEVICES.md). Install the separate QR project
+with `npm --prefix apps/devices-web ci --ignore-scripts` using the workspace cache,
+activate runtime-env.sh, and run `python3 scripts/check-p08.py`: generated contracts
+are compared read-only, four exact QR SRI/license records checked, seven workflow
+suites and sixteen dense QR round trips executed. Native all-feature tests require
+`--test-threads=1`, respecting the bounded process-wide Argon admission gate.
+
+Ordinary p06-stack.py up/check preserves owned data and applies additive schema only
+after owner-marker validation. Upgrade/attack tests explicitly use the marked
+synthetic P06 DB; run sequentially with P03 outages. Mandatory trusted-devices.yml
+verifies actual HTTP/SQL/native interop, sandboxed verified-TLS/strict-CSP UI and
+Windows/MSVC/official-header ABI. Archive only public clean-source receipts, never
+kit/QR/private fixture values. UI: `/auth/devices.html`. Draft save does not publish
+or establish fresh restoration, authorize production deployment or owner trials.
