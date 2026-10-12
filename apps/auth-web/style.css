@@ -2,3 +2,5 @@
 
 #qr { background: white; max-width: 100%; overflow: auto; }
 #video { max-width: 100%; }
+
+#qr svg { width: min(100%, 480px); height: auto; display: block; }
