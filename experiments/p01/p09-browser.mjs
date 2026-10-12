@@ -17,7 +17,7 @@ const control=(op,input)=>{const r=spawnSync('python3',['scripts/p06-stack.py','
 // suppress only its response. Errors must not serialize cookies/CSRF headers.
 async function commitBeforeLosingResponse(request){
   const u=new URL(request.url());if(u.origin!=='https://api.anynote.test:18443'||request.method()!=='POST')throw Error('FAULT_ROUTE_SCOPE');
-  const headers=await request.allHeaders(),body=request.postData();
+  const headers={...Object.fromEntries(Object.entries(await request.allHeaders()).filter(([name])=>!name.startsWith(':'))),host:'api.anynote.test:18443'},body=request.postData();
   return new Promise((done,reject)=>{
     const req=https.request({hostname:'127.0.0.1',port:18443,servername:'api.anynote.test',ca:readFileSync(root+'/.local/p06/tls/ca.crt'),path:u.pathname,method:'POST',headers},res=>{
       let bytes=0;res.on('data',b=>{bytes+=b.length;if(bytes>1048576)req.destroy();});res.on('end',()=>res.statusCode===200?done():reject(Error('FAULT_COMMIT_DENIED')));
