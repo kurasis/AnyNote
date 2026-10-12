@@ -103,6 +103,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --manifest-path packages/vault-native/Cargo.toml --locked --all-features -- --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --manifest-path packages/vault-native/Cargo.toml --locked --all-features -- --ignored --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/p07-evidence.py windows
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           git diff --exit-code

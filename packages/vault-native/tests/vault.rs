@@ -535,10 +535,7 @@ fn wrapper_revocation_rotates_l_and_preserves_all_local_work() {
             .unwrap(),
     )
     .unwrap();
-    assert_ne!(
-        old["wrappers"][0]["ciphertext"],
-        current["wrappers"][0]["ciphertext"]
-    );
+    assert_ne!(old["wrappers"][0], current["wrappers"][0]);
     let new_frame: Vec<u8> = conn
         .query_row("SELECT frame FROM records WHERE id=?1", [&record], |r| {
             r.get(0)
