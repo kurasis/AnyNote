@@ -594,6 +594,7 @@ fn interrupted_l_rotation_keeps_prior_key_and_ciphertext() {
 #[cfg(windows)]
 #[test]
 fn actual_windows_wts_registration_and_message_fences_without_hello_objects() {
+    use windows_sys::Win32::UI::WindowsAndMessaging::{WTS_SESSION_LOCK, WTS_SESSION_UNLOCK};
     use windows_sys::{
         Win32::UI::WindowsAndMessaging::{
             CreateWindowExW, DestroyWindow, PBT_APMSUSPEND, WM_POWERBROADCAST, WM_WTSSESSION_CHANGE,
