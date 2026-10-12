@@ -136,7 +136,7 @@
     },
     {
       "path": "packages/contracts/p03-api.schema.json",
-      "sha256": "71196cab1b3ea42437407e4ff143660b0b1590fc8bb2aed785ac52ad29d49323"
+      "sha256": "d5397875d6fba4fcd63d7fa33939ce34e59dd17a17923048f7fe45db72f897ed"
     },
     {
       "path": "packages/contracts/p04-api.schema.json",
@@ -168,7 +168,7 @@
     },
     {
       "path": "apps/api/app/Http/Controllers/CapabilitiesController.php",
-      "sha256": "254810165cb2f1a2ed1f866753e5755dd542d58d1de3b6b1c86a7e6ab0641e17"
+      "sha256": "c8745c21844eca0505005bdac76d8c6e7447a21edb687ec19b0c631a5b7badd6"
     },
     {
       "path": "scripts/p06_compatibility.py",
@@ -334,15 +334,15 @@
   "outputs": [
     {
       "path": "packages/contracts/generated/openapi.json",
-      "sha256": "2c736ce9255bbd699afcfb05b21ebd8818f97e6aa49eb2bfa7bc2b6c2563e600"
+      "sha256": "deb2a775458daacf8f933e97a6a3cc983177f83a19d10c7e3251cbfbfdd681cc"
     },
     {
       "path": "packages/contracts/generated/protocol.d.ts",
-      "sha256": "26c2d91cfe948862e08f528f871f35dc9bd0600878cac174b14db581d0404c4d"
+      "sha256": "3d170edbef2655e3b18ef77570ab987c955af6fc4ad19c3381b5bff29d825e69"
     },
     {
       "path": "packages/contracts/generated/runtime-schemas.json",
-      "sha256": "55533186ad1d9b64b8e871b807707e15d98200e5429b7dca86f502924c451e96"
+      "sha256": "0c34bf0fc25d326db205234d80090e5e87e3fe75eb7f63f44f9a726a07cf4d10"
     },
     {
       "path": "apps/api/app/Generated/Dtos.php",
@@ -354,7 +354,7 @@
     },
     {
       "path": "apps/api/app/Generated/schemas.json",
-      "sha256": "55533186ad1d9b64b8e871b807707e15d98200e5429b7dca86f502924c451e96"
+      "sha256": "0c34bf0fc25d326db205234d80090e5e87e3fe75eb7f63f44f9a726a07cf4d10"
     }
   ],
   "structures": 242,

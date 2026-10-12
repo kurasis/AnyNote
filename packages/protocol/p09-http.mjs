@@ -55,6 +55,7 @@ async function enrollNative(f){
 }
 const f=await account('p09-http'),others=[],nativePeers=[];
 try{
+ const features=(await request('/capabilities')).json.features;check(features.content_storage===true&&features.sync===false&&features.file_transfer===false&&features.production_ready===false,'PRIVATE_CONTENT_CAPABILITY_HAS_EXPLICIT_LATER_PHASE_BOUNDARIES');
  const made=await notes(f,'prepareGroup'),g=await ok(f.browser,'/groups',made.request,'group-status');await notes(f,'group',[g]);check(g.kind==='private'&&!g.settings,'REAL_PRIVATE_GROUP');
  const groupBefore=control('p09-state');const repeated=await ok(f.browser,'/groups',made.request,'group-status');check(JSON.stringify(repeated)===JSON.stringify(g)&&JSON.stringify(control('p09-state'))===JSON.stringify(groupBefore),'GENESIS_ONE_RESULT');
  const metadata=await publish(f,edit(g.group_id,'group-metadata',g.group_id,null,content('PUBLIC synthetic private group title')));
@@ -114,6 +115,10 @@ try{
  check(prior.envelope_digest===parent.envelope_digest,'EXACT_PRE_DELETE_PARENT_VERIFIED');
  const restored=await publish(f,edit(ng.group_id,'entry',nodeEntry.object_id,ns.object_id,{title:prior.payload.title,markdown:prior.payload.markdown,metadata_kind:'content',tags:[],checklist:[],summary_entry_id:null,preferences:[]},deleting.receipt.heads,'restore'));
  check(restored.request.bundle.envelope.header.context.revision_id!==parent.revision_id&&(await open(f,nodeEntry.object_id)).payload.markdown===prior.payload.markdown,'EXPLICIT_RESTORE_FRESH_IMMUTABLE_REVISION');
+ // A real encrypted note above the old edge's 256 KiB ceiling must round-trip.
+ const largeText='PUBLIC bounded large note '+ 'x'.repeat(400000),large=await publish(f,edit(ng.group_id,'entry',null,ns.object_id,content('PUBLIC large note',largeText)));
+ check((await open(f,large.object_id)).payload.markdown===largeText,'REAL_LARGE_CONTROL_CIPHERTEXT_ROUND_TRIP');
+ const oversized=await request('/groups',{body:{padding:'x'.repeat(4194304)},cookie:f.browser.cookie,csrf:f.browser.csrf});check(oversized.status===413&&oversized.json?.error?.code==='REQUEST_TOO_LARGE','REAL_EDGE_OVERSIZE_CLOSED_ERROR');
  const inspection=control('p09-inspect',JSON.stringify({markers:['PUBLIC synthetic private group title','PUBLIC synthetic private thread title','PUBLIC synthetic private entry title',body,'PUBLIC native to PWA title','PUBLIC PWA to native body',b64(f.initial.keys.signing.privateKey),f.initial.kit.recovery_secret]}));check(inspection.status==='PASS','SQL_AND_LOG_PLAINTEXT_PRIVATE_KEY_ABSENCE');
  mkdirSync(root+'/artifacts/p09',{recursive:true});const report={purpose:'P09 actual verified HTTPS/SQL/native private-note vertical slice',status:'PASS',checks:fixtureCheckCount(),source_commit:spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).stdout.trim(),source_tree_dirty:!!spawnSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}).stdout.trim(),physical_acceptance:false,independent_review:'NOT_RUN',native_storage:'Actual protected SQLite and main-window IPC',node_storage:'Transactional model; actual IndexedDB covered by hosted UI job'};
  writeFileSync(root+'/artifacts/p09/http-report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));

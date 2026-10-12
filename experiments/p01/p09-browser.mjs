@@ -1,5 +1,6 @@
 // Mandatory hosted sandboxed Chromium: genuine WebAuthn through the shipped strict-CSP UI.
 import {chromium} from 'playwright-core';
+import https from 'node:https';
 import {mkdtempSync,mkdirSync,readFileSync,writeFileSync,existsSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {resolve,join} from 'node:path';
@@ -10,7 +11,7 @@ mkdirSync(root+'/artifacts/p09',{recursive:true});
 rmSync(root+'/artifacts/p09/browser-report.json',{force:true});
 let checks=0,context;const children=[];
 const check=(value,name)=>{if(!value)throw Error(name);checks++;};
-const control=op=>{const r=spawnSync('python3',['scripts/p06-stack.py','control',op],{cwd:root,encoding:'utf8'});if(r.status!==0)throw Error('CONTROL_FAILED');return JSON.parse(r.stdout);};
+const control=(op,input)=>{const r=spawnSync('python3',['scripts/p06-stack.py','control',op],{cwd:root,encoding:'utf8',input});if(r.status!==0)throw Error('CONTROL_FAILED');return JSON.parse(r.stdout);};
 try{
   if(process.env.GITHUB_ACTIONS==='true'){
     // Trust the locally generated test CA with real NSS validation; never ignore certificate errors.
@@ -48,7 +49,7 @@ try{
     await notesAction(page,'favorite');check((await page.locator('#groups').textContent()).includes('★'),'ENCRYPTED_ACCOUNT_PREFERENCES');
     await notesAction(page,'group-first');await notesAction(page,'thread-first');await notesAction(page,'mark-read');check(true,'ENCRYPTED_ORDER_AND_READ_MARKER_PREFERENCES');
     await notesAction(page,'pin-summary');check(await page.locator('#thread-summary').textContent()===entryTitle,'SUMMARY_REFERENCE_VERIFIED_IN_SAME_THREAD');
-    await notesAction(page,'offline');const sw=await context.request.get(url+'sw.js');check(sw.headers()['content-security-policy'].includes('/auth/notes.js')&&!sw.headers()['content-security-policy'].includes('https://api.anynote.test')&&!sw.headers()['content-security-policy'].includes("connect-src 'self'"),'WORKER_CONNECTIONS_ENUMERATE_STATIC_RESOURCES_ONLY');check(await page.evaluate(async()=>{const names=await caches.keys();for(const n of names){const cache=await caches.open(n);for(const r of await cache.keys()){if(!r.url.startsWith(location.origin+'/auth/'))return false;}}return true;}),'STATIC_ONLY_OFFLINE_CACHE');
+    await notesAction(page,'offline');const sw=await new Promise((done,reject)=>{const req=https.get({hostname:'127.0.0.1',port:18443,servername:'app.anynote.test',ca:readFileSync(root+'/.local/p06/tls/ca.crt'),path:'/auth/sw.js',headers:{Host:'app.anynote.test:18443'}},r=>{r.resume();r.on('end',()=>done(r));});req.on('error',reject);req.setTimeout(5000,()=>req.destroy(Error('SW_TLS_TIMEOUT')));});check(sw.statusCode===200&&sw.headers['content-security-policy'].includes('/auth/notes.js')&&!sw.headers['content-security-policy'].includes('https://api.anynote.test')&&!sw.headers['content-security-policy'].includes("connect-src 'self'"),'WORKER_CONNECTIONS_ENUMERATE_STATIC_RESOURCES_ONLY');check(await page.evaluate(async()=>{const names=await caches.keys();for(const n of names){const cache=await caches.open(n);for(const r of await cache.keys()){if(!r.url.startsWith(location.origin+'/auth/'))return false;}}return true;}),'STATIC_ONLY_OFFLINE_CACHE');
     await page.locator('#lock').click();await page.locator('#workspace').waitFor({state:'hidden'});check(await page.locator('#workspace').isHidden()&&await page.locator('#note-body').inputValue()===''&&await page.locator('#preview').textContent()==='','LOCK_MASKS_AND_CLEARS_PLAINTEXT_DOM');
     await notesPage(page);await page.locator('#groups button').filter({hasText:groupTitle}).click();await page.waitForFunction(()=>!document.getElementById('status').dataset.busy);await page.locator('#threads button').filter({hasText:threadTitle}).click();await page.waitForFunction(()=>!document.getElementById('status').dataset.busy);await page.locator('#entries button').first().click();await page.waitForFunction(()=>document.getElementById('note-body').value.includes('PUBLIC browser secret body'));check(await page.locator('#note-title').inputValue()===entryTitle,'PAGE_RESTART_LOADS_VERIFIED_NOTE');
     await page.locator('#note-body').fill('PUBLIC newer body after lost response');let lost=false;

@@ -98,6 +98,10 @@ def main():
         database(args.operation == 'reset')
         subprocess.run(['node', str(ROOT / 'experiments/p01/p06-build.mjs')], cwd=ROOT, check=True)
         compose('up', '-d', 'auth-php', 'auth-nginx', capture=True)
+        # Bind-mounted configuration may change without recreating the container.
+        # Validate and reload only this owned edge, preserving sessions/data.
+        compose('exec', '-T', 'auth-nginx', 'nginx', '-t', capture=True)
+        compose('exec', '-T', 'auth-nginx', 'nginx', '-s', 'reload', capture=True)
         php('php', 'tests/Support/p06-control.php', 'ready')
         ready()
     elif args.operation == 'check':
