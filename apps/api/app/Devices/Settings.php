@@ -31,8 +31,12 @@ final class Settings
     public static function recipient(stdClass $i, ?stdClass $device): stdClass
     {
         $r = (object) ['kind' => $device ? 'device' : 'account-recovery', 'account_id' => $i->account_id, 'root_fingerprint' => $i->root_fingerprint, 'recovery_generation' => (string) $i->recovery_generation, 'roster_head' => Protocol::head($i)];
-        if ($device) { $r->device_id = $device->id; $r->certificate_digest = $device->certificate_digest; }
+        if ($device) {
+            $r->device_id = $device->id;
+            $r->certificate_digest = $device->certificate_digest;
+        }
         $r->encryption_key_fingerprint = self::keyFingerprint($device?->encryption_key ?? json_decode($i->identity_record)->body->recovery_encryption_key);
+
         return $r;
     }
 
@@ -45,15 +49,29 @@ final class Settings
     public function create(Request $r, stdClass $body): array
     {
         return DB::transaction(function () use ($r, $body) {
-            $s = $this->sessions->current($r, true); $this->authorization->actor($this->sessions->secret($r));
+            $s = $this->sessions->current($r, true);
+            $this->authorization->actor($this->sessions->secret($r));
             $hash = P::b64(hash('sha256', P::canonical($body), true));
             $old = DB::table('account_settings_genesis')->where('account_id', $s->account_id)->first();
-            if ($old) { Protocol::require($hash === $old->request_digest, 'IDEMPOTENCY_MISMATCH'); return ['version' => 1, 'group_id' => $old->group_id, 'commit' => json_decode($old->commit_record), 'pages' => [json_decode($old->grant_page)]]; }
+            if ($old) {
+                Protocol::require($hash === $old->request_digest, 'IDEMPOTENCY_MISMATCH');
+
+                return ['version' => 1, 'group_id' => $old->group_id, 'commit' => json_decode($old->commit_record), 'pages' => [json_decode($old->grant_page)]];
+            }
             Protocol::require(count($body->pages) === 1, 'INVALID_REQUEST');
             [$i, $device, $certificate] = $this->authorization->certifiedDevice($s->account_id, $s->device_id);
-            $commit = $body->commit; $b = $commit->body; $policy = $b->policy; Protocol::require($policy !== null, 'INVALID_REQUEST');
-            $p = $policy->body; $intent = $b->intent; $v = $intent->body; $descriptor = $b->descriptor; $d = $descriptor->body; $page = $body->pages[0];
-            $sender = self::sender($i, $device); $key = $certificate->body->device_signing_key;
+            $commit = $body->commit;
+            $b = $commit->body;
+            $policy = $b->policy;
+            Protocol::require($policy !== null, 'INVALID_REQUEST');
+            $p = $policy->body;
+            $intent = $b->intent;
+            $v = $intent->body;
+            $descriptor = $b->descriptor;
+            $d = $descriptor->body;
+            $page = $body->pages[0];
+            $sender = self::sender($i, $device);
+            $key = $certificate->body->device_signing_key;
             Protocol::require(in_array('sign-content', $certificate->body->capabilities, true) && in_array('distribute-group-key', $certificate->body->capabilities, true));
             foreach ([$policy, $intent, $descriptor, $commit] as $record) {
                 P::verify('p02-group-c2', $record->body->purpose, $record->body, $record->signature, $key);
@@ -67,17 +85,29 @@ final class Settings
             $this->protocol->window($v->expires_at);
             Protocol::require(Protocol::equal($v->rosters, [(object) ['account_id' => $s->account_id, 'root_fingerprint' => $i->root_fingerprint, 'recovery_generation' => (string) $i->recovery_generation, 'roster' => Protocol::head($i)]]), 'ROSTER_CHANGED');
             $devices = DB::table('devices')->where('account_id', $s->account_id)->where('status', 'active')->orderBy('id')->get();
-            $expected = []; foreach ($devices as $item) { [, , $cert] = $this->authorization->certifiedDevice($s->account_id, $item->id); Protocol::require(in_array('receive-group-key', $cert->body->capabilities, true)); $expected['device/'.$item->id] = self::recipient($i, $item); }
+            $expected = [];
+            foreach ($devices as $item) {
+                [, , $cert] = $this->authorization->certifiedDevice($s->account_id, $item->id);
+                Protocol::require(in_array('receive-group-key', $cert->body->capabilities, true));
+                $expected['device/'.$item->id] = self::recipient($i, $item);
+            }
             $expected['account-recovery/'] = self::recipient($i, null);
             Protocol::require($page->service_id === config('api.service_id') && $page->group_id === $b->group_id && $page->operation_id === $b->operation_id && $page->page_index === '0' && count($page->records) === count($expected));
-            $count = count($page->records); $bytes = 0; $last = null;
+            $count = count($page->records);
+            $bytes = 0;
+            $last = null;
             foreach ($page->records as $record) {
-                $ctx = $record->body->context; $recipient = $ctx->recipient; $rid = $recipient->kind.'/'.($recipient->device_id ?? '');
+                $ctx = $record->body->context;
+                $recipient = $ctx->recipient;
+                $rid = $recipient->kind.'/'.($recipient->device_id ?? '');
                 $order = str_pad($ctx->key_epoch, 19, '0', STR_PAD_LEFT).'/'.$recipient->account_id.'/'.$recipient->kind.'/'.($recipient->device_id ?? '');
-                Protocol::require($last === null || strcmp($last, $order) < 0); $last = $order;
-                Protocol::require(isset($expected[$rid]) && Protocol::equal($recipient, $expected[$rid])); unset($expected[$rid]);
+                Protocol::require($last === null || strcmp($last, $order) < 0);
+                $last = $order;
+                Protocol::require(isset($expected[$rid]) && Protocol::equal($recipient, $expected[$rid]));
+                unset($expected[$rid]);
                 Protocol::require($ctx->service_id === config('api.service_id') && $ctx->group_id === $b->group_id && $ctx->key_epoch === '0' && $ctx->epoch_digest === $epoch && Protocol::equal($ctx->membership_head, $membership) && $ctx->operation_id === $b->operation_id && Protocol::equal($ctx->issuer, $sender));
-                P::verify('p02-identity-c1', 'group-key-distribution', $record->body, $record->signature, $key); $bytes += strlen(P::binary($record->body->sealed_ciphertext));
+                P::verify('p02-identity-c1', 'group-key-distribution', $record->body, $record->signature, $key);
+                $bytes += strlen(P::binary($record->body->sealed_ciphertext));
             }
             Protocol::require($expected === []);
             $inventory = P::b64(hash('sha256', "AnyNote/p02-group-c2/hash/grant-inventory\0".pack('N3', 1, 0, $count).pack('N3', 0, $count, strlen(P::canonical($page))).P::binary(P::digest('p02-group-c2', 'grant-page', $page)), true));
@@ -90,10 +120,13 @@ final class Settings
             DB::table('group_memberships')->insert(['group_id' => $g, 'account_id' => $s->account_id, 'role' => 'owner', 'status' => 'active', 'joined_policy' => 0]);
             DB::table('group_policy_events')->insert(['id' => $p->operation_id, 'group_id' => $g, 'sequence' => 0, 'parent_digest' => null, 'digest' => $membership->digest, 'signed_record' => P::canonical($policy)]);
             DB::table('group_key_epochs')->insert(['id' => P::b64(random_bytes(16)), 'group_id' => $g, 'epoch_number' => 0, 'policy_digest' => $membership->digest, 'digest' => $epoch, 'signed_transition' => P::canonical($commit)]);
-            foreach ($page->records as $record) { self::envelope($record); }
+            foreach ($page->records as $record) {
+                self::envelope($record);
+            }
             $this->quota->apply($this->quota->lock($s->account_id, $g), $bytes, 0);
             DB::table('account_settings_genesis')->insert(['account_id' => $s->account_id, 'group_id' => $g, 'request_digest' => $hash, 'commit_record' => P::canonical($commit), 'grant_page' => P::canonical($page)]);
             $this->sync->append([['group_id' => $g, 'audience_account_id' => $s->account_id, 'kind' => 'settings-genesis', 'object_id' => $g, 'revision_id' => null, 'digest' => P::digest('p02-group-c2', 'epoch-commit', $commit)]]);
+
             return ['version' => 1, 'group_id' => $g, 'commit' => $commit, 'pages' => [$page]];
         }, 3);
     }
@@ -101,9 +134,12 @@ final class Settings
     public function read(Request $r): array
     {
         return DB::transaction(function () use ($r) {
-            $s = $this->sessions->current($r, true); $this->authorization->actor($this->sessions->secret($r));
-            $row = DB::table('account_settings_genesis')->where('account_id', $s->account_id)->first(); Protocol::require($row !== null, 'NOT_FOUND');
+            $s = $this->sessions->current($r, true);
+            $this->authorization->actor($this->sessions->secret($r));
+            $row = DB::table('account_settings_genesis')->where('account_id', $s->account_id)->first();
+            Protocol::require($row !== null, 'NOT_FOUND');
             $this->authorization->group($this->authorization->actor($this->sessions->secret($r)), $row->group_id);
+
             return ['version' => 1, 'group_id' => $row->group_id, 'commit' => json_decode($row->commit_record), 'pages' => [json_decode($row->grant_page)]];
         }, 3);
     }

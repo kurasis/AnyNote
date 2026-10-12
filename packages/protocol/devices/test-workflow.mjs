@@ -62,3 +62,15 @@ test('second window cannot mutate active leader state, while explicit replacemen
  const second=new VaultEngine(f.old.store),cap=(await second.unlock(phrase)).capability;await rejection(()=>second.devices(cap,'summary',[]),'WRITER_BUSY');
  f.old.store.state.lease.issued=Date.now()-20000;f.old.store.state.lease.expires=f.old.store.state.lease.issued+10000;assert.equal((await second.devices(cap,'summary',[])).state,'ACTIVE');await rejection(()=>run(f.old,'startInvite'),'WRITER_BUSY');await second.close();
  }finally{f.initial.dispose();await f.old.engine.close();await f.fresh.engine.close();}});
+
+test('hostile QR/relay key substitution, mutation and reflection cannot produce approval',async()=>{
+ for(const attack of ['key','ciphertext','reflection']){const f=await fixture();try{
+  const invite=await run(f.old,'startInvite');let qr=invite.qr;
+  if(attack==='key'){const decoded=JSON.parse(qr);decoded.channel_key=b64(randomKey());qr=JSON.stringify(decoded);}
+  const offer=await run(f.fresh,'scan',[qr,f.sid]);
+  if(attack==='key')await assert.rejects(()=>run(f.old,'receive',[offer.request.frame]),e=>e.message==='CHANNEL_AUTHENTICATION_FAILED');
+  else if(attack==='ciphertext'){const frame=structuredClone(offer.request.frame),bytes=un64(frame.ciphertext);bytes[bytes.length-1]^=1;frame.ciphertext=b64(bytes);await assert.rejects(()=>run(f.old,'receive',[frame]),e=>e.message==='CHANNEL_AUTHENTICATION_FAILED');}
+  else{const response=await run(f.old,'receive',[offer.request.frame]);await assert.rejects(()=>run(f.old,'receive',[response.request.frame]),e=>['CHANNEL_REFLECTION','PAIRING_ORDER'].includes(e.message));}
+  assert.equal((await run(f.fresh,'summary')).state,'PENDING');assert(!f.fresh.store.rows.has('group_secret'));
+ }finally{f.initial.dispose();await f.old.engine.close();await f.fresh.engine.close();}}
+});

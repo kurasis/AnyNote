@@ -17,7 +17,7 @@ export function pairingQr(mode, recordBytes, key) {
 export function scannedChannelForEvaluation(qrBytes, role) {
   const qr = stateDecode('qr', qrBytes);
   check(role === 'new-device' || role === 'approver', 'INVALID_CHANNEL_ROLE');
-  const token = Object.freeze({ oob: 'SIMULATED_SCAN', channel: 'LIBSODIUM_SECRETSTREAM' });
+  const token = Object.freeze({ oob: 'DECODED_QR', channel: 'LIBSODIUM_SECRETSTREAM' });
   channels.set(token, { key: un64(qr.channel_key), role, sent: new Set(), received: new Set(), closed: false });
   return token;
 }

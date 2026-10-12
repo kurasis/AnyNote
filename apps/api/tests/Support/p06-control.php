@@ -96,6 +96,56 @@ $value = match ($op) {
 
         return ['status' => 'ok'];
     })(),
+    'p08-state' => (function () {
+        $result = [];
+        foreach (['devices', 'account_roster_events', 'device_transition_receipts', 'sync_events', 'key_envelopes'] as $table) {
+            $result[$table] = DB::table($table)->count();
+        }
+        $result['heads'] = DB::table('account_identities')->orderBy('account_id')->get(['account_id', 'roster_sequence', 'roster_digest', 'recovery_generation']);
+        $result['sessions'] = DB::table('auth_sessions')->orderBy('id')->get(['id', 'state', 'device_id', 'recovery_generation']);
+
+        return $result;
+    })(),
+    'p08-fault-on' => (function () {
+        DB::unprepared("CREATE TRIGGER p08_fault BEFORE INSERT ON account_roster_events FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='synthetic P08 write failure'");
+
+        return ['status' => 'armed'];
+    })(),
+    'p08-fault-off' => (function () {
+        DB::unprepared('DROP TRIGGER IF EXISTS p08_fault');
+
+        return ['status' => 'disarmed'];
+    })(),
+    'p08-expire-pending' => (function () {
+        DB::table('enrollment_sessions')->whereIn('state', ['pending', 'approved'])->update(['expires_at' => now()->subMinute()]);
+
+        return ['status' => 'ok'];
+    })(),
+    'p08-fill-content' => (function () {
+        DB::table('quota_ledgers')->where('scope', 'global')->update(['committed_bytes' => DB::raw('limit_bytes')]);
+
+        return ['status' => 'ok'];
+    })(),
+    'p08-exhaust-reserve' => (function () {
+        DB::table('quota_ledgers')->where('scope', 'security')->update(['reserved_bytes' => DB::raw('limit_bytes - committed_bytes')]);
+
+        return ['status' => 'ok'];
+    })(),
+    'p08-release-reserve' => (function () {
+        DB::table('quota_ledgers')->where('scope', 'security')->update(['reserved_bytes' => 0]);
+
+        return ['status' => 'ok'];
+    })(),
+    'p08-remove-membership' => (function () {
+        DB::table('group_memberships')->update(['status' => 'removed']);
+
+        return ['status' => 'ok'];
+    })(),
+    'p08-restore-membership' => (function () {
+        DB::table('group_memberships')->update(['status' => 'active']);
+
+        return ['status' => 'ok'];
+    })(),
     default => throw new LogicException('Unknown synthetic control operation'),
 };
 echo json_encode($value, JSON_THROW_ON_ERROR)."\n";

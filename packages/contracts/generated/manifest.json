@@ -156,7 +156,7 @@
     },
     {
       "path": "apps/api/routes/web.php",
-      "sha256": "e4a15e874df9e0a3ff218b6f0744ca4ce4c591f096205b9abdf71251e3ae88cb"
+      "sha256": "ef60968b727a88eec0cf95dcb9f4cb93bdac2a9eac02ec2fea4ce41b9254d551"
     },
     {
       "path": "apps/api/routes/console.php",
@@ -164,7 +164,7 @@
     },
     {
       "path": "apps/api/app/Http/Controllers/CapabilitiesController.php",
-      "sha256": "519327dfe0ab4b89fd91b665e13cc8288b98fedb01d642771fade483d3dc6c41"
+      "sha256": "254810165cb2f1a2ed1f866753e5755dd542d58d1de3b6b1c86a7e6ab0641e17"
     },
     {
       "path": "scripts/p06_compatibility.py",
@@ -272,7 +272,7 @@
     },
     {
       "path": "apps/api/app/Auth/Policy.php",
-      "sha256": "a1369d9b488471d58631539a8e76abf2446bc649313d999329279603e87197ed"
+      "sha256": "936c053a692c65ac47ce6039c90bc8b02d6c5a35ecf40ca1dda41cc68bda04d7"
     },
     {
       "path": "apps/api/app/Auth/Proof.php",
@@ -280,7 +280,7 @@
     },
     {
       "path": "apps/api/app/Auth/RateLimits.php",
-      "sha256": "b3d40d18f83275ad53f26a2307144e9f3ae9086fda3a6a1e69f50acbe514290b"
+      "sha256": "8f348e01efb6572f6de64c39181ff812d11103e3865ab9160f2d3b6989b271b4"
     },
     {
       "path": "apps/api/app/Auth/Registration.php",
@@ -300,27 +300,27 @@
     },
     {
       "path": "apps/api/app/Devices/Envelopes.php",
-      "sha256": "94f5bf56e5698c1a6d6383b4e89d554381b6041d6917a5bd01494b17303d6b9e"
+      "sha256": "f486f6753c5285d68a09d5c090cb480e84b20ae3534808382747532083a84039"
     },
     {
       "path": "apps/api/app/Devices/Lifecycle.php",
-      "sha256": "6185ed10832cbaec7f4cfb005c802d2e6fdf5c107cd498147b203077b937dcbf"
+      "sha256": "2ff4f7f9ef0bbec324da349b2d0c949d7c9dd8ad9eee359c23b990df419047c7"
     },
     {
       "path": "apps/api/app/Devices/Protocol.php",
-      "sha256": "e3fa0db77185a28f56a014e0e7c2dac3224c06342110007b49ba8ca5a30fdf48"
+      "sha256": "4237a4df45586a4d005bb6f33441f78d0b838332aee2232abc789b43362988a4"
     },
     {
       "path": "apps/api/app/Devices/Settings.php",
-      "sha256": "fedd9885f8a18a2c451cca8afb8b2edc6a2e7420827bfb6dc4e2d7dc95c10419"
+      "sha256": "3892d714ca53fda1fead89f91c29aac59d7c48148863e897d88a3abda22d99b8"
     },
     {
       "path": "apps/api/app/Http/Controllers/DevicesController.php",
-      "sha256": "51d4787f1c1c6029911a159ccac3dae36d8dbec9988d1413a148106f8ac89109"
+      "sha256": "34ef251f7986dbfb0900d148562974c3de31f9fe9dc92e58f01b62ef0517eae9"
     },
     {
       "path": "apps/api/database/migrations/2026_10_12_000005_create_trusted_device_lifecycle.php",
-      "sha256": "c77b4a24ca2fe6640ca291d77b13c7faa0a8c6253baaf5115a06f78247912745"
+      "sha256": "540149c17ea5ecee3a505a5f3076a16dfb3d2a7b2ae2f5e042a9b96f04ca3d4e"
     },
     {
       "path": "packages/protocol/devices/client.mjs",

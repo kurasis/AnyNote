@@ -32,7 +32,9 @@ return new class extends Migration
             $t->text('event_record')->nullable();
         });
         Schema::create('device_relay_frames', function (Blueprint $t) {
-            $t->engine = 'InnoDB'; $t->charset = 'ascii'; $t->collation = 'ascii_bin';
+            $t->engine = 'InnoDB';
+            $t->charset = 'ascii';
+            $t->collation = 'ascii_bin';
             $t->char('enrollment_id', 22);
             $t->string('message', 32);
             $t->text('frame');
@@ -40,7 +42,9 @@ return new class extends Migration
             $t->foreign('enrollment_id')->references('id')->on('enrollment_sessions')->restrictOnDelete();
         });
         Schema::create('device_transition_receipts', function (Blueprint $t) {
-            $t->engine = 'InnoDB'; $t->charset = 'ascii'; $t->collation = 'ascii_bin';
+            $t->engine = 'InnoDB';
+            $t->charset = 'ascii';
+            $t->collation = 'ascii_bin';
             $t->char('operation_id', 22)->primary();
             $t->char('account_id', 22)->index();
             $t->char('session_id', 22);
@@ -49,14 +53,18 @@ return new class extends Migration
             $t->timestamp('expires_at');
         });
         Schema::create('account_security_notifications', function (Blueprint $t) {
-            $t->engine = 'InnoDB'; $t->charset = 'ascii'; $t->collation = 'ascii_bin';
+            $t->engine = 'InnoDB';
+            $t->charset = 'ascii';
+            $t->collation = 'ascii_bin';
             $t->char('id', 22)->primary();
             $t->char('account_id', 22)->index();
             $t->enum('kind', ['device-enrolled', 'device-revoked', 'recovery-reset', 'passkey-added']);
             $t->timestamp('created_at')->useCurrent();
         });
         Schema::create('account_settings_genesis', function (Blueprint $t) {
-            $t->engine = 'InnoDB'; $t->charset = 'ascii'; $t->collation = 'ascii_bin';
+            $t->engine = 'InnoDB';
+            $t->charset = 'ascii';
+            $t->collation = 'ascii_bin';
             $t->char('account_id', 22)->primary();
             $t->char('group_id', 22)->unique();
             $t->char('request_digest', 43);
