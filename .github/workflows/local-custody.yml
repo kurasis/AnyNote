@@ -93,6 +93,9 @@ jobs:
           rustup toolchain install 1.99.0 --profile minimal --component clippy,rustfmt
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           rustup override set 1.99.0
+      - name: Independent official C-header ABI reference
+        working-directory: packages/vault-native
+        run: ./tests/hello/webauthn-layout.ps1
       - name: Actual MSVC, DPAPI, SQLite/WAL, native IPC and OS hook
         run: |
           cargo fmt --manifest-path packages/vault-native/Cargo.toml --check
