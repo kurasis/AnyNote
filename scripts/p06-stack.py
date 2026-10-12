@@ -75,6 +75,8 @@ def database(reset=False):
         if sql('SELECT owner FROM anynote_p06_tests.p06_test_owner;') != OWNER:
             raise RuntimeError('Refusing an unowned database')
         if not reset:
+            # Only this owner-marked synthetic database: additive migrations preserve rows.
+            php('php', 'artisan', 'migrate', '--no-interaction')
             return
         sql('DROP DATABASE anynote_p06_tests;')
     sql("CREATE DATABASE anynote_p06_tests CHARACTER SET ascii COLLATE ascii_bin; CREATE TABLE anynote_p06_tests.p06_test_owner (owner CHAR(64) NOT NULL PRIMARY KEY) ENGINE=InnoDB; INSERT INTO anynote_p06_tests.p06_test_owner VALUES ('" + OWNER + "'); GRANT ALL ON anynote_p06_tests.* TO 'anynote_dev'@'%';")
