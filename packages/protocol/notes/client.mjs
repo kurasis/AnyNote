@@ -20,6 +20,7 @@ export class NotesClient {
   if(!response.ok){this.#csrf=undefined;const e=Error(value.error?.code??'CONTENT_DENIED');e.code=e.message;e.status=response.status;throw e;}
   noteValue(responseKind,value);
   const parts=path.split('?')[0].split('/');
+  if(requestKind==='group-create')ensure(value.group_id===body.commit.body.group_id,'CONTEXT_MISMATCH');
   // A valid same-account object is still not the object requested by the caller.
   // Bind public routing before any downstream fetch, decryption or display.
   if(parts[1]==='groups'&&parts[2])ensure((value.group_id??body?.group_id)===parts[2],'CONTEXT_MISMATCH');
