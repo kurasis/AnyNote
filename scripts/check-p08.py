@@ -12,4 +12,5 @@ for name,metadata in inventory['primary_metadata'].items():
  record=next(v for v in actual if v['name']==name);assert all(record[k]==metadata[k] for k in ['version','license','integrity'])
 subprocess.run(['python3','scripts/p03-contracts.py'],cwd=ROOT,check=True)
 subprocess.run(['node','--test','--test-concurrency=1','packages/protocol/devices/test-workflow.mjs'],cwd=ROOT,check=True)
+subprocess.run(['node','apps/devices-web/test-qr.mjs'],cwd=ROOT,check=True)
 print('PASS: P08 closed additive contracts, four exact QR dependency/license/SRI records and workflow attack suites')
