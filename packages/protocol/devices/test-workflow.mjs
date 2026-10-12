@@ -68,9 +68,9 @@ test('hostile QR/relay key substitution, mutation and reflection cannot produce 
   const invite=await run(f.old,'startInvite');let qr=invite.qr;
   if(attack==='key'){const decoded=JSON.parse(qr);decoded.channel_key=b64(randomKey());qr=JSON.stringify(decoded);}
   const offer=await run(f.fresh,'scan',[qr,f.sid]);
-  if(attack==='key')await assert.rejects(()=>run(f.old,'receive',[offer.request.frame]),e=>e.message==='CHANNEL_AUTHENTICATION_FAILED');
-  else if(attack==='ciphertext'){const frame=structuredClone(offer.request.frame),bytes=un64(frame.ciphertext);bytes[bytes.length-1]^=1;frame.ciphertext=b64(bytes);await assert.rejects(()=>run(f.old,'receive',[frame]),e=>e.message==='CHANNEL_AUTHENTICATION_FAILED');}
+  if(attack==='key')await assert.rejects(()=>run(f.old,'receive',[offer.request.frame]),e=>e.message==='CHANNEL_INTEGRITY_FAILURE');
+  else if(attack==='ciphertext'){const frame=structuredClone(offer.request.frame),bytes=un64(frame.ciphertext);bytes[bytes.length-1]^=1;frame.ciphertext=b64(bytes);await assert.rejects(()=>run(f.old,'receive',[frame]),e=>e.message==='CHANNEL_INTEGRITY_FAILURE');}
   else{const response=await run(f.old,'receive',[offer.request.frame]);await assert.rejects(()=>run(f.old,'receive',[response.request.frame]),e=>['CHANNEL_REFLECTION','PAIRING_ORDER'].includes(e.message));}
-  assert.equal((await run(f.fresh,'summary')).state,'PENDING');assert(!f.fresh.store.rows.has('group_secret'));
+  assert.equal((await run(f.fresh,'summary')).state,'PENDING');await rejection(()=>run(f.old,'approve',[true]),'PAIRING_RESTART_REQUIRED');
  }finally{f.initial.dispose();await f.old.engine.close();await f.fresh.engine.close();}}
 });
