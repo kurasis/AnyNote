@@ -22,7 +22,7 @@ export class IndexedVault {
     let timedOut=false,rejectOpen;const timeout=setTimeout(()=>{timedOut=true;rejectOpen?.(Error('STORAGE_BUSY'));},10000);
     try{this.db=await new Promise((resolve,reject)=>{rejectOpen=reject;req.onsuccess=()=>{if(timedOut){req.result.close();return;}resolve(req.result);};req.onerror=()=>reject(new Error('STORAGE_UNAVAILABLE'));req.onblocked=()=>reject(new Error('STORAGE_BUSY'));});}finally{clearTimeout(timeout);}
     this.db.onversionchange=()=>{this.db.close();this.db=null;};
-    ensure(this.db.version===1&&this.db.objectStoreNames.length===2&&this.db.objectStoreNames.contains('meta')&&this.db.objectStoreNames.contains('records'),'UNSUPPORTED_LOCAL_SCHEMA');
+    if(!(this.db.version===1&&this.db.objectStoreNames.length===2&&this.db.objectStoreNames.contains('meta')&&this.db.objectStoreNames.contains('records'))){this.close();fail('UNSUPPORTED_LOCAL_SCHEMA');}
     return this;
   }
   async transaction(write,fn){
