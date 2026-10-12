@@ -107,7 +107,9 @@ final class ApiBoundaryTest extends TestCase
         $this->withHeaders(['X-Forwarded-Proto' => 'https'])->get('http://api.anynote.test/api/v1/capabilities')->assertStatus(400);
         config(['api.service_id' => null, 'api.app_origin' => null]);
         $this->get('https://api.anynote.test/api/v1/capabilities')->assertStatus(503);
-        $this->get('https://api.anynote.test/api/v1/groups')->assertNotFound();
+        // P09 owns private groups; missing production configuration denies them.
+        $this->get('https://api.anynote.test/api/v1/groups')->assertStatus(503)->assertJsonPath('error.code', 'TEMPORARY_UNAVAILABLE');
+        $this->get('https://api.anynote.test/api/v1/groups/AAAAAAAAAAAAAAAAAAAAAA/members')->assertNotFound();
         // P06 owns this route now; malformed unauthenticated mutation fails Laravel CSRF.
         $this->postJson('https://api.anynote.test/api/v1/auth/passkeys/verify', ['credential' => 'synthetic'])->assertStatus(400);
         $this->get('https://api.anynote.test/api/v1/health/live')->assertOk()->assertExactJson(['status' => 'live']);

@@ -802,3 +802,8 @@ Seven exact Markdown dependency SRI/license records use a new separate lock.
 Actual Linux/Windows/HTTP/browser results and limitations belong in TEST_EVIDENCE;
 no AI review, synthetic OS message or compiled UI constitutes physical/audit
 acceptance. General membership/epoch maintenance is P10, convergence/scale P11.
+
+P09 derives old-epoch rekey blocking from verified signed revoke/reset events
+after genesis, even if a hostile service clears its unsigned maintenance flags.
+Local drafts and already witnessed reads remain available; P10 implements the
+actual transition rather than bypassing this independent guard.

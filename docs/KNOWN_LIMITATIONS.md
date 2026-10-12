@@ -394,3 +394,8 @@ G1/Hello/iPhone and qualified G2/G3 remain open/unbooked/NOT_RUN. No production
 migration/deployment, release, reviewer outreach or new hardware trial occurred.
 Published P08 configuration restoration was observed. P09 draft persistence,
 publication and independently observed fresh restoration are separate facts.
+
+P09 derives old-epoch rekey blocking from verified signed revoke/reset events
+after genesis, even if a hostile service clears its unsigned maintenance flags.
+Local drafts and already witnessed reads remain available; P10 implements the
+actual transition rather than bypassing this independent guard.

@@ -130,3 +130,8 @@ automatic convergence; P13 owns full search/retention/export. No production secu
 release or qualified audit acceptance is claimed. Rollback is an ordinary source
 revert, preserving encrypted local work and requiring a separate data-preserving
 plan before any deployed schema rollback.
+
+P09 derives old-epoch rekey blocking from verified signed revoke/reset events
+after genesis, even if a hostile service clears its unsigned maintenance flags.
+Local drafts and already witnessed reads remain available; P10 implements the
+actual transition rather than bypassing this independent guard.

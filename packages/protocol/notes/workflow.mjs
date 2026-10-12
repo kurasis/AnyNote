@@ -43,11 +43,16 @@ export class NotesWorkflow {
   const evidence=data.evidence,signer=evidence.commit.body.policy.body.signer;
   const historical=historicalSnapshot(this.#snapshot,this.pins,signer.roster_head),info=verifyGenesis(evidence,historical.roster,historical.identity);
   ensure(info.group_id===group&&evidence.commit.body.policy.body.members[0].account_id===this.scope.account_id,'POLICY_CHANGED');
+  // Rekey need is derived from the verified signed history, never just an
+  // unsigned flag a hostile service can clear. P09 supports genesis epoch only.
+  const epochRoster=evidence.commit.body.intent.body.rosters[0].roster;
+  info.rekey_required=this.#snapshot.events.some(e=>BigInt(e.body.version)>BigInt(epochRoster.version)&&['revoke','reset'].includes(e.body.kind));
   return {ref,evidence,info};
  }
  #policy(info){return {membership:info.membership,key_epoch:'0',epoch_digest:info.epoch_digest,history_checkpoint_digest:null};}
  #writable(group,info){
   this.#own();ensure(group.state==='COMMITTED'&&group.status,'GROUP_NOT_COMMITTED');const s=group.status;
+  ensure(!info.rekey_required,'REKEY_REQUIRED');
   ensure(s.state==='active','ROLE_FORBIDDEN');ensure(!s.restore_quarantined,'RESTORE_QUARANTINE');ensure(!s.rekey_required,'REKEY_REQUIRED');ensure(!s.history_closure_required,'HISTORY_CLOSURE_REQUIRED');
   ensure(same(s.membership,info.membership)&&s.key_epoch==='0'&&s.epoch_digest===info.epoch_digest&&s.history_checkpoint_digest===null,'POLICY_CHANGED');
  }

@@ -16,6 +16,7 @@ import {nativeHarness} from './devices/native-harness.mjs';
 import {readFileSync,mkdirSync,writeFileSync} from 'node:fs';
 import {spawnSync} from 'node:child_process';
 import {resolve} from 'node:path';
+const startedCommit=spawnSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).stdout.trim(),startedDirty=!!spawnSync('git',['status','--porcelain'],{encoding:'utf8'}).stdout.trim();
 const root=resolve(import.meta.dirname,'../..'),ident=()=>b64(sodium.randombytes_buf(16));
 const raw=b=>JSON.parse(new TextDecoder().decode(b));
 const ok=async(browser,path,body,shape)=>{const r=await browser.call(path,body);check(r.status===200,'P09_HTTP:'+path+':'+r.status+':'+r.json?.error?.code);if(shape)noteValue(shape,r.json);return r.json;};
@@ -120,6 +121,6 @@ try{
  check((await open(f,large.object_id)).payload.markdown===largeText,'REAL_LARGE_CONTROL_CIPHERTEXT_ROUND_TRIP');
  const oversized=await request('/groups',{body:{padding:'x'.repeat(4194304)},cookie:f.browser.cookie,csrf:f.browser.csrf});check(oversized.status===413&&oversized.json?.error?.code==='REQUEST_TOO_LARGE','REAL_EDGE_OVERSIZE_CLOSED_ERROR');
  const inspection=control('p09-inspect',JSON.stringify({markers:['PUBLIC synthetic private group title','PUBLIC synthetic private thread title','PUBLIC synthetic private entry title',body,'PUBLIC native to PWA title','PUBLIC PWA to native body',b64(f.initial.keys.signing.privateKey),f.initial.kit.recovery_secret]}));check(inspection.status==='PASS','SQL_AND_LOG_PLAINTEXT_PRIVATE_KEY_ABSENCE');
- mkdirSync(root+'/artifacts/p09',{recursive:true});const report={purpose:'P09 actual verified HTTPS/SQL/native private-note vertical slice',status:'PASS',checks:fixtureCheckCount(),source_commit:spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).stdout.trim(),source_tree_dirty:!!spawnSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}).stdout.trim(),physical_acceptance:false,independent_review:'NOT_RUN',native_storage:'Actual protected SQLite and main-window IPC',node_storage:'Transactional model; actual IndexedDB covered by hosted UI job'};
+ mkdirSync(root+'/artifacts/p09',{recursive:true});const report={purpose:'P09 actual verified HTTPS/SQL/native private-note vertical slice',status:'PASS',checks:fixtureCheckCount(),source_commit:startedCommit,source_tree_dirty:startedDirty||!!spawnSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}).stdout.trim()||spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).stdout.trim()!==startedCommit,physical_acceptance:false,independent_review:'NOT_RUN',native_storage:'Actual protected SQLite and main-window IPC',node_storage:'Transactional model; actual IndexedDB covered by hosted UI job'};
  writeFileSync(root+'/artifacts/p09/http-report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
 }finally{for(const p of nativePeers)await p.native.close();for(const p of [f,...others]){p.initial.dispose();await p.engine.close();}}

@@ -119,6 +119,7 @@ fn writable(
     signing: &[u8],
 ) -> Result<()> {
     own(roster, scope, signing)?;
+    check(info["rekey_required"] == false, "REKEY_REQUIRED")?;
     check(
         group["state"] == "COMMITTED" && group["status"].is_object(),
         "GROUP_NOT_COMMITTED",
@@ -213,7 +214,18 @@ impl Vault {
             "group-evidence",
         )?["evidence"]
             .clone();
-        let info = verify_genesis(&self.codec, &evidence, snapshot, &s.pins)?;
+        let mut info = verify_genesis(&self.codec, &evidence, snapshot, &s.pins)?;
+        let epoch_version =
+            text(&evidence["commit"]["body"]["intent"]["body"]["rosters"][0]["roster"]["version"])?
+                .parse::<u64>()
+                .map_err(|_| Error("INTEGRITY_FAILURE"))?;
+        info["rekey_required"] = json!(values(snapshot, "events")?.iter().any(|e| {
+            e["body"]["version"]
+                .as_str()
+                .and_then(|v| v.parse::<u64>().ok())
+                .is_some_and(|v| v > epoch_version)
+                && matches!(e["body"]["kind"].as_str(), Some("revoke" | "reset"))
+        }));
         check(
             info["group_id"] == group
                 && evidence["commit"]["body"]["policy"]["body"]["members"][0]["account_id"]

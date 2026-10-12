@@ -451,3 +451,80 @@ fn native_main_ipc_refuses_foreign_preview_stale_and_unknown_note_commands() {
     drop(_fresh);
     let _cleanup = Cleanup(root);
 }
+
+#[test]
+fn native_verified_revoke_blocks_old_epoch_even_if_service_flags_are_false() {
+    let f = Fixture::new();
+    let cap = f.vault.unlock_phrase(PHRASE).unwrap();
+    let (peer, root) = f.fresh();
+    let cleanup = Cleanup(root);
+    let peer_cap = peer.unlock_phrase(PHRASE).unwrap();
+    let invitation = f.vault.device_invitation(&cap).unwrap();
+    let session = id();
+    let offer = peer
+        .device_offer(&peer_cap, &session, Some(&invitation))
+        .unwrap();
+    let response = f
+        .vault
+        .device_response(&cap, &offer, Some(&invitation))
+        .unwrap();
+    let approval = f
+        .vault
+        .device_approval(&cap, &response["transcript"], true)
+        .unwrap();
+    let enrolled = peer
+        .device_confirmation(
+            &peer_cap,
+            &response["transcript"],
+            &approval,
+            &session,
+            true,
+        )
+        .unwrap();
+    let snapshot = json!({"identity":f.snapshot["identity"],"events":[f.snapshot["events"][0],enrolled],"head":{"version":"1","digest":digest("p02-state-c1","event",&enrolled)},"generation":"0"});
+    f.vault.record_device_snapshot(&cap, &snapshot).unwrap();
+    let g = group(&f, &cap);
+    let saved = command(
+        &f,
+        &cap,
+        json!({"action":"save","edit":edit(&g,"PUBLIC draft kept after peer revoke")}),
+    );
+    let target = peer.device_public(&peer_cap).unwrap()["device_id"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    let revoke = f.vault.device_revoke(&cap, &[target], true).unwrap();
+    let event = &revoke;
+    let current = json!({"identity":snapshot["identity"],"events":[snapshot["events"][0],snapshot["events"][1],event],"head":{"version":event["body"]["version"],"digest":digest("p02-state-c1","event",event)},"generation":"0"});
+    f.vault.record_device_snapshot(&cap, &current).unwrap();
+    let malicious_status = group_status(&f, &g);
+    assert_eq!(malicious_status["rekey_required"], false);
+    command(
+        &f,
+        &cap,
+        json!({"action":"group","status":malicious_status}),
+    );
+    assert_eq!(
+        f.vault
+            .notes_command(
+                &cap,
+                NotesRequest::Queue {
+                    draft_id: saved["draft_id"].as_str().unwrap().into()
+                }
+            )
+            .unwrap_err()
+            .0,
+        "REKEY_REQUIRED"
+    );
+    assert_eq!(
+        command(
+            &f,
+            &cap,
+            json!({"action":"draft","draft_id":saved["draft_id"]})
+        )["payload"]["title"],
+        "PUBLIC draft kept after peer revoke"
+    );
+    peer.lock();
+    drop(peer);
+    drop(cleanup);
+}
