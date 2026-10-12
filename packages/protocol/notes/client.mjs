@@ -18,7 +18,18 @@ export class NotesClient {
   const limit=response.ok?(responseKind==='bundle-result'?4194304:1048576):4096;
   const value=strictJson(await boundedResponse(response,limit),limit);
   if(!response.ok){this.#csrf=undefined;const e=Error(value.error?.code??'CONTENT_DENIED');e.code=e.message;e.status=response.status;throw e;}
-  return noteValue(responseKind,value);
+  noteValue(responseKind,value);
+  const parts=path.split('?')[0].split('/');
+  // A valid same-account object is still not the object requested by the caller.
+  // Bind public routing before any downstream fetch, decryption or display.
+  if(parts[1]==='groups'&&parts[2])ensure(value.group_id===parts[2],'CONTEXT_MISMATCH');
+  if(parts[1]==='threads')ensure(value.thread_id===parts[2],'CONTEXT_MISMATCH');
+  if(parts[1]==='objects'){
+   ensure((value.object?.object_id??value.object_id??body?.object_id)===parts[2],'CONTEXT_MISMATCH');
+   if(parts[4])ensure(value.revision_id===parts[4],'CONTEXT_MISMATCH');
+  }
+  if(parts[1]==='me')ensure(value.receipt.operation_id===parts[3],'CONTEXT_MISMATCH');
+  return value;
  }
  async publish(request){noteValue('commit-request',request);const c=request.bundle.envelope.header.context;
   const path=c.action==='soft-delete'?'/objects/'+c.object_id+'/tombstone':c.action==='restore'?'/objects/'+c.object_id+'/restore':c.action==='create'&&c.object_kind==='thread'?'/groups/'+c.group_id+'/threads':c.action==='create'&&c.object_kind==='entry'?'/threads/'+c.thread_id+'/entries':'/objects/'+c.object_id+'/revisions';
