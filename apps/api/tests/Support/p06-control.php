@@ -4,6 +4,7 @@ use App\Auth\Maintenance;
 use App\Auth\Policy;
 use App\Backend\AccountAdministration;
 use App\Backend\Authorization;
+use App\Backend\SyncWriter;
 use App\Crypto\PublicProtocol as P;
 use App\Http\ApiException;
 use Illuminate\Contracts\Console\Kernel;
@@ -20,6 +21,49 @@ if (! $app->runningInConsole() || ! $app->environment('testing') || config('data
 }
 $op = $argv[1] ?? '';
 $value = match ($op) {
+    'p11-state' => (function () {
+        return ['snapshots' => DB::table('snapshot_sessions')->count(), 'active' => DB::table('snapshot_sessions')->where('state', 'active')->count(), 'pins' => DB::table('reference_pins')->count(), 'items' => DB::table('snapshot_items')->count(), 'pages' => DB::table('snapshot_pages')->count(), 'catalog' => DB::table('snapshot_catalog')->count()];
+    })(),
+    'p11-hidden-burst' => (function () {
+        // Console-only unsigned transport hints, not an authentication/content issuer.
+        $v = json_decode(stream_get_contents(STDIN));
+        if (! $v instanceof stdClass || ! P::isBinary($v->account_id ?? null, 16) || ! is_int($v->count ?? null) || $v->count < 1 || $v->count > 3000 || ! DB::table('users')->where('id', $v->account_id)->exists()) {
+            throw new LogicException('Invalid synthetic namespace hint request');
+        }
+        $cursor = null;
+        for ($n = 0; $n < $v->count; $n += 100) {
+            $count = min(100, $v->count - $n);
+            $cursor = DB::transaction(function () use ($v, $count) {
+                $events = [];
+                for ($k = 0; $k < $count; $k++) {
+                    $events[] = ['audience_account_id' => $v->account_id, 'group_id' => null, 'kind' => 'fixture-namespace', 'object_id' => P::b64(random_bytes(16)), 'revision_id' => null, 'digest' => P::b64(random_bytes(32))];
+                }
+
+                return app(SyncWriter::class)->append($events);
+            });
+        }
+
+        return ['status' => 'appended', 'cursor' => $cursor];
+    })(),
+    'p11-expire' => (function () {
+        $v = json_decode(stream_get_contents(STDIN));
+        if (! $v instanceof stdClass || ! P::isBinary($v->id ?? null, 16)) {
+            throw new LogicException('Invalid synthetic snapshot');
+        }
+        DB::table('snapshot_sessions')->where('id', $v->id)->update(['expires_at' => now()->subMinute()]);
+
+        return ['status' => 'expired'];
+    })(),
+    'p11-fault-on' => (function () {
+        DB::unprepared("CREATE TRIGGER p11_fault BEFORE INSERT ON snapshot_pages FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Synthetic snapshot materialization fault'");
+
+        return ['status' => 'installed'];
+    })(),
+    'p11-fault-off' => (function () {
+        DB::unprepared('DROP TRIGGER IF EXISTS p11_fault');
+
+        return ['status' => 'removed'];
+    })(),
     'p09-state' => (function () {
         $counts = [];
         foreach (['objects', 'object_revisions', 'object_heads', 'object_key_wraps', 'revision_parents', 'private_group_geneses', 'mutation_receipts', 'sync_events'] as $t) {
@@ -242,6 +286,21 @@ $value = match ($op) {
         DB::table('quota_ledgers')->where('scope', 'global')->update(['committed_bytes' => DB::raw('limit_bytes')]);
 
         return ['status' => 'ok'];
+    })(),
+    'p08-release-content' => (function () {
+        // Undo only the owned synthetic saturation; preserve all actual charges/data.
+        return DB::transaction(function () {
+            $global = DB::table('quota_ledgers')->where('scope', 'global')->lockForUpdate()->first();
+            if ($global->committed_bytes == $global->limit_bytes) {
+                $actual = DB::table('quota_ledgers')->where('scope', 'like', 'account/%')->sum('committed_bytes');
+                if ($actual > $global->limit_bytes) {
+                    throw new LogicException('Synthetic quota reconciliation failed');
+                }
+                DB::table('quota_ledgers')->where('scope', 'global')->update(['committed_bytes' => $actual]);
+            }
+
+            return ['status' => 'restored'];
+        });
     })(),
     'p08-exhaust-reserve' => (function () {
         DB::table('quota_ledgers')->where('scope', 'security')->update(['reserved_bytes' => DB::raw('limit_bytes - committed_bytes')]);

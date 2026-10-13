@@ -5,7 +5,9 @@ from pathlib import Path
 from datetime import datetime,timezone
 ROOT=Path(__file__).resolve().parents[1];role=sys.argv[1];assert role in ['linux','windows'] and (role=='windows')==(sys.platform=='win32')
 test=subprocess.run(['cargo','test','--manifest-path','packages/vault-native/Cargo.toml','--locked','--all-features','-j','4','--','--test-threads=1'],cwd=ROOT,text=True,encoding='utf-8',capture_output=True,check=True)
-assert '6 passed; 0 failed; 0 ignored' in test.stdout
+# The six P09 tests remain mandatory when later phases add tests to the same binary.
+for name in ['native_main_ipc_refuses_foreign_preview_stale_and_unknown_note_commands', 'native_note_catalog_is_not_generic_mutable_and_rotation_preserves_pending_work', 'native_note_restart_and_encrypted_sqlite_wal_inspection', 'native_pending_attempt_protects_newer_text_and_a_different_receipt_cannot_retire_it', 'native_receipt_fault_rolls_back_retirement_and_preserves_the_acknowledged_draft', 'native_verified_revoke_blocks_old_epoch_even_if_service_flags_are_false']:
+ assert name+' ... ok' in test.stdout
 assert 'native_receipt_fault_rolls_back_retirement_and_preserves_the_acknowledged_draft ... ok' in test.stdout
 assert 'native_note_restart_and_encrypted_sqlite_wal_inspection ... ok' in test.stdout
 assert 'native_verified_revoke_blocks_old_epoch_even_if_service_flags_are_false ... ok' in test.stdout

@@ -1,0 +1,10 @@
+{
+  "purpose": "P11 actual TLS/SQL filtered transport and protected staged snapshot",
+  "status": "PASS",
+  "checks": 112,
+  "source_commit": "08ca97c7f9b1caff1ffc55b284a2afa7a8f0bb65",
+  "source_tree": "e4c7e51a27d386314b792310d115fe3e3c7f62c9",
+  "source_tree_dirty": false,
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN"
+}

@@ -414,3 +414,40 @@ copies and isolated malicious-server forks remain the documented v1 limits.
 
 No production migration/deployment, release, new owner hardware trial or reviewer
 outreach is authorized by this batch. G1 physical and qualified G2/G3 remain open.
+
+
+## P11 software boundary
+
+All twenty hosted gates passed with exact-source Linux/MSVC/sandboxed browser
+receipts. Protected local logical records are bounded to 32 MiB/128 encrypted
+parts; keys and complete signed rosters to 10,000; snapshot catalog to 1,000 groups,
+inventory to 50,000 revisions and fixed thirty-minute leases. Scale is bounded,
+not unlimited. Older local readers must refuse p11-local-v1 after migration;
+rollback must preserve encrypted parts, private candidate keys and immutable work.
+Earlier P09/P10 limits above describe their prior profile; P11_SYNC gives current
+bounds. Full payload history/export/collector and file streaming remain P12/P13.
+
+Known checkpoint regression/generation changes enter persistent RESTORE_QUARANTINE,
+which later unsigned server responses, cancellation or retry cannot clear. This
+software fence is not operational restore attestation, a universal freshness proof
+for an unknown old backup, or detection of every isolated malicious-server fork.
+P16 owns actual restore reconciliation. Independent pins and signed ancestry remain
+mandatory. Missing ancestry cannot be replaced by a newest-head-only shortcut.
+
+Visible online polling supports cooperative removal masking and preserves unsent
+local work. It does not promise iOS continuous background service, browser storage
+survival after eviction, forensic erasure or control of an offline stolen device.
+Local cloud Chromium cannot start its required sandbox; hosted mandatory browser
+acceptance retains sandbox/TLS/CSP. Complete Windows/iPhone application packaging
+and physical lifecycle/memory/network acceptance remain phase-owned P14/P15.
+Full physical G1 and qualified G2/G3 remain open/NOT_RUN. No production operation,
+release, new hardware trial, qualified review or outreach is implied by software CI.
+Published P10 restoration was observed; P11 draft save, Publish and independently
+observed fresh restoration are separate facts.
+
+P11 lifecycle follow-up: the original isolated 5116fad VAULT_LOCKED cause was not
+recorded and is not retrospectively claimed. The separate 5563bc0 diagnostic run
+and latest lifecycle follow-up each passed all twenty mandatory jobs. New closed
+reason diagnostics and immediate host masking make a later protective closure
+observable; background polling preserves the five-minute idle deadline. These
+software results do not establish physical/G2/G3 or universal freshness guarantees.

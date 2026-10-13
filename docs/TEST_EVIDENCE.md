@@ -1522,3 +1522,162 @@ fresh-task restoration remain separate. No production migration/deployment/relea
 new owner hardware trial or reviewer outreach occurred. Full physical G1 and
 qualified G2/G3 remain open/unbooked/NOT_RUN. No new owner action is required for
 this software phase. Continue the complete P11 handoff in NEXT_TASK.
+
+
+## P11 development checks — not final acceptance
+
+On 2026-10-13 the restored P10 checkout, owned dev-stack/P06 TLS/SQL readiness,
+frozen baseline, P10 portable checks and native inventory passed. Additive P11
+staged snapshot/paged-local work passed four portable suites and seven actual
+native SQLite note suites (six inherited and one synchronization suite), strict
+Clippy and the maintained standalone-validator/CSP static build. A real TLS/SQL
+three-object snapshot plus following content delta passed protected application.
+
+The cloud browser failed to start its required Chromium sandbox. No sandbox/TLS/
+CSP checks were disabled. The broader HTTP suite and final exact-source hosted
+acceptance remain pending; local development receipts have a dirty source flag
+and cannot establish final phase acceptance. See P11_SYNC.md and NEXT_TASK.md.
+
+P11 follow-up: the actual HTTPS/SQL transport suite passed 104 checks locally,
+including three separate authenticated accounts, immutable snapshot/write overlap,
+hidden ranges, malformed query rejection, exact retry, expiry/cancel, acknowledgement
+and materialization rollback. Six portable suites now include bounded header-only
+cache compaction and host-bound browser timer/backoff behavior. Seven native SQLite
+note suites passed with compaction/delta/re-download and SQL fault rollback added
+to the synchronization suite. Strict Clippy and the CSP build passed.
+
+First hosted runs found an obsolete P03 phase/operation assertion and a browser
+Window timer receiver error. These are fixed, not bypassed. Native Windows/MSVC
+P09/P10 jobs passed at the development head; this is still not final P11 acceptance.
+The diagnostic local source receipt produced while files changed during execution
+is discarded. Future P11 receipts compare the source head/tree/raw hashes and clean
+state before and after native execution. No invalid development receipt is archived.
+
+P11 secret/history scale checks: seven portable suites passed, including 661-key
+secret-root restart, aborted migration, complete identity preservation, refusal
+of the older frozen decoder and ciphertext inspection. The complete Linux native
+run passed 106 actual tests (72 unit, 9 devices, 7 notes, 3 shared, 15 custody);
+the new 661-key test uses actual SQLite/WAL and strong-phrase restart. Nine real
+native/portable interop checks validated 1,001 signed events and rejected a missing
+event, signature corruption and known rollback. Inherited seven P08 workflow
+suites and five P10 suites passed after updating their owned-secret readers for
+the explicit new profile; original assertions remain.
+
+At development head 0e4d728 the genuine sandboxed P09/P10/P11 Linux browser jobs
+passed. One P11 Windows build encountered an upstream DNS resolution failure while
+building unchanged libsodium; other Windows native jobs passed. Latest source and
+final Windows/Linux acceptance still require complete final runs.
+
+P11 follow-up transport/ancestry/recovery: the actual TLS/SQL suite passed 112
+checks including 2,001 console-owned unsigned hidden hints and two full 1,000-row
+scanned ranges. The three-role/independently enrolled second-device HTTP suite
+passed 418 checks with existing leased pages reauthorized across role downgrade,
+removal and device revoke. Ten portable suites now cover missing signed ancestry,
+owned local recovery/source-attempt preservation and precise cancelled-stage cache
+cleanup. Native note tests cover owned recovery and immutable attempt preservation.
+
+The P08 quota saturation test originally left its owned global ledger artificially
+full; a console-only cleanup restores actual account charge totals without deleting
+content. HTTP suites must run sequentially: overlapping local P08/P10 executions
+invalidated a global-counter race assertion and were repeated sequentially.
+
+Windows source inputs now use explicit Git LF text checkout, with supplied spec and
+Microsoft header bytes preserved. A core.autocrlf=true prospective index checkout
+passed the unchanged P03 generation hashes and all original specification checksums.
+Raw platform bytes remain recorded in source receipts. This fixes checkout drift
+without relaxing lock/artifact/source assertions. Foreground UI work can yield a
+background sync at the next protected command; interrupted stages remain durable.
+
+P11 software restore fence: cancellation, later staged finish and quarantine
+reclassification cannot clear RESTORE_QUARANTINE. Content/group/security publication
+is blocked while local draft work and exact receipt reconciliation remain available.
+The portable regression test exercises the closed-command downgrade attempts.
+Operational restore attestation and production generation fencing remain P16.
+
+## P11 complete synchronization slice — software VERIFIED
+
+All twenty mandatory jobs PASS at `fae5e306181c05a9542449e8219706859f4b87a2`, clean tree `630436bcfdfb2e7c3dbc4a52f80aba7f6b6a805a`.
+[Acceptance](evidence/p11/initial/acceptance.json) retains exact head/check/run/job references,
+GitHub ZIP digests and raw public report hashes. Final documentation/evidence needs
+fresh twenty-job success before ordinary automatic SHA-guard merge.
+
+| Execution | Actual result |
+| --- | --- |
+| Maintained-crypto portable workflow | Ten suites PASS: partial encrypted stage/restart, atomic cursor/abort, hidden scanned ranges, malformed scope/body/root, signed ancestry omission, compaction and exact historical payload recovery, part integrity/L rotation/private G, visible polling/backoff and bounded 101-page catch-up, 661-key migration/older reader denial, source-preserving owned recovery and lease-before-local cancellation |
+| Verified HTTPS/Nginx/Laravel/MariaDB sync | 112 checks PASS: three authenticated accounts, immutable snapshot/write overlap, 2,001 real hidden namespace hints/two bounded scanned ranges, closed raw duplicate query handling, expiry/cancel, exact retry, acknowledgement and SQL rollback |
+| Membership plus leased transport | 418 checks PASS, inherited three-role workflow and independently enrolled native peer; existing lease page authorization across downgrade/removal/device revoke |
+| Actual shipped PWA | 45 checks PASS, three independent persistent accounts, genuine WebAuthn, sandboxed Chromium, trusted CA/hostname TLS, strict CSP, encrypted draft preservation after removal/local reopening, EN/RU sync and reload; actual SQL/IndexedDB/log/ordinary-storage inspection |
+| Actual native Linux and Windows/MSVC | 106 actual all-feature Linux tests; seven SQLite notes suites/platform, 661-key inventory restart, staged cursor/rollback/compaction/recovery and inherited 9 device/3 shared/15 custody suites; OS/ABI gates retained |
+| New native/portable interoperability | Nine checks/platform PASS over actual protected native storage, 1,001 signed roster events, missing/corrupt event/known rollback rejection |
+| Raw source and artifact verification | 494 Linux and 494 Windows input hashes match exact Git blobs byte-for-byte (zero checkout transformations needed); raw receipts preserved; GitHub ZIP digests match actual downloaded bytes |
+| Complete install/start | PASS; 800 tracked files and marked snapshot/pin state preserved, real owned TLS/API/SQL services ready; generators compare source read-only |
+
+Public reports: [sync HTTP](evidence/p11/initial/http-report.json),
+[membership/leases](evidence/p11/initial/membership-report.json),
+[browser](evidence/p11/initial/browser-report.json),
+[Linux source](evidence/p11/initial/linux-source-report.json),
+[Windows source](evidence/p11/initial/windows-source-report.json),
+[Linux interop](evidence/p11/initial/linux-native-interop-report.json),
+[Windows interop](evidence/p11/initial/windows-native-interop-report.json).
+Source receipts verify clean head/tree/raw inputs before and after native execution.
+Diagnostic failures are corrected rather than archived as acceptance. Browser removal
+checks accept the two real poll/foreground timings while retaining mask/DOM/draft
+assertions. Frozen P02 frames, original spec bytes and prior dependency locks remain
+unchanged; no auth issuer/verifier/crypto/TLS/CSP/sandbox/eligibility bypass occurred.
+No credentials/authenticated diagnostic logs or private candidate keys are archived.
+
+Published P10 restoration was independently observed. Saving P11 configuration,
+Publish and independently observed fresh P11 restoration are distinct. Full physical
+G1/Hello/iPhone/memory/network and qualified G2/G3 remain open/unbooked/NOT_RUN.
+No production migration/deployment/release, new owner trial or reviewer outreach.
+Continue the full P12 handoff in NEXT_TASK.
+
+## P11 final follow-up — regression gate remains open
+
+Initial fae5e30 twenty-job code acceptance and archived raw reports remain factual.
+At 5116fad the P10 browser and all other eighteen jobs passed, but P11 browser
+failed with VAULT_LOCKED on the reader local save. No failing job is bypassed and
+no merge occurred. Content-free Worker error/operation/visibility diagnostics are
+being added to determine the originating custody lock. A closed lock-reason marker
+also lets the client immediately mask and terminate when Worker custody closes.
+Ten local P11 suites (including isolated host failure masking) and all five P07
+maintained-crypto suites passed. Final source/platform CI remains mandatory.
+
+P11 background/idle follow-up: visible polling now runs in a host background scope
+which does not extend the five-minute UI lock timer. Trusted visible user input
+still extends it. The isolated host test checks an unchanged timer after background
+RPC failure, rejection of untrusted activity, trusted activity renewal and actual
+idle callback masking. The original ten P11 and five P07 crypto suites, read-only
+contracts, strict-CSP build and owned service readiness passed locally. Native and
+hosted final acceptance remains pending; this does not explain the older singleton
+VAULT_LOCKED result, whose original reason was not recorded.
+
+## P11 lifecycle follow-up — exact-source code acceptance PASS
+
+All twenty jobs passed at `08ca97c7f9b1caff1ffc55b284a2afa7a8f0bb65`, tree `e4c7e51a27d386314b792310d115fe3e3c7f62c9`. [Latest acceptance](evidence/p11/acceptance.json)
+retains exact check/run/job/ZIP references and raw report digests. Original fae5e30
+reports remain [separately archived](evidence/p11/initial/acceptance.json), with their
+raw bytes unchanged. The later 5563bc0 diagnostic run passed all twenty; no failing
+job was bypassed. The original 5116fad isolated lock cause was not recorded and is
+not fabricated after the fact.
+
+Latest execution: ten portable suites, 112 actual sync HTTPS/SQL checks, 418 actual
+membership/lease checks, 45 genuine sandboxed shipped-PWA checks, seven native
+SQLite note suites/platform, nine new native/portable interop checks/platform and
+all inherited jobs PASS. 494 raw input hashes/platform matched exact Git blobs.
+The hosted browser includes only closed error/operation/reason/visibility diagnostics;
+no private RPC values are observed. Five local P07 maintained-crypto suites also
+passed. Worker closure immediately masks the host; explicit tests preserve ciphertext
+and typed error codes across five-minute expiry and backwards-clock closure, and
+verify that background RPCs leave the idle timer unchanged while trusted activity
+renews it. Full physical G1 and qualified G2/G3 remain open/NOT_RUN.
+
+Latest [browser](evidence/p11/browser-report.json), [HTTP](evidence/p11/http-report.json),
+[leases](evidence/p11/membership-report.json), [Linux source](evidence/p11/linux-source-report.json)
+and [Windows source](evidence/p11/windows-source-report.json) are public metadata only.
+Final documentation/source-byte revalidation, ordinary guarded merge and complete
+configuration persistence still require their actual recorded outcomes.
+
+Complete latest installation passed at `08ca97c7f9b1caff1ffc55b284a2afa7a8f0bb65` with all
+810 then-visible tracked files and marked private/shared quota/counter
+and snapshot/pin state unchanged. Full startup/static/API readiness passed again.

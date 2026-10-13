@@ -1,3 +1,4 @@
+import {syncValue} from '../sync/codec.mjs';
 import Ajv from 'ajv/dist/2020.js';
 import schemas from '../../contracts/generated/runtime-schemas.json' with {type:'json'};
 import {formats} from '../auth-formats.mjs';
@@ -7,7 +8,7 @@ import {ensure} from '../vault/store.mjs';
 const ajv=new Ajv({strict:true,ownProperties:true});for(const [k,v]of Object.entries(formats))ajv.addFormat(k,v);for(const s of schemas)ajv.addSchema(s);
 const doc=schemas.find(s=>s.$id==='urn:anynote:p09:notes:v1');
 const validators=new Map(Object.keys(doc.$defs).map(k=>[k,ajv.compile({$ref:doc.$id+'#/$defs/'+k})]));
-export function noteValue(kind,value){ensure(validators.get(kind)?.(value),'INVALID_NOTE_DTO');return value;}
+export function noteValue(kind,value){if(kind==='local-control')return syncValue('note-control',value);ensure(validators.get(kind)?.(value),'INVALID_NOTE_DTO');return value;}
 export class NotesClient {
  #csrf;
  constructor(auth){ensure(auth instanceof AuthClient,'AUTH_CLIENT_REQUIRED');this.auth=auth;}

@@ -4,7 +4,7 @@
   "inputs": [
     {
       "path": "scripts/p03-contracts.py",
-      "sha256": "91a503fa7a0fbdd31cdd8a667b77f1dbdbdd47c5351758725e83e572fcb4df06"
+      "sha256": "e3cc190d819b7d943dc9b17c599e8fd12eb89a3eaa5d054afa76060065157e61"
     },
     {
       "path": "scripts/p04_compatibility.py",
@@ -76,7 +76,7 @@
     },
     {
       "path": "packages/contracts/p03-operations.json",
-      "sha256": "07e81eab51682feb78a2fcd0ff97c52398739a9662f11733aeca3bb69c72c200"
+      "sha256": "c4a5d34115a4f4a9abe9909235dad4f7482594c840935ac96a16b0215ab8e14f"
     },
     {
       "path": "packages/contracts/p02-errors.json",
@@ -156,7 +156,11 @@
     },
     {
       "path": "packages/contracts/p10-shared.schema.json",
-      "sha256": "83a5e7d2e68e1e8608b13ffdc846e4ad879aa681e805915cf302c9eae7baf50a"
+      "sha256": "32bd2c874e29f84c411b251bb2870544b9f2795889d3cb74a1e8f7104681c9ca"
+    },
+    {
+      "path": "packages/contracts/p11-sync.schema.json",
+      "sha256": "5a3239c2a7a03e50e7857c498dd8a008b793c7c3b26fa5da525de254ca24c2f0"
     },
     {
       "path": "apps/api/bootstrap/app.php",
@@ -164,7 +168,7 @@
     },
     {
       "path": "apps/api/routes/web.php",
-      "sha256": "77e63c6790523f8c4ea14f269253f6a2d0cc1d67345d101e92435f1225781b34"
+      "sha256": "2774832357240adf9966e3ad7d80b6caeda1317663e9e9aa889c8472aa5dfc8d"
     },
     {
       "path": "apps/api/routes/console.php",
@@ -240,7 +244,7 @@
     },
     {
       "path": "apps/api/app/Auth/Contracts.php",
-      "sha256": "daf0553ea5e8ca38842f60a6a3c3d79b48f218aa8d4da129c4b510f15de8598f"
+      "sha256": "474e05ea74fc768090d659034956adf2091ce8d3e13ded0502201817910227c1"
     },
     {
       "path": "apps/api/app/Auth/Maintenance.php",
@@ -332,7 +336,7 @@
     },
     {
       "path": "packages/protocol/devices/client.mjs",
-      "sha256": "b9bb01510184992ac41aeec70662674952e9e0cd0d67343d89648ded8a67b0bd"
+      "sha256": "424315b591ab1d023376b8e4f51a9c8a5b2db56fa285dc59a788c64077103578"
     },
     {
       "path": "apps/api/app/Groups/Protocol.php",
@@ -361,34 +365,58 @@
     {
       "path": "packages/protocol/shared/client.mjs",
       "sha256": "1eae0cfc8e7d55fdefa4bc4262fe81a23291ac9333d922f77d87bd25c0410f4f"
+    },
+    {
+      "path": "apps/api/app/Sync/Service.php",
+      "sha256": "94cbb1ff16baf603919a33f39d101540400f030856c4248cf1195b63f3be3c1d"
+    },
+    {
+      "path": "apps/api/app/Http/Controllers/SyncController.php",
+      "sha256": "62d1a7e77ce7bedcd79cc6516b7cfb458a97358ffd7cc4d9fa7c01eb0ea90ac8"
+    },
+    {
+      "path": "apps/api/database/migrations/2026_10_13_000009_create_sync_snapshots.php",
+      "sha256": "7301f775f1e940933e29725a779ecf9538dabd2903b0e2039d3e856394fa4185"
+    },
+    {
+      "path": "packages/protocol/sync/codec.mjs",
+      "sha256": "5d9a3e3201e3866c2dbda6370281d0360599de49c4677734b14589d44b44fcfb"
+    },
+    {
+      "path": "packages/protocol/sync/paged-local.mjs",
+      "sha256": "d9f3525cfc12c38546ab553cf63709ac6d1403839578d72282619d0168303831"
+    },
+    {
+      "path": "packages/protocol/sync/client.mjs",
+      "sha256": "b55449f87b8dd244d488aa942399a16dd16131337a1693082a6e446f232cbfeb"
     }
   ],
   "outputs": [
     {
       "path": "packages/contracts/generated/openapi.json",
-      "sha256": "2d28d7742982bf04c62513370bc4156677aabdcb5a2400fa0b6e4e5e56e304b7"
+      "sha256": "2bc84ee996e96c9b24b1c45d03d27b202aa8fe08d2fdf9da752d1f145d5d1d12"
     },
     {
       "path": "packages/contracts/generated/protocol.d.ts",
-      "sha256": "f9fb19178d31c08f4db152de41d1bbc3168069894ed041209eb7eb5b6e153915"
+      "sha256": "7af97c38502ae2c9200e36f13fa46147d85fb70a4910b25aac08675f9ccf403f"
     },
     {
       "path": "packages/contracts/generated/runtime-schemas.json",
-      "sha256": "0120f96a046ea376d2499bbd0e53621b8645d8efe02a5c9265e6cd953c56582a"
+      "sha256": "02e62ee75981fc23b958e1c5f75c53e3d2bbaa42af3380fb317058dea6ee9572"
     },
     {
       "path": "apps/api/app/Generated/Dtos.php",
-      "sha256": "3da30378faaa5a9b1570b8744d9c9548c48dea5a63048f539051deff868e2779"
+      "sha256": "c35810fde4284ba27d762b4b439326b28a68b2775c8697fcc079d2e08b8fca97"
     },
     {
       "path": "apps/api/app/Generated/catalogue.json",
-      "sha256": "244a4fe641ef416da32dd84a2a1fa0f99e94fcc4b9db8ce1dc4f60e59cc0a85a"
+      "sha256": "659c3aa565ee63bfc559b450d2bd763eb0a9cf41790528396bb2b7de1de5665d"
     },
     {
       "path": "apps/api/app/Generated/schemas.json",
-      "sha256": "0120f96a046ea376d2499bbd0e53621b8645d8efe02a5c9265e6cd953c56582a"
+      "sha256": "02e62ee75981fc23b958e1c5f75c53e3d2bbaa42af3380fb317058dea6ee9572"
     }
   ],
-  "structures": 264,
-  "operations": 95
+  "structures": 290,
+  "operations": 97
 }

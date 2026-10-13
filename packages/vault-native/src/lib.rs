@@ -30,6 +30,8 @@ pub mod lifecycle;
 pub mod native_hello;
 mod note_local;
 pub mod notes;
+mod paged_local;
+mod secret_pages;
 pub mod shared;
 // The GPL provider/attestation/TPM/filesystem implementation is shared by source,
 // preserving its independent manifest/lock and synthetic RP. Only for_rp is exposed
@@ -509,17 +511,12 @@ impl Vault {
             s.epoch == epoch && s.revision >= i.observed_revision,
             "ROLLBACK_QUARANTINE",
         )?;
-        let f = frame(&i.conn, &s.vault_id)?;
-        let p = objects::open_local(
-            &self.codec,
-            &canonical(&f)?,
-            &key,
-            &canonical(&self.context("vault-secrets", &s.vault_id)?)?,
-        )?;
+        let mut p = self.secret_plain(&i.conn, &s, &key)?;
         let data = &p["data"];
-        self.codec.validate("p02-v1", "vault-secrets", data)?;
+        self.codec.validate("p11-sync", "secrets", data)?;
         let signing = Zeroizing::new(un64(text(&data["device_signing_secret"])?)?);
         let encryption = Zeroizing::new(un64(text(&data["device_encryption_secret"])?)?);
+        wipe_value(&mut p);
         let pair = libsodium_rs::crypto_sign::KeyPair::from_seed(&signing[..32])
             .map_err(|_| Error("INVALID_KEY_LENGTH"))?;
         check(
@@ -667,7 +664,8 @@ impl Vault {
                 r.id != s.vault_id
                     && r.id != device_local::control_id(&self.scope)?
                     && r.id != note_local::control_id(&self.scope)?
-                    && !note_owned.contains_key(&r.id),
+                    && !note_owned.contains_key(&r.id)
+                    && !self.note_part_owned(&tx, &s, &key, &r.id)?,
                 "RESERVED_RECORD",
             )?;
             let old: Option<Vec<u8>> = db(tx
@@ -764,7 +762,8 @@ impl Vault {
             id != s.vault_id
                 && id != device_local::control_id(&self.scope)?
                 && id != note_local::control_id(&self.scope)?
-                && !owned.contains_key(id),
+                && !owned.contains_key(id)
+                && !self.note_part_owned(&i.conn, &s, &i.secrets.as_ref().unwrap().key, id)?,
             "RESERVED_RECORD",
         )?;
         let f = frame(&i.conn, id)?;
@@ -835,6 +834,22 @@ impl Vault {
                 let bytes: Vec<u8> = db(row.get(1))?;
                 let f = strict(&bytes, 8_388_608)?;
                 let kind = text(&f["context"]["record_kind"])?;
+                if f["contract"] == "p11-local-v1" {
+                    let new = paged_local::rotate(
+                        &self.codec,
+                        &self.scope,
+                        &s.pins,
+                        &id,
+                        &f,
+                        &old_key,
+                        &key,
+                    )?;
+                    db(tx.execute(
+                        "UPDATE records SET frame=?1 WHERE id=?2",
+                        params![canonical(&new)?, id],
+                    ))?;
+                    continue;
+                }
                 let note = f["contract"] == "p09-local-v1";
                 let additive = f["contract"] == "p08-local-v1";
                 let mut p = if note {

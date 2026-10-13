@@ -1,0 +1,141 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {fixture,phrase,readOwnedSecrets,installation,sync as syncRoster} from '../notes/test-fixture.mjs';
+import {VaultEngine} from '../vault/engine.mjs';
+import {LocalVault} from '../vault/client.mjs';
+import {common,digest} from '../adapters/codecs/protocol-codec.mjs';
+import {groupCodecForProfile} from '../adapters/codecs/group-codec.mjs';
+import {wire} from '../adapters/codecs/identity-codec.mjs';
+import {sodium,b64,un64} from '../adapters/primitives.mjs';
+import {phraseKek,unwrapLocalKey,openLocal} from '../adapters/local.mjs';
+import {pageReceipt,snapshotCommitment,catalogCommitment,checkedDelta} from './codec.mjs';
+import {preparePaged,readPaged,rotatePagedFrame} from './paged-local.mjs';
+import {VisiblePoller,Synchronizer} from './client.mjs';
+const id=()=>b64(sodium.randombytes_buf(16)),notes=(f,op,args=[])=>f.old.engine.notes(f.old.cap,op,structuredClone(args)),sync=(f,op,x={})=>notes(f,'sync',[op,x]);
+const gc=groupCodecForProfile('p02-group-c2');
+async function scenario(){
+ const f=await fixture(),made=await notes(f,'prepareGroup'),g=made.group_id,genesis={...made.request,group_id:g};
+ const status={version:1,group_id:g,kind:'private',owner_account_id:f.pins.account_id,state:'active',membership:made.request.commit.body.intent.body.membership,key_epoch:'0',epoch_digest:gc.groupDigest('epoch-intent',wire(made.request.commit.body.intent)),history_checkpoint_digest:null,rekey_required:false,history_closure_required:false,restore_quarantined:false,settings:false,genesis};await notes(f,'group',[status]);
+ const values=[];for(let i=0;i<2;i++){
+  const draft=await notes(f,'save',[{draft_id:null,group_id:g,object_id:null,object_kind:'thread',thread_id:null,action:'create',parents:[],archived:false,content:{title:'P11 secret title '+i,markdown:'',metadata_kind:'content',tags:[],checklist:[],summary_entry_id:null,preferences:[]}}]),queued=await notes(f,'queue',[draft.draft_id]),sent=await notes(f,'send',[queued.attempt_id]),bundle=sent.request.bundle,c=bundle.envelope.header.context,hash=digest('envelope',wire(bundle.envelope));
+  values.push({version:1,item:{group_id:g,object_kind:'thread',object_id:c.object_id,revision_id:c.revision_id,envelope_digest:hash,payload_status:'retained'},bundle,reference:{object_id:c.object_id,object_kind:'thread',thread_id:null,archived:false,tombstoned:false,created_sequence:String(i+1),updated_sequence:String(i+1),heads:[{revision_id:c.revision_id,envelope_digest:hash}]}});
+ }
+ values.sort((a,b)=>a.item.object_id<b.item.object_id?-1:1);const snapshot_id=id(),created=Date.now(),page={...common('snapshot-page'),snapshot_id,page_index:'0',items:values.map(v=>v.item)},scope={...f.pins,group_id:g},cursor={generation:id(),sequence:'2'},result={version:1,scope,descriptor:{...common('snapshot-descriptor'),snapshot_id,account_id:f.pins.account_id,device_id:f.old.scope.device_id,snapshot_purpose:'resync',watermark:cursor,created_at:String(created),expires_at:String(created+1800000),page_count:'1',item_count:'2',inventory_digest:snapshotCommitment([pageReceipt(page)])},catalog_count:'1',catalog_digest:catalogCommitment([status])};
+ return {...f,values:values.map(v=>({...v,snapshot_id})),page,result,status,cursor};
+}
+async function close(f){f.initial.dispose();await f.old.engine.close();await f.fresh.engine.close();sodium.memzero(f.keys.signing.privateKey);sodium.memzero(f.keys.encryption.privateKey);}
+async function stage(f){await sync(f,'snapshotStart',f.result);await sync(f,'catalog',{version:1,snapshot_id:f.result.descriptor.snapshot_id,start:'0',groups:[f.status],next:null});await sync(f,'snapshotPage',{version:1,scope:f.result.scope,page:f.page});}
+test('partial snapshot is encrypted, survives restart, preserves outbox and publishes only after complete atomic apply',async()=>{
+ const f=await scenario();try{
+  await stage(f);await sync(f,'snapshotItem',f.values[0]);assert.equal((await notes(f,'summary')).witnessed,0);assert.equal((await sync(f,'status')).cursor,null);
+  await assert.rejects(()=>sync(f,'snapshotFinish'),/SYNC_GAP/);await f.old.engine.globalLock();f.old.engine=new VaultEngine(f.old.store);f.old.cap=(await f.old.engine.unlock(phrase)).capability;
+  await sync(f,'snapshotItem',f.values[1]);const before=structuredClone(f.old.store.rows);f.old.store.failAfter=1;await assert.rejects(()=>sync(f,'snapshotFinish'),/INSUFFICIENT_STORAGE/);assert.deepEqual(f.old.store.rows,before);assert.equal((await sync(f,'status')).cursor,null);f.old.store.failAfter=Infinity;
+  const done=await sync(f,'snapshotFinish');assert.deepEqual(done.cursor,f.cursor);assert.equal(done.projection.length,2);const summary=await notes(f,'summary');assert.equal(summary.witnessed,2);assert.equal(summary.drafts.length,2);assert.equal(summary.drafts[0].state,'SENT_UNKNOWN');assert(!JSON.stringify([...f.old.store.rows]).includes('P11 secret title'));
+ }finally{await close(f);}
+});
+test('malformed inventory, forged content and changed root cannot advance the durable cursor',async t=>{
+ const f=await scenario();try{
+  await stage(f);const forged=structuredClone(f.values[0]);forged.bundle.envelope.signature=b64(sodium.randombytes_buf(64));forged.item.envelope_digest=digest('envelope',wire(forged.bundle.envelope));await assert.rejects(()=>sync(f,'snapshotItem',forged),/CONTEXT_MISMATCH/);
+  const bad=structuredClone(f.values[0]);bad.bundle.ciphertext=b64(sodium.randombytes_buf(32));await assert.rejects(()=>sync(f,'snapshotItem',bad),/CIPHERTEXT_MISMATCH/);assert.equal((await sync(f,'status')).cursor,null);
+  await sync(f,'snapshotItem',f.values[0]);await sync(f,'snapshotItem',f.values[1]);await sync(f,'snapshotFinish');const root=structuredClone(f.result);root.scope.root_fingerprint=b64(sodium.randombytes_buf(32));await assert.rejects(()=>sync(f,'snapshotStart',root),/ROOT_PIN_MISMATCH/);
+  const rollback=structuredClone(f.result);rollback.descriptor.watermark.sequence='1';assert.equal((await sync(f,'snapshotStart',rollback)).state,'RESTORE_QUARANTINE');assert.deepEqual((await sync(f,'status')).cursor,f.cursor);await sync(f,'deltaCancel');await sync(f,'snapshotCancel');assert.equal((await sync(f,'status')).state,'RESTORE_QUARANTINE');const pending=(await notes(f,'summary')).drafts[0].attempt_id;await assert.rejects(()=>notes(f,'send',[pending]),/RESTORE_QUARANTINE/);await assert.rejects(()=>notes(f,'prepareGroup'),/RESTORE_QUARANTINE/);await assert.rejects(()=>sync(f,'quarantine',{state:'QUARANTINED',digest:f.result.catalog_digest}),/RESTORE_QUARANTINE/);await assert.rejects(()=>sync(f,'snapshotStart',f.result),/RESTORE_QUARANTINE/);
+  const encrypted=structuredClone(f.old.store.rows),now=Date.now();t.mock.method(Date,'now',()=>now+300001);
+  await assert.rejects(()=>notes(f,'summary'),e=>e.code==='VAULT_LOCKED'&&e.lockReason==='idle-expired');t.mock.restoreAll();assert.equal(f.old.engine.lockReason,'idle-expired');assert.deepEqual(f.old.store.rows,encrypted);
+  f.old.cap=(await f.old.engine.unlock(phrase)).capability;const fresh=Date.now();t.mock.method(Date,'now',()=>fresh-1000);
+  await assert.rejects(()=>notes(f,'summary'),e=>e.code==='VAULT_LOCKED'&&e.lockReason==='clock-regression');t.mock.restoreAll();assert.equal(f.old.engine.lockReason,'clock-regression');assert.deepEqual(f.old.store.rows,encrypted);
+ }finally{t.mock.restoreAll();await close(f);}
+});
+test('filtered ranges count hidden scanned events and reject gaps, duplicate hints and scope substitution',async()=>{
+ const pins={service_id:id(),account_id:id(),root_fingerprint:b64(sodium.randombytes_buf(32))},group=id(),cursor={generation:id(),sequence:'5'},page={version:1,scope:{...pins,group_id:group},from_cursor:cursor,next_cursor:{...cursor,sequence:'8'},watermark:{...cursor,sequence:'9'},scanned_count:'3',events:[],complete:false};assert.equal(checkedDelta(page,cursor,pins,group),page);
+ for(const changed of [{scanned_count:'2'},{complete:true},{scope:{...page.scope,account_id:id()}},{next_cursor:{...cursor,sequence:'10'}},{next_cursor:{...cursor,generation:id()}}])assert.throws(()=>checkedDelta({...page,...changed},cursor,pins,group));
+ const f=await scenario();try{
+  await stage(f);for(const v of f.values)await sync(f,'snapshotItem',v);await sync(f,'snapshotFinish');let pages=0;
+  const high=BigInt(f.cursor.sequence)+101000n,transport={call:async(path)=>{if(path==='/sync/ack')return;assert(path.startsWith('/sync?'));pages++;const from=(await sync(f,'status')).cursor,next=BigInt(from.sequence)+1000n;return {version:1,scope:f.result.scope,from_cursor:from,next_cursor:{...from,sequence:String(next)},watermark:{...from,sequence:String(high)},scanned_count:'1000',events:[],complete:next===high};}};
+  const client=new Synchronizer({transport,vault:{notes:(_op,[op,x])=>sync(f,op,x)},authorize:async()=>{},group:async()=>{}});
+  const first=await client.catchUp();assert.equal(first.catch_up_pending,true);assert.equal(pages,100);assert.equal(first.cursor.sequence,String(high-1000n));
+  const done=await client.catchUp();assert(!done.catch_up_pending);assert.equal(pages,101);assert.equal(done.cursor.sequence,String(high));assert.equal((await notes(f,'summary')).drafts.length,2);
+ }finally{await close(f);}
+});
+test('compaction frees only superseded ciphertext and keeps signed history, current heads and pending work',async()=>{
+ const f=await scenario();try{
+  await stage(f);for(const v of f.values)await sync(f,'snapshotItem',v);await sync(f,'snapshotFinish');const old=f.values[0],draft=await notes(f,'save',[{draft_id:null,group_id:old.item.group_id,object_id:old.item.object_id,object_kind:'thread',thread_id:null,action:'update',parents:old.reference.heads,archived:false,content:{title:'P11 current protected title',markdown:'',metadata_kind:'content',tags:[],checklist:[],summary_entry_id:null,preferences:[]}}]),queued=await notes(f,'queue',[draft.draft_id]),sent=await notes(f,'send',[queued.attempt_id]),b=sent.request.bundle,c=b.envelope.header.context,ed=digest('envelope',wire(b.envelope));
+  await notes(f,'ack',[queued.attempt_id,{receipt:{...common('mutation-receipt'),operation_id:c.operation_id,revision_id:c.revision_id,envelope_digest:ed,status:'COMMITTED',cursor:{...f.cursor,sequence:'3'}},heads:[{revision_id:c.revision_id,envelope_digest:ed}]}]);
+  const item={...old.item,revision_id:c.revision_id,envelope_digest:ed},reference={...old.reference,updated_sequence:'3',heads:[{revision_id:c.revision_id,envelope_digest:ed}]},page={version:1,scope:f.result.scope,from_cursor:f.cursor,next_cursor:{...f.cursor,sequence:'3'},watermark:{...f.cursor,sequence:'3'},scanned_count:'1',events:[{event_id:id(),sequence:'3',group_id:c.group_id,object_id:c.object_id,revision_id:c.revision_id,kind:'object-commit',digest:ed}],complete:true};
+  await sync(f,'deltaStart',page);await sync(f,'deltaItem',{version:1,item,reference,bundle:b});await sync(f,'deltaFinish');const before=structuredClone(f.old.store.rows);f.old.store.failAfter=1;await assert.rejects(()=>sync(f,'compact',{limit:1}),/INSUFFICIENT_STORAGE/);assert.deepEqual(f.old.store.rows,before);f.old.store.failAfter=Infinity;
+  assert.equal((await sync(f,'compact',{limit:1})).compacted,1);await assert.rejects(()=>notes(f,'cached',[old.item.revision_id]),/PAYLOAD_UNAVAILABLE/);assert.equal((await notes(f,'cached',[c.revision_id])).payload.title,'P11 current protected title');assert.equal((await notes(f,'summary')).drafts.length,2);assert.equal((await notes(f,'summary')).witnessed,3);
+  // An exact historical download restores the payload without changing its witness or cursor.
+  const cursor=(await sync(f,'status')).cursor;await notes(f,'open',[{group_id:old.item.group_id,object_id:old.item.object_id,object_kind:'thread',thread_id:null,revision_id:old.item.revision_id,bundle:old.bundle}]);assert.deepEqual((await sync(f,'status')).cursor,cursor);assert.equal((await notes(f,'cached',[old.item.revision_id])).payload.title.startsWith('P11 secret title'),true);
+ }finally{await close(f);}
+});
+test('paged public proof exceeds the old frame limit, binds every part, rotates L and retains private candidate only in the root',async()=>{
+ const scope={service_id:id(),account_id:id(),device_id:id(),profile_id:id()},pins={service_id:scope.service_id,account_id:scope.account_id,root_fingerprint:b64(sodium.randombytes_buf(32))},key=sodium.randombytes_buf(32),next=sodium.randombytes_buf(32),root=id(),candidate={service_id:scope.service_id,group_id:id(),key_epoch:'1',epoch_digest:b64(sodium.randombytes_buf(32)),group_secret:b64(sodium.randombytes_buf(32))},data={proof:{text:'x'.repeat(700000)},pending_key:candidate};
+ try{const prepared=preparePaged(scope,pins,root,'group-evidence',data,key),rows=new Map(prepared.records.map(r=>[r.id,r]));assert.equal(prepared.records.length,3);assert.deepEqual(await readPaged(prepared.frame,scope,pins,root,'group-evidence',key,async id=>rows.get(id)),data);assert(!JSON.stringify(prepared).includes(candidate.group_secret));
+  const rotated=rotatePagedFrame(prepared.frame,scope,pins,root,key,next);for(const r of rows.values())r.frame=rotatePagedFrame(r.frame,scope,pins,r.id,key,next);assert.deepEqual(await readPaged(rotated,scope,pins,root,'group-evidence',next,async id=>rows.get(id)),data);const missing=[...rows.keys()][1];rows.delete(missing);await assert.rejects(()=>readPaged(rotated,scope,pins,root,'group-evidence',next,async id=>rows.get(id)),/RECORD_NOT_FOUND/);
+ }finally{sodium.memzero(key);sodium.memzero(next);}
+});
+test('visible polling uses host-bound timers, bounded backoff, reconnect catch-up and no hidden/offline work',async t=>{
+ let pending,delay,calls=0,errors=0,visible=true,online=true,fail=false;
+ t.mock.method(globalThis,'setTimeout',function(fn,ms){assert.equal(this,globalThis);pending=fn;delay=ms;return 1;});
+ t.mock.method(globalThis,'clearTimeout',function(){assert.equal(this,globalThis);pending=undefined;});
+ const poller=new VisiblePoller({catchUp:async()=>{calls++;if(fail)throw Error('TEMPORARY_UNAVAILABLE');},onError:()=>errors++,visible:()=>visible,online:()=>online,random:()=>0});
+ poller.start();assert.equal(delay,0);await pending();assert.equal(calls,1);assert.equal(delay,5000);
+ fail=true;await pending();assert.equal(delay,15000);await pending();assert.equal(delay,30000);await pending();assert.equal(delay,60000);await pending();assert.equal(delay,60000);assert.equal(errors,4);
+ visible=false;const before=calls;await pending();assert.equal(calls,before);poller.resume();assert.equal(pending,undefined);
+ visible=true;online=false;poller.resume();assert.equal(pending,undefined);online=true;fail=false;poller.resume();assert.equal(delay,0);await pending();assert.equal(delay,5000);
+ poller.stop();assert.equal(pending,undefined);
+ t.mock.restoreAll();
+ // This isolates host masking on an error reply; it models no crypto or issuer.
+ let reply='lock';const replacements={document:Object.assign(new EventTarget(),{hidden:false}),addEventListener:()=>{},removeEventListener:()=>{},Worker:class{
+  constructor(){queueMicrotask(()=>this.onmessage?.({data:{version:1,status:'READY'}}));}
+  postMessage(r){const payload=r.op==='unlock'?{result:{state:'unlocked',capability:'public-host-unit-capability',epoch:'1'}}:reply==='lock'?{error:'INTEGRITY_FAILURE',lock_reason:'worker-integrity'}:{error:'TEMPORARY_UNAVAILABLE'};queueMicrotask(()=>this.onmessage?.({data:{version:1,id:r.id,generation:r.generation,...payload}}));}
+  terminate(){this.terminated=true;}
+ }},saved=new Map(Object.keys(replacements).map(k=>[k,Object.getOwnPropertyDescriptor(globalThis,k)]));let masks=0,client;
+ try{for(const [k,v]of Object.entries(replacements))Object.defineProperty(globalThis,k,{value:v,configurable:true,writable:true});client=new LocalVault('/unit-worker',()=>masks++);await assert.rejects(()=>client.notes('summary'),e=>e.message==='INTEGRITY_FAILURE'&&e.lockReason==='worker-integrity');assert.equal(masks,1);assert.equal(pending,undefined);client.close();
+  const timers=new Map();let timerId=0;t.mock.method(globalThis,'setTimeout',(fn,ms)=>{const id=++timerId;timers.set(id,{fn,ms});return id;});t.mock.method(globalThis,'clearTimeout',id=>timers.delete(id));
+  client=new LocalVault('/unit-worker',()=>masks++);await client.unlock('public host timing fixture');const idle=()=>[...timers].filter(([,v])=>v.ms===300000);const first=idle()[0][0];reply='temporary';
+  await assert.rejects(()=>client.background(()=>client.notes('summary')),/TEMPORARY_UNAVAILABLE/);assert.equal(idle()[0][0],first);client.activity({isTrusted:false});assert.equal(idle()[0][0],first);
+  client.activity({isTrusted:true});const active=idle()[0][0];assert.notEqual(active,first);const before=masks;timers.get(active).fn();assert.equal(masks,before+1);assert.equal(idle().length,0);
+ }
+ finally{client?.close();t.mock.restoreAll();for(const [k,v]of saved)if(v)Object.defineProperty(globalThis,k,v);else delete globalThis[k];}
+});
+test('additive secret inventory exceeds the frozen 660-key limit, keeps device identity and refuses an older reader',async()=>{
+ const f=await fixture();let key,kek;try{
+  const old=f.old.store.rows.get(f.old.store.state.vault_id),w=f.old.store.state.wrappers[0],{nonce,ciphertext,...descriptor}=w;kek=await phraseKek(phrase,wire(w.parameters));key=unwrapLocalKey('phrase-wrapper',wire(w),wire(descriptor),kek);const data=await readOwnedSecrets(f.old),group=id();
+  data.group_keys=Array.from({length:661},(_,i)=>({service_id:f.pins.service_id,group_id:group,key_epoch:String(i),epoch_digest:b64(sodium.randombytes_buf(32)),group_secret:b64(sodium.randombytes_buf(32))}));
+  const prepared=preparePaged(f.old.scope,f.pins,f.old.store.state.vault_id,'vault-secrets',data,key),before=structuredClone(f.old.store.rows);
+  const migrate=()=>f.old.store.transaction(true,async tx=>{for(const row of prepared.records)await tx.put(row);await tx.put({id:f.old.store.state.vault_id,frame:prepared.frame});const s=await tx.get();s.revision++;await tx.set(s);});
+  f.old.store.failAfter=1;await assert.rejects(migrate,/INSUFFICIENT_STORAGE/);assert.deepEqual(f.old.store.rows,before);f.old.store.failAfter=Infinity;await migrate();assert.throws(()=>openLocal(wire(prepared.frame),key,wire(old.frame.context)));
+  await f.old.engine.globalLock();f.old.engine=new VaultEngine(f.old.store);f.old.cap=(await f.old.engine.unlock(phrase)).capability;const loaded=await readOwnedSecrets(f.old);assert.deepEqual(loaded,data);assert.deepEqual((await f.old.engine.devices(f.old.cap,'summary')).head,f.snapshot.head);
+  for(const marker of [data.device_signing_secret,data.device_encryption_secret,data.group_keys[660].group_secret])assert(!JSON.stringify([...f.old.store.rows]).includes(marker));
+ }finally{if(key)sodium.memzero(key);if(kek)sodium.memzero(kek);await close(f);}
+});
+test('a valid signed child cannot complete bootstrap when the service omits its signed parent',async()=>{
+ const f=await scenario();let replica;try{
+  await stage(f);for(const v of f.values)await sync(f,'snapshotItem',v);await sync(f,'snapshotFinish');const parent=f.values[0],saved=await notes(f,'save',[{draft_id:null,group_id:parent.item.group_id,object_id:parent.item.object_id,object_kind:'thread',thread_id:null,action:'update',parents:parent.reference.heads,archived:false,content:{title:'P11 missing ancestry',markdown:'',metadata_kind:'content',tags:[],checklist:[],summary_entry_id:null,preferences:[]}}]),queued=await notes(f,'queue',[saved.draft_id]),sent=await notes(f,'send',[queued.attempt_id]),bundle=sent.request.bundle,c=bundle.envelope.header.context,ed=digest('envelope',wire(bundle.envelope));
+  replica=await installation(f.pins,f.initial.keys,f.old.scope.device_id);await syncRoster(replica,f.snapshot);const command=(op,args=[])=>replica.engine.notes(replica.cap,op,args);
+  await command('group',[f.status]);await replica.engine.devices(replica.cap,'acceptKeys',[f.status.genesis,f.status.genesis.pages[0].records]);
+  const item={...parent.item,revision_id:c.revision_id,envelope_digest:ed},page={...f.page,items:[item]},result=structuredClone(f.result);result.descriptor.snapshot_id=id();page.snapshot_id=result.descriptor.snapshot_id;result.descriptor.item_count='1';result.descriptor.inventory_digest=snapshotCommitment([pageReceipt(page)]);
+  await command('sync',['snapshotStart',result]);await command('sync',['catalog',{version:1,snapshot_id:page.snapshot_id,start:'0',groups:[f.status],next:null}]);await command('sync',['snapshotPage',{version:1,scope:result.scope,page}]);await command('sync',['snapshotItem',{version:1,snapshot_id:page.snapshot_id,item,bundle,reference:{...parent.reference,heads:[{revision_id:c.revision_id,envelope_digest:ed}]}}]);
+  await assert.rejects(()=>command('sync',['snapshotFinish',{}]),/UNANCHORED_HISTORY/);assert.equal((await command('sync',['status',{}])).cursor,null);assert.equal((await command('summary')).witnessed,0);
+ }finally{await replica?.engine.close();await close(f);}
+});
+test('owned recovery creates a fresh local draft and retains the source and immutable attempt',async()=>{
+ const f=await scenario();try{
+  await stage(f);for(const v of f.values)await sync(f,'snapshotItem',v);await sync(f,'snapshotFinish');const thread=f.values[0].item.object_id,edit={draft_id:null,group_id:f.status.group_id,object_id:null,object_kind:'entry',thread_id:thread,action:'create',parents:[],archived:false,content:{title:'P11 recover my work',markdown:'P11 unsent source text',metadata_kind:'content',tags:[],checklist:[],summary_entry_id:null,preferences:[]}},source=await notes(f,'save',[edit]),q=await notes(f,'queue',[source.draft_id]),sent=await notes(f,'send',[q.attempt_id]);
+  const x={draft_id:source.draft_id,destination_group:f.status.group_id,destination_thread:thread,confirm:true};await assert.rejects(()=>notes(f,'recoverDraft',[{...x,confirm:false}]),/CONFIRMATION_REQUIRED/);await assert.rejects(()=>notes(f,'recoverDraft',[{...x,destination_thread:id()}]),/UNANCHORED_HISTORY/);
+  const recovered=await notes(f,'recoverDraft',[x]);assert.notEqual(recovered.draft_id,source.draft_id);assert.notEqual(recovered.object_id,source.object_id);assert.equal(recovered.source_draft_retained,true);assert.equal((await notes(f,'draft',[source.draft_id])).payload.markdown,'P11 unsent source text');assert.deepEqual((await notes(f,'send',[q.attempt_id])).request,sent.request);const newDraft=await notes(f,'draft',[recovered.draft_id]);assert.equal(newDraft.payload.markdown,'P11 unsent source text');assert.equal(newDraft.payload.context.action,'create');assert.deepEqual(newDraft.payload.context.parents,[]);
+ }finally{await close(f);}
+});
+test('cancelled partial application releases only staging caches and keeps all pending drafts/outbox',async()=>{
+ const f=await scenario();try{
+  await stage(f);await sync(f,'snapshotItem',f.values[0]);assert.equal([...f.old.store.rows.values()].filter(r=>r.frame.context.record_kind==='cache').length,1);
+  const before=await notes(f,'summary');await sync(f,'snapshotCancel');assert.equal([...f.old.store.rows.values()].filter(r=>r.frame.context.record_kind==='cache').length,0);assert.deepEqual((await notes(f,'summary')).drafts,before.drafts);assert.equal((await sync(f,'status')).cursor,null);assert.equal((await sync(f,'status')).stage,null);
+  // An expired transport must release its known server lease before erasing the
+  // only protected local reference. A failed DELETE keeps that reference retryable.
+  await stage(f);let deletes=0,deleteFails=true;
+  const transport={call:async(path,kind,result,body,method)=>{if(method==='DELETE'){assert.equal(path,'/snapshots/'+f.result.descriptor.snapshot_id);assert((await sync(f,'status')).stage);deletes++;if(deleteFails)throw Error('NETWORK_UNAVAILABLE');return;}throw Error('SYNC_CURSOR_EXPIRED');}};
+  const client=new Synchronizer({transport,vault:{notes:(_op,[op,x])=>sync(f,op,x)},group:async()=>{}});
+  await assert.rejects(()=>client.snapshot(),/NETWORK_UNAVAILABLE/);assert((await sync(f,'status')).stage);deleteFails=false;
+  await assert.rejects(()=>client.snapshot(),/SYNC_CURSOR_EXPIRED/);assert.equal(deletes,2);assert.equal((await sync(f,'status')).stage,null);assert.deepEqual((await notes(f,'summary')).drafts,before.drafts);
+ }finally{await close(f);}
+});

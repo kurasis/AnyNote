@@ -1,3 +1,4 @@
+import {pagedFrame} from '../sync/paged-local.mjs';
 import {noteFrame} from '../notes/local.mjs';
 import {localFrame} from '../devices/local.mjs';
 import canonicalize from 'canonicalize';
@@ -12,7 +13,7 @@ export function scope(value){
   ensure(value&&Object.keys(value).sort().join(',')==='account_id,device_id,profile_id,service_id'&&Object.values(value).every(id),'INVALID_PROFILE');return structuredClone(value);
 }
 export const name=s=>'anynote-vault-v1-'+[s.service_id,s.account_id,s.device_id,s.profile_id].join('-');
-export function record(s,frame){const e=frame?.contract==='p09-local-v1'?noteFrame(frame):frame?.contract==='p08-local-v1'?localFrame(frame):decode('local-envelope',wire(frame));for(const k of Object.keys(s))ensure(e.context[k]===s[k],'LOCAL_CONTEXT_MISMATCH');return e;}
+export function record(s,frame){const e=frame?.contract==='p11-local-v1'?pagedFrame(frame):frame?.contract==='p09-local-v1'?noteFrame(frame):frame?.contract==='p08-local-v1'?localFrame(frame):decode('local-envelope',wire(frame));for(const k of Object.keys(s))ensure(e.context[k]===s[k],'LOCAL_CONTEXT_MISMATCH');return e;}
 const request=r=>new Promise((resolve,reject)=>{r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(Object.assign(new Error('STORAGE_FAILURE'),{code:'STORAGE_FAILURE'}));});
 export class IndexedVault {
   constructor(s){this.scope=scope(s);this.db=null;}

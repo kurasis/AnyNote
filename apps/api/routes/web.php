@@ -7,6 +7,7 @@ use App\Http\Controllers\GroupsController;
 use App\Http\Controllers\NotesController;
 use App\Http\Controllers\OperatorReadinessController;
 use App\Http\Controllers\ReadinessController;
+use App\Http\Controllers\SyncController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health/ready', ReadinessController::class);
@@ -61,6 +62,17 @@ Route::get('/api/v1/me/recovery-envelopes', DevicesController::class)->name('get
 Route::get('/api/v1/me/security-notifications', DevicesController::class)->name('get_me_security_notifications');
 
 // P09 account-private E2EE content; shared policy transitions remain P10.
+Route::post('/api/v1/groups/{id}/snapshots', SyncController::class)->name('post_groups_id_snapshots');
+Route::get('/api/v1/mutations/{operation_id}', SyncController::class)->name('get_mutations_operation_id');
+Route::post('/api/v1/snapshots', SyncController::class)->name('post_snapshots');
+Route::delete('/api/v1/snapshots/{id}', SyncController::class)->name('delete_snapshots_id');
+Route::get('/api/v1/snapshots/{id}/pages', SyncController::class)->name('get_snapshots_id_pages');
+Route::post('/api/v1/snapshots/{id}/renew', SyncController::class)->name('post_snapshots_id_renew');
+Route::get('/api/v1/sync', SyncController::class)->name('get_sync');
+Route::post('/api/v1/sync/ack', SyncController::class)->name('post_sync_ack');
+Route::get('/api/v1/snapshots/{id}/catalog', SyncController::class)->name('get_snapshots_id_catalog');
+Route::get('/api/v1/snapshots/{id}/revisions/{revision}', SyncController::class)->name('get_snapshots_id_revisions_revision');
+
 Route::get('/api/v1/groups', NotesController::class)->name('get_groups');
 Route::post('/api/v1/groups', NotesController::class)->name('post_groups');
 Route::get('/api/v1/groups/{id}', NotesController::class)->name('get_groups_id');

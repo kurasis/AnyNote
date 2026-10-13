@@ -466,7 +466,7 @@
               "items": {
                 "$ref": "urn:anynote:p02:state-contract:c1#/$defs/event"
               },
-              "maxItems": 1000
+              "maxItems": 10000
             }
           },
           "required": [

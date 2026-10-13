@@ -3,16 +3,18 @@ import {IndexedVault,metadata,ensure,name,scope} from './store.mjs';
 // UI receives only an opaque capability and display data. Lock masks synchronously,
 // fences every pending result and broadcasts before waiting for encrypted durability.
 export class LocalVault {
-  #worker;#pending=new Map();#id=0;#generation=0;#cap;#ready;#bus;#profile;#timer;#closed=false;#client;#needsOpen=false;#initReject;#initTimer;#epoch;
+  #worker;#pending=new Map();#id=0;#generation=0;#cap;#ready;#bus;#profile;#timer;#closed=false;#client;#needsOpen=false;#initReject;#initTimer;#epoch;#background=0;
   constructor(url,mask=()=>{}){
     this.mask=mask;this.url=url;this.#spawn();
     this.hide=()=>{if(document.hidden)this.lock().catch(()=>{});};this.pagehide=()=>{this.lock().finally(()=>this.close()).catch(()=>{});};
     document.addEventListener('visibilitychange',this.hide);addEventListener('pagehide',this.pagehide);
+    this.activity=e=>{if(e.isTrusted&&this.#cap&&!document.hidden)this.#touch(true);};
+    for(const event of ['pointerdown','keydown','input'])document.addEventListener(event,this.activity,true);
   }
   #spawn(){
     this.#client=btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(16)))).replaceAll('+','-').replaceAll('/','_').replaceAll('=','');
     this.#worker=new Worker(this.url,{type:'module'});this.#ready=new Promise((resolve,reject)=>{this.#initReject=reject;this.#initTimer=setTimeout(()=>{reject(Error('WORKER_INIT_TIMEOUT'));this.close();},30000);
-      this.#worker.onmessage=async({data:r})=>{if(r?.version!==1)return;if(r.status==='READY'){clearTimeout(this.#initTimer);resolve();return;}const p=this.#pending.get(r.id);if(!p)return;this.#pending.delete(r.id);clearTimeout(p.timer);try{ensure(r.generation===this.#generation,'STALE_CAPABILITY');if(r.error){const error=Error(r.error);if(['other-owner','clock-regression'].includes(r.hint)){error.vaultReason=r.hint;error.vaultRemaining=r.remaining;}throw error;}if(this.#cap&&this.#epoch&&this.#profile&&['read','proof','save','addPrf','devices','notes'].includes(p.op)){const store=await new IndexedVault(this.#profile).open();try{const e=await store.transaction(false,async tx=>metadata(await tx.get(),this.#profile).epoch);ensure(String(e)===this.#epoch&&r.generation===this.#generation,'STALE_CAPABILITY');}finally{store.close();}}p.resolve(r.result);}catch(e){p.reject(e);}};
+      this.#worker.onmessage=async({data:r})=>{if(r?.version!==1)return;if(r.status==='READY'){clearTimeout(this.#initTimer);resolve();return;}const p=this.#pending.get(r.id);if(!p)return;this.#pending.delete(r.id);clearTimeout(p.timer);try{ensure(r.generation===this.#generation,'STALE_CAPABILITY');if(r.error){const error=Error(r.error);if(['explicit','idle-expired','clock-regression','capability-mismatch','worker-integrity'].includes(r.lock_reason)){error.lockReason=r.lock_reason;this.lock().catch(()=>{});}if(['other-owner','clock-regression'].includes(r.hint)){error.vaultReason=r.hint;error.vaultRemaining=r.remaining;}throw error;}if(this.#cap&&this.#epoch&&this.#profile&&['read','proof','save','addPrf','devices','notes'].includes(p.op)){const store=await new IndexedVault(this.#profile).open();try{const e=await store.transaction(false,async tx=>metadata(await tx.get(),this.#profile).epoch);ensure(String(e)===this.#epoch&&r.generation===this.#generation,'STALE_CAPABILITY');}finally{store.close();}}p.resolve(r.result);}catch(e){p.reject(e);}};
       this.#worker.onerror=()=>{reject(Error('WORKER_FAILED'));this.close();};});this.#ready.catch(()=>{});
   }
   #disposeWorker(){clearTimeout(this.#initTimer);this.#initReject?.(Error('STALE_CAPABILITY'));this.#worker?.terminate();this.#worker=null;this.#ready=null;this.#needsOpen=!!this.#profile;}
@@ -21,7 +23,8 @@ export class LocalVault {
   }
   async open(profile){this.#profile=scope(profile);this.#bus?.close();this.#bus=typeof BroadcastChannel==='function'?new BroadcastChannel(name(this.#profile)):null;this.#bus&&(this.#bus.onmessage=({data})=>{if(data?.version===1&&data.event==='lock'&&data.profile===name(this.#profile)){this.#invalidate();const client=this.#client;this.#disposeWorker();releaseKdf(client).catch(()=>{});}});this.#cap=undefined;this.#epoch=undefined;this.#needsOpen=false;return this.call('open',[this.#profile]);}
   #invalidate(){this.#cap=undefined;this.#epoch=undefined;this.#generation++;this.mask();clearTimeout(this.#timer);for(const p of this.#pending.values()){clearTimeout(p.timer);p.reject(Error('STALE_CAPABILITY'));}this.#pending.clear();}
-  #touch(){clearTimeout(this.#timer);this.#timer=setTimeout(()=>this.lock().catch(()=>{}),300000);}
+  #touch(user=false){if(this.#background&&!user)return;clearTimeout(this.#timer);this.#timer=setTimeout(()=>this.lock().catch(()=>{}),300000);}
+  async background(action){this.#background++;try{return await action();}finally{this.#background--;}}
   async unlock(phrase){ensure(!document.hidden,'RESUME_REQUIRED');const r=await this.call('unlock',[phrase]);ensure(!document.hidden,'RESUME_REQUIRED');this.#cap=r.capability;this.#epoch=r.epoch;this.#touch();return {state:'unlocked'};}
   async unlockPrf(wrapper,credential,prf){ensure(!document.hidden,'RESUME_REQUIRED');const r=await this.call('unlockPrf',[wrapper,credential,prf]);this.#cap=r.capability;this.#epoch=r.epoch;this.#touch();return {state:'unlocked'};}
   async lock(){this.#invalidate();const client=this.#client,profile=this.#profile;this.#disposeWorker();this.#bus?.postMessage({version:1,event:'lock',profile:profile?name(profile):null});await releaseKdf(client);if(profile){const store=await new IndexedVault(profile).open();try{await store.transaction(true,async tx=>{const v=await tx.get();if(!v)return;const s=metadata(v,profile);s.epoch++;s.revision++;s.lease=null;await tx.set(s);});}finally{store.close();}}return {state:'locked'};}
@@ -34,7 +37,7 @@ export class LocalVault {
   preparePrf(credential){return this.call('preparePrf',[this.#cap,credential]);}
   addPrf(credential,prf,prepared){return this.call('addPrf',[this.#cap,credential,prf,prepared]);}
   async removeWrapper(id,phrase){const r=await this.call('removeWrapper',[this.#cap,id,phrase]);await this.lock();return r;}
-  close(){if(this.#closed)return;this.lock().catch(()=>{});this.#closed=true;const client=this.#client;this.#disposeWorker();releaseKdf(client).catch(()=>{});this.#bus?.close();document.removeEventListener('visibilitychange',this.hide);removeEventListener('pagehide',this.pagehide);}
+  close(){if(this.#closed)return;this.lock().catch(()=>{});this.#closed=true;const client=this.#client;this.#disposeWorker();releaseKdf(client).catch(()=>{});this.#bus?.close();document.removeEventListener('visibilitychange',this.hide);removeEventListener('pagehide',this.pagehide);for(const event of ['pointerdown','keydown','input'])document.removeEventListener(event,this.activity,true);}
 }
 // A credential prompt starts while locked. A hidden result cannot unlock; the UI
 // offers explicit continuation while visible, never an automatic prompt loop.

@@ -176,6 +176,187 @@ fn receipt(request: &Value) -> Value {
     json!({"receipt":{"contract":"p02-v1","protocol":"anynote","protocol_version":1,"purpose":"mutation-receipt","operation_id":c["operation_id"],"revision_id":c["revision_id"],"envelope_digest":ed,"status":"COMMITTED","cursor":{"generation":c["service_id"],"sequence":"1"}},"heads":[{"revision_id":c["revision_id"],"envelope_digest":ed}]})
 }
 #[test]
+fn staged_sync_cursor_is_atomic_and_restore_regression_keeps_drafts() {
+    let f = Fixture::new();
+    let cap = f.vault.unlock_phrase(PHRASE).unwrap();
+    let g = group(&f, &cap);
+    let (_, _, sent) = attempt(&f, &cap, &g);
+    let bundle = &sent["request"]["bundle"];
+    let x = &bundle["envelope"]["header"]["context"];
+    let ed = digest("p02-v1", "envelope", &bundle["envelope"]);
+    let item = json!({"group_id":g["group_id"],"object_kind":"thread","object_id":x["object_id"],"revision_id":x["revision_id"],"envelope_digest":ed,"payload_status":"retained"});
+    let snapshot_id = id();
+    let page = json!({"contract":"p02-v1","protocol":"anynote","protocol_version":1,"purpose":"snapshot-page","snapshot_id":snapshot_id,"page_index":"0","items":[item]});
+    let status = group_status(&f, &g);
+    let mut catalog_bytes = b"AnyNote/P11/catalog\0".to_vec();
+    catalog_bytes.extend(1u32.to_be_bytes());
+    let b = canonical(&status).unwrap();
+    catalog_bytes.extend((b.len() as u32).to_be_bytes());
+    catalog_bytes.extend(b);
+    let mut inventory = b"AnyNote/p02-v1/hash/snapshot-inventory\0".to_vec();
+    inventory.extend(1u32.to_be_bytes());
+    inventory.extend(1u64.to_be_bytes());
+    for n in [0, 1, canonical(&page).unwrap().len() as u32] {
+        inventory.extend(n.to_be_bytes());
+    }
+    inventory.extend(
+        anynote_crypto_core::crypto::un64(&digest("p02-v1", "snapshot-page", &page)).unwrap(),
+    );
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_millis();
+    let cursor = json!({"generation":id(),"sequence":"3"});
+    let scope = json!({"service_id":f.scope.service_id,"account_id":f.scope.account_id,"root_fingerprint":f.pins["root_fingerprint"],"group_id":g["group_id"]});
+    let result = json!({"version":1,"scope":scope,"descriptor":{"contract":"p02-v1","protocol":"anynote","protocol_version":1,"purpose":"snapshot-descriptor","snapshot_id":snapshot_id,"account_id":f.scope.account_id,"device_id":f.scope.device_id,"snapshot_purpose":"resync","watermark":cursor,"created_at":now.to_string(),"expires_at":(now+1800000).to_string(),"page_count":"1","item_count":"1","inventory_digest":hash(&inventory)},"catalog_count":"1","catalog_digest":hash(&catalog_bytes)});
+    command(
+        &f,
+        &cap,
+        json!({"action":"sync","request":{"action":"snapshot-start","result":result}}),
+    );
+    command(
+        &f,
+        &cap,
+        json!({"action":"sync","request":{"action":"catalog","page":{"version":1,"snapshot_id":snapshot_id,"start":"0","groups":[status],"next":null}}}),
+    );
+    command(
+        &f,
+        &cap,
+        json!({"action":"sync","request":{"action":"snapshot-page","result":{"version":1,"scope":scope,"page":page}}}),
+    );
+    let finish: NotesRequest =
+        serde_json::from_value(json!({"action":"sync","request":{"action":"snapshot-finish"}}))
+            .unwrap();
+    assert_eq!(
+        f.vault.notes_command(&cap, finish).unwrap_err().0,
+        "SYNC_GAP"
+    );
+    command(
+        &f,
+        &cap,
+        json!({"action":"sync","request":{"action":"snapshot-item","result":{"version":1,"snapshot_id":snapshot_id,"item":item,"bundle":bundle,"reference":{"object_id":x["object_id"],"object_kind":"thread","thread_id":null,"archived":false,"tombstoned":false,"created_sequence":"3","updated_sequence":"3","heads":[{"revision_id":x["revision_id"],"envelope_digest":ed}]}}}}),
+    );
+    assert!(
+        command(
+            &f,
+            &cap,
+            json!({"action":"sync","request":{"action":"status"}})
+        )["cursor"]
+            .is_null()
+    );
+    f.vault.lock_all().unwrap();
+    let reopened = Vault::open(f.vault.path(), f.scope.clone()).unwrap();
+    let c = reopened.unlock_phrase(PHRASE).unwrap();
+    let finish: NotesRequest =
+        serde_json::from_value(json!({"action":"sync","request":{"action":"snapshot-finish"}}))
+            .unwrap();
+    let done = reopened.notes_command(&c, finish).unwrap();
+    assert_eq!(done["cursor"], cursor);
+    assert_eq!(
+        reopened
+            .notes_command(&c, NotesRequest::Summary {})
+            .unwrap()["drafts"]
+            .as_array()
+            .unwrap()
+            .len(),
+        1
+    );
+    let run = |request: Value| {
+        reopened
+            .notes_command(&c, serde_json::from_value(request).unwrap())
+            .unwrap()
+    };
+    let mut update = edit(&g, "PUBLIC native current after sync");
+    update["object_id"] = x["object_id"].clone();
+    update["action"] = json!("update");
+    update["parents"] = json!([{"revision_id":x["revision_id"],"envelope_digest":ed}]);
+    let saved = run(json!({"action":"save","edit":update}));
+    let queued = run(json!({"action":"queue","draft_id":saved["draft_id"]}));
+    let sent2 = run(json!({"action":"send","attempt_id":queued["attempt_id"]}));
+    let b2 = &sent2["request"]["bundle"];
+    let c2 = &b2["envelope"]["header"]["context"];
+    let ed2 = digest("p02-v1", "envelope", &b2["envelope"]);
+    run(
+        json!({"action":"ack","attempt_id":queued["attempt_id"],"result":receipt(&sent2["request"])}),
+    );
+    let next = json!({"generation":cursor["generation"],"sequence":"4"});
+    run(
+        json!({"action":"sync","request":{"action":"delta-start","page":{"version":1,"scope":scope,"from_cursor":cursor,"next_cursor":next,"watermark":next,"scanned_count":"1","complete":true,"events":[{"event_id":id(),"sequence":"4","group_id":g["group_id"],"object_id":x["object_id"],"revision_id":c2["revision_id"],"digest":ed2,"kind":"object-commit"}]}}}),
+    );
+    run(
+        json!({"action":"sync","request":{"action":"delta-item","result":{"version":1,"item":{"group_id":g["group_id"],"object_kind":"thread","object_id":x["object_id"],"revision_id":c2["revision_id"],"envelope_digest":ed2,"payload_status":"retained"},"bundle":b2,"reference":{"object_id":x["object_id"],"object_kind":"thread","thread_id":null,"archived":false,"tombstoned":false,"created_sequence":"3","updated_sequence":"4","heads":[{"revision_id":c2["revision_id"],"envelope_digest":ed2}]}}}}),
+    );
+    run(json!({"action":"sync","request":{"action":"delta-finish"}}));
+    let connection = rusqlite::Connection::open(reopened.path()).unwrap();
+    connection.execute_batch("CREATE TRIGGER p11_compact_fault BEFORE INSERT ON records BEGIN SELECT RAISE(ABORT,'PUBLIC_SYNTHETIC_COMPACT_FAULT'); END;").unwrap();
+    let compact: NotesRequest =
+        serde_json::from_value(json!({"action":"sync","request":{"action":"compact","limit":1}}))
+            .unwrap();
+    assert!(reopened.notes_command(&c, compact).is_err());
+    connection
+        .execute_batch("DROP TRIGGER p11_compact_fault")
+        .unwrap();
+    assert_eq!(
+        run(json!({"action":"sync","request":{"action":"compact","limit":1}}))["compacted"],
+        1
+    );
+    let cached: NotesRequest =
+        serde_json::from_value(json!({"action":"cached","revision_id":x["revision_id"]})).unwrap();
+    assert_eq!(
+        reopened.notes_command(&c, cached).unwrap_err().0,
+        "PAYLOAD_UNAVAILABLE"
+    );
+    assert_eq!(
+        run(json!({"action":"cached","revision_id":c2["revision_id"]}))["payload"]["title"],
+        "PUBLIC native current after sync"
+    );
+    assert_eq!(
+        run(json!({"action":"summary"}))["drafts"]
+            .as_array()
+            .unwrap()
+            .len(),
+        1
+    );
+    run(
+        json!({"action":"open","request":{"group_id":g["group_id"],"object_kind":"thread","object_id":x["object_id"],"thread_id":null,"revision_id":x["revision_id"],"bundle":bundle}}),
+    );
+    assert_eq!(
+        run(json!({"action":"sync","request":{"action":"status"}}))["cursor"],
+        next
+    );
+    let mut local_entry = edit(&g, "PUBLIC native owned recovery");
+    local_entry["object_kind"] = json!("entry");
+    local_entry["thread_id"] = x["object_id"].clone();
+    local_entry["content"]["markdown"] = json!("PUBLIC preserve native source draft");
+    let source = run(json!({"action":"save","edit":local_entry}));
+    let queue = run(json!({"action":"queue","draft_id":source["draft_id"]}));
+    let first = run(json!({"action":"send","attempt_id":queue["attempt_id"]}));
+    let copy = run(
+        json!({"action":"recover-draft","draft_id":source["draft_id"],"destination_group":g["group_id"],"destination_thread":x["object_id"],"confirmed":true}),
+    );
+    assert_ne!(copy["draft_id"], source["draft_id"]);
+    assert_ne!(copy["object_id"], source["object_id"]);
+    assert_eq!(copy["source_draft_retained"], true);
+    assert_eq!(
+        run(json!({"action":"draft","draft_id":source["draft_id"]}))["payload"]["markdown"],
+        "PUBLIC preserve native source draft"
+    );
+    assert_eq!(
+        run(json!({"action":"send","attempt_id":queue["attempt_id"]}))["request"],
+        first["request"]
+    );
+    let mut old = result.clone();
+    old["descriptor"]["watermark"]["sequence"] = json!("2");
+    let start: NotesRequest = serde_json::from_value(
+        json!({"action":"sync","request":{"action":"snapshot-start","result":old}}),
+    )
+    .unwrap();
+    let blocked = reopened.notes_command(&c, start).unwrap();
+    assert_eq!(blocked["state"], "RESTORE_QUARANTINE");
+    assert_eq!(blocked["cursor"], next);
+    reopened.lock_all().unwrap();
+}
+#[test]
 fn native_note_restart_and_encrypted_sqlite_wal_inspection() {
     let f = Fixture::new();
     let cap = f.vault.unlock_phrase(PHRASE).unwrap();

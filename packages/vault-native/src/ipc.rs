@@ -169,8 +169,8 @@ impl Endpoint {
     }
     pub fn invoke(&self, binding: &HostBinding, bytes: &[u8]) -> Result<Value> {
         binding.allowed()?;
-        // The public roster has its own 16 MiB bound; other requests retain P07 limits.
-        let parsed = strict(bytes, 16_781_312)?;
+        // The public roster has its own P11 32 MiB bound; other requests retain P07 limits.
+        let parsed = strict(bytes, 33_558_528)?;
         if parsed["operation"] != "device-snapshot" {
             check(bytes.len() <= 8_388_608, "RESOURCE_LIMIT")?;
         }
