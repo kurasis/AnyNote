@@ -29,6 +29,9 @@ if role == 'linux':
     http = json.loads((ROOT/'artifacts/p11/http-report.json').read_text())
     assert http['status'] == 'PASS' and http['source_commit'] == report['source_commit'] and not http['source_tree_dirty']
     report['http_checks'] = http['checks']
+    membership=json.loads((ROOT/'artifacts/p11/membership-report.json').read_text())
+    assert membership['status']=='PASS' and membership['source_commit']==source_commit and not membership['source_tree_dirty']
+    report['membership_checks']=membership['checks']
 (ROOT/'artifacts/p11').mkdir(parents=True, exist_ok=True)
 (ROOT/'artifacts/p11/source-report.json').write_text(json.dumps(report, indent=2)+'\n')
 print('PASS: P11 source receipt', role, len(report['inputs']), 'raw inputs')

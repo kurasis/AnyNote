@@ -16,3 +16,6 @@ Object.assign(words.ru,{sync_now:'Синхронизировать',sync_attenti
 
 Object.assign(words.en,{compact_cache:'Free older cached bodies',cache_compacted:'Older downloaded bodies freed. Signed history, current heads and drafts are preserved. Earlier bodies can be downloaded again.',cache_current:'No eligible older bodies in this batch.'});
 Object.assign(words.ru,{compact_cache:'Освободить старый кэш',cache_compacted:'Старые загруженные тела освобождены. Подписанная история, текущие версии и черновики сохранены. Предыдущие тела можно загрузить снова.',cache_current:'В этой порции нет старых тел для освобождения.'});
+
+Object.assign(words.en,{draft_recovery_target:'Your private thread',recover_draft:'Copy this draft to your private notes',draft_recovered:'New private draft saved locally. The source draft is preserved.'});
+Object.assign(words.ru,{draft_recovery_target:'Ваша приватная тема',recover_draft:'Скопировать черновик в приватные заметки',draft_recovered:'Новый приватный черновик сохранён локально. Исходный черновик сохранён.'});

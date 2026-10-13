@@ -60,6 +60,7 @@ jobs:
           python3 scripts/check-p08-upgrade.py
           python3 scripts/p06-stack.py reset
           node packages/protocol/p11-http.mjs
+          node packages/protocol/p10-http.mjs --p11-sync
       - name: Actual three-account UI, full history, reader denial, removal and epoch maintenance
         run: |
           source scripts/runtime-env.sh
@@ -75,6 +76,7 @@ jobs:
           path: |
             artifacts/p11/native-interop-report.json
             artifacts/p11/http-report.json
+            artifacts/p11/membership-report.json
             artifacts/p10/browser-report.json
             artifacts/p11/source-report.json
             artifacts/p10/native-interop-report.json

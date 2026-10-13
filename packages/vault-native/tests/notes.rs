@@ -324,6 +324,27 @@ fn staged_sync_cursor_is_atomic_and_restore_regression_keeps_drafts() {
         run(json!({"action":"sync","request":{"action":"status"}}))["cursor"],
         next
     );
+    let mut local_entry = edit(&g, "PUBLIC native owned recovery");
+    local_entry["object_kind"] = json!("entry");
+    local_entry["thread_id"] = x["object_id"].clone();
+    local_entry["content"]["markdown"] = json!("PUBLIC preserve native source draft");
+    let source = run(json!({"action":"save","edit":local_entry}));
+    let queue = run(json!({"action":"queue","draft_id":source["draft_id"]}));
+    let first = run(json!({"action":"send","attempt_id":queue["attempt_id"]}));
+    let copy = run(
+        json!({"action":"recover-draft","draft_id":source["draft_id"],"destination_group":g["group_id"],"destination_thread":x["object_id"],"confirmed":true}),
+    );
+    assert_ne!(copy["draft_id"], source["draft_id"]);
+    assert_ne!(copy["object_id"], source["object_id"]);
+    assert_eq!(copy["source_draft_retained"], true);
+    assert_eq!(
+        run(json!({"action":"draft","draft_id":source["draft_id"]}))["payload"]["markdown"],
+        "PUBLIC preserve native source draft"
+    );
+    assert_eq!(
+        run(json!({"action":"send","attempt_id":queue["attempt_id"]}))["request"],
+        first["request"]
+    );
     let mut old = result.clone();
     old["descriptor"]["watermark"]["sequence"] = json!("2");
     let start: NotesRequest = serde_json::from_value(

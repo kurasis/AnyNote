@@ -12,7 +12,7 @@ let language=navigator.language.startsWith('ru')?'ru':'en',selected,groupSelecte
 const roles=new Map(),groups=new Map(),titles=new Map(),references=new Map();
 const auth=new AuthClient(ANYNOTE_AUTH_ISSUER),devices=new DevicesClient(auth),api=new NotesClient(auth);
 const sharing=new SharedClient(auth);
-let synchronizer,poller;
+let synchronizer,poller,backgroundSync=false,uiInterrupt=false;
 const text=k=>words[language][k]??words.en[k]??k;
 const vault=new LocalVault('/auth/vault-worker.js',mask);
 function erase(v){if(v&&typeof v==='object')for(const k of Object.keys(v)){if(typeof v[k]==='string')v[k]='';else erase(v[k]);}}
@@ -22,7 +22,7 @@ function mask(){
  roles.clear();groups.clear();titles.clear();references.clear();preferences=[];settingsGroup=undefined;groupSelected=threadSelected=undefined;server=false;
  $('workspace').hidden=true;$('unlock-panel').hidden=false;$('editor').hidden=true;$('conflict').hidden=true;
  for(const id of ['member-account','member-root','share-card','incoming-owner','incoming-device','phrase','group-title','thread-title','note-title','note-body','checklist-text','loaded-search'])$(id).value='';
- copyPrepared=undefined;for(const id of ['sharing-confirm','copy-confirm','close-account-confirm'])$(id).checked=false;for(const id of ['members-list','invitation-list','groups','threads','entries','drafts','checklist','preview','versions','trash-items'])$(id).replaceChildren();
+ copyPrepared=undefined;for(const id of ['sharing-confirm','copy-confirm','close-account-confirm'])$(id).checked=false;for(const id of ['members-list','invitation-list','groups','threads','entries','drafts','checklist','preview','versions','trash-items','draft-recovery-target'])$(id).replaceChildren();
  for(const id of ['membership-state','copy-audience','group-heading','thread-heading','thread-summary','audience','conflict-remote','save-state'])$(id).textContent='';
  $('lock-state').textContent=text('locked');$('status').textContent=text('locked');delete $('status').dataset.error;delete $('status').dataset.busy;
  for(const id of ['unlock','login','create-group','create-thread','save-note','save-local','refresh','retry'])$(id).disabled=false;
@@ -38,10 +38,10 @@ function reportError(e){
  $('status').textContent=text(messages[key]??'attention');
 }
 function run(action){
- const g=generation;$('status').dataset.busy='true';$('status').textContent=text('working');
+ uiInterrupt=true;const g=generation;$('status').dataset.busy='true';$('status').textContent=text('working');
  for(const id of ['unlock','login','create-group','create-thread','save-note','save-local','refresh','retry'])$(id).disabled=true;
  const r=tail.then(async()=>{
-  if(g!==generation)throw Error('STALE_CAPABILITY');
+  uiInterrupt=false;if(g!==generation)throw Error('STALE_CAPABILITY');
   delete $('status').dataset.error;$('status').dataset.busy='true';$('status').textContent=text('working');
   for(const id of ['unlock','login','create-group','create-thread','save-note','save-local','refresh','retry'])$(id).disabled=true;
   try{await action(g);if(g===generation&&!$('status').dataset.error)$('status').textContent=text('done');}
@@ -110,10 +110,11 @@ async function synchronize(){
  await flushIfDirty();if(!server)await prove();
  // Current authorization is checked even if removal made the group feed invisible.
  for(const [id,g]of [...groups])if(!g.pending){try{await groupStatus(id);}catch(e){if(e.message!=='NOT_FOUND')throw e;}}
- synchronizer??=new Synchronizer({transport:new SyncClient(auth),vault,notes:api,authorize:async()=>{if(!server)await prove();else await devices.sync(vault,selected.account_id);},group:async id=>{const g=await groupStatus(id);await keyFor(g);},active:()=>!$('workspace').hidden&&!document.hidden});
+ synchronizer??=new Synchronizer({transport:new SyncClient(auth),vault,notes:api,authorize:async()=>{if(!server)await prove();else await devices.sync(vault,selected.account_id);},group:async id=>{const g=await groupStatus(id);await keyFor(g);},active:()=>!$('workspace').hidden&&!document.hidden&&(!backgroundSync||!uiInterrupt)});
  $('sync-state').textContent=text('syncing');const s=await synchronizer.catchUp();
  for(const p of s.projection)references.set(p.reference.object_id,{group_id:p.group_id,...p.reference});
  for(const p of s.projection)if(p.reference.object_kind!=='entry'&&p.reference.heads.length){const v=await vault.notes('cached',[p.reference.heads[0].revision_id]);titles.set(p.reference.object_id,v.payload.title);}
+ $('draft-recovery-target').replaceChildren();for(const [id,r]of references){const g=groups.get(r.group_id);if(g?.kind==='private'&&!g.settings&&g.owner_account_id===selected.account_id&&r.object_kind==='thread'&&!r.tombstoned){const option=document.createElement('option');option.value=r.group_id+'/'+id;option.textContent=(titles.get(r.group_id)??text('private'))+' / '+(titles.get(id)??text('untitled'));$('draft-recovery-target').append(option);}}
  renderGroups();await summary();$('sync-state').textContent=text('synced');return s;
 }
 async function refresh(){await flushIfDirty();await prove();if(groupSelected)await groupStatus(groupSelected);await loadGroups();await copyDestinations();if(groupSelected&&groups.has(groupSelected))await openGroup(groupSelected);await retryPending();await summary();}
@@ -239,9 +240,10 @@ $('profiles').onchange=()=>run(async()=>{await vault.lock();selected=JSON.parse(
 $('unlock').onclick=()=>run(async g=>{
  if(!selected)throw Error('PROFILE_REQUIRED');const phrase=$('phrase').value;$('phrase').value='';await vault.unlock(phrase);checkGeneration(g);$('workspace').hidden=false;$('unlock-panel').hidden=true;$('lock-state').textContent=text('unlocked');await loadLocal();
  try{await refresh();}catch(e){if(['AUTH_REQUIRED','SESSION_EXPIRED','TEMPORARY_UNAVAILABLE'].includes(e.message)||e.name==='TypeError'){$('status').textContent=text('local_only');server=false;}else throw e;}
- poller=new VisiblePoller({catchUp:()=>{const task=tail.then(()=>synchronize());tail=task.catch(()=>{});return task;},onError:e=>{$('sync-state').textContent=text(e.message==='RESTORE_QUARANTINE'?'restore_quarantine':e.message==='KEYS_PENDING'?'key_pending':'sync_attention');}});poller.start();
+ poller=new VisiblePoller({catchUp:()=>{if($('status').dataset.busy)return Promise.resolve();const task=tail.then(async()=>{if($('status').dataset.busy)return; backgroundSync=true;try{return await synchronize();}finally{backgroundSync=false;}});tail=task.catch(()=>{});return task;},onError:e=>{$('sync-state').textContent=text(e.message==='RESTORE_QUARANTINE'?'restore_quarantine':e.message==='KEYS_PENDING'?'key_pending':'sync_attention');}});poller.start();
 });
 $('sync-now').onclick=()=>run(synchronize);
+$('recover-draft').onclick=()=>run(async()=>{await flushIfDirty();if(!editor?.draft_id)throw Error('DRAFT_NOT_FOUND');const target=$('draft-recovery-target').value.split('/');if(target.length!==2)throw Error('THREAD_REQUIRED');const saved=await vault.notes('recoverDraft',[{draft_id:editor.draft_id,destination_group:target[0],destination_thread:target[1],confirm:true}]);await openDraft(saved.draft_id);$('sync-state').textContent=text('draft_recovered');});
 $('sync-compact').onclick=()=>run(async()=>{await flushIfDirty();const result=await vault.notes('sync',['compact',{limit:16}]);$('sync-state').textContent=text(result.compacted?'cache_compacted':'cache_current');});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)poller?.resume();});
 addEventListener('online',()=>poller?.resume());

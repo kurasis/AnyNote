@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {fixture,phrase,readOwnedSecrets} from '../notes/test-fixture.mjs';
+import {fixture,phrase,readOwnedSecrets,installation,sync as syncRoster} from '../notes/test-fixture.mjs';
 import {VaultEngine} from '../vault/engine.mjs';
 import {common,digest} from '../adapters/codecs/protocol-codec.mjs';
 import {groupCodecForProfile} from '../adapters/codecs/group-codec.mjs';
@@ -82,4 +82,27 @@ test('additive secret inventory exceeds the frozen 660-key limit, keeps device i
   await f.old.engine.globalLock();f.old.engine=new VaultEngine(f.old.store);f.old.cap=(await f.old.engine.unlock(phrase)).capability;const loaded=await readOwnedSecrets(f.old);assert.deepEqual(loaded,data);assert.deepEqual((await f.old.engine.devices(f.old.cap,'summary')).head,f.snapshot.head);
   for(const marker of [data.device_signing_secret,data.device_encryption_secret,data.group_keys[660].group_secret])assert(!JSON.stringify([...f.old.store.rows]).includes(marker));
  }finally{if(key)sodium.memzero(key);if(kek)sodium.memzero(kek);await close(f);}
+});
+test('a valid signed child cannot complete bootstrap when the service omits its signed parent',async()=>{
+ const f=await scenario();let replica;try{
+  await stage(f);for(const v of f.values)await sync(f,'snapshotItem',v);await sync(f,'snapshotFinish');const parent=f.values[0],saved=await notes(f,'save',[{draft_id:null,group_id:parent.item.group_id,object_id:parent.item.object_id,object_kind:'thread',thread_id:null,action:'update',parents:parent.reference.heads,archived:false,content:{title:'P11 missing ancestry',markdown:'',metadata_kind:'content',tags:[],checklist:[],summary_entry_id:null,preferences:[]}}]),queued=await notes(f,'queue',[saved.draft_id]),sent=await notes(f,'send',[queued.attempt_id]),bundle=sent.request.bundle,c=bundle.envelope.header.context,ed=digest('envelope',wire(bundle.envelope));
+  replica=await installation(f.pins,f.initial.keys,f.old.scope.device_id);await syncRoster(replica,f.snapshot);const command=(op,args=[])=>replica.engine.notes(replica.cap,op,args);
+  await command('group',[f.status]);await replica.engine.devices(replica.cap,'acceptKeys',[f.status.genesis,f.status.genesis.pages[0].records]);
+  const item={...parent.item,revision_id:c.revision_id,envelope_digest:ed},page={...f.page,items:[item]},result=structuredClone(f.result);result.descriptor.snapshot_id=id();page.snapshot_id=result.descriptor.snapshot_id;result.descriptor.item_count='1';result.descriptor.inventory_digest=snapshotCommitment([pageReceipt(page)]);
+  await command('sync',['snapshotStart',result]);await command('sync',['catalog',{version:1,snapshot_id:page.snapshot_id,start:'0',groups:[f.status],next:null}]);await command('sync',['snapshotPage',{version:1,scope:result.scope,page}]);await command('sync',['snapshotItem',{version:1,snapshot_id:page.snapshot_id,item,bundle,reference:{...parent.reference,heads:[{revision_id:c.revision_id,envelope_digest:ed}]}}]);
+  await assert.rejects(()=>command('sync',['snapshotFinish',{}]),/UNANCHORED_HISTORY/);assert.equal((await command('sync',['status',{}])).cursor,null);assert.equal((await command('summary')).witnessed,0);
+ }finally{await replica?.engine.close();await close(f);}
+});
+test('owned recovery creates a fresh local draft and retains the source and immutable attempt',async()=>{
+ const f=await scenario();try{
+  await stage(f);for(const v of f.values)await sync(f,'snapshotItem',v);await sync(f,'snapshotFinish');const thread=f.values[0].item.object_id,edit={draft_id:null,group_id:f.status.group_id,object_id:null,object_kind:'entry',thread_id:thread,action:'create',parents:[],archived:false,content:{title:'P11 recover my work',markdown:'P11 unsent source text',metadata_kind:'content',tags:[],checklist:[],summary_entry_id:null,preferences:[]}},source=await notes(f,'save',[edit]),q=await notes(f,'queue',[source.draft_id]),sent=await notes(f,'send',[q.attempt_id]);
+  const x={draft_id:source.draft_id,destination_group:f.status.group_id,destination_thread:thread,confirm:true};await assert.rejects(()=>notes(f,'recoverDraft',[{...x,confirm:false}]),/CONFIRMATION_REQUIRED/);await assert.rejects(()=>notes(f,'recoverDraft',[{...x,destination_thread:id()}]),/UNANCHORED_HISTORY/);
+  const recovered=await notes(f,'recoverDraft',[x]);assert.notEqual(recovered.draft_id,source.draft_id);assert.notEqual(recovered.object_id,source.object_id);assert.equal(recovered.source_draft_retained,true);assert.equal((await notes(f,'draft',[source.draft_id])).payload.markdown,'P11 unsent source text');assert.deepEqual((await notes(f,'send',[q.attempt_id])).request,sent.request);const newDraft=await notes(f,'draft',[recovered.draft_id]);assert.equal(newDraft.payload.markdown,'P11 unsent source text');assert.equal(newDraft.payload.context.action,'create');assert.deepEqual(newDraft.payload.context.parents,[]);
+ }finally{await close(f);}
+});
+test('cancelled partial application releases only staging caches and keeps all pending drafts/outbox',async()=>{
+ const f=await scenario();try{
+  await stage(f);await sync(f,'snapshotItem',f.values[0]);assert.equal([...f.old.store.rows.values()].filter(r=>r.frame.context.record_kind==='cache').length,1);
+  const before=await notes(f,'summary');await sync(f,'snapshotCancel');assert.equal([...f.old.store.rows.values()].filter(r=>r.frame.context.record_kind==='cache').length,0);assert.deepEqual((await notes(f,'summary')).drafts,before.drafts);assert.equal((await sync(f,'status')).cursor,null);assert.equal((await sync(f,'status')).stage,null);
+ }finally{await close(f);}
 });

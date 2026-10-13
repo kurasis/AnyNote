@@ -81,6 +81,13 @@ export class NotesWorkflow {
    ensure(args.length===1,'INVALID_REQUEST');const x=args[0];ensure(id(x.source_group)&&id(x.destination_group)&&id(x.revision_id),'INVALID_REQUEST');const source=await this.#info(x.source_group),destination=await this.#info(x.destination_group);ensure(source.ref.status?.kind==='private'&&source.ref.status?.settings!==true&&destination.ref.status?.kind==='shared','COPY_AUDIENCE_REQUIRED');this.#writable(destination.ref,destination.info);const opened=await this.command('cached',[x.revision_id]),p=opened.payload;ensure(p.context.group_id===x.source_group&&p.context.object_kind==='entry'&&p.metadata_kind==='content'&&p.context.action!=='soft-delete'&&p.context.attachments.length===0,'COPY_SCOPE_MISMATCH');const preview={source_group:x.source_group,destination_group:x.destination_group,revision_id:x.revision_id,source_audience:[this.scope.account_id],destination_audience:destination.info.members.map(m=>({account_id:m.account_id,root_fingerprint:m.root_fingerprint,role:m.role})),policy:this.#policy(destination.info),scope:'selected-current-entry-only',title:p.title};const digest=valueHash(preview);if(op==='copyPreview')return {preview,digest};ensure(x.confirm===true&&x.preview_digest===digest&&id(x.destination_thread),'COPY_CONFIRMATION_REQUIRED');this.#copyAudience=valueHash(destination.info.members);try{return await this.command('save',[{draft_id:null,group_id:x.destination_group,object_id:null,object_kind:'entry',thread_id:x.destination_thread,action:'create',parents:[],archived:false,content:{title:p.title,markdown:p.markdown,metadata_kind:'content',tags:p.tags,checklist:p.checklist,summary_entry_id:null,preferences:[]}}]);}finally{this.#copyAudience=undefined;}
   }
   if(op==='shared')return this.#sharedCommand(args);
+  if(op==='recoverDraft'){
+   ensure(args.length===1&&args[0]?.confirm===true&&Object.keys(args[0]).sort().join(',')==='confirm,destination_group,destination_thread,draft_id','CONFIRMATION_REQUIRED');const x=args[0];ensure(id(x.draft_id)&&id(x.destination_group)&&id(x.destination_thread),'INVALID_REQUEST');
+   const old=await this.#draft(x.draft_id),destination=await this.#info(x.destination_group),p=old.data.payload;
+   ensure(destination.ref.status?.kind==='private'&&!destination.ref.status.settings&&destination.ref.status.owner_account_id===this.scope.account_id,'PRIVATE_NAMESPACE_REQUIRED');ensure(p.context.object_kind==='entry'&&p.metadata_kind==='content'&&p.context.attachments.length===0,'COPY_SCOPE_MISMATCH');
+   ensure(this.#state.witnesses.some(w=>w.group_id===x.destination_group&&w.object_kind==='thread'&&w.object_id===x.destination_thread&&w.action!=='soft-delete'),'UNANCHORED_HISTORY');
+   const saved=await this.command('save',[{draft_id:null,group_id:x.destination_group,object_id:null,object_kind:'entry',thread_id:x.destination_thread,action:'create',parents:[],archived:false,content:{title:p.title,markdown:p.markdown,metadata_kind:'content',tags:p.tags,checklist:p.checklist,summary_entry_id:null,preferences:[]}}]);return {...saved,source_draft_retained:true,scope:'owned-private-local-copy'};
+  }
   if(op==='prepareGroup'){
    ensure(args.length===0&&this.#state.groups.length<100,'RESOURCE_LIMIT');this.#own();const made=privateGenesis(this.#proof.roster,this.#proof.identity,this.scope.device_id,this.#keys.signing.privateKey),group=made.request.commit.body.group_id,record_id=random();
    this.#state.groups.push({group_id:group,record_id,state:'GENESIS_PENDING',status:null});
@@ -211,7 +218,7 @@ export class NotesWorkflow {
   }
   if(op==='snapshotFinish'){
    ensure(Object.keys(x).length===0,'INVALID_REQUEST');const t=s.stage;ensure(t&&t.catalog_next===t.result.catalog_count&&t.pages.length===Number(t.result.descriptor.page_count)&&t.all_items===t.result.descriptor.item_count&&t.items.length===t.inventory.length&&snapshotCommitment(t.pages)===t.result.descriptor.inventory_digest,'SYNC_GAP');
-   this.#syncPublish(t.items,true);s.cursor=structuredClone(t.result.descriptor.watermark);s.watermark=structuredClone(s.cursor);s.stage=null;s.state='SYNCED';s.quarantine=null;await this.#commit();return output();
+   await this.#syncPublish(t.items,true);s.cursor=structuredClone(t.result.descriptor.watermark);s.watermark=structuredClone(s.cursor);s.stage=null;s.state='SYNCED';s.quarantine=null;await this.#commit();return output();
   }
   if(op==='deltaCancel'){ensure(Object.keys(x).length===0,'INVALID_REQUEST');s.pending=null;s.state=s.cursor?'SYNCED':'NEW';await this.#commit();return output();}
   if(op==='deltaStart'){
@@ -225,13 +232,14 @@ export class NotesWorkflow {
   }
   if(op==='deltaFinish'){
    ensure(Object.keys(x).length===0,'INVALID_REQUEST');const p=s.pending;ensure(p&&p.page.events.every(e=>e.revision_id!==null&&p.items.some(i=>i.item.revision_id===e.revision_id)),'SYNC_GAP');
-   this.#syncPublish(p.items,false);s.cursor=structuredClone(p.page.next_cursor);s.watermark=structuredClone(p.page.watermark);s.pending=null;s.state='SYNCED';await this.#commit();return output();
+   await this.#syncPublish(p.items,false);s.cursor=structuredClone(p.page.next_cursor);s.watermark=structuredClone(p.page.watermark);s.pending=null;s.state='SYNCED';await this.#commit();return output();
   }
   throw Error('INVALID_SYNC_COMMAND');
  }
- #syncPublish(items,snapshot){
+ async #syncPublish(items,snapshot){
   const s=this.#state.sync,merged=new Map(this.#state.witnesses.map(w=>[w.revision_id,w]));
   for(const v of items){const old=merged.get(v.witness.revision_id);ensure(!old||same(old,v.witness),'ROLLBACK_QUARANTINE');merged.set(v.witness.revision_id,structuredClone(v.witness));}
+  for(const v of items){const data=await this.read(v.cache_id,'cache'),envelope=data.purpose==='p11-header-evidence'?syncValue('header-evidence',data).envelope:decode('bundle',un64(decode('cache',wire(data)).record_bytes)).envelope;ensure(digest('envelope',wire(envelope))===v.item.envelope_digest,'INTEGRITY_FAILURE');for(const parent of envelope.header.context.parents){const w=merged.get(parent.revision_id);ensure(w&&w.group_id===v.item.group_id&&w.object_id===v.item.object_id&&w.envelope_digest===parent.envelope_digest,'UNANCHORED_HISTORY');}}
   const refs=new Map(snapshot?s.projection.filter(p=>s.scope.group_id!==null&&p.group_id!==s.scope.group_id).map(p=>[p.group_id+'/'+p.reference.object_id,p]):s.projection.map(p=>[p.group_id+'/'+p.reference.object_id,p]));
   for(const v of items){for(const h of v.reference.heads){const w=merged.get(h.revision_id);ensure(w&&w.group_id===v.item.group_id&&w.object_id===v.item.object_id&&w.envelope_digest===h.envelope_digest,'UNANCHORED_HISTORY');}refs.set(v.item.group_id+'/'+v.item.object_id,{group_id:v.item.group_id,reference:structuredClone(v.reference)});}
   this.#state.witnesses=[...merged.values()];s.projection=[...refs.values()].sort((a,b)=>a.group_id+'/'+a.reference.object_id<b.group_id+'/'+b.reference.object_id?-1:1);

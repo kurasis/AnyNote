@@ -26,8 +26,9 @@ const id=()=>{const b=crypto.getRandomValues(new Uint8Array(16));return btoa(Str
 export class Synchronizer {
  #running;
  constructor({transport,vault,notes,authorize,group,active=()=>true}){Object.assign(this,{transport,vault,notes,authorize,group,active});}
- command(op,x={}){ensure(this.active(),'STALE_CAPABILITY');return this.vault.notes('sync',[op,x]);}
- catchUp(){if(this.#running)return this.#running;this.#running=this.#catchUp().catch(async e=>{if(e.message==='SYNC_CURSOR_EXPIRED'){await this.command('deltaCancel');await this.command('snapshotCancel');return this.snapshot();}if(['CIPHERTEXT_MISMATCH','INVALID_SIGNATURE','CONTEXT_MISMATCH','ROOT_PIN_MISMATCH','SYNC_GAP','INVALID_SYNC_DTO','RESTORE_QUARANTINE'].includes(e.message))await this.command('quarantine',{state:e.message==='RESTORE_QUARANTINE'?'RESTORE_QUARANTINE':'QUARANTINED',digest:syncHash({code:e.message})});throw e;}).finally(()=>{this.#running=undefined;});return this.#running;}
+ command(op,x={}){ensure(this.active(),'SYNC_PAUSED');return this.vault.notes('sync',[op,x]);}
+ catchUp(){if(this.#running)return this.#running;this.#running=this.#catchUp().catch(async e=>{if(['SYNC_CURSOR_EXPIRED','POLICY_CHANGED','ROSTER_CHANGED','REKEY_REQUIRED','HISTORY_CLOSURE_REQUIRED','NOT_FOUND','ACCESS_REVOKED'].includes(e.message)){await this.#abandonStage();return this.snapshot();}if(['CIPHERTEXT_MISMATCH','INVALID_SIGNATURE','CONTEXT_MISMATCH','ROOT_PIN_MISMATCH','SYNC_GAP','INVALID_SYNC_DTO','RESTORE_QUARANTINE'].includes(e.message))await this.command('quarantine',{state:e.message==='RESTORE_QUARANTINE'?'RESTORE_QUARANTINE':'QUARANTINED',digest:syncHash({code:e.message})});throw e;}).finally(()=>{this.#running=undefined;});return this.#running;}
+ async #abandonStage(){const s=await this.command('status');if(s.stage){try{await this.transport.call('/snapshots/'+s.stage.result.descriptor.snapshot_id,'','cancel-result',undefined,'DELETE');}catch(e){if(!['NOT_FOUND','SYNC_CURSOR_EXPIRED','SESSION_EXPIRED','DEVICE_REVOKED','AUTH_REQUIRED'].includes(e.message))throw e;}}await this.command('deltaCancel');await this.command('snapshotCancel');}
  async snapshot(){
   let s=await this.command('status');ensure(s.state!=='RESTORE_QUARANTINE','RESTORE_QUARANTINE');
   if(!s.stage){const result=await this.transport.call('/snapshots','snapshot-request','snapshot-result',{version:1,operation_id:id(),purpose:'resync',group_id:s.scope.group_id});s=await this.command('snapshotStart',result);}
@@ -40,7 +41,7 @@ export class Synchronizer {
    // for item recovery without re-appending their inventory receipts.
    for(let n=0;n<Number(d.page_count);n++){const page=await this.transport.call(path+'/pages?index='+n,null,'snapshot-page-result');if(n>=s.stage.pages)s=await this.command('snapshotPage',page);for(const item of page.page.items)await this.command('snapshotItem',await this.transport.call(path+'/revisions/'+item.revision_id,null,'snapshot-bundle'));}
    s=await this.command('snapshotFinish');await this.transport.call(path,'','cancel-result',undefined,'DELETE');return s;
-  }catch(e){if(e.message==='SYNC_CURSOR_EXPIRED'){await this.command('snapshotCancel');}throw e;}
+  }catch(e){if(['SYNC_CURSOR_EXPIRED','POLICY_CHANGED','ROSTER_CHANGED','REKEY_REQUIRED','HISTORY_CLOSURE_REQUIRED','NOT_FOUND','ACCESS_REVOKED'].includes(e.message)){await this.command('snapshotCancel');}throw e;}
  }
  async #catchUp(){
   await this.authorize();let s=await this.command('status');ensure(s.state!=='RESTORE_QUARANTINE','RESTORE_QUARANTINE');ensure(s.state!=='QUARANTINED','SYNC_QUARANTINE');
@@ -68,7 +69,7 @@ export class VisiblePoller {
  stop(){this.#stopped=true;this.clearTimer(this.#timer);}
  resume(){this.clearTimer(this.#timer);if(!this.#stopped&&this.visible()&&this.online())this.#timer=this.setTimer(()=>this.#tick(),0);}
  async #tick(){if(this.#stopped||this.#running||!this.visible()||!this.online())return;this.#running=true;
-  try{await this.catchUp();this.#backoff=0;}catch(e){this.#backoff=this.#backoff?Math.min(60000,this.#backoff*2):15000;this.onError(e);}
+  try{await this.catchUp();this.#backoff=0;}catch(e){if(e.message==='SYNC_PAUSED'){this.#backoff=0;}else{this.#backoff=this.#backoff?Math.min(60000,this.#backoff*2):15000;this.onError(e);}}
   finally{this.#running=false;if(!this.#stopped&&this.visible()&&this.online()){const base=this.#backoff||5000,delay=Math.min(60000,base+Math.floor(this.random()*Math.min(1000,base/10)));this.#timer=this.setTimer(()=>this.#tick(),delay);}}
  }
 }

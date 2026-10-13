@@ -388,7 +388,7 @@
     },
     {
       "path": "packages/protocol/sync/client.mjs",
-      "sha256": "b7cb4bd3f8352e117576980830cf37f35c78f23c67cad99a1a4bad4ab3761e0b"
+      "sha256": "2baea1ad6dd2ddf1442b1e3a5b0b4f8862becb17f6d6cccd975fc85622107a68"
     }
   ],
   "outputs": [

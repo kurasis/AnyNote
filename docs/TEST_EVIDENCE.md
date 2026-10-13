@@ -1567,3 +1567,23 @@ At development head 0e4d728 the genuine sandboxed P09/P10/P11 Linux browser jobs
 passed. One P11 Windows build encountered an upstream DNS resolution failure while
 building unchanged libsodium; other Windows native jobs passed. Latest source and
 final Windows/Linux acceptance still require complete final runs.
+
+P11 follow-up transport/ancestry/recovery: the actual TLS/SQL suite passed 112
+checks including 2,001 console-owned unsigned hidden hints and two full 1,000-row
+scanned ranges. The three-role/independently enrolled second-device HTTP suite
+passed 418 checks with existing leased pages reauthorized across role downgrade,
+removal and device revoke. Ten portable suites now cover missing signed ancestry,
+owned local recovery/source-attempt preservation and precise cancelled-stage cache
+cleanup. Native note tests cover owned recovery and immutable attempt preservation.
+
+The P08 quota saturation test originally left its owned global ledger artificially
+full; a console-only cleanup restores actual account charge totals without deleting
+content. HTTP suites must run sequentially: overlapping local P08/P10 executions
+invalidated a global-counter race assertion and were repeated sequentially.
+
+Windows source inputs now use explicit Git LF text checkout, with supplied spec and
+Microsoft header bytes preserved. A core.autocrlf=true prospective index checkout
+passed the unchanged P03 generation hashes and all original specification checksums.
+Raw platform bytes remain recorded in source receipts. This fixes checkout drift
+without relaxing lock/artifact/source assertions. Foreground UI work can yield a
+background sync at the next protected command; interrupted stages remain durable.

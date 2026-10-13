@@ -75,54 +75,87 @@ fn inventory_hash(pages: &[Value]) -> Result<String> {
     }
     Ok(hash(&bytes))
 }
-fn publish(c: &mut Value, staged: &[Value], snapshot: bool) -> Result<()> {
-    let mut witnesses = values(c, "witnesses")?.clone();
-    for v in staged {
-        if let Some(w) = witnesses
-            .iter()
-            .find(|w| w["revision_id"] == v["witness"]["revision_id"])
-        {
-            check(*w == v["witness"], "ROLLBACK_QUARANTINE")?;
-        } else {
-            witnesses.push(v["witness"].clone());
-        }
-    }
-    let group = c["sync"]["scope"]["group_id"].clone();
-    let mut refs = values(&c["sync"], "projection")?
-        .iter()
-        .filter(|p| !snapshot || (!group.is_null() && p["group_id"] != group))
-        .cloned()
-        .collect::<Vec<_>>();
-    for v in staged {
-        for h in values(&v["reference"], "heads")? {
-            check(
-                witnesses.iter().any(|w| {
-                    w["group_id"] == v["item"]["group_id"]
-                        && w["object_id"] == v["item"]["object_id"]
-                        && w["revision_id"] == h["revision_id"]
-                        && w["envelope_digest"] == h["envelope_digest"]
-                }),
-                "UNANCHORED_HISTORY",
-            )?;
-        }
-        refs.retain(|p| {
-            !(p["group_id"] == v["item"]["group_id"]
-                && p["reference"]["object_id"] == v["item"]["object_id"])
-        });
-        refs.push(json!({"group_id":v["item"]["group_id"],"reference":v["reference"]}));
-    }
-    refs.sort_by_key(|p| {
-        format!(
-            "{}/{}",
-            p["group_id"].as_str().unwrap(),
-            p["reference"]["object_id"].as_str().unwrap()
-        )
-    });
-    c["witnesses"] = json!(witnesses);
-    c["sync"]["projection"] = json!(refs);
-    Ok(())
-}
 impl Vault {
+    fn sync_publish(
+        &self,
+        i: &mut Inner,
+        state: &State,
+        c: &mut Value,
+        staged: &[Value],
+        snapshot: bool,
+    ) -> Result<()> {
+        let mut witnesses = values(c, "witnesses")?.clone();
+        for v in staged {
+            if let Some(w) = witnesses
+                .iter()
+                .find(|w| w["revision_id"] == v["witness"]["revision_id"])
+            {
+                check(*w == v["witness"], "ROLLBACK_QUARANTINE")?;
+            } else {
+                witnesses.push(v["witness"].clone());
+            }
+        }
+        for v in staged {
+            let data = self.note_read(i, state, c, text(&v["cache_id"])?, "cache")?;
+            let envelope = if data["purpose"] == "p11-header-evidence" {
+                data["envelope"].clone()
+            } else {
+                self.codec
+                    .decode("p02-v1", "bundle", &un64(text(&data["record_bytes"])?)?)?["envelope"]
+                    .clone()
+            };
+            check(
+                digest("p02-v1", "envelope", &envelope)? == v["item"]["envelope_digest"],
+                "INTEGRITY_FAILURE",
+            )?;
+            for p in values(&envelope["header"]["context"], "parents")? {
+                check(
+                    witnesses.iter().any(|w| {
+                        w["revision_id"] == p["revision_id"]
+                            && w["envelope_digest"] == p["envelope_digest"]
+                            && w["group_id"] == v["item"]["group_id"]
+                            && w["object_id"] == v["item"]["object_id"]
+                    }),
+                    "UNANCHORED_HISTORY",
+                )?;
+            }
+        }
+        let group = c["sync"]["scope"]["group_id"].clone();
+        let mut refs = values(&c["sync"], "projection")?
+            .iter()
+            .filter(|p| !snapshot || (!group.is_null() && p["group_id"] != group))
+            .cloned()
+            .collect::<Vec<_>>();
+        for v in staged {
+            for h in values(&v["reference"], "heads")? {
+                check(
+                    witnesses.iter().any(|w| {
+                        w["group_id"] == v["item"]["group_id"]
+                            && w["object_id"] == v["item"]["object_id"]
+                            && w["revision_id"] == h["revision_id"]
+                            && w["envelope_digest"] == h["envelope_digest"]
+                    }),
+                    "UNANCHORED_HISTORY",
+                )?;
+            }
+            refs.retain(|p| {
+                !(p["group_id"] == v["item"]["group_id"]
+                    && p["reference"]["object_id"] == v["item"]["object_id"])
+            });
+            refs.push(json!({"group_id":v["item"]["group_id"],"reference":v["reference"]}));
+        }
+        refs.sort_by_key(|p| {
+            format!(
+                "{}/{}",
+                p["group_id"].as_str().unwrap(),
+                p["reference"]["object_id"].as_str().unwrap()
+            )
+        });
+        c["witnesses"] = json!(witnesses);
+        c["sync"]["projection"] = json!(refs);
+        Ok(())
+    }
+
     #[allow(clippy::too_many_arguments)]
     pub(super) fn note_sync(
         &self,
@@ -441,7 +474,7 @@ impl Vault {
                             == t["result"]["descriptor"]["inventory_digest"],
                     "SYNC_GAP",
                 )?;
-                publish(c, values(&t, "items")?, true)?;
+                self.sync_publish(i, state, c, values(&t, "items")?, true)?;
                 c["sync"]["cursor"] = t["result"]["descriptor"]["watermark"].clone();
                 c["sync"]["watermark"] = c["sync"]["cursor"].clone();
                 c["sync"]["stage"] = Value::Null;
@@ -520,7 +553,7 @@ impl Vault {
                         }),
                     "SYNC_GAP",
                 )?;
-                publish(c, values(&p, "items")?, false)?;
+                self.sync_publish(i, state, c, values(&p, "items")?, false)?;
                 c["sync"]["cursor"] = p["page"]["next_cursor"].clone();
                 c["sync"]["watermark"] = p["page"]["watermark"].clone();
                 c["sync"]["pending"] = Value::Null;

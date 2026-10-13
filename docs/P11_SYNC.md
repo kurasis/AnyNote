@@ -48,7 +48,7 @@ after saving the dirty editor locally. Security hints request fresh signed autho
 and a consistent snapshot; they never authorize a local mutation by themselves.
 No continuous iOS background service is promised.
 
-Current local verification: seven maintained-crypto portable suites, seven actual
+Current local verification: ten maintained-crypto portable suites, seven actual
 native SQLite note suites including staged snapshot restart/rollback, unchanged five
 P10 portable suites, strict native Clippy and the strict-CSP static build passed.
 The small actual HTTPS/SQL staged snapshot smoke passed. The broader actual TLS/SQL suite passed 104 checks in development; all hosted
@@ -57,7 +57,6 @@ Cloud Chromium cannot start its required sandbox; hosted browser acceptance is
 mandatory and is not replaced by disabling it.
 
 Outstanding before full P11 acceptance: complete multi-device/three-role convergence
-and independent browser/fault evidence; complete migration/lease race evidence; full conflict/delete-edit/restore/rebase and owned-copy
-recovery coverage; lease/authorization/restore races; final exact-source Linux/MSVC
+and independent browser/fault evidence; complete migration/lease race evidence; final conflict/convergence and platform coverage; lease/authorization/restore races; final exact-source Linux/MSVC
 reports, all twenty CI jobs, tracking and P12 handoff. Physical G1 and qualified
 G2/G3 remain open/NOT_RUN. No production deployment or restore is authorized here.

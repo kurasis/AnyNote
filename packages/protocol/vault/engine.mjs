@@ -163,6 +163,7 @@ export class VaultEngine {
       }
       if(extra.addKeys)await this.#addGroupKeys(tx,s,extra.addKeys);
       for(const id of extra.retireDrafts??[]){ensure(oldIds.get(id)==='draft'&&!ids.has(id),'UNSYNCED_WORK_PROTECTED');const ref=before.drafts.find(d=>d.record_id===id),attempt=control.attempts.find(a=>a.draft_id===ref.draft_id&&a.state==='COMMITTED'&&a.source_digest===ref.saved_digest);ensure(attempt&&values.some(v=>v.kind==='outbox'&&v.data.attempt_id===attempt.attempt_id&&v.data.state==='COMMITTED'),'UNSYNCED_WORK_PROTECTED');const old=await tx.read(id);ensure(old,'RECORD_NOT_FOUND');decode('draft',bounded(this.#load(old.frame,this.#key).data));await tx.remove(id);}
+      for(const [id,kind]of oldIds)if(kind==='cache'&&!ids.has(id)){const row=await tx.read(id);ensure(row&&row.frame.context.record_kind==='cache','INTEGRITY_FAILURE');if(row.frame.contract==='p11-local-v1')for(const part of openManifest(row.frame,this.scope,s.pins,id,'cache',this.#key).parts)await tx.remove(part.record_id);await tx.remove(id);}
       const frame=await this.#storePaged(tx,s.pins,noteControlId(this.scope),'note-control',control,old?.frame);await tx.put({id:noteControlId(this.scope),frame});ensure(await tx.count()<=100000,'RESOURCE_LIMIT');this.#authorize(cap);this.#fence(s,this.#notesFence);s.revision++;await tx.set(s);return {revision:s.revision,hash:frameHash(frame)};
     });this.#revision=committed.revision;this.#notesHash=committed.hash;return {state:'local-saved'};
   }

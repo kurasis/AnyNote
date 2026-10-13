@@ -17,6 +17,12 @@ pub enum NotesRequest {
     UpgradePrivate {
         group_id: String,
     },
+    RecoverDraft {
+        draft_id: String,
+        destination_group: String,
+        destination_thread: String,
+        confirmed: bool,
+    },
     CopyPreview {
         source_group: String,
         destination_group: String,
@@ -698,6 +704,28 @@ impl Vault {
             frames.push((id, bytes));
         }
         frames.push((id, canonical(&ctl)?));
+        let mut retired_caches = Vec::new();
+        for (id, kind) in &old_ids {
+            if kind == "cache" && !ids.contains_key(id) {
+                let f = frame(&i.conn, id)?;
+                check(f["context"]["record_kind"] == "cache", "INTEGRITY_FAILURE")?;
+                if f["contract"] == "p11-local-v1" {
+                    let m = paged_local::manifest(
+                        &self.codec,
+                        &self.scope,
+                        &before.pins,
+                        id,
+                        "cache",
+                        &f,
+                        &key,
+                    )?;
+                    for p in m["parts"].as_array().ok_or(Error("INTEGRITY_FAILURE"))? {
+                        remove_parts.push(text(&p["record_id"])?.into());
+                    }
+                }
+                retired_caches.push(id.clone());
+            }
+        }
         let tx = db(i
             .conn
             .transaction_with_behavior(TransactionBehavior::Immediate))?;
@@ -718,6 +746,9 @@ impl Vault {
             )?;
         }
         for id in &remove_parts {
+            db(tx.execute("DELETE FROM records WHERE id=?1", [id]))?;
+        }
+        for id in retired_caches {
             db(tx.execute("DELETE FROM records WHERE id=?1", [id]))?;
         }
         for (id, bytes) in &frames {
@@ -889,6 +920,66 @@ impl Vault {
         Ok(std::mem::take(&mut outcome.result))
     }
     pub fn notes_command(&self, cap: &Capability, request: NotesRequest) -> Result<Value> {
+        if let NotesRequest::RecoverDraft {
+            draft_id,
+            destination_group,
+            destination_thread,
+            confirmed,
+        } = &request
+        {
+            check(
+                *confirmed
+                    && valid_id(draft_id)
+                    && valid_id(destination_group)
+                    && valid_id(destination_thread),
+                "CONFIRMATION_REQUIRED",
+            )?;
+            let mut draft = self.notes_command(
+                cap,
+                NotesRequest::Draft {
+                    draft_id: draft_id.clone(),
+                },
+            )?;
+            let result = (|| {
+                let p = &draft["payload"];
+                check(
+                    p["context"]["object_kind"] == "entry"
+                        && p["metadata_kind"] == "content"
+                        && p["context"]["attachments"]
+                            .as_array()
+                            .is_some_and(Vec::is_empty),
+                    "COPY_SCOPE_MISMATCH",
+                )?;
+                let summary = self.notes_command(cap, NotesRequest::Summary {})?;
+                let g = values(&summary, "groups")?
+                    .iter()
+                    .find(|g| g["group_id"] == *destination_group)
+                    .ok_or(Error("KEYS_PENDING"))?;
+                check(
+                    g["status"]["kind"] == "private"
+                        && g["status"]["settings"] == false
+                        && g["status"]["owner_account_id"] == self.scope.account_id,
+                    "PRIVATE_NAMESPACE_REQUIRED",
+                )?;
+                check(
+                    values(&summary, "witnesses")?.iter().any(|w| {
+                        w["group_id"] == *destination_group
+                            && w["object_id"] == *destination_thread
+                            && w["object_kind"] == "thread"
+                            && w["action"] != "soft-delete"
+                    }),
+                    "UNANCHORED_HISTORY",
+                )?;
+                let edit = json!({"draft_id":null,"group_id":destination_group,"object_id":null,"object_kind":"entry","thread_id":destination_thread,"action":"create","parents":[],"archived":false,"content":{"title":p["title"],"markdown":p["markdown"],"metadata_kind":"content","tags":p["tags"],"checklist":p["checklist"],"summary_entry_id":null,"preferences":[]}});
+                let mut saved = self.notes_command(cap, NotesRequest::Save { edit })?;
+                saved["source_draft_retained"] = json!(true);
+                saved["scope"] = json!("owned-private-local-copy");
+                Ok(saved)
+            })();
+            wipe_value(&mut draft);
+            return result;
+        }
+
         if let NotesRequest::CopyPreview {
             source_group,
             destination_group,
@@ -1050,9 +1141,9 @@ impl Vault {
                     json!({"groups":c["groups"],"drafts":drafts,"witnessed":values(&c,"witnesses")?.len(),"witnesses":c["witnesses"]}),
                 )
             }
-            NotesRequest::CopyPreview { .. } | NotesRequest::Copy { .. } => {
-                Err(Error("INVALID_REQUEST"))
-            }
+            NotesRequest::CopyPreview { .. }
+            | NotesRequest::Copy { .. }
+            | NotesRequest::RecoverDraft { .. } => Err(Error("INVALID_REQUEST")),
             NotesRequest::UpgradePrivate { group_id } => {
                 let (r, evidence, _) = self.note_info(&mut i, &s, &c, &snapshot, group_id)?;
                 let old =
