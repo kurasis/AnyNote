@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {fixture,phrase} from '../notes/test-fixture.mjs';
+import {fixture,phrase,pair,run} from '../notes/test-fixture.mjs';
 import {VaultEngine} from '../vault/engine.mjs';
 import {FileReader} from '../adapters/files.mjs';
 import {un64,hash} from '../adapters/primitives.mjs';
@@ -10,7 +10,7 @@ import {CHUNK} from './workflow.mjs';
 import {safeFilename} from './client.mjs';
 import {groupCodecForProfile} from '../adapters/codecs/group-codec.mjs';
 const gc=groupCodecForProfile('p02-group-c2');
-async function setup(){const f=await fixture(),v=f.old;const made=await v.engine.notes(v.cap,'prepareGroup'),p=made.request.commit.body,group={version:1,group_id:made.group_id,kind:'private',owner_account_id:f.pins.account_id,state:'active',settings:false,membership:{version:'0',digest:p.intent.body.membership.digest},key_epoch:'0',epoch_digest:gc.groupDigest('epoch-intent',wire(made.request.commit.body.intent)),history_checkpoint_digest:null,rekey_required:false,history_closure_required:false,restore_quarantined:false,genesis:{...made.request,group_id:made.group_id}};await v.engine.notes(v.cap,'group',[group]);return {f,v,group,call:(op,x={})=>v.engine.notes(v.cap,'files',[op,x])};}
+async function setup(enrolled=false){const f=await fixture();if(enrolled)await pair(f,'invite');const v=f.old;const made=await v.engine.notes(v.cap,'prepareGroup'),p=made.request.commit.body,group={version:1,group_id:made.group_id,kind:'private',owner_account_id:f.pins.account_id,state:'active',settings:false,membership:{version:'0',digest:p.intent.body.membership.digest},key_epoch:'0',epoch_digest:gc.groupDigest('epoch-intent',wire(made.request.commit.body.intent)),history_checkpoint_digest:null,rekey_required:false,history_closure_required:false,restore_quarantined:false,genesis:{...made.request,group_id:made.group_id}};await v.engine.notes(v.cap,'group',[group]);return {f,v,group,call:(op,x={})=>v.engine.notes(v.cap,'files',[op,x])};}
 test('immutable source commitments survive lock/reopen and reject changed bytes before nonce reuse',async()=>{
  const {v,group,call}=await setup(),bytes=new Uint8Array(CHUNK+1);crypto.getRandomValues(bytes.subarray(0,65536));const blob=new Blob([bytes]),made=await call('prepare',{group_id:group.group_id,source:blob,name:'SECRET-P12-NAME.txt'}),p=await call('part',{draft_id:made.draft_id,source:blob,index:0});assert.equal(p.ciphertext.length,CHUNK+16);
  const stored=JSON.stringify([...v.store.rows.values()]);assert(!stored.includes('SECRET-P12-NAME'));assert(!stored.includes('source_digest'));assert.equal(v.store.state.file_profile,'p12-files-v1');
@@ -47,4 +47,9 @@ test('an expired immutable attempt is burned before a fresh attempt reuses the s
  await assert.rejects(call('prepare',{group_id:group.group_id,source,previous_draft_id:first.draft_id}),/RECONCILIATION_REQUIRED/);
  await call('burn',{draft_id:first.draft_id,confirm:true,status:{upload_id:first.request.upload_id,state:'EXPIRED'}});await assert.rejects(call('request',{draft_id:first.draft_id}),/IMMUTABLE_ATTEMPT/);
  const next=await call('prepare',{group_id:group.group_id,source,previous_draft_id:first.draft_id}),fresh=await call('part',{draft_id:next.draft_id,source,index:0});assert.equal(next.local_draft_id,first.local_draft_id);assert.notEqual(next.draft_id,first.draft_id);assert.notEqual(next.request.upload_id,first.request.upload_id);assert.notEqual(hash(cipher.ciphertext),hash(fresh.ciphertext));
+});
+
+test('another enrolled installation attaches a verified file without the original upload journal',async()=>{
+ const {f,group,call}=await setup(true),source=new Blob(['cross-installation recovery']),made=await call('prepare',{group_id:group.group_id,source}),part=await call('part',{draft_id:made.draft_id,source,index:0});await call('ackPart',{draft_id:made.draft_id,part:{index:'0',ciphertext_bytes:String(part.ciphertext.length),ciphertext_digest:hash(part.ciphertext)}});const finished=await call('finish',{draft_id:made.draft_id}),record=finished.request.record;
+ const grant=await run(f.old,'distribute',[group.genesis,f.fresh.scope.device_id,null,true]);await run(f.fresh,'acceptKeys',[group.genesis,grant.request.records]);await f.fresh.engine.notes(f.fresh.cap,'group',[group]);const remote=(op,x)=>f.fresh.engine.notes(f.fresh.cap,'files',[op,x]);assert.equal((await remote('list',{})).length,0);const observed=await remote('observe',{group_id:group.group_id,file_version_id:made.request.context.file_version_id,record});const attachment={file_id:made.request.context.file_id,file_version_id:made.request.context.file_version_id,envelope_digest:observed.envelope_digest};const edit={draft_id:null,group_id:group.group_id,object_kind:'entry',object_id:null,thread_id:made.request.context.file_id,parents:[],action:'create',archived:false,content:{title:'public recovery',markdown:'',metadata_kind:'content',tags:[],checklist:[],summary_entry_id:null,preferences:[]},attachments:[attachment]};const draft=await f.fresh.engine.notes(f.fresh.cap,'save',[edit]);assert.deepEqual((await f.fresh.engine.notes(f.fresh.cap,'draft',[draft.draft_id])).payload.context.attachments,[attachment]);assert.equal((await remote('list',{})).length,0);
 });

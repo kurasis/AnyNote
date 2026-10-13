@@ -20,7 +20,7 @@ self.addEventListener('fetch',event=>{
   start(controller){
    ticket.port.onmessage=({data})=>{
     if(data?.cancel){controller.error(Error('EXPORT_INTERRUPTED'));finish();return;}
-    if(data?.end){if(bytes!==ticket.size||buffer){controller.error(Error('EXPORT_TRUNCATED'));finish();}else{controller.close();ended=true;resolve?.();clearTimeout(timer);ticket.port.close();done();}return;}
+    if(data?.end){if(bytes!==ticket.size||buffer){controller.error(Error('EXPORT_TRUNCATED'));finish();}else{controller.close();ended=true;resolve?.();clearTimeout(timer);ticket.port.postMessage({complete:true});ticket.port.close();done();}return;}
     if(!(data?.bytes instanceof Uint8Array)||data.bytes.length>8388608||buffer||bytes+data.bytes.length>ticket.size){controller.error(Error('EXPORT_INTEGRITY_FAILURE'));finish();return;}
     buffer=data.bytes;resolve?.();resolve=null;
    };timer=setTimeout(()=>{controller.error(Error('EXPORT_INTERRUPTED'));finish();},120000);
