@@ -57,7 +57,7 @@ export class NotesWorkflow {
  }
  #policy(info){if(info.policy)return structuredClone(info.policy);return {membership:info.membership,key_epoch:'0',epoch_digest:info.epoch_digest,history_checkpoint_digest:null};}
  #writable(group,info){
-  this.#own();if(info.policy){ensure(info.write_state==='WRITABLE',info.write_state);const member=info.members?.find(m=>m.account_id===this.scope.account_id);ensure(member&&member.role!=='reader','ROLE_FORBIDDEN');}
+  ensure(this.#state.sync?.state!=='RESTORE_QUARANTINE','RESTORE_QUARANTINE');this.#own();if(info.policy){ensure(info.write_state==='WRITABLE',info.write_state);const member=info.members?.find(m=>m.account_id===this.scope.account_id);ensure(member&&member.role!=='reader','ROLE_FORBIDDEN');}
   ensure(group.state==='COMMITTED'&&group.status,'GROUP_NOT_COMMITTED');const s=group.status;
   ensure(!info.rekey_required,'REKEY_REQUIRED');
   ensure(s.state==='active','ROLE_FORBIDDEN');ensure(!s.restore_quarantined,'RESTORE_QUARANTINE');ensure(!s.rekey_required,'REKEY_REQUIRED');ensure(!s.history_closure_required,'HISTORY_CLOSURE_REQUIRED');
@@ -74,7 +74,7 @@ export class NotesWorkflow {
   if(op==='sync')return this.#syncCommand(args);
   if(op==='summary')return {groups:this.#state.groups.map(g=>({group_id:g.group_id,state:g.state,status:g.status})),drafts:this.#state.drafts.map(d=>{const a=this.#state.attempts.findLast(a=>a.draft_id===d.draft_id);return {...d,attempt_id:a?.attempt_id??null,state:a?(a.state==='COMMITTED'&&a.source_digest!==d.saved_digest?'LOCAL_SAVED':a.state):'LOCAL_SAVED'};}),witnessed:this.#state.witnesses.length,witnesses:structuredClone(this.#state.witnesses)};
   if(op==='prepareShared'){
-   ensure(args.length===0&&this.#state.groups.length<100,'RESOURCE_LIMIT');this.#own();const made=privateGenesis(this.#proof.roster,this.#proof.identity,this.scope.device_id,this.#keys.signing.privateKey,'shared'),group=made.request.commit.body.group_id,record_id=random(),evidence={version:1,group_id:group,...made.request};
+   ensure(this.#state.sync?.state!=='RESTORE_QUARANTINE','RESTORE_QUARANTINE');ensure(args.length===0&&this.#state.groups.length<100,'RESOURCE_LIMIT');this.#own();const made=privateGenesis(this.#proof.roster,this.#proof.identity,this.scope.device_id,this.#keys.signing.privateKey,'shared'),group=made.request.commit.body.group_id,record_id=random(),evidence={version:1,group_id:group,...made.request};
    const proof={pin:genesisPin(evidence),journal:{version:1,group_id:group,genesis:evidence,events:[],pending:null},accounts:[{pins:this.pins,snapshot:this.#snapshot}]};replayGroup(proof,{ownPins:this.pins,localGenesis:true});this.#state.groups.push({group_id:group,record_id,state:'GENESIS_PENDING',status:null});try{await this.#commit({records:[{id:record_id,kind:'group-evidence',data:{purpose:'p10-group-proof',version:1,proof,attempt:null}}],addKeys:[made.secret]});return {group_id:group,request:made.request};}finally{wipe(made.secret);}
   }
   if(op==='copyPreview'||op==='copy'){
@@ -89,7 +89,7 @@ export class NotesWorkflow {
    const saved=await this.command('save',[{draft_id:null,group_id:x.destination_group,object_id:null,object_kind:'entry',thread_id:x.destination_thread,action:'create',parents:[],archived:false,content:{title:p.title,markdown:p.markdown,metadata_kind:'content',tags:p.tags,checklist:p.checklist,summary_entry_id:null,preferences:[]}}]);return {...saved,source_draft_retained:true,scope:'owned-private-local-copy'};
   }
   if(op==='prepareGroup'){
-   ensure(args.length===0&&this.#state.groups.length<100,'RESOURCE_LIMIT');this.#own();const made=privateGenesis(this.#proof.roster,this.#proof.identity,this.scope.device_id,this.#keys.signing.privateKey),group=made.request.commit.body.group_id,record_id=random();
+   ensure(this.#state.sync?.state!=='RESTORE_QUARANTINE','RESTORE_QUARANTINE');ensure(args.length===0&&this.#state.groups.length<100,'RESOURCE_LIMIT');this.#own();const made=privateGenesis(this.#proof.roster,this.#proof.identity,this.scope.device_id,this.#keys.signing.privateKey),group=made.request.commit.body.group_id,record_id=random();
    this.#state.groups.push({group_id:group,record_id,state:'GENESIS_PENDING',status:null});
    const evidence={version:1,group_id:group,...made.request};
    try{await this.#commit({records:[{id:record_id,kind:'group-evidence',data:{purpose:'p09-private-genesis',version:1,evidence}}],addKeys:[made.secret]});return {group_id:group,request:made.request};}finally{wipe(made.secret);}
@@ -182,8 +182,9 @@ export class NotesWorkflow {
   syncValue('sync-control',s);
   const output=()=>structuredClone({scope:s.scope,cursor:s.cursor,watermark:s.watermark,state:s.state,quarantine:s.quarantine,stage:s.stage?{result:s.stage.result,catalog_next:s.stage.catalog_next,pages:s.stage.pages.length,items:s.stage.items.length}:null,pending:s.pending?.page??null,projection:s.projection});
   if(op==='status')return output();
+  ensure(s.state!=='RESTORE_QUARANTINE'||['offline','quarantine','snapshotCancel','deltaCancel','snapshotStart'].includes(op),'RESTORE_QUARANTINE');
   if(op==='offline'){ensure(Object.keys(x).length===0,'INVALID_REQUEST');if(!['QUARANTINED','RESTORE_QUARANTINE'].includes(s.state))s.state='OFFLINE';await this.#commit();return output();}
-  if(op==='quarantine'){ensure(typeof x.digest==='string'&&['QUARANTINED','RESTORE_QUARANTINE'].includes(x.state),'INVALID_REQUEST');s.state=x.state;s.quarantine=x.digest;await this.#commit();return output();}
+  if(op==='quarantine'){ensure(typeof x.digest==='string'&&['QUARANTINED','RESTORE_QUARANTINE'].includes(x.state),'INVALID_REQUEST');ensure(s.state!=='RESTORE_QUARANTINE'||x.state==='RESTORE_QUARANTINE','RESTORE_QUARANTINE');s.state=x.state;s.quarantine=x.digest;await this.#commit();return output();}
   if(op==='compact'){
    ensure(Object.keys(x).length===1&&Number.isSafeInteger(x.limit)&&x.limit>=1&&x.limit<=16,'INVALID_REQUEST');ensure(s.cursor&&!s.stage&&!s.pending,'SYNC_GAP');
    const keep=new Set(s.projection.flatMap(p=>p.reference.heads.map(h=>h.revision_id)));
@@ -220,7 +221,7 @@ export class NotesWorkflow {
    ensure(Object.keys(x).length===0,'INVALID_REQUEST');const t=s.stage;ensure(t&&t.catalog_next===t.result.catalog_count&&t.pages.length===Number(t.result.descriptor.page_count)&&t.all_items===t.result.descriptor.item_count&&t.items.length===t.inventory.length&&snapshotCommitment(t.pages)===t.result.descriptor.inventory_digest,'SYNC_GAP');
    await this.#syncPublish(t.items,true);s.cursor=structuredClone(t.result.descriptor.watermark);s.watermark=structuredClone(s.cursor);s.stage=null;s.state='SYNCED';s.quarantine=null;await this.#commit();return output();
   }
-  if(op==='deltaCancel'){ensure(Object.keys(x).length===0,'INVALID_REQUEST');s.pending=null;s.state=s.cursor?'SYNCED':'NEW';await this.#commit();return output();}
+  if(op==='deltaCancel'){ensure(Object.keys(x).length===0,'INVALID_REQUEST');s.pending=null;if(s.state!=='RESTORE_QUARANTINE')s.state=s.cursor?'SYNCED':'NEW';await this.#commit();return output();}
   if(op==='deltaStart'){
    ensure(s.cursor&&!s.stage,'SYNC_CURSOR_EXPIRED');ensure(!s.pending||same(s.pending.page,x),'PUBLICATION_PENDING');checkedDelta(x,s.cursor,this.pins,s.scope.group_id);
    if(!s.pending)s.pending={page:structuredClone(x),items:[]};s.state='STAGING';await this.#commit();return output();
@@ -246,7 +247,7 @@ export class NotesWorkflow {
  }
  async #sharedCommand(args){
   ensure(args.length===2&&typeof args[0]==='string'&&args[1]&&typeof args[1]==='object','INVALID_REQUEST');const [op,x]=args;
-  this.#own();
+  this.#own();ensure(this.#state.sync?.state!=='RESTORE_QUARANTINE'||['proof','details','card','adopt','keys','ownKeys','finishCancel','complete'].includes(op),'RESTORE_QUARANTINE');
   if(op==='upgradePrivate'){ensure(args.length===2&&id(x.group_id),'INVALID_REQUEST');const old=await this.#info(x.group_id);ensure(!old.data,'GROUP_PROOF_REQUIRED');const proof={pin:genesisPin(old.evidence),journal:{version:1,group_id:x.group_id,genesis:old.evidence,events:[],pending:null},accounts:[{pins:this.pins,snapshot:this.#snapshot}]};replayGroup(proof,{ownPins:this.pins,localGenesis:true,witnesses:await this.#historyRecords(x.group_id)});await this.#commit({records:[{id:old.ref.record_id,kind:'group-evidence',data:{purpose:'p10-group-proof',version:1,proof,attempt:null}}]});return proof;}
   if(op==='adopt'){
    sharedValue('adopt-request',x);ensure(x.pin.service_id===this.scope.service_id,'CONTEXT_MISMATCH');const group=x.pin.group_id;let ref=this.#state.groups.find(g=>g.group_id===group),old=ref?await this.read(ref.record_id,'group-evidence'):null;

@@ -172,6 +172,19 @@ impl Vault {
         }
         self.codec
             .validate("p11-sync", "sync-control", &c["sync"])?;
+        check(
+            c["sync"]["state"] != "RESTORE_QUARANTINE"
+                || matches!(
+                    request,
+                    Request::Status {}
+                        | Request::Offline {}
+                        | Request::Quarantine { .. }
+                        | Request::SnapshotCancel {}
+                        | Request::DeltaCancel {}
+                        | Request::SnapshotStart { .. }
+                ),
+            "RESTORE_QUARANTINE",
+        )?;
         let mut writes = Vec::new();
         match request {
             Request::Status {} => return Ok(c["sync"].clone()),
@@ -241,6 +254,10 @@ impl Vault {
                     ["QUARANTINED", "RESTORE_QUARANTINE"].contains(&state.as_str())
                         && un64(digest).is_ok_and(|b| b.len() == 32),
                     "INVALID_SYNC_DTO",
+                )?;
+                check(
+                    c["sync"]["state"] != "RESTORE_QUARANTINE" || state == "RESTORE_QUARANTINE",
+                    "RESTORE_QUARANTINE",
                 )?;
                 c["sync"]["state"] = json!(state);
                 c["sync"]["quarantine"] = json!(digest);
@@ -533,11 +550,13 @@ impl Vault {
             }
             Request::DeltaCancel {} => {
                 c["sync"]["pending"] = Value::Null;
-                c["sync"]["state"] = json!(if c["sync"]["cursor"].is_null() {
-                    "NEW"
-                } else {
-                    "SYNCED"
-                });
+                if c["sync"]["state"] != "RESTORE_QUARANTINE" {
+                    c["sync"]["state"] = json!(if c["sync"]["cursor"].is_null() {
+                        "NEW"
+                    } else {
+                        "SYNCED"
+                    });
+                }
             }
             Request::DeltaFinish {} => {
                 let p = c["sync"]["pending"].clone();

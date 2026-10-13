@@ -1159,6 +1159,10 @@ impl Vault {
                 Ok(proof)
             }
             NotesRequest::PrepareShared {} => {
+                check(
+                    c["sync"]["state"] != "RESTORE_QUARANTINE",
+                    "RESTORE_QUARANTINE",
+                )?;
                 own(&roster, &self.scope, &i.secrets.as_ref().unwrap().signing)?;
                 check(values(&c, "groups")?.len() < 1000, "RESOURCE_LIMIT")?;
                 let (request, mut key) = crate::device_groups::create_genesis_kind(
@@ -1196,9 +1200,27 @@ impl Vault {
                 Ok(json!({"group_id":group,"request":request}))
             }
             NotesRequest::Shared { request } => {
+                check(
+                    c["sync"]["state"] != "RESTORE_QUARANTINE"
+                        || matches!(
+                            request,
+                            crate::shared::Request::Adopt { .. }
+                                | crate::shared::Request::Details { .. }
+                                | crate::shared::Request::Card { .. }
+                                | crate::shared::Request::Keys { .. }
+                                | crate::shared::Request::OwnKeys { .. }
+                                | crate::shared::Request::FinishCancel { .. }
+                                | crate::shared::Request::Complete { .. }
+                        ),
+                    "RESTORE_QUARANTINE",
+                )?;
                 self.note_shared_command(&mut i, cap, &s, fence, &mut c, &snapshot, request)
             }
             NotesRequest::PrepareGroup {} => {
+                check(
+                    c["sync"]["state"] != "RESTORE_QUARANTINE",
+                    "RESTORE_QUARANTINE",
+                )?;
                 own(&roster, &self.scope, &i.secrets.as_ref().unwrap().signing)?;
                 check(values(&c, "groups")?.len() < 1000, "RESOURCE_LIMIT")?;
                 let (request, mut key) = create_private_genesis(
@@ -1461,6 +1483,10 @@ impl Vault {
                 Ok(result)
             }
             NotesRequest::Queue { draft_id } => {
+                check(
+                    c["sync"]["state"] != "RESTORE_QUARANTINE",
+                    "RESTORE_QUARANTINE",
+                )?;
                 check(valid_id(draft_id), "INVALID_REQUEST")?;
                 let (mut d, mut data) = self.note_draft(&mut i, &s, &c, draft_id)?;
                 let (g, _, info) =
@@ -1539,6 +1565,10 @@ impl Vault {
                 Ok(result)
             }
             NotesRequest::Send { attempt_id } => {
+                check(
+                    c["sync"]["state"] != "RESTORE_QUARANTINE",
+                    "RESTORE_QUARANTINE",
+                )?;
                 check(valid_id(attempt_id), "INVALID_REQUEST")?;
                 let (r, mut data) = self.note_attempt(&mut i, &s, &c, attempt_id)?;
                 check(

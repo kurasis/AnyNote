@@ -1587,3 +1587,9 @@ passed the unchanged P03 generation hashes and all original specification checks
 Raw platform bytes remain recorded in source receipts. This fixes checkout drift
 without relaxing lock/artifact/source assertions. Foreground UI work can yield a
 background sync at the next protected command; interrupted stages remain durable.
+
+P11 software restore fence: cancellation, later staged finish and quarantine
+reclassification cannot clear RESTORE_QUARANTINE. Content/group/security publication
+is blocked while local draft work and exact receipt reconciliation remain available.
+The portable regression test exercises the closed-command downgrade attempts.
+Operational restore attestation and production generation fencing remain P16.

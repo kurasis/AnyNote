@@ -51,7 +51,7 @@ No continuous iOS background service is promised.
 Current local verification: ten maintained-crypto portable suites, seven actual
 native SQLite note suites including staged snapshot restart/rollback, unchanged five
 P10 portable suites, strict native Clippy and the strict-CSP static build passed.
-The small actual HTTPS/SQL staged snapshot smoke passed. The broader actual TLS/SQL suite passed 104 checks in development; all hosted
+The small actual HTTPS/SQL staged snapshot smoke passed. The broader actual TLS/SQL suite passed 112 checks in development; all hosted
 gates still require completed execution at the final exact source.
 Cloud Chromium cannot start its required sandbox; hosted browser acceptance is
 mandatory and is not replaced by disabling it.
