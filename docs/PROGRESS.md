@@ -17,7 +17,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P08 | VERIFIED | Seven Node workflow suites, 16 dense QR round trips, 153 actual HTTPS/SQL checks, 33 sandboxed UI checks and nine native device tests per Linux/Windows; all fourteen hosted gates PASS |
 | P09 | VERIFIED | Eight workflow/transport suites, 131 actual HTTPS/SQL checks, 49 sandboxed two-PWA UI checks, six native note tests/platform and 16 native/PWA interop checks/platform; all sixteen hosted gates PASS |
 | P10 | VERIFIED | Five protected workflow/transport suites, 407 actual HTTPS/SQL checks, 40 sandboxed three-account PWA checks, three native shared tests and 89 native/portable interop checks/platform; all eighteen hosted gates PASS |
-| P11 | IN PROGRESS | Initial code acceptance passed all twenty jobs at fae5e30; final P11 browser exposed VAULT_LOCKED. Protected Worker lock notification/masking and content-free diagnostics are under mandatory follow-up validation |
+| P11 | VERIFIED | Ten portable suites, 112 actual sync HTTP/SQL checks, 418 membership/lease checks, 45 sandboxed PWA checks, seven native notes and nine new interop checks/platform; all twenty final code jobs PASS; Worker masking and background idle guards verified |
 | P12 | NOT STARTED | P04/P05/P10/P11 |
 | P13 | NOT STARTED | P11/P12 |
 | P14 | NOT STARTED | P07–P13 and actual Windows evidence |
@@ -638,7 +638,7 @@ journals and retained signed evidence; deployed schema rollback requires its own
 data-preservation plan. Final tracking needs fresh eighteen-job CI before merge.
 Next full batch: P11 incremental sync, conflicts and convergence.
 
-## Completed P11 synchronization, offline durability and convergence
+## Initial P11 synchronization code acceptance
 
 Scoped commit-ordered sparse feeds, immutable leased snapshots/pins, verified staged
 portable/native application, atomic durable cursors, signed ancestry preservation,
@@ -652,8 +652,8 @@ RESTORE_QUARANTINE remains persistent across cancellation,
 retry and attempted downgrade; publication is blocked while own drafts and exact
 receipt reconciliation survive. Operational restore remains P16.
 
-All twenty mandatory jobs PASS at `fae5e306181c05a9542449e8219706859f4b87a2`, tree `630436bcfdfb2e7c3dbc4a52f80aba7f6b6a805a`. Public reports,
-GitHub ZIP digests and raw source hashes are in evidence/p11 and TEST_EVIDENCE.
+All twenty mandatory jobs PASS at `fae5e306181c05a9542449e8219706859f4b87a2`, tree `630436bcfdfb2e7c3dbc4a52f80aba7f6b6a805a`. Public initial reports,
+GitHub ZIP digests and raw hashes are in evidence/p11/initial and TEST_EVIDENCE.
 The complete installer passed with 800 tracked source files and marked
 snapshot/pin state preserved. Full owned startup/readiness passed. Published P10
 restoration was observed; saving P11 configuration, Publish and independently
@@ -667,3 +667,22 @@ immutable attempts, signed evidence and parts. A migrated active vault cannot be
 opened by a frozen older reader; preserve it for a compatible reader rather than
 resetting or silently downgrading data. Deployed schema rollback needs a separate
 data-preservation plan.
+
+## Completed P11 follow-up and final code acceptance
+
+All twenty mandatory jobs PASS at `08ca97c7f9b1caff1ffc55b284a2afa7a8f0bb65`, clean tree `e4c7e51a27d386314b792310d115fe3e3c7f62c9`. Latest exact-source
+reports are in evidence/p11; original fae5e30 receipts remain in evidence/p11/initial.
+The final browser retains every original denial/DOM/draft assertion and records only
+closed error/operation/lock-reason/visibility metadata. Worker custody closure now
+immediately masks and terminates host access. Existing typed errors, five-minute
+expiry, backwards-clock checks and encrypted local state remain preserved.
+Background sync cannot extend the host idle deadline; trusted visible user input
+and foreground work can. Ten P11 and five P07 suites cover these guards, including
+actual encrypted state preservation across idle and clock-regression closure.
+
+The earlier isolated 5116fad VAULT_LOCKED reason was unavailable before diagnostic
+instrumentation and is not retrospectively invented. A separate 5563bc0 diagnostic
+run passed all twenty. Latest follow-up acceptance passed all twenty with the
+additional lifecycle coverage; operational/physical/review limitations remain.
+Final tracking requires fresh twenty-job CI and ordinary SHA-guard merge. Full P12
+handoff is NEXT_TASK. Draft save, Publish and independent fresh restore are separate.

@@ -1597,7 +1597,7 @@ Operational restore attestation and production generation fencing remain P16.
 ## P11 complete synchronization slice — software VERIFIED
 
 All twenty mandatory jobs PASS at `fae5e306181c05a9542449e8219706859f4b87a2`, clean tree `630436bcfdfb2e7c3dbc4a52f80aba7f6b6a805a`.
-[Acceptance](evidence/p11/acceptance.json) retains exact head/check/run/job references,
+[Acceptance](evidence/p11/initial/acceptance.json) retains exact head/check/run/job references,
 GitHub ZIP digests and raw public report hashes. Final documentation/evidence needs
 fresh twenty-job success before ordinary automatic SHA-guard merge.
 
@@ -1612,13 +1612,13 @@ fresh twenty-job success before ordinary automatic SHA-guard merge.
 | Raw source and artifact verification | 494 Linux and 494 Windows input hashes match exact Git blobs byte-for-byte (zero checkout transformations needed); raw receipts preserved; GitHub ZIP digests match actual downloaded bytes |
 | Complete install/start | PASS; 800 tracked files and marked snapshot/pin state preserved, real owned TLS/API/SQL services ready; generators compare source read-only |
 
-Public reports: [sync HTTP](evidence/p11/http-report.json),
-[membership/leases](evidence/p11/membership-report.json),
-[browser](evidence/p11/browser-report.json),
-[Linux source](evidence/p11/linux-source-report.json),
-[Windows source](evidence/p11/windows-source-report.json),
-[Linux interop](evidence/p11/linux-native-interop-report.json),
-[Windows interop](evidence/p11/windows-native-interop-report.json).
+Public reports: [sync HTTP](evidence/p11/initial/http-report.json),
+[membership/leases](evidence/p11/initial/membership-report.json),
+[browser](evidence/p11/initial/browser-report.json),
+[Linux source](evidence/p11/initial/linux-source-report.json),
+[Windows source](evidence/p11/initial/windows-source-report.json),
+[Linux interop](evidence/p11/initial/linux-native-interop-report.json),
+[Windows interop](evidence/p11/initial/windows-native-interop-report.json).
 Source receipts verify clean head/tree/raw inputs before and after native execution.
 Diagnostic failures are corrected rather than archived as acceptance. Browser removal
 checks accept the two real poll/foreground timings while retaining mask/DOM/draft
@@ -1651,3 +1651,33 @@ idle callback masking. The original ten P11 and five P07 crypto suites, read-onl
 contracts, strict-CSP build and owned service readiness passed locally. Native and
 hosted final acceptance remains pending; this does not explain the older singleton
 VAULT_LOCKED result, whose original reason was not recorded.
+
+## P11 lifecycle follow-up — exact-source code acceptance PASS
+
+All twenty jobs passed at `08ca97c7f9b1caff1ffc55b284a2afa7a8f0bb65`, tree `e4c7e51a27d386314b792310d115fe3e3c7f62c9`. [Latest acceptance](evidence/p11/acceptance.json)
+retains exact check/run/job/ZIP references and raw report digests. Original fae5e30
+reports remain [separately archived](evidence/p11/initial/acceptance.json), with their
+raw bytes unchanged. The later 5563bc0 diagnostic run passed all twenty; no failing
+job was bypassed. The original 5116fad isolated lock cause was not recorded and is
+not fabricated after the fact.
+
+Latest execution: ten portable suites, 112 actual sync HTTPS/SQL checks, 418 actual
+membership/lease checks, 45 genuine sandboxed shipped-PWA checks, seven native
+SQLite note suites/platform, nine new native/portable interop checks/platform and
+all inherited jobs PASS. 494 raw input hashes/platform matched exact Git blobs.
+The hosted browser includes only closed error/operation/reason/visibility diagnostics;
+no private RPC values are observed. Five local P07 maintained-crypto suites also
+passed. Worker closure immediately masks the host; explicit tests preserve ciphertext
+and typed error codes across five-minute expiry and backwards-clock closure, and
+verify that background RPCs leave the idle timer unchanged while trusted activity
+renews it. Full physical G1 and qualified G2/G3 remain open/NOT_RUN.
+
+Latest [browser](evidence/p11/browser-report.json), [HTTP](evidence/p11/http-report.json),
+[leases](evidence/p11/membership-report.json), [Linux source](evidence/p11/linux-source-report.json)
+and [Windows source](evidence/p11/windows-source-report.json) are public metadata only.
+Final documentation/source-byte revalidation, ordinary guarded merge and complete
+configuration persistence still require their actual recorded outcomes.
+
+Complete latest installation passed at `08ca97c7f9b1caff1ffc55b284a2afa7a8f0bb65` with all
+810 then-visible tracked files and marked private/shared quota/counter
+and snapshot/pin state unchanged. Full startup/static/API readiness passed again.

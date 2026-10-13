@@ -2,10 +2,10 @@
   "purpose": "P11 staged synchronization software source receipt",
   "status": "PASS",
   "role": "linux",
-  "source_commit": "fae5e306181c05a9542449e8219706859f4b87a2",
-  "source_tree": "630436bcfdfb2e7c3dbc4a52f80aba7f6b6a805a",
+  "source_commit": "08ca97c7f9b1caff1ffc55b284a2afa7a8f0bb65",
+  "source_tree": "e4c7e51a27d386314b792310d115fe3e3c7f62c9",
   "source_tree_dirty": false,
-  "timestamp": "2026-10-13T18:27:23.400173+00:00",
+  "timestamp": "2026-10-13T19:46:06.972905+00:00",
   "physical_acceptance": false,
   "independent_review": "NOT_RUN",
   "inputs": [
@@ -491,7 +491,7 @@
     },
     {
       "path": "apps/notes-web/app.mjs",
-      "sha256": "a1edce55d179337dd4d4b141ebb8382339bed47f8f705a095904328ec3b62f70"
+      "sha256": "3aaa65ecc72daf42d22e05ce687d8f2f891cfa49db8e25201b7149aacbdb486f"
     },
     {
       "path": "apps/notes-web/dependency-inventory.json",
@@ -667,7 +667,7 @@
     },
     {
       "path": "experiments/p01/p10-browser.mjs",
-      "sha256": "5bc77ae264db2b1ff9ab7095e7d973eabccfb68957eab815375677955fcd557f"
+      "sha256": "33ff400d5d96f5478edf75deccc2a04bbf043d87a31056ff4215e3e23047fe84"
     },
     {
       "path": "experiments/p01/p10-native-interop.mjs",
@@ -1571,7 +1571,7 @@
     },
     {
       "path": "packages/protocol/sync/test-sync.mjs",
-      "sha256": "c5e99c2bec152c430a44b6c4f53dbef664f08eacdd67f1e169ab8304567d6755"
+      "sha256": "98b1ba18ab079f5b594f63e954f8ec242a10484dc1f0632632857e31e7064989"
     },
     {
       "path": "packages/protocol/test/complete.test.mjs",
@@ -1595,11 +1595,11 @@
     },
     {
       "path": "packages/protocol/vault/client.mjs",
-      "sha256": "adfe45836052e248107ca30e9075eb3633b4e24154d680515005d146a2663e7d"
+      "sha256": "4730a538bd4c1d987e58ca11ad8266349f760bd0ca0d0a26b60e285f70e3cffb"
     },
     {
       "path": "packages/protocol/vault/engine.mjs",
-      "sha256": "c71b525d89db0612d664780365cfcd581977897d2173bd2ecd27a8d79aac3755"
+      "sha256": "ec06daf2ef5869d63685bb089fc5e553c403f86394380e86457af3e1e6019c2c"
     },
     {
       "path": "packages/protocol/vault/kdf.mjs",
@@ -1623,7 +1623,7 @@
     },
     {
       "path": "packages/protocol/vault/worker.mjs",
-      "sha256": "281736ea4d3c8d824e9d2713c20b30d118db9ab54e82b975df87161a6e7ba04f"
+      "sha256": "3dd4281a53fa96e2ed0a57168c7f9d32774a3d7046e4444cb370c0cc2bbe98e4"
     },
     {
       "path": "packages/vault-native/Cargo.lock",

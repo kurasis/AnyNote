@@ -1,7 +1,7 @@
 # P11 synchronization, offline durability and verification
 
-P11 is **IN PROGRESS** pending a final browser regression investigation.
-Initial code acceptance passed all twenty jobs at fae5e30. Public exact-source execution receipts are retained
+P11 is **software VERIFIED** at the latest exact-source acceptance below.
+Initial fae5e30 receipts are retained separately. Public exact-source execution receipts are retained
 in TEST_EVIDENCE and evidence/p11; physical and qualified review gates stay open.
 Frozen P02 records, signatures, independent pins, provider eligibility,
 TLS and CSP remain authoritative. See ADR-021.
@@ -132,3 +132,15 @@ masks the host, terminates access and preserves encrypted state. Idle expiry and
 clock regression retain the original five-minute/fail-closed guards and typed error
 code. Background polling does not renew the host idle timer; only foreground work
 or trusted visible input does. Final platform validation remains pending.
+
+## Final lifecycle follow-up acceptance
+
+All twenty code jobs PASS at `08ca97c7f9b1caff1ffc55b284a2afa7a8f0bb65`, full tree `e4c7e51a27d386314b792310d115fe3e3c7f62c9`. Latest reports are in
+TEST_EVIDENCE and evidence/p11. 45 sandboxed PWA checks, ten portable suites,
+112 actual sync HTTP/SQL checks, 418 lease/membership checks and both native platform
+receipts passed. Closed lock reasons provide content-free diagnostics, immediate
+host masking and preserved encrypted work. Background RPCs do not renew idle; real
+user activity does. Native/Worker security, TLS/CSP/sandbox and original assertions
+remain enabled. The prior isolated lock origin is unclassified rather than invented;
+it did not recur in the separate full diagnostic run or this accepted follow-up.
+Final tracking/merge requires the complete current-head CI, independently observed.

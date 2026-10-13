@@ -445,8 +445,9 @@ release, new hardware trial, qualified review or outreach is implied by software
 Published P10 restoration was observed; P11 draft save, Publish and independently
 observed fresh restoration are separate facts.
 
-P11 final regression gate: first fae5e30 acceptance passed, but a later exact-head
-P11 browser run exposed VAULT_LOCKED during reader draft save. Original lock-cause
-investigation and final validation remain open; current follow-up restores immediate
-client masking when the Worker closes custody. Historical code acceptance is not
-proof that this later regression gate has been closed.
+P11 lifecycle follow-up: the original isolated 5116fad VAULT_LOCKED cause was not
+recorded and is not retrospectively claimed. The separate 5563bc0 diagnostic run
+and latest lifecycle follow-up each passed all twenty mandatory jobs. New closed
+reason diagnostics and immediate host masking make a later protective closure
+observable; background polling preserves the five-minute idle deadline. These
+software results do not establish physical/G2/G3 or universal freshness guarantees.
