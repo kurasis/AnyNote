@@ -5,4 +5,4 @@ from pathlib import Path
 root=Path(__file__).resolve().parents[1]
 for command in [['python3','scripts/p03-contracts.py'],['python3','scripts/p10-port-group.py'],['node','--test','--test-concurrency=1','packages/protocol/shared/test-shared.mjs']]:
  subprocess.run(command,cwd=root,check=True)
-print('PASS: P10 read-only contracts, frozen predicates and four maintained-crypto protected suites')
+print('PASS: P10 read-only contracts, frozen predicates and five maintained-crypto protected suites')
