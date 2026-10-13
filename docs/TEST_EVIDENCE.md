@@ -1593,3 +1593,41 @@ reclassification cannot clear RESTORE_QUARANTINE. Content/group/security publica
 is blocked while local draft work and exact receipt reconciliation remain available.
 The portable regression test exercises the closed-command downgrade attempts.
 Operational restore attestation and production generation fencing remain P16.
+
+## P11 complete synchronization slice — software VERIFIED
+
+All twenty mandatory jobs PASS at `fae5e306181c05a9542449e8219706859f4b87a2`, clean tree `630436bcfdfb2e7c3dbc4a52f80aba7f6b6a805a`.
+[Acceptance](evidence/p11/acceptance.json) retains exact head/check/run/job references,
+GitHub ZIP digests and raw public report hashes. Final documentation/evidence needs
+fresh twenty-job success before ordinary automatic SHA-guard merge.
+
+| Execution | Actual result |
+| --- | --- |
+| Maintained-crypto portable workflow | Ten suites PASS: partial encrypted stage/restart, atomic cursor/abort, hidden scanned ranges, malformed scope/body/root, signed ancestry omission, compaction and exact historical payload recovery, part integrity/L rotation/private G, visible polling/backoff and bounded 101-page catch-up, 661-key migration/older reader denial, source-preserving owned recovery and lease-before-local cancellation |
+| Verified HTTPS/Nginx/Laravel/MariaDB sync | 112 checks PASS: three authenticated accounts, immutable snapshot/write overlap, 2,001 real hidden namespace hints/two bounded scanned ranges, closed raw duplicate query handling, expiry/cancel, exact retry, acknowledgement and SQL rollback |
+| Membership plus leased transport | 418 checks PASS, inherited three-role workflow and independently enrolled native peer; existing lease page authorization across downgrade/removal/device revoke |
+| Actual shipped PWA | 45 checks PASS, three independent persistent accounts, genuine WebAuthn, sandboxed Chromium, trusted CA/hostname TLS, strict CSP, encrypted draft preservation after removal/local reopening, EN/RU sync and reload; actual SQL/IndexedDB/log/ordinary-storage inspection |
+| Actual native Linux and Windows/MSVC | 106 actual all-feature Linux tests; seven SQLite notes suites/platform, 661-key inventory restart, staged cursor/rollback/compaction/recovery and inherited 9 device/3 shared/15 custody suites; OS/ABI gates retained |
+| New native/portable interoperability | Nine checks/platform PASS over actual protected native storage, 1,001 signed roster events, missing/corrupt event/known rollback rejection |
+| Raw source and artifact verification | 494 Linux and 494 Windows input hashes match exact Git blobs byte-for-byte (zero checkout transformations needed); raw receipts preserved; GitHub ZIP digests match actual downloaded bytes |
+| Complete install/start | PASS; 800 tracked files and marked snapshot/pin state preserved, real owned TLS/API/SQL services ready; generators compare source read-only |
+
+Public reports: [sync HTTP](evidence/p11/http-report.json),
+[membership/leases](evidence/p11/membership-report.json),
+[browser](evidence/p11/browser-report.json),
+[Linux source](evidence/p11/linux-source-report.json),
+[Windows source](evidence/p11/windows-source-report.json),
+[Linux interop](evidence/p11/linux-native-interop-report.json),
+[Windows interop](evidence/p11/windows-native-interop-report.json).
+Source receipts verify clean head/tree/raw inputs before and after native execution.
+Diagnostic failures are corrected rather than archived as acceptance. Browser removal
+checks accept the two real poll/foreground timings while retaining mask/DOM/draft
+assertions. Frozen P02 frames, original spec bytes and prior dependency locks remain
+unchanged; no auth issuer/verifier/crypto/TLS/CSP/sandbox/eligibility bypass occurred.
+No credentials/authenticated diagnostic logs or private candidate keys are archived.
+
+Published P10 restoration was independently observed. Saving P11 configuration,
+Publish and independently observed fresh P11 restoration are distinct. Full physical
+G1/Hello/iPhone/memory/network and qualified G2/G3 remain open/unbooked/NOT_RUN.
+No production migration/deployment/release, new owner trial or reviewer outreach.
+Continue the full P12 handoff in NEXT_TASK.

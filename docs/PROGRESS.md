@@ -17,7 +17,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P08 | VERIFIED | Seven Node workflow suites, 16 dense QR round trips, 153 actual HTTPS/SQL checks, 33 sandboxed UI checks and nine native device tests per Linux/Windows; all fourteen hosted gates PASS |
 | P09 | VERIFIED | Eight workflow/transport suites, 131 actual HTTPS/SQL checks, 49 sandboxed two-PWA UI checks, six native note tests/platform and 16 native/PWA interop checks/platform; all sixteen hosted gates PASS |
 | P10 | VERIFIED | Five protected workflow/transport suites, 407 actual HTTPS/SQL checks, 40 sandboxed three-account PWA checks, three native shared tests and 89 native/portable interop checks/platform; all eighteen hosted gates PASS |
-| P11 | IN PROGRESS | Commit-ordered scoped feeds, consistent pinned snapshots, protected staged application, conflict/offline UX and mandatory software acceptance in development |
+| P11 | VERIFIED | Ten protected portable suites, 112 actual sync HTTPS/SQL checks, 418 membership/lease checks, 45 sandboxed three-account PWA checks, seven native note tests and nine new native/portable interop checks/platform; all twenty hosted gates PASS |
 | P12 | NOT STARTED | P04/P05/P10/P11 |
 | P13 | NOT STARTED | P11/P12 |
 | P14 | NOT STARTED | P07–P13 and actual Windows evidence |
@@ -637,3 +637,33 @@ Rollback uses an ordinary source revert while preserving encrypted drafts, secur
 journals and retained signed evidence; deployed schema rollback requires its own
 data-preservation plan. Final tracking needs fresh eighteen-job CI before merge.
 Next full batch: P11 incremental sync, conflicts and convergence.
+
+## Completed P11 synchronization, offline durability and convergence
+
+Scoped commit-ordered sparse feeds, immutable leased snapshots/pins, verified staged
+portable/native application, atomic durable cursors, signed ancestry preservation,
+explicit conflict/retry/recovery and foreground-aware EN/RU polling are implemented.
+Cache compaction preserves signed headers, current heads and pending work. The
+additive encrypted-part profile reads prior local control and scales protected key
+and complete signed-roster inventory to 10,000 / 32 MiB. Older clients must refuse
+the migrated profile. Bounded catch-up keeps a pending status until its captured
+watermark is reached, and key discovery follows the 10,000-record logical bound.
+RESTORE_QUARANTINE remains persistent across cancellation,
+retry and attempted downgrade; publication is blocked while own drafts and exact
+receipt reconciliation survive. Operational restore remains P16.
+
+All twenty mandatory jobs PASS at `fae5e306181c05a9542449e8219706859f4b87a2`, tree `630436bcfdfb2e7c3dbc4a52f80aba7f6b6a805a`. Public reports,
+GitHub ZIP digests and raw source hashes are in evidence/p11 and TEST_EVIDENCE.
+The complete installer passed with 800 tracked source files and marked
+snapshot/pin state preserved. Full owned startup/readiness passed. Published P10
+restoration was observed; saving P11 configuration, Publish and independently
+observed fresh P11 restoration remain separate. Physical G1/Hello/iPhone/memory/
+network and qualified G2/G3 remain open/NOT_RUN. No deployment, production migration,
+release, new owner trial or outreach occurred. Final documentation/evidence needs
+fresh twenty-job CI before ordinary SHA-guard merge. Next full batch: P12.
+
+Rollback requires an ordinary source revert that preserves encrypted local work,
+immutable attempts, signed evidence and parts. A migrated active vault cannot be
+opened by a frozen older reader; preserve it for a compatible reader rather than
+resetting or silently downgrading data. Deployed schema rollback needs a separate
+data-preservation plan.

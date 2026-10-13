@@ -188,3 +188,12 @@ The safe renderer consumes tokens without raw HTML or remote image requests. No
 new crypto package or existing lock was changed. Native inventory remains the
 preserved 313-record selection. Project release license remains unselected; this
 inventory is not a release SBOM, legal assessment or qualified security audit.
+
+## P11 synchronization dependencies
+
+No cryptographic/rendering dependency or prior lockfile was added or changed.
+The additive transport/control uses the frozen AJV/JCS/libsodium adapters, Laravel/
+MariaDB transactions and protected Worker/native SQLite. All 313 native custody
+inventory records remain frozen. Git text checkout is explicit LF while uploaded
+specification and Microsoft-header bytes remain preserved; raw platform source
+hashes are independently checked. This inventory is not a qualified review or SBOM.
