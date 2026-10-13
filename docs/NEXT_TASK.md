@@ -1,78 +1,86 @@
 # Next implementation batch
 
-## Complete P10 shared groups and membership integrity
+## Complete P11 incremental synchronization, conflict durability and convergence
 
-First confirm the final P09 evidence, tracking and passing mandatory CI. Read
-AGENTS.md, PROGRESS.md, TEST_EVIDENCE.md, DECISIONS.md, KNOWN_LIMITATIONS.md,
-P04_BACKEND.md, P05_CRYPTO_CORE.md, P07_LOCAL_VAULT.md, P08_TRUSTED_DEVICES.md,
-P09_PRIVATE_NOTES.md and original spec 00 then 01, 03–06, 08, 09, 13, 14 and
-relevant 20 criteria. Work in the existing checkout, Russian chat and English
-source/docs/commits/PRs. Ordinary passing push/merge is authorized. No worktrees
-or subagents unless expressly requested; no production migration/deployment,
-release, new owner-device trial or reviewer outreach.
+First confirm the final P10 exact-source reports, eighteen passing jobs and ordinary
+merge. Read AGENTS, PROGRESS, TEST_EVIDENCE, DECISIONS, KNOWN_LIMITATIONS and P04–P10
+guides, beginning the supplied spec at 00 then 01–06, 07–09, 13, 14 and relevant 20.
+Use the existing checkout, Russian chat and English source/docs/commits/PRs. Passing
+push/merge is authorized. No worktree/subagents unless explicitly requested, no
+production migration/deployment, release, new owner trial or reviewer outreach.
 
-Restore with runtime-env.sh, dev-stack.py up/check and p06-stack.py up/check.
-The published P08 snapshot was actually restored. P09 saved setup is distinct
-from publication and independently observed fresh P09 restoration. Preserve
-marked credentials/TLS/OAuth state, DB volumes, encrypted drafts/outbox and
-pending cleanup journals. Install the frozen QR and Markdown projects before
-the shared UI build. Default setup/generators compare source read-only. Never
-regenerate original spec/corpora/old locks to make checks pass. Run P03 outage
-checks sequentially with P06/P07/P08/P09 HTTP because MariaDB is shared.
+Activate runtime-env.sh; start/check owned dev-stack and p06-stack. Preserve owner
+markers, TLS/OAuth files, all SQL volumes, encrypted local drafts/outbox, prepared
+security attempts/private candidate keys, signed checkpoints and cleanup journals.
+No remove-orphans/prune, blanket reset or test against live data. Frozen QR/Markdown
+projects must be installed before the shared bundle. Setup/default generators compare
+source read-only. Run P03 dependency outages sequentially with P06–P11 HTTP tests.
+Native all-feature tests are serial under the actual bounded Argon admission gate.
 
-Implement the entire shared-group vertical slice: owner/editor/reader, independently
-verified target account/root invitation and explicit acceptance, full-history/key
-delivery, owner transfer, signed role changes, membership removal, same-account
-active-device distribution and rekey-required maintenance. Bind every recipient
-to current independently replayed group policy/account roster and authenticated
-public keys. Signature validity alone authorizes neither current writers nor key
-recipients. Invitation is pending admission, not active access. A nonmember/admin
-must not gain plaintext or a key. Preserve private namespace isolation.
+Implement the entire P11 slice: actual account/group-scoped commit-ordered delta
+feeds, captured watermark and bounded scanned range, consistent leased materialized
+snapshots with immutable inventory/pins, complete bootstrap/resync and staged local
+application. Advance the durable cursor only after actual encrypted transactional
+application or preserved retry evidence. Filter inaccessible events without skipping
+unscanned visible ones. Reauthorize every page/reference and never infer deletion
+from incomplete pagination, missing keys, malformed events or an API error.
 
-Reuse frozen group-c2 signed pages, transition staging, commit coverage and P04
-transaction/CAS/quota/receipt/event semantics. Complete general public policy/
-epoch/history proof transports as closed additive contracts; preserve P02 frames.
-Distinguish historical authors from current writers. Current P09 known local
-witnesses allow already verified old content, but a fresh client with no independent
-historical anchor must not accept an arbitrary backdated revoked signature. Build
-actual signed history closure and current recipient/epoch coverage rather than
-clearing flags or suppressing UNANCHORED_HISTORY. P11 owns scaled snapshot/delta
-convergence, not permission to bypass P10 transition correctness.
+Build actual client/native synchronization and usable EN/RU controls. Poll only while
+visible/online, with bounded backoff/jitter, immediate reconnect/resume catch-up and
+honest offline/save/conflict states. No iOS continuous-background promise. Scale and
+compact the current P10 public proof, account roster/history/key inventory and local
+512 KiB/512-record controls without weakening independent pins, historical anchors,
+recipient coverage, signed role/epoch authority or preserving only the newest heads.
+Keep frozen P02 framing; any additive profile/schema must have explicit compatibility,
+bounded migrations and rollback/data-preservation evidence. An unknown older backup
+cannot establish universal freshness or a complete independent consistency service.
 
-Removal/revoke must stop new publication and rotate future access with honest
-limits: exposed old keys/plaintext/backups cannot be erased. Preserve unsent work
-under local L and explain access-lost/rekey/history-required states. Every signing
-or recipient mutation rechecks fresh session/device/current policy. Freeze signed
-attempt bytes and reconcile unknown operation receipts. Account roster and group
-maintenance races must have explicit deterministic winners and durable recovery.
+Preserve immutable attempts and receipt-before-retry semantics. Resolve concurrent
+edits/delete-versus-edit as recoverable explicit conflicts; never plaintext/body
+last-write-wins, implicit resurrection or automatic draft erasure. Rebase/re-encrypt
+only after current authority/epoch checks, with fresh operation/revision/DEK bytes.
+Only exact unchanged acknowledged drafts retire atomically; newer edits survive.
+Private shared-copy audience fences must survive resync and policy changes. Revoked/
+removed users retain unsent local work; hide inaccessible shared views cooperatively
+and provide safe owned-copy/draft recovery. Do not reinterpret a reader maintenance
+capability as writing or authority to certify unwitnessed old content.
 
-Implement private-to-shared copy with an audience preview and explicit confirmation,
-fresh objects/DEKs/epoch encryption, no old private ciphertext/key reuse. No silent
-sharing of private account preferences or unrelated attachment references. Make
-membership, role, owner transfer, removal and maintenance usable in EN/RU through
-safe UI and closed protected native commands; no general key/token/SQL/path IPC.
+Snapshots require one read view/watermark and durable pins before exposing their
+lease. Recheck actor/device/session/group access on each page. Coordinate pin/session
+lifetime with the future collector and distinguish missing payload from missing
+signed ancestry. Events arriving during snapshot construction are recovered through
+the following delta range. Changed membership/rekey/ownership during preparation has
+an explicit deterministic winner and recovery path. Root/account identities cannot
+be substituted during a resync. Security attempts retain signed bytes and encrypted
+private candidate G until exact final acknowledgement; refreshing a public proof
+must not erase or export that candidate. A cancellation burns the exposed commitment.
 
-Retain P07 random-L custody, strong phrase/eligible Hello+TPM/optional PRF/current-user
-DPAPI, worker termination, writer/epoch/generation fencing and lock masking. Retain
-P08 independent root pins, both QR directions, mutual one-use approval, independent
-device keys and root-signed recovery. Root/R remain transient. Retain P09 safe DOM,
-strict page and static-worker CSP, ciphertext-only SQLite/IndexedDB/WAL, immutable
-note attempts, conflict preservation and exact explicit restore ancestry.
+Keep P07 random-L strong phrase/eligible Hello+TPM/optional PRF/current-user DPAPI,
+worker termination and transactional lease/epoch/OS-generation fencing. Keep P08
+independent device keys, both QR directions, mutual one-use approval/root reset and
+checkpoint exchange. Keep P09 safe DOM/Markdown, strict API-only page CSP, static-only
+worker caches, exact restore ancestry and encrypted SQLite/IndexedDB/WAL. Worker
+message cleanup remains mandatory: detach nested live state from wiped input/result
+objects. No generic key/token/SQL/path IPC, dummy auth issuer or substituted verifier.
 
-Use actual maintained crypto, real HTTP/SQL and persistent protected native/browser
-storage. Exercise at least three accounts/roles, target-root substitution, unauthorized
-recipient/signer, stale policy/epoch, concurrent enroll/revoke/role/rekey/owner transfer,
-unknown result/retry, interrupted staging, historical read/current-write distinctions,
-private-copy audience and leakage. Windows/MSVC plus sandboxed verified-TLS/CSP PWA
-acceptance are mandatory alongside all sixteen inherited gates at the exact final
-head/full tree. Never weaken verifier/assertions/crypto/TLS/CSP/sandbox/eligibility.
-Archive only exact-source public reports; update tracking, limitations, decisions,
-dependencies, complete read-only install/start configuration and full P11 handoff.
-Ordinary merge requires all checks passing and a SHA guard, then clean local/remote
-main and the tested tree. Draft saving is not publication or fresh restoration.
+Use genuine maintained crypto, verified HTTPS/Nginx/Laravel/MariaDB, actual persistent
+protected native storage and sandboxed trusted-CA/CSP browser UI. Exercise at least
+three accounts/roles and independent enrolled devices; snapshot/delta overlap with
+writes/deletion/invitation/role change/revoke/rekey; expiry, page size spill, hidden
+ranges, fork/regression, SQL/IndexedDB abort, process/worker termination, source/data
+migration and lease races; receipt loss, partial resync, quota/local eviction and
+malformed evidence. Prove no silently lost/duplicated accepted state or orphaned
+unsent edits, and inspect actual SQL/WAL/ordinary storage/logs for leaks. Full Windows/
+MSVC and browser gates plus all eighteen inherited jobs are mandatory at the exact
+final head/full tree; no disabled assertions/crypto/TLS/CSP/sandbox/eligibility.
 
-Full physical G1/Hello/iPhone and qualified G2/G3 remain open/unbooked/NOT_RUN.
-Software acceptance is not a production security release. P12 owns large-file
-source/resume/quota, P13 full search/export/retention, P14/P15 host packaging,
-P16 operations and P17 qualified adversarial review. Do not start unrelated phases
-or request new physical hardware actions merely to validate P10 software.
+Archive only public exact-source reports and verified raw input hashes; retain
+platform line endings. Update tracking, decisions, limitations/dependencies, complete
+tested read-only install/start instructions and full P12 handoff. Draft save is not
+publication or fresh restoration. Merge only after all final jobs pass with an exact
+SHA guard, then explicitly fetch/verify clean local/remote main and the tested tree.
+
+P12 owns physical file/source/resume/quota, P13 full search/export/retention and
+physical account/group purge, P14/P15 complete hosts, P16 operational deployment and
+P17 qualified review. Full physical G1/Hello/iPhone/memory/network and qualified G2/G3
+remain open/unbooked/NOT_RUN. No new owner action is required for P11 software CI.

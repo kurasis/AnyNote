@@ -400,10 +400,10 @@ after genesis, even if a hostile service clears its unsigned maintenance flags.
 Local drafts and already witnessed reads remain available; P10 implements the
 actual transition rather than bypassing this independent guard.
 
-## P10 development boundary
+## P10 software boundary
 
-Shared-group software is under mandatory hosted validation; do not claim VERIFIED
-until exact-source Linux/Windows/browser and all inherited gates pass. Independent
+Shared-group software passed all eighteen hosted gates with exact-source
+Linux/Windows/browser receipts. This does not close physical or qualified review. Independent
 history pins/witnesses remain required. Missing ancestry/history, stale rosters,
 recipient/key repair and lost authority preserve local drafts and fail closed.
 Current numerical bounds and phase ownership are in P10_SHARED_GROUPS. Public cards

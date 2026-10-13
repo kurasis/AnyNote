@@ -1,0 +1,12 @@
+{
+  "purpose": "P10 actual multi-account shared-group UI and protected persistent storage",
+  "status": "PASS",
+  "source_commit": "fddd9fde0e5158ef7fdefa5396fde51d53865b56",
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "checks": 40,
+  "chromium_sandbox": true,
+  "request_pacing": "Genuine roster/group requests paced below unchanged production limits; no mocked API responses",
+  "tls_verification": "Real trusted disposable CA and hostname validation",
+  "source_tree_dirty": false
+}
