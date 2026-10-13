@@ -41,7 +41,7 @@ export class Synchronizer {
    // for item recovery without re-appending their inventory receipts.
    for(let n=0;n<Number(d.page_count);n++){const page=await this.transport.call(path+'/pages?index='+n,null,'snapshot-page-result');if(n>=s.stage.pages)s=await this.command('snapshotPage',page);for(const item of page.page.items)await this.command('snapshotItem',await this.transport.call(path+'/revisions/'+item.revision_id,null,'snapshot-bundle'));}
    s=await this.command('snapshotFinish');await this.transport.call(path,'','cancel-result',undefined,'DELETE');return s;
-  }catch(e){if(['SYNC_CURSOR_EXPIRED','POLICY_CHANGED','ROSTER_CHANGED','REKEY_REQUIRED','HISTORY_CLOSURE_REQUIRED','NOT_FOUND','ACCESS_REVOKED'].includes(e.message)){await this.command('snapshotCancel');}throw e;}
+  }catch(e){if(['SYNC_CURSOR_EXPIRED','POLICY_CHANGED','ROSTER_CHANGED','REKEY_REQUIRED','HISTORY_CLOSURE_REQUIRED','NOT_FOUND','ACCESS_REVOKED'].includes(e.message)){await this.#abandonStage();}throw e;}
  }
  async #catchUp(){
   await this.authorize();let s=await this.command('status');ensure(s.state!=='RESTORE_QUARANTINE','RESTORE_QUARANTINE');ensure(s.state!=='QUARANTINED','SYNC_QUARANTINE');

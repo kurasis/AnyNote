@@ -9,7 +9,7 @@ import {sodium,b64,un64} from '../adapters/primitives.mjs';
 import {phraseKek,unwrapLocalKey,openLocal} from '../adapters/local.mjs';
 import {pageReceipt,snapshotCommitment,catalogCommitment,checkedDelta} from './codec.mjs';
 import {preparePaged,readPaged,rotatePagedFrame} from './paged-local.mjs';
-import {VisiblePoller} from './client.mjs';
+import {VisiblePoller,Synchronizer} from './client.mjs';
 const id=()=>b64(sodium.randombytes_buf(16)),notes=(f,op,args=[])=>f.old.engine.notes(f.old.cap,op,structuredClone(args)),sync=(f,op,x={})=>notes(f,'sync',[op,x]);
 const gc=groupCodecForProfile('p02-group-c2');
 async function scenario(){
@@ -104,5 +104,12 @@ test('cancelled partial application releases only staging caches and keeps all p
  const f=await scenario();try{
   await stage(f);await sync(f,'snapshotItem',f.values[0]);assert.equal([...f.old.store.rows.values()].filter(r=>r.frame.context.record_kind==='cache').length,1);
   const before=await notes(f,'summary');await sync(f,'snapshotCancel');assert.equal([...f.old.store.rows.values()].filter(r=>r.frame.context.record_kind==='cache').length,0);assert.deepEqual((await notes(f,'summary')).drafts,before.drafts);assert.equal((await sync(f,'status')).cursor,null);assert.equal((await sync(f,'status')).stage,null);
+  // An expired transport must release its known server lease before erasing the
+  // only protected local reference. A failed DELETE keeps that reference retryable.
+  await stage(f);let deletes=0,deleteFails=true;
+  const transport={call:async(path,kind,result,body,method)=>{if(method==='DELETE'){assert.equal(path,'/snapshots/'+f.result.descriptor.snapshot_id);assert((await sync(f,'status')).stage);deletes++;if(deleteFails)throw Error('NETWORK_UNAVAILABLE');return;}throw Error('SYNC_CURSOR_EXPIRED');}};
+  const client=new Synchronizer({transport,vault:{notes:(_op,[op,x])=>sync(f,op,x)},group:async()=>{}});
+  await assert.rejects(()=>client.snapshot(),/NETWORK_UNAVAILABLE/);assert((await sync(f,'status')).stage);deleteFails=false;
+  await assert.rejects(()=>client.snapshot(),/SYNC_CURSOR_EXPIRED/);assert.equal(deletes,2);assert.equal((await sync(f,'status')).stage,null);assert.deepEqual((await notes(f,'summary')).drafts,before.drafts);
  }finally{await close(f);}
 });
