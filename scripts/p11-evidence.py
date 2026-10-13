@@ -12,11 +12,16 @@ assert role in ['linux', 'windows'] and (role == 'windows') == (sys.platform == 
 def git(*args):
     return subprocess.check_output(['git', *args], cwd=ROOT, text=True).strip()
 assert not git('status', '--porcelain'), 'Software receipt requires clean source'
+source_commit=git('rev-parse','HEAD');source_tree=git('rev-parse','HEAD^{tree}')
+initial_inputs={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in git('ls-files').splitlines()}
 result = subprocess.run(['cargo', 'test', '--manifest-path', 'packages/vault-native/Cargo.toml', '--locked', '--all-features', '-j', '4', '--', '--test-threads=1'], cwd=ROOT, check=True, text=True, encoding='utf-8', capture_output=True)
 assert 'staged_sync_cursor_is_atomic_and_restore_regression_keeps_drafts ... ok' in result.stdout
+assert not git('status', '--porcelain'), 'Source changed during native execution'
+assert git('rev-parse','HEAD')==source_commit and git('rev-parse','HEAD^{tree}')==source_tree, 'Commit changed during execution'
 paths = git('ls-files').splitlines()
+assert {p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in paths}==initial_inputs, 'Raw source changed during execution'
 prefixes = ('packages/', 'apps/', 'scripts/', 'infra/', 'experiments/p01/', '.github/workflows/')
-report = {'purpose': 'P11 staged synchronization software source receipt', 'status': 'PASS', 'role': role, 'source_commit': git('rev-parse', 'HEAD'), 'source_tree': git('rev-parse', 'HEAD^{tree}'), 'source_tree_dirty': False, 'timestamp': datetime.now(timezone.utc).isoformat(), 'physical_acceptance': False, 'independent_review': 'NOT_RUN', 'inputs': [{'path': p, 'sha256': hashlib.sha256((ROOT/p).read_bytes()).hexdigest()} for p in paths if p.startswith(prefixes)]}
+report = {'purpose': 'P11 staged synchronization software source receipt', 'status': 'PASS', 'role': role, 'source_commit': source_commit, 'source_tree': source_tree, 'source_tree_dirty': False, 'timestamp': datetime.now(timezone.utc).isoformat(), 'physical_acceptance': False, 'independent_review': 'NOT_RUN', 'inputs': [{'path': p, 'sha256': hashlib.sha256((ROOT/p).read_bytes()).hexdigest()} for p in paths if p.startswith(prefixes)]}
 if role == 'linux':
     http = json.loads((ROOT/'artifacts/p11/http-report.json').read_text())
     assert http['status'] == 'PASS' and http['source_commit'] == report['source_commit'] and not http['source_tree_dirty']

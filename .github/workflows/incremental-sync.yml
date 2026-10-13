@@ -63,7 +63,7 @@ jobs:
         run: |
           source scripts/runtime-env.sh
           python3 scripts/p06-stack.py reset
-          node experiments/p01/p10-browser.mjs
+          node experiments/p01/p10-browser.mjs --p11-sync
           python3 scripts/p11-evidence.py linux
           git diff --exit-code
       - name: Preserve only public source receipts and metadata

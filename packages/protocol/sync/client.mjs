@@ -13,7 +13,13 @@ export class SyncClient {
   const response=await this.auth.fetcher(this.auth.issuer+'/api/v1'+path,{method,credentials:'include',cache:'no-store',redirect:'error',headers:{Accept:'application/json',...(write?{'X-CSRF-TOKEN':this.#csrf}:{}),...(requestKind?{'Content-Type':'application/json'}:{})},...(requestKind?{body:JSON.stringify(body)}:{})});
   const limit=response.ok?(responseKind==='snapshot-bundle'?4194304:1048576):4096,value=strictJson(await boundedResponse(response,limit),limit);
   if(!response.ok){this.#csrf=undefined;throw Object.assign(Error(value.error?.code??'SYNC_DENIED'),{status:response.status});}
-  syncValue(responseKind,value);return value;
+  syncValue(responseKind,value);
+  const parts=path.split('?')[0].split('/');
+  if(parts[1]==='snapshots'&&parts[2])ensure((value.snapshot_id??value.descriptor?.snapshot_id??value.page?.snapshot_id)===parts[2],'CONTEXT_MISMATCH');
+  if(parts[4])ensure(value.item?.revision_id===parts[4],'CONTEXT_MISMATCH');
+  if(requestKind==='snapshot-request')ensure(value.scope.group_id===body.group_id,'CONTEXT_MISMATCH');
+  if(requestKind==='ack-request')ensure(value.cursor.generation===body.cursor.generation&&value.cursor.sequence===body.cursor.sequence,'CONTEXT_MISMATCH');
+  return value;
  }
 }
 const id=()=>{const b=crypto.getRandomValues(new Uint8Array(16));return btoa(String.fromCharCode(...b)).replaceAll('+','-').replaceAll('/','_').replaceAll('=','');};

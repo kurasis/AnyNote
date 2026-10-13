@@ -7,6 +7,7 @@ use std::collections::BTreeSet;
 pub enum Request {
     Status {},
     Offline {},
+    Quarantine { state: String, digest: String },
     SnapshotStart { result: Value },
     Catalog { page: Value },
     SnapshotPage { result: Value },
@@ -134,6 +135,15 @@ impl Vault {
         let mut writes = Vec::new();
         match request {
             Request::Status {} => return Ok(c["sync"].clone()),
+            Request::Quarantine { state, digest } => {
+                check(
+                    ["QUARANTINED", "RESTORE_QUARANTINE"].contains(&state.as_str())
+                        && un64(digest).is_ok_and(|b| b.len() == 32),
+                    "INVALID_SYNC_DTO",
+                )?;
+                c["sync"]["state"] = json!(state);
+                c["sync"]["quarantine"] = json!(digest);
+            }
             Request::Offline {} => {
                 if !matches!(
                     c["sync"]["state"].as_str(),
@@ -406,7 +416,11 @@ impl Vault {
                 for e in values(p, "events")? {
                     let n = number(&e["sequence"])?;
                     check(
-                        n > last && n <= next && ids.insert(text(&e["event_id"])?),
+                        n > last
+                            && n <= next
+                            && ids.insert(text(&e["event_id"])?)
+                            && (s["scope"]["group_id"].is_null()
+                                || e["group_id"] == s["scope"]["group_id"]),
                         "SYNC_GAP",
                     )?;
                     last = n;
