@@ -126,3 +126,9 @@ and complete signed roster events, 1,000 catalog groups, 50,000 snapshot revisio
 fixed resync lifetime. Exhaustion fails explicitly and preserves the prior state.
 Old signed frames/corpora remain unchanged. See ADR-021 for the additive transport
 and local profile, and NEXT_TASK for the complete P12 handoff.
+
+Follow-up lifecycle integration: a closed Worker custody reason now immediately
+masks the host, terminates access and preserves encrypted state. Idle expiry and
+clock regression retain the original five-minute/fail-closed guards and typed error
+code. Background polling does not renew the host idle timer; only foreground work
+or trusted visible input does. Final platform validation remains pending.

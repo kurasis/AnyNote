@@ -85,13 +85,18 @@ test('visible polling uses host-bound timers, bounded backoff, reconnect catch-u
  poller.stop();assert.equal(pending,undefined);
  t.mock.restoreAll();
  // This isolates host masking on an error reply; it models no crypto or issuer.
- const replacements={document:Object.assign(new EventTarget(),{hidden:false}),addEventListener:()=>{},removeEventListener:()=>{},Worker:class{
+ let reply='lock';const replacements={document:Object.assign(new EventTarget(),{hidden:false}),addEventListener:()=>{},removeEventListener:()=>{},Worker:class{
   constructor(){queueMicrotask(()=>this.onmessage?.({data:{version:1,status:'READY'}}));}
-  postMessage(r){queueMicrotask(()=>this.onmessage?.({data:{version:1,id:r.id,generation:r.generation,error:'INTEGRITY_FAILURE',lock_reason:'worker-integrity'}}));}
+  postMessage(r){const payload=r.op==='unlock'?{result:{state:'unlocked',capability:'public-host-unit-capability',epoch:'1'}}:reply==='lock'?{error:'INTEGRITY_FAILURE',lock_reason:'worker-integrity'}:{error:'TEMPORARY_UNAVAILABLE'};queueMicrotask(()=>this.onmessage?.({data:{version:1,id:r.id,generation:r.generation,...payload}}));}
   terminate(){this.terminated=true;}
  }},saved=new Map(Object.keys(replacements).map(k=>[k,Object.getOwnPropertyDescriptor(globalThis,k)]));let masks=0,client;
- try{for(const [k,v]of Object.entries(replacements))Object.defineProperty(globalThis,k,{value:v,configurable:true,writable:true});client=new LocalVault('/unit-worker',()=>masks++);await assert.rejects(()=>client.notes('summary'),e=>e.message==='INTEGRITY_FAILURE'&&e.lockReason==='worker-integrity');assert.equal(masks,1);assert.equal(pending,undefined);}
- finally{client?.close();for(const [k,v]of saved)if(v)Object.defineProperty(globalThis,k,v);else delete globalThis[k];}
+ try{for(const [k,v]of Object.entries(replacements))Object.defineProperty(globalThis,k,{value:v,configurable:true,writable:true});client=new LocalVault('/unit-worker',()=>masks++);await assert.rejects(()=>client.notes('summary'),e=>e.message==='INTEGRITY_FAILURE'&&e.lockReason==='worker-integrity');assert.equal(masks,1);assert.equal(pending,undefined);client.close();
+  const timers=new Map();let timerId=0;t.mock.method(globalThis,'setTimeout',(fn,ms)=>{const id=++timerId;timers.set(id,{fn,ms});return id;});t.mock.method(globalThis,'clearTimeout',id=>timers.delete(id));
+  client=new LocalVault('/unit-worker',()=>masks++);await client.unlock('public host timing fixture');const idle=()=>[...timers].filter(([,v])=>v.ms===300000);const first=idle()[0][0];reply='temporary';
+  await assert.rejects(()=>client.background(()=>client.notes('summary')),/TEMPORARY_UNAVAILABLE/);assert.equal(idle()[0][0],first);client.activity({isTrusted:false});assert.equal(idle()[0][0],first);
+  client.activity({isTrusted:true});const active=idle()[0][0];assert.notEqual(active,first);const before=masks;timers.get(active).fn();assert.equal(masks,before+1);assert.equal(idle().length,0);
+ }
+ finally{client?.close();t.mock.restoreAll();for(const [k,v]of saved)if(v)Object.defineProperty(globalThis,k,v);else delete globalThis[k];}
 });
 test('additive secret inventory exceeds the frozen 660-key limit, keeps device identity and refuses an older reader',async()=>{
  const f=await fixture();let key,kek;try{

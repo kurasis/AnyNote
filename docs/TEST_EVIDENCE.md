@@ -1642,3 +1642,12 @@ being added to determine the originating custody lock. A closed lock-reason mark
 also lets the client immediately mask and terminate when Worker custody closes.
 Ten local P11 suites (including isolated host failure masking) and all five P07
 maintained-crypto suites passed. Final source/platform CI remains mandatory.
+
+P11 background/idle follow-up: visible polling now runs in a host background scope
+which does not extend the five-minute UI lock timer. Trusted visible user input
+still extends it. The isolated host test checks an unchanged timer after background
+RPC failure, rejection of untrusted activity, trusted activity renewal and actual
+idle callback masking. The original ten P11 and five P07 crypto suites, read-only
+contracts, strict-CSP build and owned service readiness passed locally. Native and
+hosted final acceptance remains pending; this does not explain the older singleton
+VAULT_LOCKED result, whose original reason was not recorded.
