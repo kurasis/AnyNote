@@ -23,6 +23,32 @@ if (! $app->runningInConsole() || ! $app->environment('testing') || config('data
 }
 $op = $argv[1] ?? '';
 $value = match ($op) {
+    'p12-budget' => (function () {
+        $v = json_decode(stream_get_contents(STDIN));
+        if (! P::counter($v->available_bytes ?? '', '1000000000')) {
+            throw new LogicException('Invalid synthetic quota budget');
+        }
+
+        return DB::transaction(function () use ($v) {
+            $ledger = DB::table('quota_ledgers')->where('scope', 'global')->lockForUpdate()->first();
+            $next = (int) $ledger->committed_bytes + (int) $ledger->reserved_bytes + (int) $v->available_bytes;
+            if ($next > 100000000000) {
+                throw new LogicException('Synthetic quota cannot exceed the product limit');
+            }
+            DB::table('quota_ledgers')->where('scope', 'global')->update(['limit_bytes' => $next]);
+
+            return ['previous_limit_bytes' => (string) $ledger->limit_bytes];
+        });
+    })(),
+    'p12-budget-restore' => (function () {
+        $v = json_decode(stream_get_contents(STDIN));
+        if (! P::counter($v->limit_bytes ?? '', '100000000000')) {
+            throw new LogicException('Invalid synthetic quota restore');
+        }
+        DB::table('quota_ledgers')->where('scope', 'global')->update(['limit_bytes' => (int) $v->limit_bytes]);
+
+        return ['status' => 'PASS'];
+    })(),
     'p12-collect' => app(Service::class)->collect(),
     'p12-reconcile' => app(QuotaLedger::class)->reconcile(),
     'p12-expire' => (function () {

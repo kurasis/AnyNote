@@ -37,3 +37,14 @@ test('independent authenticated range never certifies a complete export and reje
 test('export names cannot form paths, alternate data streams or Windows device names',()=>{
  for(const name of ['CON','con.txt','LPT1.log','NUL','COM9'])assert.match(safeFilename(name),/^_/);for(const name of ['../a.html','..\\..\\a.exe','x:y','<script>'])assert(!/[<>:"/\\|?*]/.test(safeFilename(name)));assert.equal(safeFilename('CON .txt'),'CON_.txt');
 });
+test('a confirmed source copy gets fresh version/ciphertext while destination-audience changes fail closed',async()=>{
+ const {group,call}=await setup(),source=new Blob(['copy source']),original=await call('prepare',{group_id:group.group_id,source}),before=await call('part',{draft_id:original.draft_id,source,index:0}),preview=await call('copyPreview',{draft_id:original.draft_id,destination_group:group.group_id});
+ await assert.rejects(call('copy',{draft_id:original.draft_id,destination_group:group.group_id,source,confirm:true,preview_digest:'x'.repeat(43)}),/COPY_CONFIRMATION_REQUIRED/);
+ const copied=await call('copy',{draft_id:original.draft_id,destination_group:group.group_id,source,confirm:true,preview_digest:preview.digest}),after=await call('part',{draft_id:copied.draft_id,source,index:0});assert.notEqual(copied.request.context.file_version_id,original.request.context.file_version_id);assert.notEqual(hash(after.ciphertext),hash(before.ciphertext));assert.equal((await call('list')).length,2);
+});
+test('an expired immutable attempt is burned before a fresh attempt reuses the stable local intent',async()=>{
+ const {group,call}=await setup(),source=new Blob(['restart source']),first=await call('prepare',{group_id:group.group_id,source}),cipher=await call('part',{draft_id:first.draft_id,source,index:0});
+ await assert.rejects(call('prepare',{group_id:group.group_id,source,previous_draft_id:first.draft_id}),/RECONCILIATION_REQUIRED/);
+ await call('burn',{draft_id:first.draft_id,confirm:true,status:{upload_id:first.request.upload_id,state:'EXPIRED'}});await assert.rejects(call('request',{draft_id:first.draft_id}),/IMMUTABLE_ATTEMPT/);
+ const next=await call('prepare',{group_id:group.group_id,source,previous_draft_id:first.draft_id}),fresh=await call('part',{draft_id:next.draft_id,source,index:0});assert.equal(next.local_draft_id,first.local_draft_id);assert.notEqual(next.draft_id,first.draft_id);assert.notEqual(next.request.upload_id,first.request.upload_id);assert.notEqual(hash(cipher.ciphertext),hash(fresh.ciphertext));
+});

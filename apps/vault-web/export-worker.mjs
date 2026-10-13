@@ -15,18 +15,18 @@ self.addEventListener('fetch',event=>{
  const denied=()=>new Response('Export unavailable',{status:410,headers:{'Cache-Control':'no-store'}});
  if(!/^[0-9a-f]{32}$/.test(token)||!ticket||ticket.expires<Date.now()||event.request.method!=='GET'||event.request.headers.has('Range')){event.respondWith(denied());return;}
  let resolve,bytes=0,buffer,ended=false,timer,done;const lifetime=new Promise(r=>done=r);event.waitUntil(lifetime);
- const finish=()=>{clearTimeout(timer);ticket.port.close();done();};
+ const finish=()=>{ended=true;resolve?.();resolve=null;clearTimeout(timer);buffer?.fill(0);buffer=null;ticket.port.postMessage({error:true});ticket.port.close();done();};
  const stream=new ReadableStream({
   start(controller){
    ticket.port.onmessage=({data})=>{
     if(data?.cancel){controller.error(Error('EXPORT_INTERRUPTED'));finish();return;}
-    if(data?.end){if(bytes!==ticket.size||buffer){controller.error(Error('EXPORT_TRUNCATED'));}else controller.close();ended=true;resolve?.();finish();return;}
+    if(data?.end){if(bytes!==ticket.size||buffer){controller.error(Error('EXPORT_TRUNCATED'));finish();}else{controller.close();ended=true;resolve?.();clearTimeout(timer);ticket.port.close();done();}return;}
     if(!(data?.bytes instanceof Uint8Array)||data.bytes.length>8388608||buffer||bytes+data.bytes.length>ticket.size){controller.error(Error('EXPORT_INTEGRITY_FAILURE'));finish();return;}
     buffer=data.bytes;resolve?.();resolve=null;
    };timer=setTimeout(()=>{controller.error(Error('EXPORT_INTERRUPTED'));finish();},120000);
   },
   async pull(controller){
-   clearTimeout(timer);if(!buffer&&!ended)await new Promise(r=>resolve=r);if(ended)return;
+   clearTimeout(timer);const client=await self.clients.get(ticket.client);if(!client||client.visibilityState==='hidden'){controller.error(Error('EXPORT_INTERRUPTED'));finish();return;}timer=setTimeout(()=>{controller.error(Error('EXPORT_INTERRUPTED'));finish();},120000);if(!buffer&&!ended)await new Promise(r=>resolve=r);if(ended)return;clearTimeout(timer);
    bytes+=buffer.length;controller.enqueue(buffer);buffer=null;ticket.port.postMessage({pull:true});timer=setTimeout(()=>{controller.error(Error('EXPORT_INTERRUPTED'));finish();},120000);
   },
   cancel(){ticket.port.postMessage({error:true});finish();},

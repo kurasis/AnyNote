@@ -838,3 +838,68 @@ fn p12_native_incompressible_gigabyte_durable_resume_and_export() {
         );
     }
 }
+
+#[test]
+fn p12_native_ciphertext_cache_verifies_bytes_and_refuses_corruption() {
+    use anynote_local_vault::notes::file_cache::CipherCache;
+    use std::fs::OpenOptions;
+    use std::io::Write;
+    let f = Fixture::new();
+    let cap = f.vault.unlock_phrase(PHRASE).unwrap();
+    let g = group(&f, &cap);
+    let root = f.vault.path().parent().unwrap();
+    let path = root.join("explicit-cache-test-source.bin");
+    let mut source = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .open(path)
+        .unwrap();
+    source
+        .write_all(b"public synthetic encrypted cache fixture")
+        .unwrap();
+    let made = f
+        .vault
+        .prepare_file(
+            &cap,
+            g["group_id"].as_str().unwrap(),
+            &mut source,
+            "PRIVATE CACHE NAME.txt",
+            "application/octet-stream",
+        )
+        .unwrap();
+    let draft = made["draft_id"].as_str().unwrap();
+    let cipher = f.vault.file_part(&cap, draft, &mut source, 0).unwrap();
+    let part = json!({"index":"0","ciphertext_bytes":cipher.len().to_string(),"ciphertext_digest":hash(&cipher)});
+    let finished = f.vault.file_finish(&cap, draft, &[part]).unwrap();
+    let record = &finished["request"]["record"];
+    let cache = CipherCache::for_vault(&f.vault).unwrap();
+    let mut job = cache.begin(&Codec::new().unwrap(), record).unwrap();
+    cache.put(&mut job, 0, &cipher).unwrap();
+    cache.finish(&mut job).unwrap();
+    let version = record["envelope"]["header"]["context"]["file_version_id"]
+        .as_str()
+        .unwrap();
+    cache
+        .verify(&f.vault, &cap, g["group_id"].as_str().unwrap(), version)
+        .unwrap();
+    let directory = root
+        .join(format!("p12-downloaded-ciphertext-{}", f.scope.profile_id))
+        .join(format!("{}_{version}", g["group_id"].as_str().unwrap()));
+    let manifest = std::fs::read(directory.join("manifest.json")).unwrap();
+    assert!(
+        !manifest
+            .windows(b"PRIVATE CACHE NAME".len())
+            .any(|w| w == b"PRIVATE CACHE NAME")
+    );
+    let mut wrong = cipher.clone();
+    wrong[0] ^= 1;
+    std::fs::write(directory.join("0"), wrong).unwrap();
+    assert_eq!(
+        cache
+            .verify(&f.vault, &cap, g["group_id"].as_str().unwrap(), version)
+            .unwrap_err()
+            .0,
+        "CHUNK_DIGEST_MISMATCH"
+    );
+}

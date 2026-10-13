@@ -11,11 +11,14 @@ export class CipherCache {
  name(group,version){ensure(id(group)&&id(version),'INVALID_RECORD');return group+'_'+version;}
  async #read(dir){const file=await (await dir.getFileHandle('manifest.json')).getFile();ensure(file.size<=262144,'RESOURCE_LIMIT');return strictJson(new Uint8Array(await file.arrayBuffer()),262144);}
  async #write(dir,name,bytes){const w=await (await dir.getFileHandle(name,{create:true})).createWritable();try{await w.write(bytes);await w.close();}catch(e){await w.abort().catch(()=>{});throw e;}}
- async begin(record,{pinned=false,extraBudget=0,confirm=false}={}){
+ async begin(record,options={}){
+  ensure(navigator.locks,'STORAGE_UNAVAILABLE');return navigator.locks.request('anynote-p12-downloaded-cache-budget',{mode:'exclusive'},()=>this.#begin(record,options));
+ }
+ async #begin(record,{pinned=false,extraBudget=0,confirm=false}={}){
   const h=record.envelope.header,c=h.context,name=this.name(c.group_id,c.file_version_id),bytes=Number(h.manifest_ciphertext_bytes)+48+h.framing.parts.reduce((n,p)=>n+Number(p.ciphertext_bytes),0);
   ensure(!pinned||confirm===true&&Number.isSafeInteger(extraBudget)&&extraBudget>=bytes,'CONFIRMATION_REQUIRED');const estimate=await navigator.storage.estimate();ensure(Number.isFinite(estimate.quota)&&Number.isFinite(estimate.usage)&&estimate.quota-estimate.usage>=bytes+65536,'INSUFFICIENT_STORAGE');
   await navigator.storage.persist?.();const root=await this.root(),entries=[];let used=0;
-  for await(const [key,handle]of root.entries()){if(handle.kind!=='directory')continue;const data=await this.#read(handle).catch(()=>null);if(data){used+=data.bytes;entries.push({key,...data});}}
+  for await(const [key,handle]of root.entries()){if(handle.kind!=='directory')continue;const data=await this.#read(handle).catch(()=>null);if(data){if(data.name===name){ensure(envelopeDigest(wire(data.record.envelope))===envelopeDigest(wire(record.envelope)),'INTEGRITY_FAILURE');pinned||=data.pinned;continue;}used+=data.bytes;entries.push({key,...data});}}
   for(const e of entries.sort((a,b)=>a.touched-b.touched)){if(used+bytes<=this.budget+(pinned?extraBudget:0))break;if(!e.pinned&&e.name!==name){await root.removeEntry(e.key,{recursive:true});used-=e.bytes;}}
   ensure(used+bytes<=this.budget+(pinned?extraBudget:0),'INSUFFICIENT_STORAGE');const dir=await root.getDirectoryHandle(name,{create:true}),data={version:1,name,bytes,touched:Date.now(),pinned,complete:false,record,parts:[]};await this.#write(dir,'manifest.json',new TextEncoder().encode(JSON.stringify(data)));return {dir,data};
  }

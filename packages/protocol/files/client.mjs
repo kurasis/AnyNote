@@ -44,16 +44,18 @@ export class TransferManager {
    const finish=await this.command('finish',{draft_id});const receipt=await this.transport.call('/uploads/'+finish.upload_id+'/commit','POST',finish.request,abort.signal);await this.command('committed',{draft_id,receipt});this.progress({draft_id,state:'UNATTACHED',bytes:source.size,total:source.size});return {draft_id,receipt};
   }catch(e){this.progress({draft_id,state:['SOURCE_CHANGED','REKEY_RESTART_REQUIRED','UPLOAD_EXPIRED'].includes(e.message)?'RESTART_REQUIRED':'NEEDS_SOURCE',code:e.message});throw e;}finally{this.#active.delete(abort);}
  }
+ async copy(source,draft_id,destination_group,preview_digest){const made=await this.command('copy',{source,draft_id,destination_group,preview_digest,confirm:true});return this.upload(source,destination_group,made.draft_id);}
+ async restart(source,group_id,old_draft_id){await this.cancel(old_draft_id);const made=await this.command('prepare',{source,group_id,previous_draft_id:old_draft_id});return this.upload(source,group_id,made.draft_id);}
  async cancel(draft_id){const request=await this.command('request',{draft_id}),status=await this.transport.call('/uploads/'+request.upload_id,'DELETE');await this.command('burn',{draft_id,confirm:true,status});return status;}
  async download(group_id,file_version_id,sink){
-  ensure(sink&&typeof sink.write==='function'&&typeof sink.finish==='function'&&typeof sink.abort==='function','SINK_REQUIRED');const abort=new AbortController();this.#active.add(abort);let reader,cacheJob;
+  ensure(sink&&typeof sink.write==='function'&&typeof sink.finish==='function'&&typeof sink.abort==='function','SINK_REQUIRED');const abort=new AbortController();this.#active.add(abort);abort.signal.addEventListener('abort',()=>{void sink.abort();},{once:true});let reader,cacheJob,complete;
   try{
    const record=await this.transport.call('/files/'+file_version_id+'/manifest','GET',undefined,abort.signal);reader=await this.command('open',{group_id,file_version_id,record});if(this.cache)cacheJob=await this.cache.begin(record).catch(()=>null);
    for(let index=0;index<Number(reader.chunks);index++){
     ensure(!abort.signal.aborted,'RESUME_REQUIRED');const ciphertext=await this.transport.call('/files/'+file_version_id+'/chunks/'+index,'GET',undefined,abort.signal),p=await this.command('decrypt',{reader_id:reader.reader_id,ciphertext});if(cacheJob){try{await this.cache.put(cacheJob,index,ciphertext);}catch{cacheJob=null;}}
-    try{await sink.write(p.plaintext);this.progress({state:'DOWNLOADING',bytes:Math.min(Number(reader.plaintext_bytes),(index+1)*CHUNK),total:Number(reader.plaintext_bytes)});}finally{p.plaintext.fill(0);ciphertext.fill(0);}
+    try{if(index===Number(reader.chunks)-1)complete=await this.command('complete',{reader_id:reader.reader_id});await sink.write(p.plaintext);this.progress({state:'DOWNLOADING',bytes:Math.min(Number(reader.plaintext_bytes),(index+1)*CHUNK),total:Number(reader.plaintext_bytes)});}finally{p.plaintext.fill(0);ciphertext.fill(0);}
    }
-   const complete=await this.command('complete',{reader_id:reader.reader_id});await sink.finish();if(cacheJob)await this.cache.finish(cacheJob).catch(()=>{});return {...complete,available_offline:Boolean(cacheJob?.data.complete)};
+   complete??=await this.command('complete',{reader_id:reader.reader_id});await sink.finish();if(cacheJob)await this.cache.finish(cacheJob).catch(()=>{});return {...complete,available_offline:Boolean(cacheJob?.data.complete)};
   }catch(e){await sink.abort();throw e;}finally{if(reader)await this.command('close',{reader_id:reader.reader_id}).catch(()=>{});this.#active.delete(abort);}
  }
  async range(group_id,file_version_id,offset,length,sink){

@@ -1,4 +1,5 @@
 //! Current account-private content authority, encrypted SQLite journal and closed native commands.
+pub mod file_cache;
 pub mod files;
 pub mod sync;
 use super::*;

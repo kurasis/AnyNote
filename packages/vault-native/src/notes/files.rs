@@ -76,6 +76,158 @@ fn identity(file: &mut File, signal: &LockSignal, generation: u64) -> Result<Val
     Ok(json!({"size":size,"parts":parts,"digest":b64(&digest.finalize())}))
 }
 impl Vault {
+    pub fn file_copy_preview(
+        &self,
+        cap: &Capability,
+        draft: &str,
+        destination_group: &str,
+    ) -> Result<Value> {
+        self.lease(cap)?;
+        let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
+        let s = self.authorize(&mut i, cap)?;
+        let control = self.file_control(&i, &s)?;
+        let (reference, mut data) = self.file_read(&i, &s, &control, draft)?;
+        let result = (|| {
+            let (_, policy, _key) = self.file_authority(&mut i, &s, destination_group)?;
+            let notes = self.note_control(&i.conn, &s, &i.secrets.as_ref().unwrap().key)?;
+            let snapshot = self.snapshot_for_groups(&mut i, &s)?;
+            let (_, _, info) = self.note_info(&mut i, &s, &notes, &snapshot, destination_group)?;
+            let audience = if info["members"].is_array() {
+                info["members"].clone()
+            } else {
+                json!([{"account_id":self.scope.account_id,"root_fingerprint":s.pins["root_fingerprint"],"role":"owner"}])
+            };
+            let preview = json!({"source_group":reference["group_id"],"source_version":data["context"]["file_version_id"],"destination_group":destination_group,"audience":audience,"policy":policy,"scope":"selected-file-only-with-fresh-encryption"});
+            Ok(json!({"digest":hash(&canonical(&preview)?),"preview":preview}))
+        })();
+        wipe_value(&mut data);
+        result
+    }
+    pub fn copy_selected_file(
+        &self,
+        cap: &Capability,
+        draft: &str,
+        destination_group: &str,
+        source: &mut File,
+        preview_digest: &str,
+        confirmed: bool,
+    ) -> Result<Value> {
+        check(confirmed, "COPY_CONFIRMATION_REQUIRED")?;
+        let preview = self.file_copy_preview(cap, draft, destination_group)?;
+        check(
+            preview["digest"] == preview_digest,
+            "COPY_CONFIRMATION_REQUIRED",
+        )?;
+        let proven = identity(source, &self.signal, cap.generation)?;
+        let mut data = {
+            let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
+            let s = self.authorize(&mut i, cap)?;
+            let control = self.file_control(&i, &s)?;
+            self.file_read(&i, &s, &control, draft)?.1
+        };
+        let result = (|| {
+            check(proven == data["source"], "SOURCE_CHANGED")?;
+            let current = self.file_copy_preview(cap, draft, destination_group)?;
+            check(
+                current["digest"] == preview_digest,
+                "COPY_CONFIRMATION_REQUIRED",
+            )?;
+            self.prepare_file_bound(
+                cap,
+                destination_group,
+                source,
+                text(&data["name"])?,
+                text(&data["media"])?,
+                Some(&preview["preview"]["policy"]),
+            )
+        })();
+        wipe_value(&mut data);
+        result
+    }
+    /// Trusted host dialog result only. No renderer command accepts this path.
+    pub fn atomic_export_file(
+        &self,
+        cap: &Capability,
+        record: &Value,
+        parts: &mut dyn Iterator<Item = Result<Vec<u8>>>,
+        destination: &std::path::Path,
+        overwrite: bool,
+    ) -> Result<Value> {
+        let parent = destination.parent().ok_or(Error("INVALID_FILENAME"))?;
+        check(
+            destination.is_absolute() && parent.is_dir() && destination.file_name().is_some(),
+            "INVALID_FILENAME",
+        )?;
+        check(
+            overwrite || !destination.exists(),
+            "EXPORT_DESTINATION_EXISTS",
+        )?;
+        let temporary = parent.join(format!(".anynote-export-{}.incomplete", random_id()));
+        let result = (|| {
+            let mut sink = std::fs::OpenOptions::new()
+                .create_new(true)
+                .read(true)
+                .write(true)
+                .open(&temporary)
+                .map_err(|_| Error("INSUFFICIENT_STORAGE"))?;
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                std::fs::set_permissions(&temporary, std::fs::Permissions::from_mode(0o600))
+                    .map_err(|_| Error("STORAGE_UNAVAILABLE"))?;
+            }
+            let result = self.export_file(cap, record, parts, &mut sink)?;
+            drop(sink);
+            check(
+                self.signal.generation() == cap.generation,
+                "STALE_CAPABILITY",
+            )?;
+            if !overwrite {
+                std::fs::hard_link(&temporary, destination)
+                    .map_err(|_| Error("EXPORT_DESTINATION_EXISTS"))?;
+                std::fs::remove_file(&temporary).map_err(|_| Error("STORAGE_UNAVAILABLE"))?;
+            } else {
+                #[cfg(windows)]
+                {
+                    use std::os::windows::ffi::OsStrExt;
+                    use windows_sys::Win32::Storage::FileSystem::{
+                        MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH, MoveFileExW,
+                    };
+                    let source: Vec<u16> =
+                        temporary.as_os_str().encode_wide().chain(Some(0)).collect();
+                    let target: Vec<u16> = destination
+                        .as_os_str()
+                        .encode_wide()
+                        .chain(Some(0))
+                        .collect();
+                    // SAFETY: owned NUL-terminated buffers remain live for the synchronous call.
+                    check(
+                        unsafe {
+                            MoveFileExW(
+                                source.as_ptr(),
+                                target.as_ptr(),
+                                MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH,
+                            )
+                        } != 0,
+                        "STORAGE_UNAVAILABLE",
+                    )?;
+                }
+                #[cfg(not(windows))]
+                std::fs::rename(&temporary, destination)
+                    .map_err(|_| Error("STORAGE_UNAVAILABLE"))?;
+            }
+            #[cfg(unix)]
+            File::open(parent)
+                .map_err(|_| Error("STORAGE_UNAVAILABLE"))?
+                .sync_all()
+                .map_err(|_| Error("STORAGE_UNAVAILABLE"))?;
+            Ok(result)
+        })();
+        if temporary.exists() {
+            let _ = std::fs::remove_file(temporary);
+        }
+        result
+    }
     pub fn file_request(&self, cap: &Capability, draft: &str) -> Result<Value> {
         let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
         let s = self.authorize(&mut i, cap)?;
@@ -231,6 +383,10 @@ impl Vault {
         let count = text(&record["envelope"]["header"]["framing"]["chunk_count"])?
             .parse::<u8>()
             .map_err(|_| Error("INTEGRITY_FAILURE"))?;
+        let cache = super::file_cache::CipherCache::for_vault(self).ok();
+        let mut cache_job = cache
+            .as_ref()
+            .and_then(|c| c.begin(&self.codec, &record).ok());
         let mut parts = (0..count).map(|index| {
             let response = self.file_http(
                 cap,
@@ -239,9 +395,19 @@ impl Vault {
                 FileOperation::Chunk { version, index },
             )?;
             check(response.status == 200, "FILE_TRANSPORT_DENIED")?;
+            if let (Some(cache), Some(job)) = (&cache, &mut cache_job)
+                && cache.put(job, index as usize, &response.bytes).is_err()
+            {
+                cache_job = None;
+            }
             Ok(response.bytes)
         });
-        self.export_file(cap, &record, &mut parts, sink)
+        let result = self.export_file(cap, &record, &mut parts, sink)?;
+        drop(parts);
+        if let (Some(cache), Some(job)) = (&cache, &mut cache_job) {
+            let _ = cache.finish(job);
+        }
+        Ok(result)
     }
     pub fn file_http(
         &self,
@@ -477,6 +643,17 @@ impl Vault {
         name: &str,
         media: &str,
     ) -> Result<Value> {
+        self.prepare_file_bound(cap, group, file, name, media, None)
+    }
+    fn prepare_file_bound(
+        &self,
+        cap: &Capability,
+        group: &str,
+        file: &mut File,
+        name: &str,
+        media: &str,
+        expected_policy: Option<&Value>,
+    ) -> Result<Value> {
         // Hash before selecting keys; each later read must match the encrypted commitment.
         {
             self.lease(cap)?;
@@ -489,6 +666,10 @@ impl Vault {
         let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
         let s = self.authorize(&mut i, cap)?;
         let (author, policy, _key) = self.file_authority(&mut i, &s, group)?;
+        check(
+            expected_policy.is_none_or(|p| p == &policy),
+            "COPY_CONFIRMATION_REQUIRED",
+        )?;
         let context = json!({"contract":"p02-file-c1","protocol":"anynote","protocol_version":1,"service_id":self.scope.service_id,"group_id":group,"file_id":random_id(),"file_version_id":random_id(),"operation_id":random_id(),"author":author,"policy":policy,"parents":[],"file_format":"xchacha20poly1305-chunks-c1","manifest_schema":1});
         let writer = FileWriter::new(
             &self.codec,
@@ -737,7 +918,7 @@ impl Vault {
         )?;
         Ok(data)
     }
-    fn file_reader(&self, cap: &Capability, record: &Value) -> Result<FileReader> {
+    pub(super) fn file_reader(&self, cap: &Capability, record: &Value) -> Result<FileReader> {
         self.lease(cap)?;
         let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
         let s = self.authorize(&mut i, cap)?;

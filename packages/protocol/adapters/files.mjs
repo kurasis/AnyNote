@@ -246,6 +246,7 @@ export class FileReader {
       this.#fileKey = un64(m.file_data_key);
       this.#prefix = un64(m.nonce_prefix);
       delete m.file_data_key;
+      if(Number(h.framing.plaintext_bytes)===0)check(m.plaintext_digest===null||m.plaintext_digest===hash(new Uint8Array()),'PLAINTEXT_MISMATCH');
       this.#manifest = m;
       this.#header = h;
     } finally {

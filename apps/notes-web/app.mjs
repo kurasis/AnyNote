@@ -21,7 +21,7 @@ const vault=new LocalVault('/auth/vault-worker.js',mask);
 function erase(v){if(v&&typeof v==='object')for(const k of Object.keys(v)){if(typeof v[k]==='string')v[k]='';else erase(v[k]);}}
 let transfers;
 function mask(){
- transfers?.pause();if($('file-source'))$('file-source').value='';if($('file-items'))$('file-items').replaceChildren();if($('file-state'))$('file-state').textContent='';
+ transfers?.pause();if($('file-delete-confirm'))$('file-delete-confirm').checked=false;if($('file-copy-confirm'))$('file-copy-confirm').checked=false;if($('file-copy-audience'))$('file-copy-audience').textContent='';if($('file-source'))$('file-source').value='';if($('file-items'))$('file-items').replaceChildren();if($('file-state'))$('file-state').textContent='';
  poller?.stop();synchronizer=undefined;
  generation++;clearTimeout(timer);editor&&erase(editor);editor=undefined;pendingConflict&&erase(pendingConflict);pendingConflict=undefined;
  roles.clear();groups.clear();titles.clear();references.clear();preferences=[];settingsGroup=undefined;groupSelected=threadSelected=undefined;server=false;
@@ -349,8 +349,12 @@ $('file-refresh').onclick=()=>run(async()=>{
  $('file-items').replaceChildren();const local=await transfers.command('list');for(const f of local.filter(f=>f.group_id===groupSelected&&f.state!=='SUPERSEDED')){
   const li=document.createElement('li');li.textContent=f.state+' · '+f.file_version_id;
   if(f.state==='UNATTACHED')li.append(button(text('attach_file'),async()=>{if(!editor)throw Error('THREAD_REQUIRED');await flushLocal();await vault.notes('attach',[{draft_id:editor.draft_id,file_draft_id:f.draft_id}]);await openDraft(editor.draft_id);}));
-  else li.append(button(text('resume_file'),async()=>{const source=$('file-source').files[0];await transfers.upload(source,groupSelected,f.draft_id);}));
-  if(f.state!=='UNATTACHED')li.append(button(text('cancel_file'),()=>transfers.cancel(f.draft_id)));$('file-items').append(li);
+  else if(f.state!=='ATTACHED')li.append(button(text('resume_file'),async()=>{const source=$('file-source').files[0];await transfers.upload(source,groupSelected,f.draft_id);}));
+  let fileCopy;
+  li.append(button(text('file_copy_preview'),async()=>{const destination=$('copy-destination').value.split('/')[0];if(!destination)throw Error('GROUP_REQUIRED');await groupStatus(destination);await keyFor(groups.get(destination));fileCopy=await transfers.command('copyPreview',{draft_id:f.draft_id,destination_group:destination});$('file-copy-audience').textContent=JSON.stringify(fileCopy.preview.audience);$('file-copy-confirm').checked=false;}));
+  li.append(button(text('file_copy'),async()=>{const destination=$('copy-destination').value.split('/')[0],source=$('file-source').files[0];if(!$('file-copy-confirm').checked||!fileCopy||fileCopy.preview.destination_group!==destination)throw Error('COPY_CONFIRMATION_REQUIRED');await transfers.copy(source,f.draft_id,destination,fileCopy.digest);$('file-copy-confirm').checked=false;}));
+  if(f.state==='UNATTACHED')li.append(button(text('cleanup_file'),async()=>{if(!$('file-delete-confirm').checked)throw Error('CONFIRMATION_REQUIRED');await transport.call('/files/'+f.file_version_id+'/unattached','DELETE');$('file-delete-confirm').checked=false;$('file-state').textContent=text('file_cleanup_pending');}));
+  if(!['UNATTACHED','ATTACHED'].includes(f.state))li.append(button(text('cancel_file'),()=>transfers.cancel(f.draft_id)));$('file-items').append(li);
  }
  const page=await transport.call('/groups/'+groupSelected+'/files');for(const f of page.items){const li=document.createElement('li');li.textContent=f.file_version_id+' · '+f.ciphertext_bytes+' '+text('encrypted_bytes');li.append(button(text('download_file'),async()=>{const record=await transport.call('/files/'+f.file_version_id+'/manifest'),size=Number(record.envelope.header.framing.plaintext_bytes),verified=await transfers.command('observe',{group_id:groupSelected,file_version_id:f.file_version_id,record}),sink=await browserSink(verified.name,size);await transfers.download(groupSelected,f.file_version_id,sink);}));$('file-items').append(li);}
 });

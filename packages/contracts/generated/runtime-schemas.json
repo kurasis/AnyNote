@@ -11316,6 +11316,9 @@
           },
           "file_version_id": {
             "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "local_draft_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
           }
         },
         "required": [
@@ -11590,6 +11593,9 @@
               "ATTACHED",
               "SUPERSEDED"
             ]
+          },
+          "local_draft_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
           }
         },
         "required": [

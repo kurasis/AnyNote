@@ -4434,11 +4434,13 @@ final readonly class P12FilesTransferRef implements \JsonSerializable
         public string $group_id,
         public string $state,
         public string $file_version_id,
+        public string|null $local_draft_id = null,
     ) {}
 
     public function jsonSerialize(): array
     {
         $values = get_object_vars($this);
+        if ($values['local_draft_id'] === null) { unset($values['local_draft_id']); }
         return $values;
     }
 }
@@ -4550,11 +4552,13 @@ final readonly class P12FilesFileTransfer implements \JsonSerializable
         public array|null $record,
         public array|null $receipt,
         public string $state,
+        public string|null $local_draft_id = null,
     ) {}
 
     public function jsonSerialize(): array
     {
         $values = get_object_vars($this);
+        if ($values['local_draft_id'] === null) { unset($values['local_draft_id']); }
         return $values;
     }
 }

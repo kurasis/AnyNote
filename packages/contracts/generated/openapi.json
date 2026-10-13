@@ -15896,6 +15896,9 @@
           },
           "file_version_id": {
             "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "local_draft_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
           }
         },
         "required": [
@@ -16170,6 +16173,9 @@
               "ATTACHED",
               "SUPERSEDED"
             ]
+          },
+          "local_draft_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
           }
         },
         "required": [

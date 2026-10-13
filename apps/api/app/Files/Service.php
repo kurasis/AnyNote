@@ -330,6 +330,20 @@ final class Service
     public function collect(int $limit = 50): array
     {
         D::require($limit >= 1 && $limit <= 100, 'INVALID_REQUEST');
+        foreach (DB::table('snapshot_sessions')->where('state', 'active')->where('expires_at', '<=', now())->orderBy('id')->limit($limit)->get() as $hint) {
+            DB::transaction(function () use ($hint) {
+                DB::table('users')->where('id', $hint->account_id)->lockForUpdate()->first();
+                $this->boundary();
+                $lease = DB::table('snapshot_sessions')->where('id', $hint->id)->lockForUpdate()->first();
+                if ($lease->state !== 'active' || $lease->expires_at > now()->format('Y-m-d H:i:s')) {
+                    return;
+                }
+                foreach (['snapshot_file_pins', 'reference_pins', 'snapshot_items', 'snapshot_pages', 'snapshot_catalog'] as $table) {
+                    DB::table($table)->where('snapshot_id', $lease->id)->delete();
+                }
+                DB::table('snapshot_sessions')->where('id', $lease->id)->update(['state' => 'expired']);
+            }, 3);
+        }
         $expired = 0;
         foreach (DB::table('upload_sessions')->whereIn('state', ['reserved', 'receiving'])->where('expires_at', '<=', now())->orderBy('id')->limit($limit)->get() as $hint) {
             $expired += DB::transaction(function () use ($hint) {

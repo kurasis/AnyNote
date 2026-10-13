@@ -164,7 +164,7 @@
     },
     {
       "path": "packages/contracts/p12-files.schema.json",
-      "sha256": "06554763a4986ad680a227c8b61614fdf6d3d13cf72c2e867874f5bf7b5b011e"
+      "sha256": "483bd770b7cb3311b8d20f47d11bda71d9a1553490425d05eab3c1937a8e6440"
     },
     {
       "path": "apps/api/bootstrap/app.php",
@@ -398,19 +398,19 @@
   "outputs": [
     {
       "path": "packages/contracts/generated/openapi.json",
-      "sha256": "8ae2f7779ee9fcef869f8f9e0124b8090c9841cec36b372d597960e4195ee468"
+      "sha256": "8a3b864d30996e77549efc506d21946accf946ade84258535a58080de7f4d1f7"
     },
     {
       "path": "packages/contracts/generated/protocol.d.ts",
-      "sha256": "5d8b8caa1b88b2753aea15f6bbc82cdf0e145f4aa2b2172b6819edf25ce44a27"
+      "sha256": "6a46bafbae16a90475e21ee59c399237ee0d783bbe6db8aeda1a9972d49203b8"
     },
     {
       "path": "packages/contracts/generated/runtime-schemas.json",
-      "sha256": "fc260eb582e5d3774b5ab1e4623a4fe77dc132532568bd973d8ca05be12378b1"
+      "sha256": "51de8287cf103807b21bad696668043bc89986a77be96fc18f95758fe447c2f3"
     },
     {
       "path": "apps/api/app/Generated/Dtos.php",
-      "sha256": "f5b5c510085097fce3233ac1d74ec77bfce3cc4acbd68add7c6587310948e904"
+      "sha256": "7d0406bf8a718c8a30bd83880e0a1bee8ac936d5a252fa8055e0d3cc59c1ba9e"
     },
     {
       "path": "apps/api/app/Generated/catalogue.json",
@@ -418,7 +418,7 @@
     },
     {
       "path": "apps/api/app/Generated/schemas.json",
-      "sha256": "fc260eb582e5d3774b5ab1e4623a4fe77dc132532568bd973d8ca05be12378b1"
+      "sha256": "51de8287cf103807b21bad696668043bc89986a77be96fc18f95758fe447c2f3"
     }
   ],
   "structures": 307,
