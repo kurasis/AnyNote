@@ -58,7 +58,7 @@ final class PublicProtocol
 
     public function decode(string $component, string $kind, string $bytes): stdClass
     {
-        $allowed = ['p02-v1' => ['bundle', 'context', 'header', 'wrap', 'envelope', 'receipt', 'export-footer-body'], 'p02-identity-c1' => ['identity', 'certificate', 'identity-body', 'certificate-body', 'grant-body', 'grant'], 'p02-file-c1' => ['header', 'envelope', 'checkpoint'], 'p02-state-c1' => ['invitation-body', 'offer-body', 'response-body', 'approval-body', 'confirmation-body', 'possession-body', 'event-body'], 'p02-group-c2' => ['invitation-body', 'acceptance-body', 'policy-body', 'epoch-intent-body', 'descriptor-body', 'epoch-commit-body', 'history-body'], 'p04-api' => ['readiness', 'object-commit', 'commit-result', 'quota-request', 'quota-result', 'invite-request', 'invite-result']];
+        $allowed = ['p02-v1' => ['bundle', 'context', 'header', 'wrap', 'envelope', 'receipt', 'export-footer-body'], 'p02-identity-c1' => ['identity', 'certificate', 'identity-body', 'certificate-body', 'grant-body', 'grant'], 'p02-file-c1' => ['context', 'header', 'envelope', 'wrap', 'checkpoint'], 'p02-state-c1' => ['invitation-body', 'offer-body', 'response-body', 'approval-body', 'confirmation-body', 'possession-body', 'event-body'], 'p02-group-c2' => ['invitation-body', 'acceptance-body', 'policy-body', 'epoch-intent-body', 'descriptor-body', 'epoch-commit-body', 'history-body'], 'p04-api' => ['readiness', 'object-commit', 'commit-result', 'quota-request', 'quota-result', 'invite-request', 'invite-result']];
         if (! in_array($kind, $allowed[$component] ?? [], true)) {
             throw new ApiException('UNSUPPORTED_SCHEMA');
         }

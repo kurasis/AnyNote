@@ -52,7 +52,7 @@ final class SyncController
         }
         if ($r->isMethod('GET')) {
             D::require($r->getContent() === '', 'INVALID_REQUEST');
-            $q = $this->query($r, $op === 'get_sync' ? ['generation', 'sequence', 'watermark', 'group', 'limit', 'bytes'] : ($op === 'get_snapshots_id_pages' ? ['index'] : ($op === 'get_snapshots_id_catalog' ? ['start'] : [])));
+            $q = $this->query($r, $op === 'get_sync' ? ['generation', 'sequence', 'watermark', 'group', 'limit', 'bytes'] : ($op === 'get_snapshots_id_pages' ? ['index'] : (in_array($op, ['get_snapshots_id_catalog', 'get_snapshots_id_files'], true) ? ['start'] : [])));
             if ($op === 'get_sync') {
                 D::require(isset($q['generation'],$q['sequence']) && P::isBinary($q['generation'], 16) && P::counter($q['sequence']), 'INVALID_REQUEST');
                 foreach (['watermark', 'limit', 'bytes'] as $key) {
@@ -75,6 +75,10 @@ final class SyncController
             } elseif ($op === 'get_snapshots_id_revisions_revision') {
                 $result = $this->service->bundle($r, $id, $revision);
                 $shape = 'snapshot-bundle';
+            } elseif ($op === 'get_snapshots_id_files') {
+                D::require(! isset($q['start']) || P::counter($q['start'], '1000'), 'INVALID_REQUEST');
+
+                return response()->json($this->service->files($r, $id, (int) ($q['start'] ?? '0')));
             } elseif ($op === 'get_mutations_operation_id') {
                 $result = app(ScopedRepository::class)->receipt($this->sessions->secret($r), $operation);
                 $this->contracts->value('p09', 'receipt-result', json_decode(json_encode($result, JSON_THROW_ON_ERROR)));

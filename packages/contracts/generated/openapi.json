@@ -771,7 +771,7 @@
         "operationId": "get_files_version_chunks_index",
         "summary": "Authorized ciphertext part delivery",
         "x-implementation-phase": "P12",
-        "x-implemented": false,
+        "x-implemented": true,
         "description": "Account/session/device and signed operation; see original chapter 08",
         "parameters": [
           {
@@ -812,6 +812,18 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "Authorized immutable ciphertext chunk; clients authenticate the full AEAD frame",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary",
+                  "x-maximum-observed-bytes": 8388624
+                }
+              }
+            }
           }
         }
       }
@@ -821,7 +833,7 @@
         "operationId": "get_files_version_manifest",
         "summary": "Authorized signed encrypted manifest",
         "x-implementation-phase": "P12",
-        "x-implemented": false,
+        "x-implemented": true,
         "description": "Account/session/device and signed operation; see original chapter 08",
         "parameters": [
           {
@@ -851,6 +863,16 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P12FilesManifestResult"
+                }
+              }
+            }
           }
         }
       }
@@ -860,7 +882,7 @@
         "operationId": "delete_files_version_unattached",
         "summary": "Current uploader/writer or owner explicitly removes an unreferenced committed version; reference/retention checks required",
         "x-implementation-phase": "P12",
-        "x-implemented": false,
+        "x-implemented": true,
         "description": "Account/session/device and signed operation; see original chapter 08",
         "parameters": [
           {
@@ -887,6 +909,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P12FilesReclaimResult"
                 }
               }
             }
@@ -987,8 +1019,8 @@
         "operationId": "get_groups_id_files",
         "summary": "Paginated attachment/file-version metadata",
         "x-implementation-phase": "P12",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implemented": true,
+        "description": "Current trusted session and device; exact account/group/immutable file scope; writer for upload and current read access for every ciphertext request.",
         "parameters": [
           {
             "name": "id",
@@ -1014,6 +1046,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P12FilesFilesPage"
                 }
               }
             }
@@ -1273,8 +1315,8 @@
         "operationId": "post_groups_id_uploads",
         "summary": "Reserve bytes, bind upload to device/group/new file version",
         "x-implementation-phase": "P12",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implemented": true,
+        "description": "Current trusted session and device; exact account/group/immutable file scope; writer for upload and current read access for every ciphertext request.",
         "parameters": [
           {
             "name": "id",
@@ -1303,9 +1345,28 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P12FilesUploadStatus"
+                }
+              }
+            }
           }
         },
-        "x-request-dto-state": "Transport wrapper is finalized by P12 before endpoint implementation; no generic body is accepted"
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P12FilesReserveRequest"
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/health/live": {
@@ -2159,9 +2220,9 @@
       "get": {
         "operationId": "get_me_storage",
         "summary": "storage",
-        "x-implementation-phase": "P13",
-        "x-implemented": false,
-        "description": "See original chapter 08; no implicit public data access",
+        "x-implementation-phase": "P12",
+        "x-implemented": true,
+        "description": "Current trusted session and device; exact account/group/immutable file scope; writer for upload and current read access for every ciphertext request.",
         "parameters": [],
         "security": [
           {
@@ -2181,6 +2242,16 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P12FilesStorage"
+                }
+              }
+            }
           }
         }
       }
@@ -2190,8 +2261,8 @@
         "operationId": "get_me_unattached_files",
         "summary": "Recoverable committed versions uploaded by this account, still in currently accessible groups, awaiting entry publication",
         "x-implementation-phase": "P12",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implemented": true,
+        "description": "Current trusted session and device; exact account/group/immutable file scope; writer for upload and current read access for every ciphertext request.",
         "parameters": [],
         "security": [
           {
@@ -2208,6 +2279,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P12FilesFilesPage"
                 }
               }
             }
@@ -2847,8 +2928,8 @@
         "operationId": "delete_uploads_id",
         "summary": "Cancel/release reservation idempotently",
         "x-implementation-phase": "P12",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implemented": true,
+        "description": "Current trusted session and device; exact account/group/immutable file scope; writer for upload and current read access for every ciphertext request.",
         "parameters": [
           {
             "name": "id",
@@ -2877,6 +2958,16 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P12FilesUploadStatus"
+                }
+              }
+            }
           }
         }
       },
@@ -2884,8 +2975,8 @@
         "operationId": "get_uploads_id",
         "summary": "Missing part list, acknowledged digests, expiry, reservation",
         "x-implementation-phase": "P12",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implemented": true,
+        "description": "Current trusted session and device; exact account/group/immutable file scope; writer for upload and current read access for every ciphertext request.",
         "parameters": [
           {
             "name": "id",
@@ -2911,6 +3002,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P12FilesUploadStatus"
                 }
               }
             }
@@ -2923,8 +3024,8 @@
         "operationId": "post_uploads_id_commit",
         "summary": "Signed encrypted manifest and exact part inventory -> committed unattached version",
         "x-implementation-phase": "P12",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implemented": true,
+        "description": "Current trusted session and device; exact account/group/immutable file scope; writer for upload and current read access for every ciphertext request.",
         "parameters": [
           {
             "name": "id",
@@ -2953,9 +3054,28 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P12FilesReceipt"
+                }
+              }
+            }
           }
         },
-        "x-request-dto-state": "Transport wrapper is finalized by P12 before endpoint implementation; no generic body is accepted"
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P12FilesCommitRequest"
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/uploads/{id}/parts/{index}": {
@@ -2963,8 +3083,8 @@
         "operationId": "put_uploads_id_parts_index",
         "summary": "Bounded binary ciphertext body, expected length/digest",
         "x-implementation-phase": "P12",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "x-implemented": true,
+        "description": "Current trusted session and device; exact account/group/immutable file scope; writer for upload and current read access for every ciphertext request.",
         "parameters": [
           {
             "name": "id",
@@ -3001,6 +3121,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02FileC1Part"
                 }
               }
             }
@@ -4473,6 +4603,55 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/P11SyncSnapshotBundle"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snapshots/{id}/files": {
+      "get": {
+        "operationId": "get_snapshots_id_files",
+        "summary": "Pinned exact file manifest inventory at the snapshot watermark",
+        "x-implementation-phase": "P12",
+        "x-implemented": true,
+        "description": "Bound snapshot owner/device/session with every-page current group authorization",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P12FilesSnapshotFilesPage"
                 }
               }
             }
@@ -13428,6 +13607,13 @@
           },
           "content": {
             "$ref": "#/components/schemas/P09NotesEditContent"
+          },
+          "attachments": {
+            "type": "array",
+            "maxItems": 32,
+            "items": {
+              "$ref": "#/components/schemas/P02V1Attachment"
+            }
           }
         },
         "required": [
@@ -14776,6 +14962,23 @@
           },
           "catalog_digest": {
             "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "files": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]{0,3}$"
+              },
+              "digest": {
+                "$ref": "#/components/schemas/P02FileC1Digest"
+              }
+            },
+            "required": [
+              "count",
+              "digest"
+            ],
+            "additionalProperties": false
           }
         },
         "required": [
@@ -15047,7 +15250,10 @@
               "group-evidence",
               "sync-control",
               "cache",
-              "vault-secrets"
+              "vault-secrets",
+              "file-control",
+              "file-transfer",
+              "file-evidence"
             ]
           },
           "parts": {
@@ -15126,7 +15332,10 @@
               "sync-control",
               "content-part",
               "cache",
-              "vault-secrets"
+              "vault-secrets",
+              "file-control",
+              "file-transfer",
+              "file-evidence"
             ]
           },
           "root_fingerprint": {
@@ -15457,6 +15666,9 @@
           },
           "all_items": {
             "$ref": "#/components/schemas/P02FileC1Counter"
+          },
+          "files_verified": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -15613,6 +15825,640 @@
           "projection",
           "state",
           "quarantine"
+        ],
+        "additionalProperties": false
+      },
+      "P12FilesReserveRequest": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "upload_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "context": {
+            "$ref": "#/components/schemas/P02FileC1Context"
+          },
+          "plaintext_bytes": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "maxLength": 10,
+            "format": "decimal-1000000000"
+          }
+        },
+        "required": [
+          "version",
+          "upload_id",
+          "context",
+          "plaintext_bytes"
+        ],
+        "additionalProperties": false
+      },
+      "P12FilesCommitRequest": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "record": {
+            "$ref": "#/components/schemas/P02V1ExportFileRecord"
+          }
+        },
+        "required": [
+          "version",
+          "record"
+        ],
+        "additionalProperties": false
+      },
+      "P12FilesTransferRef": {
+        "type": "object",
+        "properties": {
+          "draft_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "record_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "state": {
+            "enum": [
+              "NEEDS_SOURCE",
+              "READY",
+              "UPLOADING",
+              "COMMIT_UNKNOWN",
+              "UNATTACHED",
+              "ATTACHED",
+              "SUPERSEDED"
+            ]
+          },
+          "file_version_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          }
+        },
+        "required": [
+          "draft_id",
+          "record_id",
+          "group_id",
+          "state",
+          "file_version_id"
+        ],
+        "additionalProperties": false
+      },
+      "P12FilesWitnessRef": {
+        "type": "object",
+        "properties": {
+          "record_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "file_version_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "envelope_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          }
+        },
+        "required": [
+          "record_id",
+          "group_id",
+          "file_version_id",
+          "envelope_digest"
+        ],
+        "additionalProperties": false
+      },
+      "P12FilesFileControl": {
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "const": "p12-file-control"
+          },
+          "version": {
+            "const": 1
+          },
+          "id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "transfers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P12FilesTransferRef"
+            },
+            "maxItems": 512
+          },
+          "witnesses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P12FilesWitnessRef"
+            },
+            "maxItems": 1000
+          }
+        },
+        "required": [
+          "purpose",
+          "version",
+          "id",
+          "transfers"
+        ],
+        "additionalProperties": false
+      },
+      "P12FilesSource": {
+        "type": "object",
+        "properties": {
+          "size": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          },
+          "parts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P02FileC1Digest"
+            },
+            "maxItems": 120
+          },
+          "digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          }
+        },
+        "required": [
+          "size",
+          "parts",
+          "digest"
+        ],
+        "additionalProperties": false
+      },
+      "P12FilesWriter": {
+        "type": "object",
+        "properties": {
+          "context": {
+            "$ref": "#/components/schemas/P02FileC1Context"
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000000
+          },
+          "next": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 120
+          },
+          "parts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P02FileC1Part"
+            },
+            "maxItems": 120
+          },
+          "file_key": {
+            "type": "string",
+            "format": "base64url-32",
+            "minLength": 43,
+            "maxLength": 43
+          },
+          "manifest_key": {
+            "type": "string",
+            "format": "base64url-32",
+            "minLength": 43,
+            "maxLength": 43
+          },
+          "prefix": {
+            "type": "string",
+            "format": "base64url-16",
+            "minLength": 22,
+            "maxLength": 22
+          },
+          "source_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          }
+        },
+        "required": [
+          "context",
+          "size",
+          "next",
+          "parts",
+          "file_key",
+          "manifest_key",
+          "prefix",
+          "source_digest"
+        ],
+        "additionalProperties": false
+      },
+      "P12FilesReceipt": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "upload_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "file_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "file_version_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "operation_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "envelope_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "ciphertext_bytes": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "maxLength": 19,
+            "format": "decimal-u63"
+          },
+          "state": {
+            "const": "COMMITTED"
+          },
+          "cursor": {
+            "$ref": "#/components/schemas/P02V1Cursor"
+          }
+        },
+        "required": [
+          "version",
+          "upload_id",
+          "file_id",
+          "file_version_id",
+          "group_id",
+          "operation_id",
+          "envelope_digest",
+          "ciphertext_bytes",
+          "state",
+          "cursor"
+        ],
+        "additionalProperties": false
+      },
+      "P12FilesFileTransfer": {
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "const": "p12-file-transfer"
+          },
+          "version": {
+            "const": 1
+          },
+          "draft_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "upload_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "context": {
+            "$ref": "#/components/schemas/P02FileC1Context"
+          },
+          "source": {
+            "$ref": "#/components/schemas/P12FilesSource"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "media": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "writer": {
+            "$ref": "#/components/schemas/P12FilesWriter"
+          },
+          "acknowledged": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]{0,2})$"
+            },
+            "maxItems": 120
+          },
+          "record": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02V1ExportFileRecord"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "receipt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P12FilesReceipt"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state": {
+            "enum": [
+              "NEEDS_SOURCE",
+              "READY",
+              "UPLOADING",
+              "COMMIT_UNKNOWN",
+              "UNATTACHED",
+              "ATTACHED",
+              "SUPERSEDED"
+            ]
+          }
+        },
+        "required": [
+          "purpose",
+          "version",
+          "draft_id",
+          "upload_id",
+          "context",
+          "source",
+          "name",
+          "media",
+          "writer",
+          "acknowledged",
+          "record",
+          "receipt",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "P12FilesFileEvidence": {
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "const": "p12-file-evidence"
+          },
+          "version": {
+            "const": 1
+          },
+          "envelope": {
+            "$ref": "#/components/schemas/P02FileC1Envelope"
+          }
+        },
+        "required": [
+          "purpose",
+          "version",
+          "envelope"
+        ],
+        "additionalProperties": false
+      },
+      "P12FilesUploadStatus": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "upload_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "file_version_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "state": {
+            "enum": [
+              "RESERVED",
+              "RECEIVING",
+              "READY",
+              "COMMITTED",
+              "CANCELLED",
+              "EXPIRED"
+            ]
+          },
+          "expires_at_ms": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "maxLength": 19,
+            "format": "decimal-u63"
+          },
+          "reserved_bytes": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "maxLength": 19,
+            "format": "decimal-u63"
+          },
+          "parts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P02FileC1Part"
+            },
+            "maxItems": 120
+          },
+          "receipt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P12FilesReceipt"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "upload_id",
+          "group_id",
+          "file_version_id",
+          "state",
+          "expires_at_ms",
+          "reserved_bytes",
+          "parts",
+          "receipt"
+        ],
+        "additionalProperties": false
+      },
+      "P12FilesFileRef": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "file_version_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "envelope_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "ciphertext_bytes": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "maxLength": 19,
+            "format": "decimal-u63"
+          },
+          "unattached_expires_at_ms": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "maxLength": 19,
+            "format": "decimal-u63"
+          }
+        },
+        "required": [
+          "file_id",
+          "file_version_id",
+          "group_id",
+          "envelope_digest",
+          "ciphertext_bytes",
+          "unattached_expires_at_ms"
+        ],
+        "additionalProperties": false
+      },
+      "P12FilesFilesPage": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P12FilesFileRef"
+            },
+            "maxItems": 100
+          },
+          "next_after": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "items",
+          "next_after"
+        ],
+        "additionalProperties": false
+      },
+      "P12FilesStorage": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "limit_bytes": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "maxLength": 19,
+            "format": "decimal-u63"
+          },
+          "committed_bytes": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "maxLength": 19,
+            "format": "decimal-u63"
+          },
+          "reserved_bytes": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "maxLength": 19,
+            "format": "decimal-u63"
+          },
+          "pending_limit_bytes": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "maxLength": 19,
+            "format": "decimal-u63"
+          },
+          "account_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "physical_overhead_included": {
+            "const": false
+          }
+        },
+        "required": [
+          "version",
+          "limit_bytes",
+          "committed_bytes",
+          "reserved_bytes",
+          "pending_limit_bytes",
+          "account_id",
+          "physical_overhead_included"
+        ],
+        "additionalProperties": false
+      },
+      "P12FilesReclaimResult": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "file_version_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "state": {
+            "const": "RECLAIMABLE"
+          }
+        },
+        "required": [
+          "version",
+          "file_version_id",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "P12FilesManifestResult": {
+        "$ref": "#/components/schemas/P02V1ExportFileRecord"
+      },
+      "P12FilesSnapshotFilesPage": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "snapshot_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "start": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "maxLength": 19,
+            "format": "decimal-u63"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P12FilesManifestResult"
+            },
+            "maxItems": 8
+          },
+          "next": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(0|[1-9][0-9]*)$",
+                "maxLength": 19,
+                "format": "decimal-u63"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "snapshot_id",
+          "start",
+          "items",
+          "next"
         ],
         "additionalProperties": false
       }

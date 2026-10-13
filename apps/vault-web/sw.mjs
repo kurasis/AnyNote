@@ -1,3 +1,4 @@
+import './export-worker.mjs';
 // No dynamic/API/auth/recovery/plaintext caching. Activation leaves every local
 // encrypted database untouched, including pending work from the previous app.
 const cacheName='anynote-p07-static-'+ANYNOTE_STATIC_REVISION;

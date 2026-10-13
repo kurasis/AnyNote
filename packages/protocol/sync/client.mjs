@@ -1,3 +1,6 @@
+import {FilesClient} from '../files/client.mjs';
+import {envelopeDigest} from '../adapters/codecs/codec.mjs';
+import {wire} from '../adapters/codecs/identity-codec.mjs';
 import {AuthClient,boundedResponse} from '../auth-client.mjs';
 import {strictJson} from '../src/strict-json.mjs';
 import {syncValue,syncHash} from './codec.mjs';
@@ -37,6 +40,11 @@ export class Synchronizer {
    // Restarting an interrupted lease resumes exact pages/items; duplicates are verified.
    for(let start=Number(s.stage.catalog_next);start<Number(s.stage.result.catalog_count);){const page=await this.transport.call(path+'/catalog?start='+start,null,'catalog-page');for(const g of page.groups)await this.group(g.group_id,g);s=await this.command('catalog',page);if(page.next===null)break;start=Number(page.next);}
    if(s.stage.result.catalog_count==='0')s=await this.command('catalog',await this.transport.call(path+'/catalog',null,'catalog-page'));
+   if(s.stage.result.files){
+    const transport=new FilesClient(this.notes.auth),inventory=[];let start=0;
+    do{const page=await transport.call(path+'/files?start='+start);ensure(page.snapshot_id===d.snapshot_id&&page.start===String(start)&&Array.isArray(page.items),'SYNC_GAP');for(const record of page.items){const c=record.envelope.header.context;await this.vault.notes('files',['observe',{group_id:c.group_id,file_version_id:c.file_version_id,record}]);inventory.push({group_id:c.group_id,file_id:c.file_id,file_version_id:c.file_version_id,envelope_digest:envelopeDigest(wire(record.envelope))});}if(page.next===null)break;ensure(Number(page.next)===start+page.items.length&&page.items.length>0,'SYNC_GAP');start=Number(page.next);}while(start<1000);
+    s=await this.command('snapshotFiles',{inventory});
+   }
    // A page may have been committed before its bodies. Replay already saved pages
    // for item recovery without re-appending their inventory receipts.
    for(let n=0;n<Number(d.page_count);n++){const page=await this.transport.call(path+'/pages?index='+n,null,'snapshot-page-result');if(n>=s.stage.pages)s=await this.command('snapshotPage',page);for(const item of page.page.items)await this.command('snapshotItem',await this.transport.call(path+'/revisions/'+item.revision_id,null,'snapshot-bundle'));}
@@ -50,7 +58,7 @@ export class Synchronizer {
    const c=s.cursor,page=s.pending??await this.transport.call('/sync?generation='+c.generation+'&sequence='+c.sequence+(s.scope.group_id?'&group='+s.scope.group_id:''),null,'delta-page');
    // Security changes refresh the actual signed authority then take a consistent
    // snapshot. No unsigned hint is treated as an authorization instruction.
-   if(page.events.some(e=>e.revision_id===null)){if(s.pending)await this.command('deltaCancel');s=await this.snapshot();continue;}
+   if(page.events.some(e=>e.revision_id===null||e.kind==='file')){if(s.pending)await this.command('deltaCancel');s=await this.snapshot();continue;}
    if(!s.pending)await this.command('deltaStart',page);
    for(const event of page.events){await this.group(event.group_id);const state=await this.notes.call('/objects/'+event.object_id,null,'object-state'),result=await this.notes.call('/objects/'+event.object_id+'/revisions/'+event.revision_id,null,'bundle-result'),c=result.bundle.envelope.header.context;
     await this.command('deltaItem',{version:1,item:{group_id:event.group_id,object_id:event.object_id,object_kind:c.object_kind,revision_id:event.revision_id,envelope_digest:event.digest,payload_status:c.action==='soft-delete'?'tombstone':'retained'},reference:state.object,bundle:result.bundle});

@@ -178,6 +178,23 @@
         },
         "catalog_digest": {
           "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        },
+        "files": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,3}$"
+            },
+            "digest": {
+              "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+            }
+          },
+          "required": [
+            "count",
+            "digest"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
@@ -449,7 +466,10 @@
             "group-evidence",
             "sync-control",
             "cache",
-            "vault-secrets"
+            "vault-secrets",
+            "file-control",
+            "file-transfer",
+            "file-evidence"
           ]
         },
         "parts": {
@@ -528,7 +548,10 @@
             "sync-control",
             "content-part",
             "cache",
-            "vault-secrets"
+            "vault-secrets",
+            "file-control",
+            "file-transfer",
+            "file-evidence"
           ]
         },
         "root_fingerprint": {
@@ -859,6 +882,9 @@
         },
         "all_items": {
           "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+        },
+        "files_verified": {
+          "type": "boolean"
         }
       },
       "required": [

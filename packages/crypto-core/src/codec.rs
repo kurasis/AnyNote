@@ -93,6 +93,7 @@ pub fn limit(profile: &str, kind: &str) -> usize {
         "p08-local-v1" => 524288,
         "p09-notes" | "p10-shared" => 4194304,
         "p11-sync" => 33554432,
+        "p12-files" => 1048576,
         "p02-state-c1" => {
             if kind == "qr" {
                 8192
@@ -154,6 +155,10 @@ impl Codec {
             (
                 "p11-sync",
                 include_str!("../../contracts/p11-sync.schema.json"),
+            ),
+            (
+                "p12-files",
+                include_str!("../../contracts/p12-files.schema.json"),
             ),
         ];
         let values: Vec<_> = schemas

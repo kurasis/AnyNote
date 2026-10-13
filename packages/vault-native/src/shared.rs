@@ -1651,6 +1651,20 @@ pub(crate) fn object_author(
     own.active(&scope.device_id, Some("receive-group-key"))?;
     let env = &bundle["envelope"];
     let c = &env["header"]["context"];
+    let file = bundle["record_kind"] == "file-manifest";
+    let profile = if file { "p02-file-c1" } else { "p02-v1" };
+    codec.validate(profile, "envelope", env)?;
+    let revision = if file {
+        &c["file_version_id"]
+    } else {
+        &c["revision_id"]
+    };
+    let object = if file { &c["file_id"] } else { &c["object_id"] };
+    let kind = if file {
+        json!("file-manifest")
+    } else {
+        c["object_kind"].clone()
+    };
     check(
         c["service_id"] == proof["pin"]["service_id"] && c["group_id"] == proof["pin"]["group_id"],
         "CONTEXT_MISMATCH",
@@ -1685,11 +1699,15 @@ pub(crate) fn object_author(
         author_role != "reader" && (c["object_kind"] != "group-metadata" || author_role == "owner"),
         "HISTORICAL_WRITER_REQUIRED",
     )?;
-    let ed = digest("p02-v1", "envelope", env)?;
-    let anchored = v.records.get(text(&c["revision_id"])?).is_some_and(|r| {
+    let ed = digest(
+        profile,
+        if file { "file-envelope" } else { "envelope" },
+        env,
+    )?;
+    let anchored = v.records.get(text(revision)?).is_some_and(|r| {
         r["envelope_digest"] == ed
-            && r["object_id"] == c["object_id"]
-            && r["object_kind"] == c["object_kind"]
+            && r["object_id"] == *object
+            && r["object_kind"] == kind
             && r["parents"] == c["parents"]
     });
     if !anchored {
@@ -1709,7 +1727,7 @@ pub(crate) fn object_author(
         "KEY_REPAIR_REQUIRED",
     )?;
     crypto::verify(
-        &codec.signing("p02-v1", "header", &env["header"])?,
+        &codec.signing(profile, "header", &env["header"])?,
         text(&env["signature"])?,
         &un64(text(&d.certificate["body"]["device_signing_key"])?)?,
     )?;

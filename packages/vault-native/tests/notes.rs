@@ -709,3 +709,132 @@ fn native_verified_revoke_blocks_old_epoch_even_if_service_flags_are_false() {
     drop(peer);
     drop(cleanup);
 }
+
+#[test]
+fn p12_native_incompressible_gigabyte_durable_resume_and_export() {
+    use sha2::{Digest, Sha256};
+    use std::fs::{File, OpenOptions};
+    use std::io::{Read, Seek, SeekFrom, Write};
+    let f = Fixture::new();
+    let mut cap = f.vault.unlock_phrase(PHRASE).unwrap();
+    let g = group(&f, &cap);
+    let root = f.vault.path().parent().unwrap();
+    let source_path = root.join("explicit-synthetic-source.bin");
+    let mut source = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .open(&source_path)
+        .unwrap();
+    let mut expected = Sha256::new();
+    let mut left = 1_000_000_000usize;
+    while left > 0 {
+        let bytes = libsodium_rs::random::bytes(left.min(8_388_608));
+        source.write_all(&bytes).unwrap();
+        expected.update(&bytes);
+        left -= bytes.len();
+    }
+    source.sync_all().unwrap();
+    let made = f
+        .vault
+        .prepare_file(
+            &cap,
+            g["group_id"].as_str().unwrap(),
+            &mut source,
+            "P12 SECRET WINDOWS NAME.txt",
+            "application/octet-stream",
+        )
+        .unwrap();
+    let draft = made["draft_id"].as_str().unwrap();
+    let mut acknowledgements = Vec::new();
+    for index in 0..120usize {
+        let cipher = f.vault.file_part(&cap, draft, &mut source, index).unwrap();
+        if index == 0 {
+            assert_eq!(
+                cipher,
+                f.vault.file_part(&cap, draft, &mut source, index).unwrap()
+            );
+            source.seek(SeekFrom::Start(0)).unwrap();
+            let mut original = [0u8];
+            source.read_exact(&mut original).unwrap();
+            source.seek(SeekFrom::Start(0)).unwrap();
+            source.write_all(&[original[0] ^ 1]).unwrap();
+            assert_eq!(
+                f.vault
+                    .file_part(&cap, draft, &mut source, index)
+                    .unwrap_err()
+                    .0,
+                "SOURCE_CHANGED"
+            );
+            source.seek(SeekFrom::Start(0)).unwrap();
+            source.write_all(&original).unwrap();
+        }
+        if index == 53 {
+            f.vault.lock_all().unwrap();
+            assert!(f.vault.file_part(&cap, draft, &mut source, index).is_err());
+            cap = f.vault.unlock_phrase(PHRASE).unwrap();
+            assert_eq!(
+                cipher,
+                f.vault.file_part(&cap, draft, &mut source, index).unwrap()
+            );
+        }
+        File::create(root.join(format!("encrypted-part-{index}")))
+            .unwrap()
+            .write_all(&cipher)
+            .unwrap();
+        acknowledgements.push(json!({"index":index.to_string(),"ciphertext_bytes":cipher.len().to_string(),"ciphertext_digest":hash(&cipher)}));
+    }
+    assert_eq!(acknowledgements[119]["ciphertext_bytes"], "1755664");
+    let finish = f.vault.file_finish(&cap, draft, &acknowledgements).unwrap();
+    assert_eq!(
+        finish,
+        f.vault.file_finish(&cap, draft, &acknowledgements).unwrap()
+    );
+    let record = &finish["request"]["record"];
+    assert_eq!(
+        record["envelope"]["header"]["framing"]["plaintext_bytes"],
+        "1000000000"
+    );
+    let mut parts = (0..120).map(|index| {
+        std::fs::read(root.join(format!("encrypted-part-{index}")))
+            .map_err(|_| anynote_crypto_core::Error("STORAGE_UNAVAILABLE"))
+    });
+    let output_path = root.join("explicit-synthetic-export.incomplete");
+    let mut output = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .open(&output_path)
+        .unwrap();
+    let exported = f
+        .vault
+        .export_file(&cap, record, &mut parts, &mut output)
+        .unwrap();
+    assert_eq!(exported["complete"], true);
+    output.seek(SeekFrom::Start(0)).unwrap();
+    let mut observed = Sha256::new();
+    let mut buffer = vec![0u8; 65536];
+    loop {
+        let n = output.read(&mut buffer).unwrap();
+        if n == 0 {
+            break;
+        }
+        observed.update(&buffer[..n]);
+    }
+    assert_eq!(expected.finalize(), observed.finalize());
+    let disk = std::fs::read(f.vault.path()).unwrap();
+    assert!(
+        !disk
+            .windows(b"P12 SECRET WINDOWS NAME".len())
+            .any(|w| w == b"P12 SECRET WINDOWS NAME")
+    );
+    let wal = f.vault.path().with_extension("sqlite-wal");
+    if wal.exists() {
+        let bytes = std::fs::read(wal).unwrap();
+        assert!(
+            !bytes
+                .windows(b"P12 SECRET WINDOWS NAME".len())
+                .any(|w| w == b"P12 SECRET WINDOWS NAME")
+        );
+    }
+}

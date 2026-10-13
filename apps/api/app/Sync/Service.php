@@ -5,11 +5,13 @@ namespace App\Sync;
 use App\Backend\Actor;
 use App\Crypto\PublicProtocol as P;
 use App\Devices\Protocol as D;
+use App\Files\BlobStore;
 use App\Http\ApiException;
 use App\Notes\Repository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use stdClass;
+use Truschery\Kanon\Json;
 
 /** Transport hints never replace independently verified content/security authority. */
 final class Service
@@ -121,6 +123,7 @@ final class Service
 
     private function release(stdClass $lease, string $state): void
     {
+        DB::table('snapshot_file_pins')->where('snapshot_id', $lease->id)->delete();
         DB::table('reference_pins')->where('snapshot_id', $lease->id)->delete();
         foreach (['snapshot_items', 'snapshot_pages', 'snapshot_catalog'] as $table) {
             DB::table($table)->where('snapshot_id', $lease->id)->delete();
@@ -142,7 +145,32 @@ final class Service
 
     private function result(Actor $a, stdClass $lease): array
     {
-        return ['version' => 1, 'scope' => $this->scope($a, $lease->scope_group_id), 'descriptor' => json_decode($lease->descriptor), 'catalog_count' => (string) $lease->catalog_count, 'catalog_digest' => $lease->catalog_digest];
+        $result = ['version' => 1, 'scope' => $this->scope($a, $lease->scope_group_id), 'descriptor' => json_decode($lease->descriptor), 'catalog_count' => (string) $lease->catalog_count, 'catalog_digest' => $lease->catalog_digest];
+        $files = DB::table('snapshot_file_pins as p')->join('file_versions as v', 'p.file_version_id', '=', 'v.id')->where('p.snapshot_id', $lease->id)->orderBy('v.id')->get(['v.id', 'v.file_id', 'v.group_id', 'v.manifest_digest']);
+        if ($files->isNotEmpty()) {
+            $inventory = $files->map(fn ($v) => (object) ['group_id' => $v->group_id, 'file_id' => $v->file_id, 'file_version_id' => $v->id, 'envelope_digest' => $v->manifest_digest])->all();
+            $result['files'] = ['count' => (string) count($inventory), 'digest' => P::b64(hash('sha256', "AnyNote/P12/snapshot-files\0".Json::canonicalize($inventory), true))];
+        }
+
+        return $result;
+    }
+
+    public function files(Request $r, string $id, int $start): array
+    {
+        return DB::transaction(function () use ($r, $id, $start) {
+            [$a, $lease] = $this->lease($r, $id);
+            $count = DB::table('snapshot_file_pins')->where('snapshot_id', $id)->count();
+            D::require($start <= $count, 'NOT_FOUND');
+            $rows = DB::table('snapshot_file_pins as p')->join('file_versions as v', 'p.file_version_id', '=', 'v.id')->where('p.snapshot_id', $id)->orderBy('v.id')->offset($start)->limit(8)->get(['v.*']);
+            $items = [];
+            foreach ($rows as $file) {
+                $this->notes->group($a, $file->group_id);
+                D::require($file->state === 'committed', 'INTEGRITY_FAILURE');
+                $items[] = json_decode($file->manifest_record);
+            }
+
+            return ['version' => 1, 'snapshot_id' => $id, 'start' => (string) $start, 'items' => $items, 'next' => $start + count($items) < $count ? (string) ($start + count($items)) : null];
+        }, 3);
     }
 
     public function start(Request $r, stdClass $body): array
@@ -192,7 +220,7 @@ final class Service
             foreach ($rows as $row) {
                 $envelope = json_decode($row->signed_envelope);
                 $context = $envelope->header->context;
-                D::require((string) $row->stored_bytes === (string) $row->ciphertext_bytes && hash_equals(strtolower(bin2hex(P::binary($envelope->header->ciphertext_digest))), $row->stored_hash), 'CIPHERTEXT_MISMATCH');
+                D::require((string) $row->stored_bytes === (string) $row->ciphertext_bytes && hash_equals(strtolower(bin2hex(P::binary($envelope->header->ciphertext_digest))), $row->stored_hash), 'INTEGRITY_FAILURE');
                 $item = (object) ['group_id' => $row->group_id, 'object_kind' => $row->kind, 'object_id' => $row->object_id, 'revision_id' => $row->revision_id, 'envelope_digest' => $row->envelope_digest, 'payload_status' => $context->action === 'soft-delete' ? 'tombstone' : 'retained'];
                 $ref = $this->notes->reference($row);
                 $items[] = $item;
@@ -220,6 +248,16 @@ final class Service
                 [$row,$ref] = $records[$n];
                 DB::table('snapshot_items')->insert(['id' => P::b64(random_bytes(16)), 'snapshot_id' => $id, 'group_id' => $item->group_id, 'revision_id' => $item->revision_id, 'item_index' => $n, 'inventory_record' => P::canonical((object) ['item' => $item, 'reference' => $ref])]);
                 DB::table('reference_pins')->insert(['id' => P::b64(random_bytes(16)), 'snapshot_id' => $id, 'group_id' => $item->group_id, 'revision_id' => $item->revision_id]);
+            }
+            // The same read view and GC boundary protect every captured file version,
+            // including unattached recovery work and historical attachment payloads.
+            $capturedFiles = DB::table('file_versions')->whereIn('group_id', $groupIds)->where('state', 'committed')->orderBy('id')->limit(1001)->get();
+            D::require($capturedFiles->count() <= 1000, 'RESOURCE_LIMIT');
+            foreach ($capturedFiles as $file) {
+                foreach (DB::table('file_chunks')->where('file_version_id', $file->id)->get() as $chunk) {
+                    app(BlobStore::class)->verify($chunk);
+                }
+                DB::table('snapshot_file_pins')->insert(['snapshot_id' => $id, 'file_version_id' => $file->id]);
             }
             foreach ($pages as $n => $page) {
                 DB::table('snapshot_pages')->insert(['snapshot_id' => $id, 'page_index' => $n, 'page_record' => P::canonical($page)]);

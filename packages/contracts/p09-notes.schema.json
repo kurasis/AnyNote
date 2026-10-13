@@ -482,6 +482,13 @@
         },
         "content": {
           "$ref": "urn:anynote:p09:notes:v1#/$defs/edit-content"
+        },
+        "attachments": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/attachment"
+          }
         }
       },
       "required": [

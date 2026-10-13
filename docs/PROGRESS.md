@@ -18,7 +18,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P09 | VERIFIED | Eight workflow/transport suites, 131 actual HTTPS/SQL checks, 49 sandboxed two-PWA UI checks, six native note tests/platform and 16 native/PWA interop checks/platform; all sixteen hosted gates PASS |
 | P10 | VERIFIED | Five protected workflow/transport suites, 407 actual HTTPS/SQL checks, 40 sandboxed three-account PWA checks, three native shared tests and 89 native/portable interop checks/platform; all eighteen hosted gates PASS |
 | P11 | VERIFIED | Ten portable suites, 112 actual sync HTTP/SQL checks, 418 membership/lease checks, 45 sandboxed PWA checks, seven native notes and nine new interop checks/platform; all twenty final code jobs PASS; Worker masking and background idle guards verified |
-| P12 | NOT STARTED | P04/P05/P10/P11 |
+| P12 | IN PROGRESS | Protected transfers, actual-byte quota and file/snapshot journals implemented; final fault, hosted browser/platform and exact-head acceptance remain pending |
 | P13 | NOT STARTED | P11/P12 |
 | P14 | NOT STARTED | P07–P13 and actual Windows evidence |
 | P15 | NOT STARTED | P01/P07–P13 and actual iPhone evidence |
@@ -686,3 +686,16 @@ run passed all twenty. Latest follow-up acceptance passed all twenty with the
 additional lifecycle coverage; operational/physical/review limitations remain.
 Final tracking requires fresh twenty-job CI and ordinary SHA-guard merge. Full P12
 handoff is NEXT_TASK. Draft save, Publish and independent fresh restore are separate.
+
+## P12 active implementation — final acceptance pending
+
+Protected immutable file attempts, bounded ciphertext HTTP/blob storage, actual-byte
+reservation conversion, unattached recovery, signed file history and snapshot pins
+are under implementation. Dirty-source development checks passed three portable
+file suites, eight inherited note suites, 94 real TLS/SQL/blob checks and a separate
+341-check run including an incompressible 1,000,000,000-byte HTTP round trip. The
+native SQLite/source/resume/export gigabyte test passed with 120 chunks and a
+matching final hash. Source changed afterward; these are development observations,
+not final exact-source acceptance. Hosted PWA, Windows, complete fault/concurrency
+and all inherited final gates remain mandatory. No physical or independent-review
+gate is closed. No production operation, release or new owner-device trial occurred.

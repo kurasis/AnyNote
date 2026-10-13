@@ -46,8 +46,17 @@ final class ApiBoundary
                     }
                     $response = new Response('', 204);
                 } else {
-                    $body = $request->getContent();
-                    if (strlen($body) > 4194304 || (int) $request->headers->get('Content-Length', '0') > 4194304) {
+                    $binaryPart = $request->isMethod('PUT') && preg_match('#^api/v1/uploads/[A-Za-z0-9_-]{22}/parts/(0|[1-9][0-9]{0,2})$#D', $request->path());
+                    if ($binaryPart) {
+                        if ($request->header('Content-Type') !== 'application/octet-stream' || (int) $request->header('Content-Length', '0') > 8388624) {
+                            throw new ApiException('INVALID_REQUEST');
+                        }
+                        // Symfony/PHP returns a stream; do not materialize binary input in JSON.
+                        $body = '';
+                    } else {
+                        $body = $request->getContent();
+                    }
+                    if (! $binaryPart && (strlen($body) > 4194304 || (int) $request->headers->get('Content-Length', '0') > 4194304)) {
                         throw new ApiException('REQUEST_TOO_LARGE');
                     }
                     if ($body !== '') {

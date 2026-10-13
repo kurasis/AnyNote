@@ -1,4 +1,5 @@
 //! Current account-private content authority, encrypted SQLite journal and closed native commands.
+pub mod files;
 pub mod sync;
 use super::*;
 use crate::device_groups::{create_private_genesis, historical, verify_genesis};
@@ -10,6 +11,11 @@ use std::collections::BTreeMap;
 pub enum NotesRequest {
     Sync {
         request: sync::Request,
+    },
+    ObserveFile {
+        group_id: String,
+        file_version_id: String,
+        record: Value,
     },
     Summary {},
     PrepareGroup {},
@@ -78,6 +84,7 @@ pub enum NotesRequest {
 impl NotesRequest {
     fn wipe(&mut self) {
         match self {
+            Self::ObserveFile { record, .. } => wipe_value(record),
             Self::Save { edit } => wipe_value(edit),
             Self::Group { status } => wipe_value(status),
             Self::Ack { result, .. } => wipe_value(result),
@@ -271,6 +278,41 @@ impl Vault {
         let ctl = note_local::control_id(&self.scope)?;
         let roots = self.note_control(conn, s, key)?;
         let mut checks = vec![(ctl, "note-control"), (s.vault_id.clone(), "vault-secrets")];
+        let file_root = files::control_id(&self.scope)?;
+        if id == file_root {
+            return Ok(true);
+        }
+        let exists: bool = db(conn.query_row(
+            "SELECT EXISTS(SELECT 1 FROM records WHERE id=?1)",
+            [&file_root],
+            |r| r.get(0),
+        ))?;
+        if exists {
+            let control = paged_local::open(
+                &self.codec,
+                conn,
+                &self.scope,
+                &s.pins,
+                (&file_root, "file-control"),
+                &frame(conn, &file_root)?,
+                key,
+            )?;
+            checks.push((file_root, "file-control"));
+            for witness in control["witnesses"].as_array().into_iter().flatten() {
+                let root = text(&witness["record_id"])?;
+                if id == root {
+                    return Ok(true);
+                }
+                checks.push((root.into(), "file-evidence"));
+            }
+            for transfer in values(&control, "transfers")? {
+                let root = text(&transfer["record_id"])?;
+                if id == root {
+                    return Ok(true);
+                }
+                checks.push((root.into(), "file-transfer"));
+            }
+        }
         for g in values(&roots, "groups")? {
             checks.push((text(&g["record_id"])?.to_owned(), "group-evidence"));
         }
@@ -820,6 +862,35 @@ impl Vault {
             )?;
             out.push(json!({"object_kind":ctx["object_kind"],"object_id":ctx["object_id"],"revision_id":ctx["revision_id"],"envelope_digest":w["envelope_digest"],"parents":ctx["parents"],"payload_status":"retained"}));
         }
+        let files = self.file_control(i, s)?;
+        for transfer in values(&files, "transfers")?
+            .iter()
+            .filter(|t| t["group_id"] == group)
+        {
+            let (_, mut data) = self.file_read(i, s, &files, text(&transfer["draft_id"])?)?;
+            if !data["receipt"].is_null() {
+                let envelope = &data["record"]["envelope"];
+                let context = &envelope["header"]["context"];
+                out.push(json!({"object_kind":"file-manifest","object_id":context["file_id"],"revision_id":context["file_version_id"],"envelope_digest":digest("p02-file-c1","file-envelope",envelope)?,"parents":context["parents"],"payload_status":"retained"}));
+            }
+            wipe_value(&mut data);
+        }
+        for witness in files["witnesses"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter(|w| w["group_id"] == group)
+        {
+            if out
+                .iter()
+                .any(|r| r["revision_id"] == witness["file_version_id"])
+            {
+                continue;
+            }
+            let data = self.file_evidence(i, s, witness)?;
+            let context = &data["envelope"]["header"]["context"];
+            out.push(json!({"object_kind":"file-manifest","object_id":context["file_id"],"revision_id":context["file_version_id"],"envelope_digest":witness["envelope_digest"],"parents":context["parents"],"payload_status":"retained"}));
+        }
         out.sort_by(|a, b| a["revision_id"].as_str().cmp(&b["revision_id"].as_str()));
         Ok(out)
     }
@@ -920,6 +991,17 @@ impl Vault {
         Ok(std::mem::take(&mut outcome.result))
     }
     pub fn notes_command(&self, cap: &Capability, request: NotesRequest) -> Result<Value> {
+        if let NotesRequest::ObserveFile {
+            group_id,
+            file_version_id,
+            mut record,
+        } = request
+        {
+            let result = self.observe_file(cap, &group_id, &file_version_id, &record);
+            wipe_value(&mut record);
+            return result;
+        }
+
         if let NotesRequest::RecoverDraft {
             draft_id,
             destination_group,
@@ -1141,7 +1223,8 @@ impl Vault {
                     json!({"groups":c["groups"],"drafts":drafts,"witnessed":values(&c,"witnesses")?.len(),"witnesses":c["witnesses"]}),
                 )
             }
-            NotesRequest::CopyPreview { .. }
+            NotesRequest::ObserveFile { .. }
+            | NotesRequest::CopyPreview { .. }
             | NotesRequest::Copy { .. }
             | NotesRequest::RecoverDraft { .. } => Err(Error("INVALID_REQUEST")),
             NotesRequest::UpgradePrivate { group_id } => {
@@ -1432,7 +1515,35 @@ impl Vault {
                         author(&old, &self.scope, &i.secrets.as_ref().unwrap().signing)?
                     }
                 };
-                let context = json!({"contract":"p02-v1","protocol":"anynote","protocol_version":1,"purpose":"object-context","service_id":self.scope.service_id,"group_id":group,"object_kind":edit["object_kind"],"object_id":object_id,"revision_id":random_id(),"operation_id":random_id(),"thread_id":edit["thread_id"],"action":edit["action"],"author":a,"policy":policy(&info),"parents":edit["parents"],"attachments":[],"payload_schema":1,"archived":edit["archived"]});
+                let attachments = if let Some(a) = edit.get("attachments") {
+                    a.clone()
+                } else if let Some(old) = &old {
+                    self.note_draft(&mut i,&s,&c,text(&old["draft_id"])?)?.1["context"]["attachments"].clone()
+                } else {
+                    json!([])
+                };
+                let files = self.file_control(&i, &s)?;
+                for attachment in attachments
+                    .as_array()
+                    .ok_or(Error("ATTACHMENT_CONTEXT_MISMATCH"))?
+                {
+                    let known = files["witnesses"]
+                        .as_array()
+                        .into_iter()
+                        .flatten()
+                        .find(|w| {
+                            w["group_id"] == edit["group_id"]
+                                && w["file_version_id"] == attachment["file_version_id"]
+                                && w["envelope_digest"] == attachment["envelope_digest"]
+                        })
+                        .ok_or(Error("UNANCHORED_HISTORY"))?;
+                    check(
+                        self.file_evidence(&i, &s, known)?["envelope"]["header"]["context"]["file_id"]
+                            == attachment["file_id"],
+                        "ATTACHMENT_CONTEXT_MISMATCH",
+                    )?;
+                }
+                let context = json!({"contract":"p02-v1","protocol":"anynote","protocol_version":1,"purpose":"object-context","service_id":self.scope.service_id,"group_id":group,"object_kind":edit["object_kind"],"object_id":object_id,"revision_id":random_id(),"operation_id":random_id(),"thread_id":edit["thread_id"],"action":edit["action"],"author":a,"policy":policy(&info),"parents":edit["parents"],"attachments":attachments,"payload_schema":1,"archived":edit["archived"]});
                 let mut payload = edit["content"].clone();
                 payload["contract"] = json!("p02-v1");
                 payload["protocol"] = json!("anynote");

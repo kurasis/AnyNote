@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-COMPONENTS = ['p02-file-c1', 'p02-identity-c1', 'p02-state-c1', 'p02-group-c2', 'p02-v1', 'p03-api', 'p04-api', 'p06-auth', 'p08-devices', 'p09-notes', 'p10-shared', 'p11-sync']
+COMPONENTS = ['p02-file-c1', 'p02-identity-c1', 'p02-state-c1', 'p02-group-c2', 'p02-v1', 'p03-api', 'p04-api', 'p06-auth', 'p08-devices', 'p09-notes', 'p10-shared', 'p11-sync', 'p12-files']
 
 def pascal(value):
     return ''.join(part[:1].upper() + part[1:] for part in re.split('[^A-Za-z0-9]+', value))
@@ -68,6 +68,7 @@ def outputs():
         params=[{'name':n,'in':'path','required':True,'schema':(openapi_schema(documents['p02-file-c1']['$defs']['part']['properties']['index'],'p02-file-c1') if n == 'index' and ('/parts/' in op['path'] or '/chunks/' in op['path']) else {'$ref':'#/components/schemas/P02FileC1Counter'} if n == 'index' else {'$ref':'#/components/schemas/P02FileC1Id'})} for n in re.findall(r'\{([^}]+)\}',op['path'])]
         method={'operationId':op['operation_id'],'summary':op['summary'],'x-implementation-phase':op['phase'],'x-implemented':op['implemented'],'description':op['authorization'],'parameters':params,'security':([{n:[]} for n in op['security']] if 'security' in op else [] if op['implemented'] else [{'CookieSession':[]},{'NativeBearer':[]}]), 'responses':{'default':{'description':'Fixed typed error; unavailable resources are concealed as NOT_FOUND','content':{'application/json':{'schema':{'$ref':'#/components/schemas/P02V1ErrorResponse'}}}}}}
         if 'response' in op:method['responses']['200']={'description':'Strict phase-owned response','content':{'application/json':{'schema':{'$ref':'#/components/schemas/'+typename(op['response'].split('/') if '/' in op['response'] else ['p03-api',op['response']])}}}}
+        if op.get('binary_response'):method['responses']['200']={'description':'Authorized immutable ciphertext chunk; clients authenticate the full AEAD frame','content':{'application/octet-stream':{'schema':{'type':'string','format':'binary','x-maximum-observed-bytes':8388624}}}}
         if 'request' in op:
             key=op['request'].split('/') if '/' in op['request'] else ['p03-api',op['request']]
             method['requestBody']={'required':True,'content':{'application/json':{'schema':{'$ref':'#/components/schemas/'+typename(key)}}}}

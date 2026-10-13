@@ -4,8 +4,10 @@ use App\Auth\Maintenance;
 use App\Auth\Policy;
 use App\Backend\AccountAdministration;
 use App\Backend\Authorization;
+use App\Backend\QuotaLedger;
 use App\Backend\SyncWriter;
 use App\Crypto\PublicProtocol as P;
+use App\Files\Service;
 use App\Http\ApiException;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +23,18 @@ if (! $app->runningInConsole() || ! $app->environment('testing') || config('data
 }
 $op = $argv[1] ?? '';
 $value = match ($op) {
+    'p12-collect' => app(Service::class)->collect(),
+    'p12-reconcile' => app(QuotaLedger::class)->reconcile(),
+    'p12-expire' => (function () {
+        $v = json_decode(stream_get_contents(STDIN));
+        if (! P::isBinary($v->upload_id ?? '', 16)) {
+            throw new LogicException('Invalid synthetic upload');
+        }
+        DB::table('upload_sessions')->where('id', $v->upload_id)->whereIn('state', ['reserved', 'receiving'])->update(['expires_at' => now()->subSeconds(1)]);
+
+        return ['status' => 'PASS'];
+    })(),
+    'p12-file-state' => ['uploads' => DB::table('upload_sessions')->count(), 'committed_files' => DB::table('file_versions')->where('state', 'committed')->count(), 'file_pins' => DB::table('snapshot_file_pins')->count()],
     'p11-state' => (function () {
         return ['snapshots' => DB::table('snapshot_sessions')->count(), 'active' => DB::table('snapshot_sessions')->where('state', 'active')->count(), 'pins' => DB::table('reference_pins')->count(), 'items' => DB::table('snapshot_items')->count(), 'pages' => DB::table('snapshot_pages')->count(), 'catalog' => DB::table('snapshot_catalog')->count()];
     })(),

@@ -2,7 +2,7 @@ import {syncValue,checkedScope,checkedSnapshot,checkedDelta,checkedBundle,pageRe
 import {replayGroup,genesisPin,groupApi,groupBuilders,groupCodec} from '../shared/proof.mjs';
 import {sharedValue} from '../shared/client.mjs';
 import {senderForCertificate,sealGroupKeyForEvaluation} from '../devices/proofs.mjs';
-import {decode as fileDecode,inventoryCommitment,signingInput as fileSigningInput} from '../adapters/codecs/codec.mjs';
+import {decode as fileDecode,inventoryCommitment,signingInput as fileSigningInput,envelopeDigest as fileSigningDigest} from '../adapters/codecs/codec.mjs';
 // Protected Worker workflow. Signing/encryption is subordinate to verified private-group authority.
 import {sodium,b64,un64,hash} from '../adapters/primitives.mjs';
 import {wire,same} from '../adapters/codecs/identity-codec.mjs';
@@ -14,15 +14,16 @@ import {activeCertificateForEvaluation,rosterDetails} from '../devices/roster.mj
 import {certificateDetails} from '../devices/proofs.mjs';
 import {stateDigest} from '../adapters/codecs/state-codec.mjs';
 import {noteValue} from './client.mjs';
+import {FileWorkflow} from '../files/workflow.mjs';
 import {ensure,id} from '../vault/store.mjs';
 const random=()=>b64(sodium.randombytes_buf(16));
 const valueHash=v=>hash(canonicalBytes(wire(v)));
 const requestFor=b=>{const c=b.envelope.header.context;return noteValue('commit-request',{group_id:c.group_id,object_id:c.object_id,object_kind:c.object_kind,action:c.action,thread_id:c.thread_id,bundle:b});};
 function wipe(v){if(v instanceof Uint8Array)sodium.memzero(v);else if(v&&typeof v==='object')for(const k of Object.keys(v)){wipe(v[k]);if(typeof v[k]==='string')v[k]='';}}
 export class NotesWorkflow {
- #defer;#state;#proof;#snapshot;#keys;#copyAudience;
- constructor({scope,pins,keys,load,read,persist,devices,secrets}){this.scope=scope;this.pins=pins;this.#keys=keys;this.load=load;this.read=read;this.persist=persist;this.devices=devices;this.secrets=secrets;}
- close(){this.#state=this.#proof=this.#snapshot=undefined;}
+ #defer;#state;#proof;#snapshot;#keys;#copyAudience;#files;
+ constructor({scope,pins,keys,load,read,persist,devices,secrets,files}){this.scope=scope;this.pins=pins;this.#keys=keys;this.load=load;this.read=read;this.persist=persist;this.devices=devices;this.secrets=secrets;this.files=files;}
+ close(){this.#files?.close();this.#files=undefined;this.#state=this.#proof=this.#snapshot=undefined;}
  async #ready(){
   if(!this.#state)this.#state=(await this.load())??{purpose:'p09-private-control',version:1,groups:[],drafts:[],attempts:[],witnesses:[]};
   noteValue('local-control',this.#state);
@@ -66,11 +67,34 @@ export class NotesWorkflow {
  async #key(group,info,epoch=info.policy?.key_epoch??'0'){
   const data=await this.secrets();try{const k=data.group_keys.find(k=>k.service_id===this.pins.service_id&&k.group_id===group&&k.key_epoch===epoch&&k.epoch_digest===(info.epochs?.find(e=>e.key_epoch===epoch)?.epoch_digest??info.epoch_digest));ensure(k,'KEYS_PENDING');return un64(k.group_secret);}finally{wipe(data);}
  }
+ async #fileAuthority(group,write,envelope){
+  const {ref,info,verified}=await this.#info(group);
+  if(write){this.#writable(ref,info);return {author:this.#author(),policy:this.#policy(info),key:await this.#key(group,info),signing:new Uint8Array(this.#keys.signing.privateKey)};}
+  const c=envelope.header.context;ensure(c.service_id===this.scope.service_id&&c.group_id===group,'CONTEXT_MISMATCH');let certificate;
+  if(verified){let authority;try{authority=groupApi.checkHistoricalFileForEvaluation(verified.token,wire(envelope),groupApi.groupSenderForEvaluation(verified.token,this.scope.account_id,this.scope.device_id,'receive-group-key'));}catch(e){if(e.message!=='UNANCHORED_HISTORY'||!same(c.policy,info.policy))throw e;authority=groupApi.checkCurrentFileForEvaluation(verified.token,wire(envelope));groupApi.observeAcceptedFileForEvaluation(verified.token,wire(envelope));}certificate=authority.certificate;}
+  else{ensure(c.author.account_id===this.scope.account_id&&c.author.root_fingerprint===this.pins.root_fingerprint&&same(c.policy,this.#policy(info)),'CONTEXT_MISMATCH');const historical=historicalSnapshot(this.#snapshot,this.pins,c.author.roster);certificate=activeCertificateForEvaluation(historical.roster,c.author.device_id,'sign-content');ensure(this.#proof.details.devices.some(d=>d.device_id===c.author.device_id&&d.status==='ACTIVE'),'UNANCHORED_HISTORY');}
+  const author=certificateDetails(certificate).body;ensure(author.recovery_generation===c.author.recovery_generation,'CONTEXT_MISMATCH');return {key:await this.#key(group,info,c.policy.key_epoch),publicKey:un64(author.device_signing_key)};
+ }
  async #draft(id){const ref=this.#state.drafts.find(d=>d.draft_id===id);ensure(ref,'DRAFT_NOT_FOUND');const data=decode('draft',wire(await this.read(ref.record_id,'draft')));ensure(data.draft_id===ref.draft_id&&valueHash(data)===ref.saved_digest,'INTEGRITY_FAILURE');return {ref,data};}
  async #attempt(id){const ref=this.#state.attempts.find(a=>a.attempt_id===id);ensure(ref,'ATTEMPT_NOT_FOUND');const data=decode('outbox',wire(await this.read(ref.record_id,'outbox')));ensure(data.attempt_id===ref.attempt_id&&data.draft_id===ref.draft_id&&data.state===ref.state,'INTEGRITY_FAILURE');return {ref,data};}
  async #commit(extra={}){noteValue('local-control',this.#state);if(this.#defer){this.#defer.push(extra);return;}await this.persist(this.#state,extra);}
  async command(op,args=[]){
   await this.#ready();
+  if(op==='files'){
+   ensure(args.length===2&&this.files,'INVALID_FILE_COMMAND');
+   this.#files??=new FileWorkflow({scope:this.scope,...this.files,authority:(g,w,e)=>this.#fileAuthority(g,w,e)});
+   return this.#files.command(args[0],args[1]);
+  }
+  if(op==='attach'){
+   ensure(args.length===1&&id(args[0]?.draft_id)&&id(args[0]?.file_draft_id),'INVALID_REQUEST');const {ref,data}=await this.#draft(args[0].draft_id);
+   ensure(data.context.object_kind==='entry'&&data.context.action!=='soft-delete','ATTACHMENT_CONTEXT_MISMATCH');
+   const transfers=await this.command('files',['list',{}]),file=transfers.find(f=>f.draft_id===args[0].file_draft_id);ensure(file&&file.group_id===ref.group_id,'ATTACHMENT_CONTEXT_MISMATCH');
+   const attachment=await this.command('files',['attachment',{draft_id:file.draft_id}]);
+   const attachments=[...data.context.attachments.filter(a=>a.file_id!==attachment.file_id),attachment];
+   // Frozen ordering is bytewise, not locale-dependent.
+   attachments.sort((a,b)=>{const x=a.file_id+'/'+a.file_version_id,y=b.file_id+'/'+b.file_version_id;return x<y?-1:x>y?1:0;});
+   ensure(attachments.length<=32,'RESOURCE_LIMIT');data.context.attachments=attachments;data.payload.context=structuredClone(data.context);decode('draft',wire(data));ref.saved_digest=valueHash(data);await this.#commit({records:[{id:ref.record_id,kind:'draft',data}]});return {draft_id:ref.draft_id,state:'LOCAL_SAVED',attachment};
+  }
   if(op==='sync')return this.#syncCommand(args);
   if(op==='summary')return {groups:this.#state.groups.map(g=>({group_id:g.group_id,state:g.state,status:g.status})),drafts:this.#state.drafts.map(d=>{const a=this.#state.attempts.findLast(a=>a.draft_id===d.draft_id);return {...d,attempt_id:a?.attempt_id??null,state:a?(a.state==='COMMITTED'&&a.source_digest!==d.saved_digest?'LOCAL_SAVED':a.state):'LOCAL_SAVED'};}),witnessed:this.#state.witnesses.length,witnesses:structuredClone(this.#state.witnesses)};
   if(op==='prepareShared'){
@@ -113,7 +137,8 @@ export class NotesWorkflow {
    ensure(group.status?.settings!==true||edit.content.metadata_kind==='account-preferences','PRIVATE_NAMESPACE_REQUIRED');
    if(edit.content.summary_entry_id!==null)ensure(edit.object_kind==='thread'&&this.#state.witnesses.some(w=>w.group_id===edit.group_id&&w.object_kind==='entry'&&w.thread_id===object_id&&w.object_id===edit.content.summary_entry_id&&w.action!=='soft-delete'),'CONTEXT_MISMATCH');
    for(const p of edit.parents)ensure(this.#state.witnesses.some(w=>w.group_id===edit.group_id&&w.object_id===object_id&&w.revision_id===p.revision_id&&w.envelope_digest===p.envelope_digest),'UNANCHORED_HISTORY');
-   const context={...common('object-context'),service_id:this.scope.service_id,group_id:edit.group_id,object_kind:edit.object_kind,object_id,revision_id:random(),operation_id:random(),thread_id:edit.thread_id,action:edit.action,author:this.#author(true),policy:this.#policy(info),parents:edit.parents,attachments:[],payload_schema:1,archived:edit.archived};
+   const context={...common('object-context'),service_id:this.scope.service_id,group_id:edit.group_id,object_kind:edit.object_kind,object_id,revision_id:random(),operation_id:random(),thread_id:edit.thread_id,action:edit.action,author:this.#author(true),policy:this.#policy(info),parents:edit.parents,attachments:edit.attachments??(old?(await this.#draft(old.draft_id)).data.context.attachments:[]),payload_schema:1,archived:edit.archived};
+   if(context.attachments.length){const files=await this.files.readControl();for(const a of context.attachments){const w=files?.witnesses?.find(w=>w.group_id===edit.group_id&&w.file_version_id===a.file_version_id&&w.envelope_digest===a.envelope_digest);ensure(w,'UNANCHORED_HISTORY');const e=await this.files.readRecord(w.record_id,'file-evidence');ensure(e.envelope.header.context.file_id===a.file_id,'ATTACHMENT_CONTEXT_MISMATCH');}}
    const payload=decode('payload',wire({...common('object-plaintext'),context,...edit.content})),draft_id=old?.draft_id??random(),data=decode('draft',wire({draft_id,context,payload}));
    const ref=old??{draft_id,record_id:random(),group_id:edit.group_id,object_id,object_kind:edit.object_kind,thread_id:edit.thread_id,saved_digest:valueHash(data)};ref.saved_digest=valueHash(data);if(this.#copyAudience)ref.copy_audience_digest=this.#copyAudience;
    if(!old){ensure(this.#state.drafts.length<10000,'RESOURCE_LIMIT');this.#state.drafts.push(ref);}
@@ -163,7 +188,7 @@ export class NotesWorkflow {
   }
   ensure(false,'INVALID_NOTE_COMMAND');
  }
- async #historyRecords(group){const out=[];for(const w of this.#state.witnesses.filter(w=>w.group_id===group)){const data=await this.read(w.cache_id,'cache'),envelope=data.purpose==='p11-header-evidence'?syncValue('header-evidence',data).envelope:decode('bundle',un64(decode('cache',wire(data)).record_bytes)).envelope,b=envelope.header.context;ensure(digest('envelope',wire(envelope))===w.envelope_digest,'INTEGRITY_FAILURE');out.push({object_kind:b.object_kind,object_id:b.object_id,revision_id:b.revision_id,envelope_digest:w.envelope_digest,parents:b.parents,payload_status:'retained'});}return out.sort((a,b)=>a.revision_id<b.revision_id?-1:1);}
+ async #historyRecords(group){const out=[];for(const w of this.#state.witnesses.filter(w=>w.group_id===group)){const data=await this.read(w.cache_id,'cache'),envelope=data.purpose==='p11-header-evidence'?syncValue('header-evidence',data).envelope:decode('bundle',un64(decode('cache',wire(data)).record_bytes)).envelope,b=envelope.header.context;ensure(digest('envelope',wire(envelope))===w.envelope_digest,'INTEGRITY_FAILURE');out.push({object_kind:b.object_kind,object_id:b.object_id,revision_id:b.revision_id,envelope_digest:w.envelope_digest,parents:b.parents,payload_status:'retained'});}if(this.files){const files=await this.files.readControl(),ids=(files?.witnesses??[]).filter(w=>w.group_id===group);for(const w of ids){const evidence=await this.files.readRecord(w.record_id,'file-evidence'),c=evidence.envelope.header.context;ensure(fileDecode('envelope',wire(evidence.envelope))&&w.envelope_digest===fileSigningDigest(wire(evidence.envelope)),'INTEGRITY_FAILURE');out.push({object_kind:'file-manifest',object_id:c.file_id,revision_id:c.file_version_id,envelope_digest:w.envelope_digest,parents:c.parents,payload_status:'retained'});}}return out.sort((a,b)=>a.revision_id<b.revision_id?-1:1);}
  async #syncVerify(item,bundle,reference,previous=[]){
   checkedBundle(item,bundle);noteValue('object-ref',reference);const c=bundle.envelope.header.context;
   ensure(reference.object_id===item.object_id&&reference.object_kind===item.object_kind&&reference.thread_id===c.thread_id,'CONTEXT_MISMATCH');
@@ -217,8 +242,9 @@ export class NotesWorkflow {
    const old=t.items.find(i=>i.item.revision_id===x.item.revision_id);if(old){ensure(same(old.item,x.item)&&same(old.reference,x.reference),'ROLLBACK_QUARANTINE');return output();}
    const verified=await this.#syncVerify(x.item,x.bundle,x.reference,t.items);t.items.push(verified.value);await this.#commit({records:[verified.record]});return output();
   }
+  if(op==='snapshotFiles'){const t=s.stage;ensure(t&&t.result.files&&Array.isArray(x.inventory)&&String(x.inventory.length)===t.result.files.count,'SYNC_GAP');const files=await this.files.readControl();for(const item of x.inventory){const w=files?.witnesses?.find(w=>w.group_id===item.group_id&&w.file_version_id===item.file_version_id&&w.envelope_digest===item.envelope_digest);ensure(w,'UNANCHORED_HISTORY');const e=await this.files.readRecord(w.record_id,'file-evidence');ensure(e.envelope.header.context.file_id===item.file_id,'CONTEXT_MISMATCH');}const digest=hash(new Uint8Array([...new TextEncoder().encode('AnyNote/P12/snapshot-files\0'),...canonicalBytes(wire(x.inventory))]));ensure(digest===t.result.files.digest,'INTEGRITY_FAILURE');t.files_verified=true;await this.#commit();return output();}
   if(op==='snapshotFinish'){
-   ensure(Object.keys(x).length===0,'INVALID_REQUEST');const t=s.stage;ensure(t&&t.catalog_next===t.result.catalog_count&&t.pages.length===Number(t.result.descriptor.page_count)&&t.all_items===t.result.descriptor.item_count&&t.items.length===t.inventory.length&&snapshotCommitment(t.pages)===t.result.descriptor.inventory_digest,'SYNC_GAP');
+   ensure(Object.keys(x).length===0,'INVALID_REQUEST');const t=s.stage;ensure(t&&t.catalog_next===t.result.catalog_count&&t.pages.length===Number(t.result.descriptor.page_count)&&t.all_items===t.result.descriptor.item_count&&t.items.length===t.inventory.length&&(!t.result.files||t.files_verified===true)&&snapshotCommitment(t.pages)===t.result.descriptor.inventory_digest,'SYNC_GAP');
    await this.#syncPublish(t.items,true);s.cursor=structuredClone(t.result.descriptor.watermark);s.watermark=structuredClone(s.cursor);s.stage=null;s.state='SYNCED';s.quarantine=null;await this.#commit();return output();
   }
   if(op==='deltaCancel'){ensure(Object.keys(x).length===0,'INVALID_REQUEST');s.pending=null;if(s.state!=='RESTORE_QUARANTINE')s.state=s.cursor?'SYNCED':'NEW';await this.#commit();return output();}
