@@ -2,6 +2,8 @@
 * text=auto eol=lf
 # Preserve the supplied specification bytes exactly.
 docs/spec/** -text
+# Keep archived public receipts byte-identical to their downloaded artifact digests.
+docs/evidence/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 
 # Preserve exact upstream API-header bytes for SHA-256 and independent ABI checks.
 experiments/p01/windows-hello/tests/hello/vendor/webauthn.h -text
