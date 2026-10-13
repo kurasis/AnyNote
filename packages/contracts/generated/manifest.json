@@ -4,7 +4,7 @@
   "inputs": [
     {
       "path": "scripts/p03-contracts.py",
-      "sha256": "2e6c021aa54de712b1af650176fd45e221acf02a14bae342f4c19148f4ab5a99"
+      "sha256": "e3cc190d819b7d943dc9b17c599e8fd12eb89a3eaa5d054afa76060065157e61"
     },
     {
       "path": "scripts/p04_compatibility.py",
