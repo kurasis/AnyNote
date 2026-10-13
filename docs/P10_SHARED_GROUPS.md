@@ -14,14 +14,15 @@ through an independently trusted channel and confirm the full retained history,
 including retained versions/trash, before inviting. An invitation card contains
 public signed evidence and sealed envelopes, never plaintext or private keys.
 
-The target imports the card after comparing the owner's fingerprint, explicitly
-accepts, and waits for the owner to finish all historical/current grants. Pending
+The target imports the card after independently comparing the original creator's
+fingerprint and the shared history pin, explicitly accepts, and waits for the owner to finish all historical/current grants. Pending
 admission does not authorize content or key endpoints. Activation is one real SQL
 transaction after exact recipient coverage and current policy/roster comparisons.
 A recipient verifies every signed frame and the actual unwrapped key commitment;
 incorrect sealed contents enter KEY_REPAIR_REQUIRED, not a replacement random key.
 
-Owner transfer uses a proposal, the incoming owner's exact co-signature and recent
+The immutable genesis pin retains the original creator identity after ownership
+transfer; the signed policy establishes the current owner. Owner transfer uses a proposal, the incoming owner's exact co-signature and recent
 trusted authentication by both accounts. The incoming owner records consent through
 its own current session; finalization rechecks that consent/session/device and
 leaves exactly one owner. Private ownership transfer is prohibited. Archive allows
@@ -31,6 +32,8 @@ Removing a member immediately denies server content access and blocks new writes
 A new epoch excludes that account from all new distribution records. Previously
 exposed keys/plaintext/backups remain readable to their holders. Signed roster
 changes independently suspend publication even if an unsigned service flag is false.
+Existing members import a fresh independently exchanged card when a new account is
+introduced; PINNED_ACCOUNT_REQUIRED preserves drafts and explains this action.
 Any current member, including a reader, may execute exact mandatory roster maintenance;
 a reader may neither write content nor certify history or change membership. Optional
 rotation is owner/editor only. Same-account certified-device distribution extends
