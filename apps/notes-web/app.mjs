@@ -79,7 +79,15 @@ async function keyFor(status){
  do{const part=await devices.call('/me/device-envelopes'+(cursor?'?after='+cursor:''),null,'envelope-result');count+=part.records.length;if(count>660)throw Error('RESOURCE_LIMIT');found.push(...part.records.filter(r=>r.body.context.group_id===status.group_id&&r.body.context.key_epoch==='0'));cursor=part.next;if(found.length)break;}while(cursor!==null);
  if(found.length)await vault.devices('acceptKeys',[status.genesis,found]);
 }
-async function groupStatus(id){if(!server)return groups.get(id);let g;try{g=await api.call('/groups/'+id,null,'group-status');}catch(e){if(e.message==='NOT_FOUND'){groups.delete(id);renderGroups();if(groupSelected===id){editor&&erase(editor);editor=undefined;$('editor').hidden=true;$('preview').replaceChildren();$('entries').replaceChildren();$('threads').replaceChildren();$('group-heading').textContent='';$('thread-heading').textContent='';$('audience').textContent=text('access_lost');}}throw e;}if(g.kind==='shared'||g.key_epoch!=='0')await sharedProof(id);await vault.notes('group',[g]);groups.set(id,g);return g;}
+function concealGroup(id){
+ groups.delete(id);roles.delete(id);titles.delete(id);for(const [object,r]of references)if(r.group_id===id){references.delete(object);titles.delete(object);}renderGroups();
+ if(groupSelected!==id)return;
+ clearTimeout(timer);editor&&erase(editor);editor=undefined;pendingConflict&&erase(pendingConflict);pendingConflict=undefined;copyPrepared=undefined;groupSelected=threadSelected=undefined;editVersion=0;
+ $('editor').hidden=true;$('conflict').hidden=true;for(const name of ['note-title','note-body','checklist-text','share-card'])$(name).value='';
+ for(const name of ['preview','entries','threads','checklist','versions','trash-items','members-list'])$(name).replaceChildren();
+ for(const name of ['group-heading','thread-heading','thread-summary','membership-state','copy-audience','conflict-remote'])$(name).textContent='';$('audience').textContent=text('access_lost');$('copy-confirm').checked=$('sharing-confirm').checked=false;
+}
+async function groupStatus(id){if(!server)return groups.get(id);let g;try{g=await api.call('/groups/'+id,null,'group-status');}catch(e){if(e.message==='NOT_FOUND')concealGroup(id);throw e;}if(g.kind==='shared'||g.key_epoch!=='0')await sharedProof(id);await vault.notes('group',[g]);groups.set(id,g);return g;}
 async function openRevision(group,ref,head){
  const result=await api.call('/objects/'+ref.object_id+'/revisions/'+head.revision_id,null,'bundle-result');
  if(result.group_id!==group||result.object_id!==ref.object_id||result.revision_id!==head.revision_id)throw Error('CONTEXT_MISMATCH');
@@ -94,7 +102,7 @@ async function loadGroups(more=false){
   catch(e){if(!['NOT_FOUND','KEYS_PENDING'].includes(e.message))throw e;}
  }renderGroups();await summary();
 }
-async function refresh(){await prove();await loadGroups();await copyDestinations();if(groupSelected&&groups.has(groupSelected))await openGroup(groupSelected);await retryPending();await summary();}
+async function refresh(){await flushIfDirty();await prove();if(groupSelected)await groupStatus(groupSelected);await loadGroups();await copyDestinations();if(groupSelected&&groups.has(groupSelected))await openGroup(groupSelected);await retryPending();await summary();}
 async function openGroup(id){
  clearTimeout(timer);await flushIfDirty();groupSelected=id;threadSelected=undefined;const g=await groupStatus(id);if(!g)throw Error('GROUP_REQUIRED');
  $('group-heading').textContent=titles.get(id)??text('pending_title');$('audience').textContent=text(g.state==='archived'?'archived':g.kind==='shared'?'shared_group':'private');$('thread-heading').textContent='';$('entries').replaceChildren();$('editor').hidden=true;$('threads').replaceChildren();threadCursor=null;
@@ -284,7 +292,7 @@ async function previewCopy(){
  copyPrepared={source_group:editor.group_id,destination_group,destination_thread,revision_id:head.revision_id};const preview=await vault.notes('copyPreview',[copyPrepared]);copyPrepared.preview_digest=preview.digest;$('copy-audience').textContent=text('copy_scope')+' '+preview.preview.destination_audience.map(m=>m.account_id+' ('+text({owner:'owner',reader:'reader',editor:'editor_role'}[m.role])+')').join(', ');$('copy-confirm').checked=false;
 }
 async function copyDestinations(){
- $('copy-destination').replaceChildren();for(const [id,g]of groups)if(g.kind==='shared'){const p=await api.call('/groups/'+id+'/threads',null,'objects-page');for(const t of p.objects){const option=document.createElement('option');option.value=id+'/'+t.object_id;option.textContent=(titles.get(id)??text('shared_group'))+' / '+(titles.get(t.object_id)??text('untitled'));$('copy-destination').append(option);}}
+ $('copy-destination').replaceChildren();for(const [id,g]of groups)if(g.kind==='shared'){let p;try{p=await api.call('/groups/'+id+'/threads',null,'objects-page');}catch(e){if(e.message!=='NOT_FOUND')throw e;concealGroup(id);continue;}for(const t of p.objects){const option=document.createElement('option');option.value=id+'/'+t.object_id;option.textContent=(titles.get(id)??text('shared_group'))+' / '+(titles.get(t.object_id)??text('untitled'));$('copy-destination').append(option);}}
 }
 $('invitations').onclick=()=>run(showInvitations);
 $('members-panel').ontoggle=()=>{if($('members-panel').open&&groupSelected&&server)run(members);};
