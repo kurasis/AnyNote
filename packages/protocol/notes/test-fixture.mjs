@@ -13,8 +13,8 @@ class Store {
  close(){}
 }
 
-async function fixture(){
- const initial=await initialRoot(ident(),ident()),sid=ident(),pins={service_id:initial.identity.body.service_id,account_id:initial.identity.body.account_id,root_fingerprint:initial.fingerprint};
+async function fixture(serviceId=ident()){
+ const initial=await initialRoot(serviceId,ident()),sid=ident(),pins={service_id:initial.identity.body.service_id,account_id:initial.identity.body.account_id,root_fingerprint:initial.fingerprint};
  const context={purpose:'device-possession-challenge',contract:'p02-state-c1',protocol:'anynote',protocol_version:1,...pins,intent:'register',challenge_id:ident(),session_binding:hash(Buffer.from('AnyNote/P06/session-binding\0'+sid)),generation:'0',roster:null,nonce:b64(randomKey()),device:initial.device,expires_at:String(Date.now()+50000)},plain={purpose:'device-encryption-proof',context,secret:b64(randomKey())},challenge={context,sealed_challenge:b64(sodium.crypto_box_seal(wire(plain),initial.keys.encryption.publicKey)),challenge_digest:stateDigest('challenge-plaintext',wire(plain))};
  const event=registrationRequest(ident(),initial,challenge).roster,snapshot={identity:initial.identity,events:[event],head:{version:'0',digest:stateDigest('event',wire(event))},generation:'0'};
  const old=await installation(pins,initial.keys,initial.device.device_id);await sync(old,snapshot);const keys=deviceKeys(),fresh=await installation(pins,keys,ident());await sync(fresh,snapshot);return {initial,pins,sid,snapshot,old,fresh,keys};

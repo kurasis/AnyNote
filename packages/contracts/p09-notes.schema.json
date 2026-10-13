@@ -68,7 +68,10 @@
           "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
         },
         "kind": {
-          "const": "private"
+          "enum": [
+            "private",
+            "shared"
+          ]
         },
         "owner_account_id": {
           "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
@@ -692,6 +695,9 @@
         },
         "saved_digest": {
           "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        },
+        "copy_audience_digest": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
         }
       },
       "required": [
@@ -853,24 +859,31 @@
       "additionalProperties": false
     },
     "local-evidence": {
-      "type": "object",
-      "properties": {
-        "purpose": {
-          "const": "p09-private-genesis"
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "purpose": {
+              "const": "p09-private-genesis"
+            },
+            "version": {
+              "const": 1
+            },
+            "evidence": {
+              "$ref": "urn:anynote:p08:devices:v1#/$defs/genesis-result"
+            }
+          },
+          "required": [
+            "purpose",
+            "version",
+            "evidence"
+          ],
+          "additionalProperties": false
         },
-        "version": {
-          "const": 1
-        },
-        "evidence": {
-          "$ref": "urn:anynote:p08:devices:v1#/$defs/genesis-result"
+        {
+          "$ref": "urn:anynote:p10:shared:v1#/$defs/local-evidence"
         }
-      },
-      "required": [
-        "purpose",
-        "version",
-        "evidence"
-      ],
-      "additionalProperties": false
+      ]
     },
     "group-summary": {
       "type": "object",
@@ -882,7 +895,10 @@
           "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
         },
         "kind": {
-          "const": "private"
+          "enum": [
+            "private",
+            "shared"
+          ]
         },
         "owner_account_id": {
           "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"

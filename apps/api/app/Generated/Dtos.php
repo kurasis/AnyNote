@@ -3541,11 +3541,13 @@ final readonly class P09NotesLocalDraft implements \JsonSerializable
         public string $object_kind,
         public null|string $thread_id,
         public string $saved_digest,
+        public string|null $copy_audience_digest = null,
     ) {}
 
     public function jsonSerialize(): array
     {
         $values = get_object_vars($this);
+        if ($values['copy_audience_digest'] === null) { unset($values['copy_audience_digest']); }
         return $values;
     }
 }
@@ -3606,21 +3608,6 @@ final readonly class P09NotesLocalControl implements \JsonSerializable
     }
 }
 
-final readonly class P09NotesLocalEvidence implements \JsonSerializable
-{
-    public function __construct(
-        public string $purpose,
-        public int $version,
-        public array $evidence,
-    ) {}
-
-    public function jsonSerialize(): array
-    {
-        $values = get_object_vars($this);
-        return $values;
-    }
-}
-
 final readonly class P09NotesGroupSummary implements \JsonSerializable
 {
     public function __construct(
@@ -3637,6 +3624,320 @@ final readonly class P09NotesGroupSummary implements \JsonSerializable
         public bool $history_closure_required,
         public bool $restore_quarantined,
         public bool $settings,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedInvitationRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $invitation,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedAcceptRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $acceptance,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedPolicyRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $policy,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedBeginRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $intent,
+        public array|null $policy,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedPageRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $page,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedCommitRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $commit,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedHistoryRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $history,
+        public array $pages,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedCancelRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $operation_id,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $group_id,
+        public string $operation_id,
+        public string $state,
+        public string $digest,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedPending implements \JsonSerializable
+{
+    public function __construct(
+        public string $operation_id,
+        public string $state,
+        public array|null $invitation,
+        public array|null $acceptance,
+        public array|null $intent,
+        public array|null $policy,
+        public array $pages,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedJournal implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $group_id,
+        public array $genesis,
+        public array $events,
+        public array|null $pending,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedInvitationsPage implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $invitations,
+        public null|string $next,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedSharePin implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $service_id,
+        public string $group_id,
+        public string $owner_account_id,
+        public string $owner_root_fingerprint,
+        public string $genesis_digest,
+        public array|null $history,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedAccountProof implements \JsonSerializable
+{
+    public function __construct(
+        public array $pins,
+        public array $snapshot,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedAdoptRequest implements \JsonSerializable
+{
+    public function __construct(
+        public array $pin,
+        public array $journal,
+        public array $accounts,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedLocalEvidence implements \JsonSerializable
+{
+    public function __construct(
+        public string $purpose,
+        public int $version,
+        public array $proof,
+        public array|null $attempt,
+        public array|null $pending_key = null,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        if ($values['pending_key'] === null) { unset($values['pending_key']); }
+        return $values;
+    }
+}
+
+final readonly class P10SharedAttempt implements \JsonSerializable
+{
+    public function __construct(
+        public string $family,
+        public array $body,
+        public array $pages,
+        public array|null $commit,
+        public string $state,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedPendingKey implements \JsonSerializable
+{
+    public function __construct(
+        public string $service_id,
+        public string $group_id,
+        public string $key_epoch,
+        public string $epoch_digest,
+        public string $group_secret,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedAccountCloseRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $account_id,
+        public string $root_fingerprint,
+        public string $operation_id,
+        public string $confirmation,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P10SharedAccountCloseResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $operation_id,
+        public string $state,
     ) {}
 
     public function jsonSerialize(): array

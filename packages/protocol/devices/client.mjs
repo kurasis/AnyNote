@@ -15,7 +15,7 @@ export class DevicesClient {
  #csrf;
  constructor(auth){ensure(auth instanceof AuthClient,'AUTH_CLIENT_REQUIRED');this.auth=auth;}
  async call(path,requestKind,responseKind,body,method=requestKind?'POST':'GET'){
-  ensure(/^\/(?:accounts|me)(?:\/[A-Za-z0-9_-]+)*(?:\?(?:after|head)=[A-Za-z0-9_-]+(?:&(?:after|head)=[A-Za-z0-9_-]+)?)?$/.test(path),'INVALID_DEVICE_PATH');
+  ensure(/^\/(?:accounts|me)(?:\/[A-Za-z0-9_-]+)*(?:\?(?:after|head|root)=[A-Za-z0-9_-]+(?:&(?:after|head|root)=[A-Za-z0-9_-]+){0,2})?$/.test(path),'INVALID_DEVICE_PATH');
   if(requestKind){deviceValue(requestKind,body);this.#csrf??=(await this.auth.csrf()).csrf_token;}
   const response=await this.auth.fetcher(this.auth.issuer+'/api/v1'+path,{method,credentials:'include',cache:'no-store',redirect:'error',headers:{Accept:'application/json',...(requestKind?{'Content-Type':'application/json','X-CSRF-TOKEN':this.#csrf}:{})},...(requestKind?{body:JSON.stringify(body)}:{})});
   const value=strictJson(await boundedResponse(response,response.ok?262144:4096),response.ok?262144:4096);
@@ -30,9 +30,10 @@ export class DevicesClient {
    ensure(part.next===null||BigInt(part.next)===BigInt(cursor??'0')+BigInt(part.events.length),'INTEGRITY_FAILURE');await vault.devices('snapshotPage',[part.events]);cursor=part.next;
   }while(cursor!==null);return vault.devices('snapshotFinish');
  }
- async snapshot(account){
+ async snapshot(account,root=null){
+  ensure(root===null||typeof root==='string'&&/^[A-Za-z0-9_-]{43}$/.test(root),'ROOT_PIN_MISMATCH');
   ensure(/^[A-Za-z0-9_-]{22}$/.test(account),'INVALID_ACCOUNT');let cursor=null,head,identity,generation,bytes=0;const events=[];
-  do{const q=cursor===null?'':'?after='+cursor+'&head='+head.digest,part=await this.call('/accounts/'+account+'/roster'+q,null,'roster-result');
+  do{const q=cursor===null?(root?'?root='+root:''):'?after='+cursor+'&head='+head.digest+(root?'&root='+root:''),part=await this.call('/accounts/'+account+'/roster'+q,null,'roster-result');
    if(head)ensure(same(head,part.head)&&same(identity,part.identity)&&generation===part.generation,'ROSTER_CHANGED');else({head,identity,generation}=part);
    bytes+=wire(part.events).length;ensure(bytes<=16777216&&events.length+part.events.length<=1000,'RESOURCE_LIMIT');
    ensure(part.next===null||(part.events.length>0&&BigInt(part.next)===BigInt(cursor??'0')+BigInt(part.events.length)),'INTEGRITY_FAILURE');events.push(...part.events);cursor=part.next;

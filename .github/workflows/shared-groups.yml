@@ -1,0 +1,140 @@
+name: P10 shared groups and membership integrity
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shared-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shared-linux-http-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      ANYNOTE_TOOLCHAINS: /tmp/anynote-p06-toolchains
+      CHROMIUM_EXECUTABLE: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.12.14'
+      - name: Frozen dependencies and real certificate trust tools
+        run: |
+          bash scripts/install-p01-toolchains.sh
+          source scripts/runtime-env.sh
+          npm --prefix packages/protocol ci --ignore-scripts --no-audit --no-fund
+          npm --prefix experiments/p01 ci --no-audit --no-fund
+          npm --prefix packages/api-client ci --ignore-scripts --no-audit --no-fund
+          npm --prefix apps/devices-web ci --ignore-scripts --no-audit --no-fund
+          npm --prefix apps/notes-web ci --ignore-scripts --no-audit --no-fund
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libnss3-tools
+          python3 scripts/dev-stack.py install
+          python3 scripts/dev-stack.py up
+      - name: Frozen native custody and provenance
+        run: |
+          source scripts/runtime-env.sh
+          cargo fmt --manifest-path packages/vault-native/Cargo.toml --check
+          cargo clippy --manifest-path packages/vault-native/Cargo.toml --locked --all-targets --all-features -j 4 -- -D warnings
+          cargo build --manifest-path packages/vault-native/Cargo.toml --locked --features integration-harness -j 4
+          python3 scripts/p07-native-inventory.py
+          python3 scripts/check-p07.py
+          python3 scripts/check-p08.py
+          python3 scripts/check-p10.py
+          node experiments/p01/p10-native-interop.mjs
+      - name: Actual native SQLite, HTTPS and maintained session rotation
+        run: |
+          source scripts/runtime-env.sh
+          python3 scripts/check-p08-upgrade.py
+          python3 scripts/p06-stack.py reset
+          node packages/protocol/p10-http.mjs
+      - name: Actual three-account UI, full history, reader denial, removal and epoch maintenance
+        run: |
+          source scripts/runtime-env.sh
+          python3 scripts/p06-stack.py reset
+          node experiments/p01/p10-browser.mjs
+          python3 scripts/p10-evidence.py linux
+          git diff --exit-code
+      - name: Preserve only public source receipts and metadata
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: p10-linux-shared-report
+          path: |
+            artifacts/p10/http-report.json
+            artifacts/p10/browser-report.json
+            artifacts/p10/source-report.json
+            artifacts/p10/native-interop-report.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Stop only the owned services
+        if: always()
+        run: |
+          python3 scripts/p06-stack.py stop
+          python3 scripts/dev-stack.py stop
+
+  shared-windows-native:
+    runs-on: windows-2025
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.14.8'
+      - name: Install exact Rust
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal --component clippy,rustfmt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          rustup override set 1.99.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.21.0'
+      - name: Exact maintained PWA adapter dependencies
+        run: |
+          npm --prefix packages/protocol ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Independent official C-header ABI reference
+        working-directory: packages/vault-native
+        run: ./tests/hello/webauthn-layout.ps1
+      - name: Actual MSVC, DPAPI, SQLite/WAL, native IPC and OS hook
+        run: |
+          cargo fmt --manifest-path packages/vault-native/Cargo.toml --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo clippy --manifest-path packages/vault-native/Cargo.toml --locked --all-targets --all-features -- -D warnings
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/p07-native-inventory.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --manifest-path packages/vault-native/Cargo.toml --locked --all-features -- --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --manifest-path packages/vault-native/Cargo.toml --locked --all-features -- --ignored --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node experiments/p01/p10-native-interop.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/p10-evidence.py windows
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: p10-windows-shared-report
+          path: |
+            artifacts/p10/source-report.json
+            artifacts/p10/native-interop-report.json
+          if-no-files-found: error
+          retention-days: 14

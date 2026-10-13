@@ -3,8 +3,10 @@
 namespace App\Backend;
 
 use App\Crypto\PublicProtocol as P;
+use App\Devices\Protocol;
 use App\Http\ApiException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 final class ObjectService
 {
@@ -26,6 +28,7 @@ final class ObjectService
             if ($c->group_id !== $g->id || $c->service_id !== config('api.service_id') || $c->author->account_id !== $a->accountId || $c->author->device_id !== $a->deviceId || $c->author->root_fingerprint !== $a->rootFingerprint || $c->author->recovery_generation !== $a->generation) {
                 throw new ApiException('INVALID_SIGNATURE');
             }
+            Protocol::require((! Schema::hasTable('group_security_receipts') || ! DB::table('group_security_receipts')->where('account_id', $a->accountId)->where('device_id', $a->deviceId)->where('operation_id', $c->operation_id)->exists()), 'IDEMPOTENCY_MISMATCH');
             $digest = P::digest('p02-v1', 'bundle', $b);
             $receiptQuery = DB::table('mutation_receipts')->where('account_id', $a->accountId)->where('device_id', $a->deviceId)->where('operation_id', $c->operation_id);
             if ($old = $receiptQuery->first()) {
@@ -37,7 +40,16 @@ final class ObjectService
                 return json_decode($old->result, true, 32, JSON_THROW_ON_ERROR);
             }
             $this->authorization->group($a, $g->id, 'write');
+            // P04 candidate services have independently isolated row-authority fixtures.
+            // Product HTTP conceals shared groups without a committed P10 genesis.
+            if ($g->kind === 'shared' && Schema::hasTable('shared_group_geneses') && DB::table('shared_group_geneses')->where('group_id', $g->id)->exists()) {
+                $epoch = DB::table('group_key_epochs')->where('group_id', $g->id)->where('epoch_number', $g->epoch_number)->first();
+                Protocol::require($epoch && Protocol::equal(json_decode($epoch->signed_transition)->body->intent->body->rosters, \App\Groups\Protocol::rosters(\App\Groups\Protocol::members($g))), 'REKEY_REQUIRED');
+            }
             $this->authorization->expected($a, $g, $c);
+            if ($c->object_kind === 'group-metadata') {
+                $this->authorization->group($a, $g->id, 'owner');
+            }
             if ($c->object_kind === 'group-metadata' && $c->object_id !== $g->id) {
                 throw new ApiException('MALFORMED_ENVELOPE');
             }

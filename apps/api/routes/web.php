@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CapabilitiesController;
 use App\Http\Controllers\DevicesController;
+use App\Http\Controllers\GroupsController;
 use App\Http\Controllers\NotesController;
 use App\Http\Controllers\OperatorReadinessController;
 use App\Http\Controllers\ReadinessController;
@@ -75,3 +76,20 @@ Route::post('/api/v1/objects/{id}/revisions', NotesController::class)->name('pos
 Route::post('/api/v1/objects/{id}/tombstone', NotesController::class)->name('post_objects_id_tombstone');
 Route::post('/api/v1/objects/{id}/restore', NotesController::class)->name('post_objects_id_restore');
 Route::get('/api/v1/me/content-receipts/{id}', NotesController::class)->name('get_me_content_receipts_id');
+
+// P10 closed signed membership, durable staging and history closure.
+Route::get('/api/v1/me/group-invitations', GroupsController::class)->name('get_me_group_invitations');
+Route::get('/api/v1/groups/{id}/journal', GroupsController::class)->name('get_groups_id_journal');
+Route::post('/api/v1/groups/{id}/invites', GroupsController::class)->name('post_groups_id_invites');
+Route::post('/api/v1/groups/{id}/accept', GroupsController::class)->name('post_groups_id_accept');
+Route::post('/api/v1/groups/{id}/policy', GroupsController::class)->name('post_groups_id_policy');
+Route::post('/api/v1/groups/{id}/owner-consent', GroupsController::class)->name('post_groups_id_owner_consent');
+Route::post('/api/v1/groups/{id}/epoch/begin', GroupsController::class)->name('post_groups_id_epoch_begin');
+Route::post('/api/v1/groups/{id}/epoch/page', GroupsController::class)->name('post_groups_id_epoch_page');
+Route::post('/api/v1/groups/{id}/epoch/commit', GroupsController::class)->name('post_groups_id_epoch_commit');
+Route::post('/api/v1/groups/{id}/history', GroupsController::class)->name('post_groups_id_history');
+Route::post('/api/v1/groups/{id}/cancel', GroupsController::class)->name('post_groups_id_cancel');
+
+Route::post('/api/v1/me/close-account', GroupsController::class)->name('post_me_close_account');
+
+Route::get('/api/v1/me/group-receipts/{id}', GroupsController::class)->name('get_me_group_receipts_id');

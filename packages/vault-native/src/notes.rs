@@ -9,17 +9,61 @@ use std::collections::BTreeMap;
 pub enum NotesRequest {
     Summary {},
     PrepareGroup {},
-    RetryGroup { group_id: String },
-    GroupEvidence { group_id: String },
-    Group { status: Value },
-    Save { edit: Value },
-    Draft { draft_id: String },
-    Queue { draft_id: String },
-    Send { attempt_id: String },
-    Reject { attempt_id: String, code: String },
-    Ack { attempt_id: String, result: Value },
-    Open { request: Value },
-    Cached { revision_id: String },
+    PrepareShared {},
+    UpgradePrivate {
+        group_id: String,
+    },
+    CopyPreview {
+        source_group: String,
+        destination_group: String,
+        revision_id: String,
+    },
+    Copy {
+        source_group: String,
+        destination_group: String,
+        destination_thread: String,
+        revision_id: String,
+        preview_digest: String,
+        confirmed: bool,
+    },
+    Shared {
+        request: crate::shared::Request,
+    },
+    RetryGroup {
+        group_id: String,
+    },
+    GroupEvidence {
+        group_id: String,
+    },
+    Group {
+        status: Value,
+    },
+    Save {
+        edit: Value,
+    },
+    Draft {
+        draft_id: String,
+    },
+    Queue {
+        draft_id: String,
+    },
+    Send {
+        attempt_id: String,
+    },
+    Reject {
+        attempt_id: String,
+        code: String,
+    },
+    Ack {
+        attempt_id: String,
+        result: Value,
+    },
+    Open {
+        request: Value,
+    },
+    Cached {
+        revision_id: String,
+    },
 }
 impl NotesRequest {
     fn wipe(&mut self) {
@@ -82,6 +126,9 @@ pub(crate) fn protected_ids(c: &Value) -> Result<BTreeMap<String, String>> {
     Ok(ids)
 }
 fn policy(info: &Value) -> Value {
+    if info["policy"].is_object() {
+        return info["policy"].clone();
+    }
     json!({"membership":info["membership"],"key_epoch":"0","epoch_digest":info["epoch_digest"],"history_checkpoint_digest":null})
 }
 fn own<'a>(
@@ -119,6 +166,25 @@ fn writable(
     signing: &[u8],
 ) -> Result<()> {
     own(roster, scope, signing)?;
+    if info["policy"].is_object() {
+        check(
+            info["write_state"] == "WRITABLE",
+            match info["write_state"].as_str() {
+                Some("REKEY_REQUIRED") => "REKEY_REQUIRED",
+                Some("HISTORY_CLOSURE_REQUIRED") => "HISTORY_CLOSURE_REQUIRED",
+                Some("UNANCHORED_HISTORY") => "UNANCHORED_HISTORY",
+                _ => "ROLE_FORBIDDEN",
+            },
+        )?;
+        check(
+            info["members"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|m| m["account_id"] == scope.account_id && m["role"] != "reader"),
+            "ROLE_FORBIDDEN",
+        )?;
+    }
     check(info["rekey_required"] == false, "REKEY_REQUIRED")?;
     check(
         group["state"] == "COMMITTED" && group["status"].is_object(),
@@ -134,9 +200,9 @@ fn writable(
     )?;
     check(
         s["membership"] == info["membership"]
-            && s["key_epoch"] == "0"
+            && s["key_epoch"] == policy(info)["key_epoch"]
             && s["epoch_digest"] == info["epoch_digest"]
-            && s["history_checkpoint_digest"].is_null(),
+            && s["history_checkpoint_digest"] == policy(info)["history_checkpoint_digest"],
         "POLICY_CHANGED",
     )
 }
@@ -206,14 +272,19 @@ impl Vault {
         group: &str,
     ) -> Result<(Value, Value, Value)> {
         let reference = find(control, "groups", "group_id", group)?;
-        let evidence = self.note_read(
+        let data = self.note_read(
             i,
             s,
             control,
             text(&reference["record_id"])?,
             "group-evidence",
-        )?["evidence"]
-            .clone();
+        )?;
+        if data["purpose"] == "p10-group-proof" {
+            let (proof, verified) = self.note_shared_proof(i, s, control, snapshot, &data)?;
+            let info = json!({"group_id":group,"membership":verified.policy,"epoch_digest":verified.reference()["epoch_digest"],"policy":verified.reference(),"epochs":verified.epochs,"members":verified.members,"write_state":verified.write_state,"rekey_required":verified.write_state=="REKEY_REQUIRED"});
+            return Ok((reference, proof["journal"]["genesis"].clone(), info));
+        }
+        let evidence = data["evidence"].clone();
         let mut info = verify_genesis(&self.codec, &evidence, snapshot, &s.pins)?;
         let epoch_version =
             text(&evidence["commit"]["body"]["intent"]["body"]["rosters"][0]["roster"]["version"])?
@@ -254,7 +325,7 @@ impl Vault {
                 .find(|k| {
                     k["service_id"] == self.scope.service_id
                         && k["group_id"] == group
-                        && k["key_epoch"] == "0"
+                        && k["key_epoch"] == policy(info)["key_epoch"]
                         && k["epoch_digest"] == info["epoch_digest"]
                 })
                 .ok_or(Error("KEYS_PENDING"))?;
@@ -425,13 +496,19 @@ impl Vault {
             )?;
             let result = (|| {
                 let keys = list(&mut p["data"], "group_keys")?;
-                if let Some(old) = keys
-                    .iter()
-                    .find(|v| v["group_id"] == k["group_id"] && v["key_epoch"] == k["key_epoch"])
-                {
-                    check(old == k, "INTEGRITY_FAILURE")?;
+                let additions = if k.is_array() {
+                    k.as_array().unwrap().clone()
                 } else {
-                    keys.push(k.clone());
+                    vec![k.clone()]
+                };
+                for k in additions {
+                    if let Some(old) = keys.iter().find(|v| {
+                        v["group_id"] == k["group_id"] && v["key_epoch"] == k["key_epoch"]
+                    }) {
+                        check(*old == k, "INTEGRITY_FAILURE")?;
+                    } else {
+                        keys.push(k.clone());
+                    }
                 }
                 keys.sort_by_key(|v| {
                     format!(
@@ -506,7 +583,245 @@ impl Vault {
         }
         Ok(())
     }
-    pub fn notes_command(&self, cap: &Capability, mut request: NotesRequest) -> Result<Value> {
+    fn note_history_records(
+        &self,
+        i: &mut Inner,
+        s: &State,
+        c: &Value,
+        group: &str,
+    ) -> Result<Vec<Value>> {
+        let mut out = Vec::new();
+        for w in values(c, "witnesses")?
+            .iter()
+            .filter(|w| w["group_id"] == group)
+        {
+            let cache = self.note_read(i, s, c, text(&w["cache_id"])?, "cache")?;
+            let bundle =
+                self.codec
+                    .decode("p02-v1", "bundle", &un64(text(&cache["record_bytes"])?)?)?;
+            let ctx = &bundle["envelope"]["header"]["context"];
+            check(
+                digest("p02-v1", "envelope", &bundle["envelope"])? == w["envelope_digest"],
+                "INTEGRITY_FAILURE",
+            )?;
+            out.push(json!({"object_kind":ctx["object_kind"],"object_id":ctx["object_id"],"revision_id":ctx["revision_id"],"envelope_digest":w["envelope_digest"],"parents":ctx["parents"],"payload_status":"retained"}));
+        }
+        out.sort_by(|a, b| a["revision_id"].as_str().cmp(&b["revision_id"].as_str()));
+        Ok(out)
+    }
+    fn note_shared_proof(
+        &self,
+        i: &mut Inner,
+        s: &State,
+        c: &Value,
+        snapshot: &Value,
+        data: &Value,
+    ) -> Result<(Value, crate::shared::Verified)> {
+        let mut proof = data["proof"].clone();
+        let own = proof["accounts"]
+            .as_array_mut()
+            .ok_or(Error("GROUP_PROOF_REQUIRED"))?
+            .iter_mut()
+            .find(|a| a["pins"]["account_id"] == self.scope.account_id)
+            .ok_or(Error("ROOT_PIN_MISMATCH"))?;
+        own["snapshot"] = snapshot.clone();
+        let records = self.note_history_records(i, s, c, text(&proof["pin"]["group_id"])?)?;
+        let local = proof["pin"]["owner_account_id"] == self.scope.account_id
+            && values(&proof["journal"], "events")?.is_empty();
+        let v = crate::shared::verify(
+            &self.codec,
+            &proof,
+            &s.pins,
+            Some(&data["proof"]),
+            &records,
+            local,
+        )?;
+        Ok((proof, v))
+    }
+    #[allow(clippy::too_many_arguments)]
+    fn note_shared_command(
+        &self,
+        i: &mut Inner,
+        cap: &Capability,
+        s: &State,
+        fence: u64,
+        c: &mut Value,
+        snapshot: &Value,
+        request: &crate::shared::Request,
+    ) -> Result<Value> {
+        let group = request.group()?;
+        check(valid_id(&group), "INVALID_REQUEST")?;
+        let old = values(c, "groups")?
+            .iter()
+            .find(|g| g["group_id"] == group)
+            .cloned();
+        let data = if let Some(r) = &old {
+            Some(self.note_read(i, s, c, text(&r["record_id"])?, "group-evidence")?)
+        } else {
+            None
+        };
+        check(
+            data.as_ref()
+                .is_none_or(|d| d["purpose"] == "p10-group-proof"),
+            "GROUP_PROOF_REQUIRED",
+        )?;
+        let records = self.note_history_records(i, s, c, &group)?;
+        let f = frame(&i.conn, &s.vault_id)?;
+        let mut secrets = objects::open_local(
+            &self.codec,
+            &canonical(&f)?,
+            &i.secrets.as_ref().unwrap().key,
+            &canonical(&f["context"])?,
+        )?;
+        let result = crate::shared::command(
+            &self.codec,
+            request,
+            &self.scope,
+            &s.pins,
+            snapshot,
+            data.as_ref(),
+            &records,
+            &i.secrets.as_ref().unwrap().signing,
+            &i.secrets.as_ref().unwrap().encryption,
+            &secrets["data"],
+        );
+        wipe_value(&mut secrets);
+        let mut outcome = result?;
+        let record = if let Some(r) = old {
+            text(&r["record_id"])?.into()
+        } else {
+            check(values(c, "groups")?.len() < 100, "RESOURCE_LIMIT")?;
+            let r = random_id();
+            list(c, "groups")?
+                .push(json!({"group_id":group,"record_id":r,"state":"COMMITTED","status":null}));
+            r
+        };
+        self.note_commit(
+            i,
+            cap,
+            s,
+            fence,
+            c,
+            &[Write {
+                id: record,
+                kind: "group-evidence".into(),
+                data: outcome.data.clone(),
+            }],
+            Some(&outcome.keys),
+        )?;
+        Ok(std::mem::take(&mut outcome.result))
+    }
+    pub fn notes_command(&self, cap: &Capability, request: NotesRequest) -> Result<Value> {
+        if let NotesRequest::CopyPreview {
+            source_group,
+            destination_group,
+            revision_id,
+        } = &request
+        {
+            return self
+                .note_copy_preview(cap, source_group, destination_group, revision_id)
+                .map(|(v, _)| v);
+        }
+        if let NotesRequest::Copy {
+            source_group,
+            destination_group,
+            destination_thread,
+            revision_id,
+            preview_digest,
+            confirmed,
+        } = &request
+        {
+            let (preview, payload) =
+                self.note_copy_preview(cap, source_group, destination_group, revision_id)?;
+            check(
+                *confirmed && preview["digest"] == *preview_digest && valid_id(destination_thread),
+                "COPY_CONFIRMATION_REQUIRED",
+            )?;
+            let edit = json!({"draft_id":null,"group_id":destination_group,"object_id":null,"object_kind":"entry","thread_id":destination_thread,"action":"create","parents":[],"archived":false,"content":{"title":payload["title"],"markdown":payload["markdown"],"metadata_kind":"content","tags":payload["tags"],"checklist":payload["checklist"],"summary_entry_id":null,"preferences":[]}});
+            return self.notes_command_inner(
+                cap,
+                NotesRequest::Save { edit },
+                Some(hash(&canonical(
+                    &preview["preview"]["destination_audience"],
+                )?)),
+            );
+        }
+        self.notes_command_inner(cap, request, None)
+    }
+    fn note_copy_preview(
+        &self,
+        cap: &Capability,
+        source: &str,
+        destination: &str,
+        revision: &str,
+    ) -> Result<(Value, Value)> {
+        check(
+            valid_id(source) && valid_id(destination) && valid_id(revision),
+            "INVALID_REQUEST",
+        )?;
+        let summary = self.notes_command(cap, NotesRequest::Summary {})?;
+        let src = summary["groups"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|g| g["group_id"] == source)
+            .ok_or(Error("GROUP_REQUIRED"))?;
+        let dst = summary["groups"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|g| g["group_id"] == destination)
+            .ok_or(Error("GROUP_REQUIRED"))?;
+        check(
+            src["status"]["kind"] == "private"
+                && src["status"]["settings"] == false
+                && dst["status"]["kind"] == "shared",
+            "COPY_AUDIENCE_REQUIRED",
+        )?;
+        let detail = self.notes_command(
+            cap,
+            NotesRequest::Shared {
+                request: crate::shared::Request::Details {
+                    group_id: destination.into(),
+                },
+            },
+        )?;
+        check(
+            detail["write_state"] == "WRITABLE"
+                && detail["members"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .any(|m| m["account_id"] == self.scope.account_id && m["role"] != "reader"),
+            "ROLE_FORBIDDEN",
+        )?;
+        let mut opened = self.notes_command(
+            cap,
+            NotesRequest::Cached {
+                revision_id: revision.into(),
+            },
+        )?;
+        let payload = std::mem::take(&mut opened["payload"]);
+        check(
+            payload["context"]["group_id"] == source
+                && payload["context"]["object_kind"] == "entry"
+                && payload["metadata_kind"] == "content"
+                && payload["context"]["action"] != "soft-delete"
+                && payload["context"]["attachments"]
+                    .as_array()
+                    .is_some_and(Vec::is_empty),
+            "COPY_SCOPE_MISMATCH",
+        )?;
+        let preview = json!({"source_group":source,"destination_group":destination,"revision_id":revision,"source_audience":[self.scope.account_id],"destination_audience":detail["members"],"policy":detail["policy"],"scope":"selected-current-entry-only","title":payload["title"]});
+        let digest = hash(&canonical(&preview)?);
+        Ok((json!({"preview":preview,"digest":digest}), payload))
+    }
+    fn notes_command_inner(
+        &self,
+        cap: &Capability,
+        mut request: NotesRequest,
+        copy_audience: Option<String>,
+    ) -> Result<Value> {
         let fence = self.lease(cap)?;
         let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
         let s = self.authorize(&mut i, cap)?;
@@ -549,6 +864,63 @@ impl Vault {
                     json!({"groups":c["groups"],"drafts":drafts,"witnessed":values(&c,"witnesses")?.len(),"witnesses":c["witnesses"]}),
                 )
             }
+            NotesRequest::CopyPreview { .. } | NotesRequest::Copy { .. } => {
+                Err(Error("INVALID_REQUEST"))
+            }
+            NotesRequest::UpgradePrivate { group_id } => {
+                let (r, evidence, _) = self.note_info(&mut i, &s, &c, &snapshot, group_id)?;
+                let old =
+                    self.note_read(&mut i, &s, &c, text(&r["record_id"])?, "group-evidence")?;
+                check(
+                    old["purpose"] == "p09-private-genesis",
+                    "GROUP_PROOF_REQUIRED",
+                )?;
+                let proof = json!({"pin":crate::shared::pin(&evidence)?,"journal":{"version":1,"group_id":group_id,"genesis":evidence,"events":[],"pending":null},"accounts":[{"pins":s.pins,"snapshot":snapshot}]});
+                let records = self.note_history_records(&mut i, &s, &c, group_id)?;
+                crate::shared::verify(&self.codec, &proof, &s.pins, None, &records, true)?;
+                self.note_commit(&mut i,cap,&s,fence,&c,&[Write{id:text(&r["record_id"])?.into(),kind:"group-evidence".into(),data:json!({"purpose":"p10-group-proof","version":1,"proof":proof,"attempt":null})}],None)?;
+                Ok(proof)
+            }
+            NotesRequest::PrepareShared {} => {
+                own(&roster, &self.scope, &i.secrets.as_ref().unwrap().signing)?;
+                check(values(&c, "groups")?.len() < 100, "RESOURCE_LIMIT")?;
+                let (request, mut key) = crate::device_groups::create_genesis_kind(
+                    &self.codec,
+                    &roster,
+                    &self.scope,
+                    &s.pins,
+                    &i.secrets.as_ref().unwrap().signing,
+                    "shared",
+                )?;
+                let group = text(&request["commit"]["body"]["group_id"])?.to_string();
+                let mut evidence = request.clone();
+                evidence["group_id"] = json!(group);
+                let proof = json!({"pin":crate::shared::pin(&evidence)?,"journal":{"version":1,"group_id":group,"genesis":evidence,"events":[],"pending":null},"accounts":[{"pins":s.pins,"snapshot":snapshot}]});
+                crate::shared::verify(&self.codec, &proof, &s.pins, None, &[], true)?;
+                let record = random_id();
+                list(&mut c,"groups")?.push(json!({"group_id":group,"record_id":record,"state":"GENESIS_PENDING","status":null}));
+                let data =
+                    json!({"purpose":"p10-group-proof","version":1,"proof":proof,"attempt":null});
+                let outcome = self.note_commit(
+                    &mut i,
+                    cap,
+                    &s,
+                    fence,
+                    &c,
+                    &[Write {
+                        id: record,
+                        kind: "group-evidence".into(),
+                        data,
+                    }],
+                    Some(&key),
+                );
+                wipe_value(&mut key);
+                outcome?;
+                Ok(json!({"group_id":group,"request":request}))
+            }
+            NotesRequest::Shared { request } => {
+                self.note_shared_command(&mut i, cap, &s, fence, &mut c, &snapshot, request)
+            }
             NotesRequest::PrepareGroup {} => {
                 own(&roster, &self.scope, &i.secrets.as_ref().unwrap().signing)?;
                 check(values(&c, "groups")?.len() < 100, "RESOURCE_LIMIT")?;
@@ -590,6 +962,44 @@ impl Vault {
             }
             NotesRequest::Group { status } => {
                 self.codec.validate("p09-notes", "group-status", status)?;
+                if status["kind"] == "shared"
+                    || status["key_epoch"] != "0"
+                    || {
+                        let old = values(&c, "groups")?
+                            .iter()
+                            .find(|g| g["group_id"] == status["group_id"]);
+                        if let Some(r) = old {
+                            self.note_read(
+                                &mut i,
+                                &s,
+                                &c,
+                                text(&r["record_id"])?,
+                                "group-evidence",
+                            )?["purpose"]
+                                == "p10-group-proof"
+                        } else {
+                            false
+                        }
+                    }
+                {
+                    let group = text(&status["group_id"])?;
+                    let (_, _, info) = self.note_info(&mut i, &s, &c, &snapshot, group)?;
+                    check(
+                        status["membership"] == info["membership"]
+                            && status["key_epoch"] == policy(&info)["key_epoch"]
+                            && status["epoch_digest"] == info["epoch_digest"]
+                            && status["history_checkpoint_digest"]
+                                == policy(&info)["history_checkpoint_digest"],
+                        "POLICY_CHANGED",
+                    )?;
+                    let n = index(&c, "groups", "group_id", group)?;
+                    let mut summary = status.clone();
+                    summary.as_object_mut().unwrap().remove("genesis");
+                    c["groups"][n]["status"] = summary;
+                    c["groups"][n]["state"] = json!("COMMITTED");
+                    self.note_commit(&mut i, cap, &s, fence, &c, &[], None)?;
+                    return Ok(json!({"group_id":group,"state":"group-local-saved"}));
+                }
                 check(
                     status["owner_account_id"] == self.scope.account_id
                         && status["group_id"] == status["genesis"]["group_id"],
@@ -738,6 +1148,20 @@ impl Vault {
                 self.codec.validate("p02-v1", "draft", &data)?;
                 let mut r=old.unwrap_or_else(||json!({"draft_id":draft_id,"record_id":random_id(),"group_id":group,"object_id":object_id,"object_kind":edit["object_kind"],"thread_id":edit["thread_id"],"saved_digest":null}));
                 r["saved_digest"] = json!(value_hash(&data)?);
+                if let Some(audience) = &copy_audience {
+                    writable(
+                        &g,
+                        &info,
+                        &roster,
+                        &self.scope,
+                        &i.secrets.as_ref().unwrap().signing,
+                    )?;
+                    check(
+                        *audience == hash(&canonical(&info["members"])?),
+                        "COPY_CONFIRMATION_REQUIRED",
+                    )?;
+                    r["copy_audience_digest"] = json!(audience);
+                }
                 if let Ok(n) = index(&c, "drafts", "draft_id", &draft_id) {
                     c["drafts"][n] = r.clone();
                 } else {
@@ -771,6 +1195,21 @@ impl Vault {
                     &self.scope,
                     &i.secrets.as_ref().unwrap().signing,
                 )?;
+                if !d["copy_audience_digest"].is_null() {
+                    check(
+                        d["copy_audience_digest"] == hash(&canonical(&info["members"])?),
+                        "COPY_CONFIRMATION_REQUIRED",
+                    )?;
+                }
+                if data["context"]["object_kind"] == "group-metadata" && info["members"].is_array()
+                {
+                    check(
+                        info["members"].as_array().unwrap().iter().any(|m| {
+                            m["account_id"] == self.scope.account_id && m["role"] == "owner"
+                        }),
+                        "OWNER_REQUIRED",
+                    )?;
+                }
                 if let Some(a) = values(&c, "attempts")?.iter().rev().find(|a| {
                     a["draft_id"] == draft_id.as_str()
                         && ["QUEUED", "SENT_UNKNOWN"].contains(&a["state"].as_str().unwrap_or(""))
@@ -843,6 +1282,17 @@ impl Vault {
                     &self.scope,
                     &i.secrets.as_ref().unwrap().signing,
                 )?;
+                let draft = values(&c, "drafts")?
+                    .iter()
+                    .find(|d| d["draft_id"] == data["draft_id"]);
+                if let Some(d) = draft
+                    && !d["copy_audience_digest"].is_null()
+                {
+                    check(
+                        d["copy_audience_digest"] == hash(&canonical(&info["members"])?),
+                        "COPY_CONFIRMATION_REQUIRED",
+                    )?;
+                }
                 data["state"] = json!("SENT_UNKNOWN");
                 let n = index(&c, "attempts", "attempt_id", attempt_id)?;
                 c["attempts"][n]["state"] = json!("SENT_UNKNOWN");
@@ -1028,6 +1478,53 @@ impl Vault {
         self.codec.validate("p02-v1", "bundle", b)?;
         let x = &b["envelope"]["header"]["context"];
         let (_, _, info) = self.note_info(i, s, c, snapshot, text(&request["group_id"])?)?;
+        if info["policy"].is_object() {
+            for k in [
+                "group_id",
+                "object_id",
+                "revision_id",
+                "object_kind",
+                "thread_id",
+            ] {
+                check(x[k] == request[k], "CONTEXT_MISMATCH")?;
+            }
+            let r = find(c, "groups", "group_id", text(&request["group_id"])?)?;
+            let data = self.note_read(i, s, c, text(&r["record_id"])?, "group-evidence")?;
+            let (proof, verified) = self.note_shared_proof(i, s, c, snapshot, &data)?;
+            let cert =
+                crate::shared::object_author(&self.codec, &proof, &verified, b, &self.scope)?;
+            let mut key_info = info.clone();
+            key_info["policy"] = x["policy"].clone();
+            key_info["epoch_digest"] = x["policy"]["epoch_digest"].clone();
+            let key = self.note_key(i, s, text(&request["group_id"])?, &key_info)?;
+            check(
+                crate::device_groups::key_commitment(
+                    &json!({"service_id":self.scope.service_id,"group_id":request["group_id"]}),
+                    &key,
+                )? == verified
+                    .epochs
+                    .iter()
+                    .find(|e| e["key_epoch"] == x["policy"]["key_epoch"])
+                    .ok_or(Error("KEYS_PENDING"))?["key_commitment"],
+                "KEY_REPAIR_REQUIRED",
+            )?;
+            let payload = objects::open_object(
+                &self.codec,
+                &canonical(b)?,
+                &key,
+                &un64(text(&cert["body"]["device_signing_key"])?)?,
+                &canonical(x)?,
+            )?;
+            check(
+                payload["metadata_kind"] != "account-preferences",
+                "PRIVATE_NAMESPACE_REQUIRED",
+            )?;
+            let write = self.note_cache(c, b)?;
+            self.note_commit(i, cap, s, fence, c, &[write], None)?;
+            return Ok(
+                json!({"payload":payload,"envelope_digest":digest("p02-v1","envelope",&b["envelope"])?}),
+            );
+        }
         check(
             x["service_id"] == self.scope.service_id
                 && x["group_id"] == request["group_id"]

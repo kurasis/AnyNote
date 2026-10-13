@@ -1485,3 +1485,40 @@ Published P08 restoration was observed; P09 draft persistence, publication and
 independently demonstrated fresh P09 restoration remain distinct. Next full batch
 is P10; scale/convergence, files, complete export/retention and packaging retain
 P11–P15 ownership. No owner action is required for independent P09 software CI.
+
+## P10 complete shared-group slice — software VERIFIED
+
+All eighteen mandatory jobs PASS at `fddd9fde0e5158ef7fdefa5396fde51d53865b56`, clean full tree `b3d7c465f8c4b6c4e0ed2c13b51e02fa387df284`.
+[Acceptance](evidence/p10/acceptance.json) retains exact check/run/job references,
+GitHub artifact ZIP digests and raw public report hashes. Final tracking/evidence
+requires fresh full CI before ordinary automatic SHA-guard merge.
+
+| Execution | Actual outcome |
+| --- | --- |
+| Maintained-crypto portable protected workflow/transport | Five suites PASS, including actual engine restart, atomic state, pinned invitation scope, exact acknowledgement, signed route substitution and wiped Worker input preserving live membership/candidate G |
+| Verified HTTPS/Nginx/Laravel/MariaDB plus native peer | 407 checks PASS: four real account bootstraps, full retained history/trash, reader-with-G forgery denial, offline role-loss drafts, immediate removal, fresh epoch exclusion, audience/fresh-encryption copy, old-author history, dual recent owner consent, archive, independently enrolled native device grants, narrow reader maintenance, partial page coverage, cancelled commitment burn, actual recipient revoke after complete staging, receipt fault rollback, eight distinct policy CAS writers/eight identical retries and account-closure orphan prevention |
+| Actual shipped PWA | 40 checks PASS, three independent persistent account processes, sandboxed Chromium, verified trusted CA/hostname TLS and strict CSP; create/invite/accept/all-history key delivery, independent new-member card refresh, editor write, reader retained draft/denial, removal clears plaintext DOM and restores the retained unsent local draft, new-epoch write, EN/RU and actual SQL/IndexedDB/log/ordinary-storage inspection |
+| Native Linux and Windows/MSVC | Three shared tests/platform PASS over real SQLite/WAL, restart, atomic receipt-fault rollback, protected candidate keys, closed main-window commands and lock fences; prior six note/nine device/fifteen custody tests preserved |
+| Actual native/portable multi-account adapters | 89 checks/platform PASS using protected native custody, independently enrolled devices and actual signature/ciphertext compatibility; transition/content receipt responses here are modeled and never replace the separately executed actual HTTP/SQL/browser gate |
+| Inherited platform gates | All sixteen prior jobs PASS, including provider/container Linux71/Windows99 and the explicitly executed official-header ABI case; no physical Hello/TPM objects created |
+| Raw source receipts | 323 Linux and 323 Windows inputs verified against Git blobs; 320 Windows CRLF hashes verified without normalizing raw reports |
+| Complete frozen installation | PASS, all 775 then-visible source files and marked private/shared content counts/quota/counter preserved |
+| Complete startup/readiness | PASS, owned services, trusted TLS/API/session, five-suite P10 check, native inventory and read-only contracts; source remains unchanged |
+
+Raw reports: [HTTP](evidence/p10/http-report.json), [browser](evidence/p10/browser-report.json),
+[Linux source](evidence/p10/linux-source-report.json), [Windows source](evidence/p10/windows-source-report.json),
+[Linux interop](evidence/p10/linux-native-interop-report.json), [Windows interop](evidence/p10/windows-native-interop-report.json).
+Initial diagnostic failures are corrected, rather than acceptance evidence. No
+assertion/verifier/crypto/TLS/CSP/sandbox/eligibility bypass was used. Local cloud
+Chromium remains BLOCKED; optional hosted browser diagnosis does not replace the
+mandatory three-account run. Ordinary proof reads are paced below unchanged service
+limits; eight-way mutation races remain genuinely concurrent and no API responses
+are mocked by the hosted browser harness. Original spec, frozen P02 corpora and prior locks
+are unchanged. Current bounded-proof limits are documented in P10_SHARED_GROUPS;
+P11 owns scale/convergence, P12 files and P13 retention/purge.
+
+Published P09 restoration was observed. P10 configuration saving, publication and
+fresh-task restoration remain separate. No production migration/deployment/release,
+new owner hardware trial or reviewer outreach occurred. Full physical G1 and
+qualified G2/G3 remain open/unbooked/NOT_RUN. No new owner action is required for
+this software phase. Continue the complete P11 handoff in NEXT_TASK.

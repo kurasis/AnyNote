@@ -38,6 +38,24 @@ $value = match ($op) {
 
         return ['status' => 'removed'];
     })(),
+    'p10-fault-on' => (function () {
+        DB::unprepared("CREATE TRIGGER p10_fault BEFORE INSERT ON group_security_receipts FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Synthetic security receipt fault'");
+
+        return ['status' => 'armed'];
+    })(),
+    'p10-fault-off' => (function () {
+        DB::unprepared('DROP TRIGGER IF EXISTS p10_fault');
+
+        return ['status' => 'disarmed'];
+    })(),
+    'p10-state' => (function () {
+        $counts = [];
+        foreach (['groups', 'group_memberships', 'group_policy_events', 'group_key_epochs', 'group_transition_journal', 'group_security_receipts', 'security_transition_staging', 'security_transition_pages', 'key_envelopes'] as $t) {
+            $counts[$t] = DB::table($t)->count();
+        }
+
+        return ['counts' => $counts, 'counter' => (string) DB::table('sync_counters')->value('sequence'), 'quota' => DB::table('quota_ledgers')->orderBy('scope')->get(['scope', 'committed_bytes', 'reserved_bytes'])->all()];
+    })(),
     'p09-quota-on' => (function () {
         DB::statement("UPDATE quota_ledgers SET limit_bytes=committed_bytes+reserved_bytes WHERE scope='global'");
 

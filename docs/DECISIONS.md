@@ -807,3 +807,34 @@ P09 derives old-epoch rekey blocking from verified signed revoke/reset events
 after genesis, even if a hostile service clears its unsigned maintenance flags.
 Local drafts and already witnessed reads remain available; P10 implements the
 actual transition rather than bypassing this independent guard.
+
+## ADR-020 — signed shared-group transitions and independent history custody
+
+Keep frozen P02 frames, primitives and old dependency locks. Add closed P10 transport
+and protected public proof/private pending-key data under the existing random-L
+local profile. Use exact recipient/epoch coverage, current independently replayed
+rosters/policies and genuinely witnessed/independently pinned history. Signature
+validity alone grants neither write authority nor recipient access. Persist immutable
+attempts before transport; install a candidate G only after exact final acknowledgement.
+Cancellation burns exposed commitments and retains drafts; subsequent attempts are fresh.
+
+Finalize the formerly unimplemented P03 group routes as the documented closed P10
+family in P10_SHARED_GROUPS. The supplied source spec remains unchanged; no deployed
+endpoint or frozen P02 frame is removed. Permanent group purge remains P13, which
+owns retained-reference/physical-retention correctness. Account closure implements
+the P10 orphan-prevention gate and server-access denial, retaining ciphertext for P13.
+
+Transfer needs both signatures and separately current recent-session consent. Sorted
+account locks and group CAS serialize races. Removal precedes key/history maintenance;
+readers can perform exact mandatory roster-only work without becoming writers. Private
+copy requires explicit audience confirmation, fresh encryption and protected audience
+fencing. No preferences/history/trash/attachments are silently shared.
+
+The previous native P09 local opener had a 256 KiB ciphertext ceiling while its
+closed schema/sealer allowed 512 KiB plaintext. Actual P10 native replay exposed the
+mismatch. The opener now enforces the declared 512 KiB plus AEAD tag bound; schema,
+context/AAD, signatures and all cryptographic predicates remain intact.
+
+Large-scale synchronization/compaction is P11. No universal server freshness,
+physical acceptance, independently reviewed composition or production release is
+implied by these implementation decisions. Exact execution evidence is separate.

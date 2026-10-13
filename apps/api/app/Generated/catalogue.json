@@ -589,24 +589,6 @@
       "implemented": false
     },
     {
-      "method": "POST",
-      "path": "/api/v1/group-invitations/{id}/accept",
-      "summary": "Trusted target account signs acceptance; no access activated yet",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
-      "operation_id": "post_group_invitations_id_accept",
-      "phase": "P10",
-      "implemented": false
-    },
-    {
-      "method": "POST",
-      "path": "/api/v1/group-invitations/{id}/decline",
-      "summary": "Trusted target declines pending admission",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
-      "operation_id": "post_group_invitations_id_decline",
-      "phase": "P10",
-      "implemented": false
-    },
-    {
       "method": "GET",
       "path": "/api/v1/groups",
       "summary": "Only groups accessible to the active account/device",
@@ -636,15 +618,6 @@
       "response": "p09-notes/group-status"
     },
     {
-      "method": "POST",
-      "path": "/api/v1/groups/{id}/epoch-transitions",
-      "summary": "Owner/editor optional rekey or member-executed mandatory roster-only rekey; exact expected state",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
-      "operation_id": "post_groups_id_epoch_transitions",
-      "phase": "P10",
-      "implemented": false
-    },
-    {
       "method": "GET",
       "path": "/api/v1/groups/{id}/files",
       "summary": "Paginated attachment/file-version metadata",
@@ -655,65 +628,11 @@
     },
     {
       "method": "POST",
-      "path": "/api/v1/groups/{id}/invitations",
-      "summary": "Owner-signed pending admission intent targeting exact account root",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
-      "operation_id": "post_groups_id_invitations",
-      "phase": "P10",
-      "implemented": false
-    },
-    {
-      "method": "POST",
-      "path": "/api/v1/groups/{id}/key-distributions",
-      "summary": "Same-account device grants or authorized full-history invitation grants",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
-      "operation_id": "post_groups_id_key_distributions",
-      "phase": "P10",
-      "implemented": false
-    },
-    {
-      "method": "GET",
-      "path": "/api/v1/groups/{id}/key-envelopes",
-      "summary": "Trusted current member: own device or own account recovery-recipient envelopes, scoped by epoch",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
-      "operation_id": "get_groups_id_key_envelopes",
-      "phase": "P10",
-      "implemented": false
-    },
-    {
-      "method": "POST",
-      "path": "/api/v1/groups/{id}/ownership-transfer",
-      "summary": "Both identities' consent, recent auth",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
-      "operation_id": "post_groups_id_ownership_transfer",
-      "phase": "P10",
-      "implemented": false
-    },
-    {
-      "method": "GET",
-      "path": "/api/v1/groups/{id}/policy",
-      "summary": "Signed genesis and policy chain, paginated",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
-      "operation_id": "get_groups_id_policy",
-      "phase": "P10",
-      "implemented": false
-    },
-    {
-      "method": "POST",
-      "path": "/api/v1/groups/{id}/policy-events",
-      "summary": "Owner-signed membership/settings/archive changes",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
-      "operation_id": "post_groups_id_policy_events",
-      "phase": "P10",
-      "implemented": false
-    },
-    {
-      "method": "POST",
       "path": "/api/v1/groups/{id}/purge",
       "summary": "Owner-signed permanent deletion; retention and operational backup limits disclosed",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Owner-controlled permanent purge requires the P13 retained-reference and trash contract.",
       "operation_id": "post_groups_id_purge",
-      "phase": "P10",
+      "phase": "P13",
       "implemented": false
     },
     {
@@ -754,34 +673,6 @@
         "NativeBearer"
       ],
       "response": "p09-notes/receipt-result"
-    },
-    {
-      "method": "POST",
-      "path": "/api/v1/groups/{id}/transitions",
-      "summary": "Create bounded staging descriptor for membership/epoch/checkpoint operation",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
-      "operation_id": "post_groups_id_transitions",
-      "phase": "P10",
-      "implemented": false
-    },
-    {
-      "method": "POST",
-      "path": "/api/v1/groups/{id}/transitions/{tid}/commit",
-      "summary": "Atomically bind page commitment, signatures, expected heads and recipient set",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
-      "operation_id": "post_groups_id_transitions_tid_commit",
-      "phase": "P10",
-      "implemented": false
-    },
-    {
-      "method": "PUT",
-      "path": "/api/v1/groups/{id}/transitions/{tid}/pages/{index}",
-      "summary": "Idempotent bounded immutable ciphertext/envelope/inventory page",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
-      "operation_id": "put_groups_id_transitions_tid_pages_index",
-      "phase": "P10",
-      "implemented": false,
-      "request": "p02-group-c2/grant-page"
     },
     {
       "method": "GET",
@@ -1422,6 +1313,198 @@
         "NativeBearer"
       ],
       "response": "p09-notes/group-status"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/group-invitations",
+      "operation_id": "get_me_group_invitations",
+      "phase": "P10",
+      "summary": "Signed group group-invitations",
+      "authorization": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p10-shared/invitations-page"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/groups/{id}/journal",
+      "operation_id": "get_groups_id_journal",
+      "phase": "P10",
+      "summary": "Signed group journal",
+      "authorization": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p10-shared/journal"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/invites",
+      "operation_id": "post_groups_id_invites",
+      "phase": "P10",
+      "summary": "Signed group invites",
+      "authorization": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p10-shared/result",
+      "request": "p10-shared/invitation-request"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/accept",
+      "operation_id": "post_groups_id_accept",
+      "phase": "P10",
+      "summary": "Signed group accept",
+      "authorization": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p10-shared/result",
+      "request": "p10-shared/accept-request"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/policy",
+      "operation_id": "post_groups_id_policy",
+      "phase": "P10",
+      "summary": "Signed group policy",
+      "authorization": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p10-shared/result",
+      "request": "p10-shared/policy-request"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/owner-consent",
+      "operation_id": "post_groups_id_owner_consent",
+      "phase": "P10",
+      "summary": "Signed group owner-consent",
+      "authorization": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p10-shared/result",
+      "request": "p10-shared/policy-request"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/epoch/begin",
+      "operation_id": "post_groups_id_epoch_begin",
+      "phase": "P10",
+      "summary": "Signed group begin",
+      "authorization": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p10-shared/result",
+      "request": "p10-shared/begin-request"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/epoch/page",
+      "operation_id": "post_groups_id_epoch_page",
+      "phase": "P10",
+      "summary": "Signed group page",
+      "authorization": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p10-shared/result",
+      "request": "p10-shared/page-request"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/epoch/commit",
+      "operation_id": "post_groups_id_epoch_commit",
+      "phase": "P10",
+      "summary": "Signed group commit",
+      "authorization": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p10-shared/result",
+      "request": "p10-shared/commit-request"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/history",
+      "operation_id": "post_groups_id_history",
+      "phase": "P10",
+      "summary": "Signed group history",
+      "authorization": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p10-shared/result",
+      "request": "p10-shared/history-request"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/cancel",
+      "operation_id": "post_groups_id_cancel",
+      "phase": "P10",
+      "summary": "Signed group cancel",
+      "authorization": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p10-shared/result",
+      "request": "p10-shared/cancel-request"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/me/close-account",
+      "operation_id": "post_me_close_account",
+      "phase": "P10",
+      "summary": "Close own account after signed shared ownership/membership resolution",
+      "authorization": "Recent trusted self only. All shared memberships must be resolved by signed owner policy. Physical private-content retention is P13.",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "request": "p10-shared/account-close-request",
+      "response": "p10-shared/account-close-result"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me/group-receipts/{id}",
+      "operation_id": "get_me_group_receipts_id",
+      "phase": "P10",
+      "summary": "Reconcile an immutable own-device security mutation result",
+      "authorization": "Current trusted actor and current group access, or the exact pending target for acceptance/decline; explicit closed family.",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p10-shared/result"
     }
   ]
 }

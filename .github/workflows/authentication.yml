@@ -15,6 +15,11 @@ on:
         type: boolean
         default: false
 
+      shared_browser_only:
+        description: Diagnose the actual P10 three-account browser flow only; full acceptance remains mandatory
+        type: boolean
+        default: false
+
 permissions:
   contents: read
 
@@ -24,7 +29,7 @@ concurrency:
 
 jobs:
   auth-linux-http-browser:
-    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only }}
+    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only && !inputs.shared_browser_only }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
@@ -91,7 +96,7 @@ jobs:
           python3 scripts/dev-stack.py stop
 
   auth-windows-native:
-    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only }}
+    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only && !inputs.shared_browser_only }}
     runs-on: windows-2025
     timeout-minutes: 20
     defaults:
@@ -129,7 +134,7 @@ jobs:
           retention-days: 14
 
   browser-fault-diagnosis:
-    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.device_browser_only || inputs.notes_browser_only) }}
+    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.device_browser_only || inputs.notes_browser_only || inputs.shared_browser_only) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -159,7 +164,9 @@ jobs:
       - name: Actual sandboxed CSP and verified-TLS UI
         run: |
           source scripts/runtime-env.sh
-          if [ "${{ inputs.notes_browser_only }}" = "true" ]; then
+          if [ "${{ inputs.shared_browser_only }}" = "true" ]; then
+            node experiments/p01/p10-browser.mjs
+          elif [ "${{ inputs.notes_browser_only }}" = "true" ]; then
             node experiments/p01/p09-browser.mjs
           else
             node experiments/p01/p08-browser.mjs
@@ -172,6 +179,7 @@ jobs:
           path: |
             artifacts/p08/browser-report.json
             artifacts/p09/browser-report.json
+            artifacts/p10/browser-report.json
           if-no-files-found: warn
           retention-days: 7
       - name: Stop owned services only

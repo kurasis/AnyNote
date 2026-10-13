@@ -16,7 +16,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P07 | VERIFIED | Five Node custody suites, 28 actual HTTPS/SQL and 28 sandboxed browser checks, fifteen native custody tests per Linux/Windows platform plus explicit official-header ABI; all twelve hosted gates PASS |
 | P08 | VERIFIED | Seven Node workflow suites, 16 dense QR round trips, 153 actual HTTPS/SQL checks, 33 sandboxed UI checks and nine native device tests per Linux/Windows; all fourteen hosted gates PASS |
 | P09 | VERIFIED | Eight workflow/transport suites, 131 actual HTTPS/SQL checks, 49 sandboxed two-PWA UI checks, six native note tests/platform and 16 native/PWA interop checks/platform; all sixteen hosted gates PASS |
-| P10 | NOT STARTED | P09 |
+| P10 | VERIFIED | Five protected workflow/transport suites, 407 actual HTTPS/SQL checks, 40 sandboxed three-account PWA checks, three native shared tests and 89 native/portable interop checks/platform; all eighteen hosted gates PASS |
 | P11 | NOT STARTED | P09/P10 |
 | P12 | NOT STARTED | P04/P05/P10/P11 |
 | P13 | NOT STARTED | P11/P12 |
@@ -606,3 +606,34 @@ release, new owner trial or reviewer outreach occurred. Original specification,
 frozen corpora and prior locks remain unchanged. Rollback: ordinary source revert,
 preserving encrypted local work and separately planning any deployed schema rollback.
 Next full batch: P10 shared groups and membership integrity.
+
+## Completed P10 shared groups and signed membership
+
+Shared owner/editor/reader access, independently verified full-history invitations,
+complete atomic grants, role changes, immediate removal and fresh-epoch maintenance,
+dual-consent owner transfer and archive/unarchive are implemented in the actual API,
+protected Worker/native custody and EN/RU notes UI. Same-account certified devices
+receive retained epochs without copying identity secrets. Private-to-shared copy
+requires an audience preview and fresh IDs/DEK/context; account closure refuses
+unresolved shared membership and queues retained ciphertext for P13.
+
+Security attempts and private candidate keys survive proof refresh/restart under L;
+exact receipts atomically acknowledge and install the committed key. Signed history,
+independent pins, roster chronology and current roles remain required. Revoking an
+actually enrolled recipient after staged pages rejects finalization, preserves the
+current epoch and retries with fresh keys excluding the revoked device. Worker input
+cleanup cannot erase detached live membership state. Newly introduced identities
+require a fresh independently exchanged card rather than unverified API fingerprints.
+
+All eighteen jobs PASS at `fddd9fde0e5158ef7fdefa5396fde51d53865b56`, full tree `b3d7c465f8c4b6c4e0ed2c13b51e02fa387df284`. Public exact-source
+reports, artifact digests and raw implementation hashes are in TEST_EVIDENCE.
+
+Complete frozen installation preserved 775 then-visible source files and marked
+private/shared content state; complete startup/readiness passed again. Published
+P09 restoration was observed. P10 draft saving, publication and fresh restoration
+remain separate events. Full physical G1 and qualified G2/G3 stay open/unbooked/
+NOT_RUN. No production deployment/migration, release, new owner trial or outreach.
+Rollback uses an ordinary source revert while preserving encrypted drafts, security
+journals and retained signed evidence; deployed schema rollback requires its own
+data-preservation plan. Final tracking needs fresh eighteen-job CI before merge.
+Next full batch: P11 incremental sync, conflicts and convergence.
