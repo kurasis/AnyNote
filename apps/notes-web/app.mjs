@@ -8,7 +8,7 @@ import {renderMarkdown} from './markdown.mjs';
 import {words} from './i18n.mjs';
 const $=id=>document.getElementById(id);
 let language=navigator.language.startsWith('ru')?'ru':'en',selected,groupSelected,threadSelected,editor,preferences=[],settingsGroup,settingsHeads=[],preferencesDraft,groupCursor=null,threadCursor=null,entryCursor=null,server=false,generation=0,editVersion=0,timer,tail=Promise.resolve(),pendingConflict;
-const groups=new Map(),titles=new Map(),references=new Map();
+const roles=new Map(),groups=new Map(),titles=new Map(),references=new Map();
 const auth=new AuthClient(ANYNOTE_AUTH_ISSUER),devices=new DevicesClient(auth),api=new NotesClient(auth);
 const sharing=new SharedClient(auth);
 const text=k=>words[language][k]??words.en[k]??k;
@@ -16,7 +16,7 @@ const vault=new LocalVault('/auth/vault-worker.js',mask);
 function erase(v){if(v&&typeof v==='object')for(const k of Object.keys(v)){if(typeof v[k]==='string')v[k]='';else erase(v[k]);}}
 function mask(){
  generation++;clearTimeout(timer);editor&&erase(editor);editor=undefined;pendingConflict&&erase(pendingConflict);pendingConflict=undefined;
- groups.clear();titles.clear();references.clear();preferences=[];settingsGroup=undefined;groupSelected=threadSelected=undefined;server=false;
+ roles.clear();groups.clear();titles.clear();references.clear();preferences=[];settingsGroup=undefined;groupSelected=threadSelected=undefined;server=false;
  $('workspace').hidden=true;$('unlock-panel').hidden=false;$('editor').hidden=true;$('conflict').hidden=true;
  for(const id of ['member-account','member-root','share-card','incoming-owner','incoming-device','phrase','group-title','thread-title','note-title','note-body','checklist-text','loaded-search'])$(id).value='';
  copyPrepared=undefined;for(const id of ['sharing-confirm','copy-confirm','close-account-confirm'])$(id).checked=false;for(const id of ['members-list','invitation-list','groups','threads','entries','drafts','checklist','preview','versions','trash-items'])$(id).replaceChildren();
@@ -31,7 +31,7 @@ function translate(){
 }
 function reportError(e){
  const key=e.code??e.message??'NOTE_FAILURE';$('status').dataset.error=/^[A-Z_]+$/.test(key)?key:'NOTE_FAILURE';
- const messages={WRITER_BUSY:'writer_busy',KEYS_PENDING:'key_pending',UNANCHORED_HISTORY:'unanchored',INTEGRITY_FAILURE:'integrity',CONTEXT_MISMATCH:'integrity',INVALID_SIGNATURE:'integrity',CIPHERTEXT_MISMATCH:'integrity',KEY_WRAP_MISMATCH:'integrity',ROLLBACK_QUARANTINE:'integrity',STORAGE_FAILURE:'storage',STORAGE_ABORTED:'storage',INSUFFICIENT_STORAGE:'storage',QUOTA_EXCEEDED:'quota',DEVICE_REVOKED:'revoked',SESSION_EXPIRED:'signed_out',AUTH_REQUIRED:'signed_out',ROLE_FORBIDDEN:'blocked',REKEY_REQUIRED:'blocked',HISTORY_CLOSURE_REQUIRED:'blocked',POLICY_CHANGED:'blocked',ROSTER_CHANGED:'blocked',STRONG_PHRASE_REQUIRED:'phrase_error',PROFILE_REQUIRED:'pick_profile',GROUP_REQUIRED:'not_ready',THREAD_REQUIRED:'not_ready',PUBLICATION_PENDING:'unknown',STALE_REVISION:'local_conflict'};
+ const messages={WRITER_BUSY:'writer_busy',KEYS_PENDING:'key_pending',KEY_REPAIR_REQUIRED:'key_repair',UNANCHORED_HISTORY:'unanchored',INTEGRITY_FAILURE:'integrity',CONTEXT_MISMATCH:'integrity',INVALID_SIGNATURE:'integrity',CIPHERTEXT_MISMATCH:'integrity',KEY_WRAP_MISMATCH:'integrity',ROLLBACK_QUARANTINE:'integrity',STORAGE_FAILURE:'storage',STORAGE_ABORTED:'storage',INSUFFICIENT_STORAGE:'storage',QUOTA_EXCEEDED:'quota',DEVICE_REVOKED:'revoked',SESSION_EXPIRED:'signed_out',AUTH_REQUIRED:'signed_out',ROLE_FORBIDDEN:roles.get(groupSelected)==='reader'?'reader_read_only':'role_forbidden',REKEY_REQUIRED:'blocked',HISTORY_CLOSURE_REQUIRED:'blocked',POLICY_CHANGED:'blocked',ROSTER_CHANGED:'blocked',STRONG_PHRASE_REQUIRED:'phrase_error',PROFILE_REQUIRED:'pick_profile',GROUP_REQUIRED:'not_ready',THREAD_REQUIRED:'not_ready',PUBLICATION_PENDING:'unknown',STALE_REVISION:'local_conflict'};
  $('status').textContent=text(messages[key]??'attention');
 }
 function run(action){
@@ -160,10 +160,15 @@ async function submitDraft(draft_id){
 async function saveNote(){if(!editor)throw Error('DRAFT_NOT_FOUND');if(!editor.draft_id||editVersion>0)await flushLocal();if(!server)await prove();const g=await groupStatus(editor.group_id);await keyFor(g);await submitDraft(editor.draft_id);}
 async function saveFields(e){const saved=await vault.notes('save',[e]);await summary();await submitDraft(saved.draft_id);return saved;}
 async function createGroup(){
- const title=$('group-title').value;if(!title.trim())throw Error('INVALID_REQUEST');
- const kind=$('group-kind').value;const made=await vault.notes(kind==='shared'?'prepareShared':'prepareGroup'),local=await vault.notes('save',[edit(made.group_id,'group-metadata',made.group_id,null,content(title))]);await summary();groups.set(made.group_id,{group_id:made.group_id,pending:true,settings:false});titles.set(made.group_id,title);renderGroups();
- const status=await api.call('/groups','group-create','group-status',made.request);await vault.notes('group',[status]);groups.set(status.group_id,status);if(kind==='shared'){groupSelected=status.group_id;await shared('history',{group_id:status.group_id});await accessChange(status.group_id);await sharedProof(status.group_id);await vault.notes('group',[await api.call('/groups/'+status.group_id,null,'group-status')]);}await submitDraft(local.draft_id);$('group-title').value='';await openGroup(made.group_id);
+ const title=$('group-title').value;if(!title.trim())throw Error('INVALID_REQUEST');const kind=$('group-kind').value;let phase='prepare-group';
+ try{
+  const made=await vault.notes(kind==='shared'?'prepareShared':'prepareGroup');phase='save-metadata';const local=await vault.notes('save',[edit(made.group_id,'group-metadata',made.group_id,null,content(title))]);phase='local-summary';await summary();groups.set(made.group_id,{group_id:made.group_id,pending:true,settings:false});titles.set(made.group_id,title);renderGroups();
+  phase='create-genesis';const status=await api.call('/groups','group-create','group-status',made.request);phase='accept-genesis';await vault.notes('group',[status]);groups.set(status.group_id,status);
+  if(kind==='shared'){groupSelected=status.group_id;phase='prepare-history';await shared('history',{group_id:status.group_id});phase='commit-history';await accessChange(status.group_id);phase='verify-history';await sharedProof(status.group_id);phase='refresh-status';await vault.notes('group',[await api.call('/groups/'+status.group_id,null,'group-status')]);}
+  phase='publish-metadata';await submitDraft(local.draft_id);$('group-title').value='';phase='open-group';await openGroup(made.group_id);delete $('status').dataset.phase;
+ }catch(e){$('status').dataset.phase=phase;throw e;}
 }
+
 async function createThread(){
  if(!groupSelected)throw Error('GROUP_REQUIRED');const title=$('thread-title').value;if(!title.trim())throw Error('INVALID_REQUEST');
  const saved=await saveFields(edit(groupSelected,'thread',null,null,content(title)));titles.set(saved.object_id,title);$('thread-title').value='';await loadThreads();await openThread(saved.object_id);
@@ -240,7 +245,7 @@ const shared=(op,x)=>vault.notes('shared',[op,x]);
 async function sharedProof(id){
  let proof=await shared('proof',{group_id:id});const journal=await sharing.call('/groups/'+id+'/journal',null,'journal');
  const accounts=[];for(const a of proof.accounts)accounts.push({pins:a.pins,snapshot:await devices.snapshot(a.pins.account_id,a.pins.root_fingerprint)});
- proof={...proof,journal,accounts};await shared('adopt',proof);return proof;
+ proof={...proof,journal,accounts};const checked=await shared('adopt',proof);roles.set(id,checked.members.find(m=>m.account_id===selected.account_id)?.role);return proof;
 }
 async function accessChange(id){
  const a=await shared('retry',{group_id:id}),r=a.body.invitation??a.body.acceptance??a.body.policy??a.body.intent??a.body.commit??a.body.history,op=r?.body.operation_id??a.body.operation_id;let result=await sharing.call('/me/group-receipts/'+op+'?family='+(a.family==='epoch'?'commit':a.family),null,'result').catch(e=>{if(e.message!=='NOT_FOUND')throw e;return null;});
@@ -256,7 +261,7 @@ async function members(){
  if(!groupSelected||!server)throw Error('GROUP_REQUIRED');const g=groups.get(groupSelected);if(g.kind==='private'){await vault.notes('shared',['upgradePrivate',{group_id:groupSelected}]).catch(e=>{if(e.message!=='GROUP_PROOF_REQUIRED')throw e;});}
  const proof=await sharedProof(groupSelected),state=await shared('details',{group_id:groupSelected});$('members-list').replaceChildren();$('membership-state').textContent=text({WRITABLE:'shared_ready',REKEY_REQUIRED:'blocked',HISTORY_CLOSURE_REQUIRED:'blocked',UNANCHORED_HISTORY:'unanchored',ARCHIVED:'archived'}[state.write_state]??'attention');
  for(const m of state.members){const li=document.createElement('li');li.textContent=m.account_id+' · '+text({owner:'owner',reader:'reader',editor:'editor_role'}[m.role]);li.dataset.account=m.account_id;
-  if(m.role!=='owner'){
+  if(m.role!=='owner'&&roles.get(groupSelected)==='owner'){
    li.append(button(text(m.role==='reader'?'make_editor':'make_reader'),async()=>{if(!$('sharing-confirm').checked)throw Error('CONFIRMATION_REQUIRED');await shared('policy',{group_id:groupSelected,action:'role',target_account_id:m.account_id,role:m.role==='reader'?'editor':'reader',confirm:true});await accessChange(groupSelected);await members();}));
    li.append(button(text('remove_member'),async()=>{if(!$('sharing-confirm').checked)throw Error('CONFIRMATION_REQUIRED');await shared('policy',{group_id:groupSelected,action:'remove',target_account_id:m.account_id,confirm:true});await accessChange(groupSelected);await members();}));
   }$('members-list').append(li);

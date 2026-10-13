@@ -146,7 +146,10 @@ impl Codec {
                 "p09-notes",
                 include_str!("../../contracts/p09-notes.schema.json"),
             ),
-            ("p10-shared", include_str!("../../contracts/p10-shared.schema.json")),
+            (
+                "p10-shared",
+                include_str!("../../contracts/p10-shared.schema.json"),
+            ),
         ];
         let values: Vec<_> = schemas
             .iter()

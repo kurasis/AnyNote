@@ -888,7 +888,7 @@ pub(crate) fn command(
     match request {
         Request::Adopt { .. } => {
             codec.validate("p10-shared", "adopt-request", &proof)?;
-            data = json!({"purpose":"p10-group-proof","version":1,"proof":proof,"attempt":old.map_or(Value::Null,|d|d["attempt"].clone())});
+            data = json!({"purpose":"p10-group-proof","version":1,"proof":proof,"attempt":old.map_or(Value::Null,|d|d["attempt"].clone()),"pending_key":old.map_or(Value::Null,|d|d["pending_key"].clone())});
             result = json!({"group_id":group,"members":v.members,"write_state":v.write_state});
         }
         Request::Details { .. } => {
