@@ -446,7 +446,7 @@ impl Roster {
         anchor: Option<&Value>,
     ) -> Result<Self> {
         check(
-            canonical(snapshot)?.len() <= 16777216
+            canonical(snapshot)?.len() <= 33554432
                 && snapshot.as_object().is_some_and(|o| o.len() == 4),
             "RESOURCE_LIMIT",
         )?;
@@ -455,7 +455,10 @@ impl Roster {
         let events = snapshot["events"]
             .as_array()
             .ok_or(Error("SCHEMA_MISMATCH"))?;
-        check(!events.is_empty() && events.len() <= 1000, "RESOURCE_LIMIT")?;
+        check(
+            !events.is_empty() && events.len() <= 10000,
+            "RESOURCE_LIMIT",
+        )?;
         let mut s = Self {
             identity,
             pins: pins.clone(),

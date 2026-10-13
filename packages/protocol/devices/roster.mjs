@@ -151,7 +151,7 @@ export function verifyDevicePossessionForEvaluation(token, challengeBytes, confi
 export function applyRosterEventForEvaluation(token, eventBytes, now = null) {
   const s = state(token), event = decode('event',eventBytes), b=event.body;
   scopeMatch(s,b);
-  check(s.events.length<1000,'RESOURCE_LIMIT');
+  check(s.events.length<10000,'RESOURCE_LIMIT');
   check(!s.operations.has(b.operation_id),'OPERATION_REPLAY');
   check(same(b.predecessor,s.head) && b.version === (s.head ? String(BigInt(s.head.version)+1n) : '0'),'ROSTER_CHANGED');
   let activated=null, parent=null, revoked=[];
@@ -203,8 +203,8 @@ export function applyRosterEventForEvaluation(token, eventBytes, now = null) {
     durable_transaction:'NOT_IMPLEMENTED',group_authorization:'NOT_EVALUATED' };
 }
 export function replayRosterForEvaluation(identityProof, eventInputs, pinnedHeadBytes) {
-  check(Array.isArray(eventInputs)&&eventInputs.length>0&&eventInputs.length<=1000,'RESOURCE_LIMIT');
-  check(eventInputs.reduce((sum,b)=>sum+b.length,0)<=16_777_216,'RESOURCE_LIMIT');
+  check(Array.isArray(eventInputs)&&eventInputs.length>0&&eventInputs.length<=10000,'RESOURCE_LIMIT');
+  check(eventInputs.reduce((sum,b)=>sum+b.length,0)<=33_554_432,'RESOURCE_LIMIT');
   const token=newRosterForEvaluation(identityProof);
   for(const bytes of eventInputs) applyRosterEventForEvaluation(token,bytes);
   // Pinned head is independent OOB/local evidence, never taken from the same log.

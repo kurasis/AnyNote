@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {fixture,phrase} from '../notes/test-fixture.mjs';
+import {fixture,phrase,readOwnedSecrets} from '../notes/test-fixture.mjs';
 import {VaultEngine} from '../vault/engine.mjs';
 import {common,digest} from '../adapters/codecs/protocol-codec.mjs';
 import {groupCodecForProfile} from '../adapters/codecs/group-codec.mjs';
 import {wire} from '../adapters/codecs/identity-codec.mjs';
-import {sodium,b64} from '../adapters/primitives.mjs';
+import {sodium,b64,un64} from '../adapters/primitives.mjs';
+import {phraseKek,unwrapLocalKey,openLocal} from '../adapters/local.mjs';
 import {pageReceipt,snapshotCommitment,catalogCommitment,checkedDelta} from './codec.mjs';
 import {preparePaged,readPaged,rotatePagedFrame} from './paged-local.mjs';
 import {VisiblePoller} from './client.mjs';
@@ -70,4 +71,15 @@ test('visible polling uses host-bound timers, bounded backoff, reconnect catch-u
  visible=false;const before=calls;await pending();assert.equal(calls,before);poller.resume();assert.equal(pending,undefined);
  visible=true;online=false;poller.resume();assert.equal(pending,undefined);online=true;fail=false;poller.resume();assert.equal(delay,0);await pending();assert.equal(delay,5000);
  poller.stop();assert.equal(pending,undefined);
+});
+test('additive secret inventory exceeds the frozen 660-key limit, keeps device identity and refuses an older reader',async()=>{
+ const f=await fixture();let key,kek;try{
+  const old=f.old.store.rows.get(f.old.store.state.vault_id),w=f.old.store.state.wrappers[0],{nonce,ciphertext,...descriptor}=w;kek=await phraseKek(phrase,wire(w.parameters));key=unwrapLocalKey('phrase-wrapper',wire(w),wire(descriptor),kek);const data=await readOwnedSecrets(f.old),group=id();
+  data.group_keys=Array.from({length:661},(_,i)=>({service_id:f.pins.service_id,group_id:group,key_epoch:String(i),epoch_digest:b64(sodium.randombytes_buf(32)),group_secret:b64(sodium.randombytes_buf(32))}));
+  const prepared=preparePaged(f.old.scope,f.pins,f.old.store.state.vault_id,'vault-secrets',data,key),before=structuredClone(f.old.store.rows);
+  const migrate=()=>f.old.store.transaction(true,async tx=>{for(const row of prepared.records)await tx.put(row);await tx.put({id:f.old.store.state.vault_id,frame:prepared.frame});const s=await tx.get();s.revision++;await tx.set(s);});
+  f.old.store.failAfter=1;await assert.rejects(migrate,/INSUFFICIENT_STORAGE/);assert.deepEqual(f.old.store.rows,before);f.old.store.failAfter=Infinity;await migrate();assert.throws(()=>openLocal(wire(prepared.frame),key,wire(old.frame.context)));
+  await f.old.engine.globalLock();f.old.engine=new VaultEngine(f.old.store);f.old.cap=(await f.old.engine.unlock(phrase)).capability;const loaded=await readOwnedSecrets(f.old);assert.deepEqual(loaded,data);assert.deepEqual((await f.old.engine.devices(f.old.cap,'summary')).head,f.snapshot.head);
+  for(const marker of [data.device_signing_secret,data.device_encryption_secret,data.group_keys[660].group_secret])assert(!JSON.stringify([...f.old.store.rows]).includes(marker));
+ }finally{if(key)sodium.memzero(key);if(kek)sodium.memzero(kek);await close(f);}
 });

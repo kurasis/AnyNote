@@ -4250,6 +4250,21 @@ final readonly class P11SyncLocalFrame implements \JsonSerializable
     }
 }
 
+final readonly class P11SyncSecrets implements \JsonSerializable
+{
+    public function __construct(
+        public string $device_signing_secret,
+        public string $device_encryption_secret,
+        public array $group_keys,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
 final readonly class P11SyncHeaderEvidence implements \JsonSerializable
 {
     public function __construct(

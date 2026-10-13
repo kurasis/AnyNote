@@ -429,7 +429,7 @@ impl Vault {
             )?;
             let rows = p["events"].as_array().ok_or(Error("INTEGRITY_FAILURE"))?;
             count += canonical(&p)?.len();
-            check(count <= 16777216 && rows.len() <= 20, "RESOURCE_LIMIT")?;
+            check(count <= 33554432 && rows.len() <= 20, "RESOURCE_LIMIT")?;
             events.extend(rows.iter().cloned());
         }
         let snapshot = json!({"identity":control["identity"],"head":control["head"],"generation":control["generation"],"events":events});

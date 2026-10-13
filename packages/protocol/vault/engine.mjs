@@ -52,8 +52,8 @@ export class VaultEngine {
   async #activate(snapshot,key){
     let secret;
     try{
-      const loaded=await this.store.transaction(false,async tx=>{const s=metadata(await tx.get(),this.scope);ensure(s.epoch===snapshot.epoch,'STALE_CAPABILITY');ensure(s.revision>=this.#revision,'ROLLBACK_QUARANTINE');const vault=await tx.read(s.vault_id);ensure(vault&&record(this.scope,vault.frame).context.record_kind==='vault-secrets'&&vault.frame.context.record_id===s.vault_id,'INTEGRITY_FAILURE');return {s,vault};});
-      secret=this.#load(loaded.vault.frame,key).data;
+      const loaded=await this.store.transaction(false,async tx=>{const s=metadata(await tx.get(),this.scope);ensure(s.epoch===snapshot.epoch,'STALE_CAPABILITY');ensure(s.revision>=this.#revision,'ROLLBACK_QUARANTINE');const vault=await tx.read(s.vault_id);ensure(vault&&record(this.scope,vault.frame).context.record_kind==='vault-secrets'&&vault.frame.context.record_id===s.vault_id,'INTEGRITY_FAILURE');return {s,vault,secret:await this.#secretData(tx,s,key)};});
+      secret=loaded.secret;
       const signingSecret=un64(secret.device_signing_secret),encryptionSecret=un64(secret.device_encryption_secret);
       verifyManifest(loaded.s,sodium.crypto_sign_ed25519_sk_to_pk(signingSecret));
       this.lock();this.#key=Uint8Array.from(key);this.#keys={signing:{privateKey:signingSecret,publicKey:sodium.crypto_sign_ed25519_sk_to_pk(signingSecret)},encryption:{privateKey:encryptionSecret,publicKey:sodium.crypto_scalarmult_base(encryptionSecret)}};
@@ -95,18 +95,20 @@ export class VaultEngine {
     }finally{wipe(key);wipe(kek);}
   }
 
+  async #secretData(tx,s,key=this.#key){const row=await tx.read(s.vault_id);ensure(row,'INTEGRITY_FAILURE');return row.frame.contract==='p11-local-v1'?syncValue('secrets',await readPaged(row.frame,this.scope,s.pins,s.vault_id,'vault-secrets',key,id=>tx.read(id))):this.#load(row.frame,key).data;}
+  async #addGroupKeys(tx,s,keys){const data=await this.#secretData(tx,s);try{for(const value of keys){const old=data.group_keys.find(k=>k.group_id===value.group_id&&k.key_epoch===value.key_epoch);ensure(value.service_id===this.scope.service_id&&(!old||(old.epoch_digest===value.epoch_digest&&old.group_secret===value.group_secret)),'INTEGRITY_FAILURE');if(!old)data.group_keys.push(structuredClone(value));}data.group_keys.sort((a,b)=>{const x=a.group_id+'/'+a.key_epoch.padStart(19,'0'),y=b.group_id+'/'+b.key_epoch.padStart(19,'0');return x<y?-1:x>y?1:0;});syncValue('secrets',data);const old=await tx.read(s.vault_id),frame=await this.#storePaged(tx,s.pins,s.vault_id,'vault-secrets',data,old.frame);await tx.put({id:s.vault_id,frame});}finally{wipe(data);}}
   async #publicControl(tx){const row=await tx.read(controlId(this.scope));if(!row)return null;const s=metadata(await tx.get(),this.scope);return openLifecycle(row.frame,this.scope,s.pins,controlId(this.scope),'device-control',this.#key);}
   async #reserved(tx,recordId){if(recordId===controlId(this.scope)||recordId===noteControlId(this.scope))return true;const c=await this.#publicControl(tx);if(c&&(c.pages.includes(recordId)||(c.staging?.pages??[]).includes(recordId)))return true;const n=await this.#noteControl(tx);return !!n&&this.#noteIds(n).has(recordId)||await this.#criticalPart(tx,recordId);}
   async #loadDevices(cap,includeSecrets=false){
     return this.store.transaction(false,async tx=>{const s=await this.#state(tx,cap),control=await this.#publicControl(tx),pages=[];let bytes=0;
-      for(const pageId of control?.pages??[]){const row=await tx.read(pageId);ensure(row,'INTEGRITY_FAILURE');const page=openLifecycle(row.frame,this.scope,s.pins,pageId,'roster-page',this.#key);bytes+=wire(page.events).length;ensure(bytes<=16777216,'RESOURCE_LIMIT');pages.push(page.events);}
-      const secrets=includeSecrets?this.#load((await tx.read(s.vault_id)).frame,this.#key).data:null;return {control,pages,secrets};});
+      for(const pageId of control?.pages??[]){const row=await tx.read(pageId);ensure(row,'INTEGRITY_FAILURE');const page=openLifecycle(row.frame,this.scope,s.pins,pageId,'roster-page',this.#key);bytes+=wire(page.events).length;ensure(bytes<=33554432,'RESOURCE_LIMIT');pages.push(page.events);}
+      const secrets=includeSecrets?await this.#secretData(tx,s):null;return {control,pages,secrets};});
   }
   async #persistDevices(cap,control,extra){
     ensure(control.pages.length<=1000&&(control.staging?.pages??[]).length<=1000&&wire(control).length<=262144,'RESOURCE_LIMIT');
     const committed=await this.store.transaction(true,async tx=>{const s=await this.#state(tx,cap);this.#fence(s,this.#workflowFence);const oldControl=await tx.read(controlId(this.scope));ensure((oldControl?frameHash(oldControl.frame):null)===this.#workflowHash,'STALE_WRITER');let controlHash;const put=async(recordId,data,kind)=>{const frame=sealLifecycle(this.scope,s.pins,recordId,kind,data,this.#key);await tx.put({id:recordId,frame});if(recordId===controlId(this.scope))controlHash=frameHash(frame);};
       if(extra.page){ensure(id(extra.page.id)&&extra.page.id!==s.vault_id&&extra.page.id!==controlId(this.scope)&&!await tx.read(extra.page.id),'RESERVED_RECORD');await put(extra.page.id,{purpose:'p08-roster-page',version:1,events:extra.page.events},'roster-page');}
-      if(extra.addKeys){const row=await tx.read(s.vault_id),p=this.#load(row.frame,this.#key);try{for(const value of extra.addKeys){const old=p.data.group_keys.find(k=>k.group_id===value.group_id&&k.key_epoch===value.key_epoch);ensure(!old||(old.epoch_digest===value.epoch_digest&&old.group_secret===value.group_secret),'INTEGRITY_FAILURE');if(!old)p.data.group_keys.push(structuredClone(value));}p.data.group_keys.sort((a,b)=>{const x=a.group_id+'/'+a.key_epoch.padStart(19,'0'),y=b.group_id+'/'+b.key_epoch.padStart(19,'0');return x<y?-1:x>y?1:0;});decode('vault-secrets',bounded(p.data));row.frame=decode('local-envelope',sealLocal(wire(p),this.#key));await tx.put(row);}finally{wipe(p);}}
+      if(extra.addKeys)await this.#addGroupKeys(tx,s,extra.addKeys);
       for(const recordId of extra.deletePages??[]){ensure(id(recordId)&&recordId!==s.vault_id&&recordId!==controlId(this.scope)&&!control.pages.includes(recordId)&&!(control.staging?.pages??[]).includes(recordId),'RESERVED_RECORD');const row=await tx.read(recordId);if(row){openLifecycle(row.frame,this.scope,s.pins,recordId,'roster-page',this.#key);await tx.remove(recordId);}}
       ensure(await tx.count()<100000,'RESOURCE_LIMIT');await put(controlId(this.scope),control,'device-control');this.#fence(s,this.#workflowFence);s.revision++;await tx.set(s);return {revision:s.revision,controlHash};});this.#revision=committed.revision;this.#workflowHash=committed.controlHash;return {state:'local-saved'};
   }
@@ -125,6 +127,7 @@ export class VaultEngine {
   async #criticalPart(tx,id){
     const s=metadata(await tx.get(),this.scope),root=await tx.read(noteControlId(this.scope));
     if(root?.frame.contract==='p11-local-v1'&&openManifest(root.frame,this.scope,s.pins,noteControlId(this.scope),'note-control',this.#key).parts.some(p=>p.record_id===id))return true;
+    const vault=await tx.read(s.vault_id);if(vault?.frame.contract==='p11-local-v1'&&publicPartIds(vault.frame,this.scope,s.pins,s.vault_id,'vault-secrets',this.#key).includes(id))return true;
     const control=await this.#noteControl(tx);for(const ref of [...(control?.groups??[]),...[...this.#noteIds(control??{groups:[],drafts:[],attempts:[],witnesses:[]})].filter(([,kind])=>kind==='cache').map(([record_id])=>({record_id}))]){const row=await tx.read(ref.record_id);if(row?.frame.contract==='p11-local-v1'&&publicPartIds(row.frame,this.scope,s.pins,ref.record_id,row.frame.context.record_kind,this.#key).includes(id))return true;}
     return false;
   }
@@ -158,7 +161,7 @@ export class VaultEngine {
         else{if(oldRow?.frame.contract==='p11-local-v1'){const prior=openManifest(oldRow.frame,this.scope,s.pins,v.id,v.kind,this.#key);for(const part of prior.parts)await tx.remove(part.record_id);}decode(v.kind,bounded(v.data));frame=decode('local-envelope',sealLocal(wire({...common('local-record-plaintext'),context:this.context(v.kind,v.id),data:v.data}),this.#key));}
         await tx.put({id:v.id,frame});
       }
-      if(extra.addKeys){const row=await tx.read(s.vault_id),p=this.#load(row.frame,this.#key);try{for(const value of extra.addKeys){const old=p.data.group_keys.find(k=>k.group_id===value.group_id&&k.key_epoch===value.key_epoch);ensure(!old||(old.epoch_digest===value.epoch_digest&&old.group_secret===value.group_secret),'INTEGRITY_FAILURE');if(!old)p.data.group_keys.push(structuredClone(value));}p.data.group_keys.sort((a,b)=>{const x=a.group_id+'/'+a.key_epoch.padStart(19,'0'),y=b.group_id+'/'+b.key_epoch.padStart(19,'0');return x<y?-1:x>y?1:0;});decode('vault-secrets',bounded(p.data));row.frame=decode('local-envelope',sealLocal(wire(p),this.#key));await tx.put(row);}finally{wipe(p);}}
+      if(extra.addKeys)await this.#addGroupKeys(tx,s,extra.addKeys);
       for(const id of extra.retireDrafts??[]){ensure(oldIds.get(id)==='draft'&&!ids.has(id),'UNSYNCED_WORK_PROTECTED');const ref=before.drafts.find(d=>d.record_id===id),attempt=control.attempts.find(a=>a.draft_id===ref.draft_id&&a.state==='COMMITTED'&&a.source_digest===ref.saved_digest);ensure(attempt&&values.some(v=>v.kind==='outbox'&&v.data.attempt_id===attempt.attempt_id&&v.data.state==='COMMITTED'),'UNSYNCED_WORK_PROTECTED');const old=await tx.read(id);ensure(old,'RECORD_NOT_FOUND');decode('draft',bounded(this.#load(old.frame,this.#key).data));await tx.remove(id);}
       const frame=await this.#storePaged(tx,s.pins,noteControlId(this.scope),'note-control',control,old?.frame);await tx.put({id:noteControlId(this.scope),frame});ensure(await tx.count()<=100000,'RESOURCE_LIMIT');this.#authorize(cap);this.#fence(s,this.#notesFence);s.revision++;await tx.set(s);return {revision:s.revision,hash:frameHash(frame)};
     });this.#revision=committed.revision;this.#notesHash=committed.hash;return {state:'local-saved'};

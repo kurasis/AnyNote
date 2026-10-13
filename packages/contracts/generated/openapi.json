@@ -14368,7 +14368,7 @@
                 "items": {
                   "$ref": "#/components/schemas/P02StateC1Event"
                 },
-                "maxItems": 1000
+                "maxItems": 10000
               }
             },
             "required": [
@@ -15046,7 +15046,8 @@
               "note-control",
               "group-evidence",
               "sync-control",
-              "cache"
+              "cache",
+              "vault-secrets"
             ]
           },
           "parts": {
@@ -15124,7 +15125,8 @@
               "group-evidence",
               "sync-control",
               "content-part",
-              "cache"
+              "cache",
+              "vault-secrets"
             ]
           },
           "root_fingerprint": {
@@ -15182,6 +15184,58 @@
           "context",
           "nonce",
           "ciphertext"
+        ],
+        "additionalProperties": false
+      },
+      "P11SyncSecrets": {
+        "type": "object",
+        "properties": {
+          "device_signing_secret": {
+            "type": "string",
+            "format": "base64url-64"
+          },
+          "device_encryption_secret": {
+            "type": "string",
+            "format": "base64url-32"
+          },
+          "group_keys": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "service_id": {
+                  "$ref": "#/components/schemas/P02FileC1Id"
+                },
+                "group_id": {
+                  "$ref": "#/components/schemas/P02FileC1Id"
+                },
+                "key_epoch": {
+                  "$ref": "#/components/schemas/P02FileC1Counter"
+                },
+                "epoch_digest": {
+                  "$ref": "#/components/schemas/P02FileC1Digest"
+                },
+                "group_secret": {
+                  "type": "string",
+                  "format": "base64url-32"
+                }
+              },
+              "required": [
+                "service_id",
+                "group_id",
+                "key_epoch",
+                "epoch_digest",
+                "group_secret"
+              ],
+              "additionalProperties": false
+            },
+            "maxItems": 10000
+          }
+        },
+        "required": [
+          "device_signing_secret",
+          "device_encryption_secret",
+          "group_keys"
         ],
         "additionalProperties": false
       },

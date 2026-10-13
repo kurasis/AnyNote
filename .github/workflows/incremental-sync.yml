@@ -53,6 +53,7 @@ jobs:
           python3 scripts/check-p10.py
           python3 scripts/check-p11.py
           node experiments/p01/p10-native-interop.mjs
+          node experiments/p01/p11-native-interop.mjs
       - name: Actual native SQLite, HTTPS and maintained session rotation
         run: |
           source scripts/runtime-env.sh
@@ -72,6 +73,7 @@ jobs:
         with:
           name: p11-linux-sync-report
           path: |
+            artifacts/p11/native-interop-report.json
             artifacts/p11/http-report.json
             artifacts/p10/browser-report.json
             artifacts/p11/source-report.json
@@ -126,6 +128,7 @@ jobs:
           cargo test --manifest-path packages/vault-native/Cargo.toml --locked --all-features -- --ignored --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node experiments/p01/p10-native-interop.mjs
+          node experiments/p01/p11-native-interop.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/check-p11.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -137,6 +140,7 @@ jobs:
         with:
           name: p11-windows-sync-report
           path: |
+            artifacts/p11/native-interop-report.json
             artifacts/p11/source-report.json
             artifacts/p10/native-interop-report.json
           if-no-files-found: error

@@ -1552,3 +1552,18 @@ P09/P10 jobs passed at the development head; this is still not final P11 accepta
 The diagnostic local source receipt produced while files changed during execution
 is discarded. Future P11 receipts compare the source head/tree/raw hashes and clean
 state before and after native execution. No invalid development receipt is archived.
+
+P11 secret/history scale checks: seven portable suites passed, including 661-key
+secret-root restart, aborted migration, complete identity preservation, refusal
+of the older frozen decoder and ciphertext inspection. The complete Linux native
+run passed 106 actual tests (72 unit, 9 devices, 7 notes, 3 shared, 15 custody);
+the new 661-key test uses actual SQLite/WAL and strong-phrase restart. Nine real
+native/portable interop checks validated 1,001 signed events and rejected a missing
+event, signature corruption and known rollback. Inherited seven P08 workflow
+suites and five P10 suites passed after updating their owned-secret readers for
+the explicit new profile; original assertions remain.
+
+At development head 0e4d728 the genuine sandboxed P09/P10/P11 Linux browser jobs
+passed. One P11 Windows build encountered an upstream DNS resolution failure while
+building unchanged libsodium; other Windows native jobs passed. Latest source and
+final Windows/Linux acceptance still require complete final runs.

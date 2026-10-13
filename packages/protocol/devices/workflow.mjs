@@ -35,7 +35,7 @@ export class DeviceWorkflow {
   }
   if(op==='snapshotPage'){
    ensure(this.#stage,'SNAPSHOT_REQUIRED');const [events]=args;ensure(Array.isArray(events)&&events.length>0&&events.length<=20&&wire(events).length<=262144,'RESOURCE_LIMIT');
-   const stage=this.#stage;stage.bytes+=wire(events).length;ensure(stage.bytes<=16777216&&stage.events.length+events.length<=1000,'RESOURCE_LIMIT');
+   const stage=this.#stage;stage.bytes+=wire(events).length;ensure(stage.bytes<=33554432&&stage.events.length+events.length<=10000,'RESOURCE_LIMIT');
    for(const event of events){applyRosterEventForEvaluation(stage.roster,wire(event));stage.events.push(structuredClone(event));if(this.#state.head&&same(rosterDetails(stage.roster).head,this.#state.head))stage.observed=true;}
    const pageId=randomOperationId();this.#state.staging.pages.push(pageId);await this.#commit({page:{id:pageId,events}});return {state:'snapshot-page-saved',records:events.length};
   }

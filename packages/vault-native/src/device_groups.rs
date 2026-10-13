@@ -287,13 +287,7 @@ impl Vault {
         key: &Value,
     ) -> Result<()> {
         let local_key = Zeroizing::new(i.secrets.as_ref().unwrap().key.to_vec());
-        let f = frame(&i.conn, &before.vault_id)?;
-        let mut plain = objects::open_local(
-            &self.codec,
-            &canonical(&f)?,
-            &local_key,
-            &canonical(&self.context("vault-secrets", &before.vault_id)?)?,
-        )?;
+        let mut plain = self.secret_plain(&i.conn, before, &local_key)?;
         let result = (|| {
             let values = plain["data"]["group_keys"]
                 .as_array_mut()
@@ -313,10 +307,8 @@ impl Vault {
                     v["key_epoch"].as_str().unwrap()
                 )
             });
-            self.codec
-                .validate("p02-v1", "vault-secrets", &plain["data"])?;
-            let encrypted =
-                objects::seal_local(&self.codec, &Zeroizing::new(canonical(&plain)?), &local_key)?;
+            let (encrypted, parts, remove) =
+                self.prepare_secret_pages(&i.conn, before, &local_key, &plain["data"])?;
             let id = crate::device_local::control_id(&self.scope)?;
             let ctl = crate::device_local::seal(
                 &self.scope,
@@ -335,6 +327,15 @@ impl Vault {
                 "STALE_WRITER",
             )?;
             self.fence(&s, fence)?;
+            for id in remove {
+                db(tx.execute("DELETE FROM records WHERE id=?1", [id]))?;
+            }
+            for (id, bytes) in parts {
+                db(tx.execute(
+                    "INSERT INTO records(id,frame) VALUES(?1,?2)",
+                    params![id, bytes],
+                ))?;
+            }
             db(tx.execute(
                 "UPDATE records SET frame=?1 WHERE id=?2",
                 params![canonical(&encrypted)?, s.vault_id],
@@ -444,12 +445,7 @@ impl Vault {
                 root.1.secret_key.as_ref(),
             )?
         } else if target.is_some() {
-            let mut p = objects::open_local(
-                &self.codec,
-                &canonical(&frame(&i.conn, &s.vault_id)?)?,
-                &secret.key,
-                &canonical(&self.context("vault-secrets", &s.vault_id)?)?,
-            )?;
+            let mut p = self.secret_plain(&i.conn, &s, &secret.key)?;
             let result = (|| {
                 let key = p["data"]["group_keys"]
                     .as_array()

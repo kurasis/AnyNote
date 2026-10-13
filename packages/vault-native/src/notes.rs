@@ -264,7 +264,7 @@ impl Vault {
     ) -> Result<bool> {
         let ctl = note_local::control_id(&self.scope)?;
         let roots = self.note_control(conn, s, key)?;
-        let mut checks = vec![(ctl, "note-control")];
+        let mut checks = vec![(ctl, "note-control"), (s.vault_id.clone(), "vault-secrets")];
         for g in values(&roots, "groups")? {
             checks.push((text(&g["record_id"])?.to_owned(), "group-evidence"));
         }
@@ -405,12 +405,10 @@ impl Vault {
         group: &str,
         info: &Value,
     ) -> Result<Zeroizing<Vec<u8>>> {
-        let f = frame(&i.conn, &s.vault_id)?;
-        let mut p = objects::open_local(
-            &self.codec,
-            &canonical(&f)?,
+        let mut p = self.secret_plain(
+            &i.conn,
+            s,
             &i.secrets.as_ref().ok_or(Error("VAULT_LOCKED"))?.key,
-            &canonical(&f["context"])?,
         )?;
         let result = (|| {
             let k = values(&p["data"], "group_keys")?
@@ -628,13 +626,7 @@ impl Vault {
             frames.push((w.id.clone(), canonical(&f)?));
         }
         if let Some(k) = add_key {
-            let f = frame(&i.conn, &before.vault_id)?;
-            let mut p = objects::open_local(
-                &self.codec,
-                &canonical(&f)?,
-                &key,
-                &canonical(&f["context"])?,
-            )?;
+            let mut p = self.secret_plain(&i.conn, before, &key)?;
             let result = (|| {
                 let keys = list(&mut p["data"], "group_keys")?;
                 let additions = if k.is_array() {
@@ -658,11 +650,16 @@ impl Vault {
                         v["key_epoch"].as_str().unwrap()
                     )
                 });
-                self.codec.validate("p02-v1", "vault-secrets", &p["data"])?;
-                objects::seal_local(&self.codec, &Zeroizing::new(canonical(&p)?), &key)
+                self.prepare_secret_pages(&i.conn, before, &key, &p["data"])
             })();
             wipe_value(&mut p);
-            frames.push((before.vault_id.clone(), canonical(&result?)?));
+            let (root, parts, prior) = result?;
+            remove_parts.extend(prior);
+            for (id, bytes) in parts {
+                check(new_parts.insert(id.clone()), "DUPLICATE_RECORD")?;
+                frames.push((id, bytes));
+            }
+            frames.push((before.vault_id.clone(), canonical(&root)?));
         }
         let id = note_local::control_id(&self.scope)?;
         let prior: Option<Vec<u8>> = db(i
@@ -852,13 +849,7 @@ impl Vault {
             "GROUP_PROOF_REQUIRED",
         )?;
         let records = self.note_history_records(i, s, c, &group)?;
-        let f = frame(&i.conn, &s.vault_id)?;
-        let mut secrets = objects::open_local(
-            &self.codec,
-            &canonical(&f)?,
-            &i.secrets.as_ref().unwrap().key,
-            &canonical(&f["context"])?,
-        )?;
+        let mut secrets = self.secret_plain(&i.conn, s, &i.secrets.as_ref().unwrap().key)?;
         let result = crate::shared::command(
             &self.codec,
             request,

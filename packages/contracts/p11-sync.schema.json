@@ -448,7 +448,8 @@
             "note-control",
             "group-evidence",
             "sync-control",
-            "cache"
+            "cache",
+            "vault-secrets"
           ]
         },
         "parts": {
@@ -526,7 +527,8 @@
             "group-evidence",
             "sync-control",
             "content-part",
-            "cache"
+            "cache",
+            "vault-secrets"
           ]
         },
         "root_fingerprint": {
@@ -584,6 +586,58 @@
         "context",
         "nonce",
         "ciphertext"
+      ],
+      "additionalProperties": false
+    },
+    "secrets": {
+      "type": "object",
+      "properties": {
+        "device_signing_secret": {
+          "type": "string",
+          "format": "base64url-64"
+        },
+        "device_encryption_secret": {
+          "type": "string",
+          "format": "base64url-32"
+        },
+        "group_keys": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "service_id": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+              },
+              "group_id": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+              },
+              "key_epoch": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+              },
+              "epoch_digest": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+              },
+              "group_secret": {
+                "type": "string",
+                "format": "base64url-32"
+              }
+            },
+            "required": [
+              "service_id",
+              "group_id",
+              "key_epoch",
+              "epoch_digest",
+              "group_secret"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "device_signing_secret",
+        "device_encryption_secret",
+        "group_keys"
       ],
       "additionalProperties": false
     },

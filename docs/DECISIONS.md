@@ -867,3 +867,11 @@ are fenced and atomic; generic mutation/eviction cannot alter their dependencies
 No plaintext last-write-wins, implicit resurrection, unverifiable history trust or
 universal hostile-server freshness is introduced. Actual software/restore/fault
 execution evidence is required separately, not inferred from these decisions.
+
+P11 extends the bounded protected secret inventory to 10,000 keys and the complete
+account roster replay to 10,000 events / 32 MiB, retaining every signed event and
+independent historical anchor. Individual frozen P02 signatures/fields remain
+unchanged. The existing device snapshot IPC has the matching public-only 32 MiB
+limit; all other P07 IPC budgets remain unchanged. Additive paged secret roots make
+older clients refuse unlock before any private-store mutation. P10 public account
+proof list capacity matches this bounded replay; it grants no new authority.

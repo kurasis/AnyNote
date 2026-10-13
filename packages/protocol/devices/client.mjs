@@ -26,7 +26,7 @@ export class DevicesClient {
   ensure(/^[A-Za-z0-9_-]{22}$/.test(account),'INVALID_ACCOUNT');let cursor=null,head,identity,generation,count=0,bytes=0;
   do{const q=cursor===null?'':'?after='+cursor+'&head='+head.digest,part=await this.call('/accounts/'+account+'/roster'+q,null,'roster-result');
    if(head)ensure(same(head,part.head)&&same(identity,part.identity)&&generation===part.generation,'ROSTER_CHANGED');else{({head,identity,generation}=part);await vault.devices('snapshotStart',[identity,head,generation]);}
-   bytes+=wire(part.events).length;count+=part.events.length;ensure(bytes<=16777216&&count<=1000&&part.events.length>0,'RESOURCE_LIMIT');
+   bytes+=wire(part.events).length;count+=part.events.length;ensure(bytes<=33554432&&count<=10000&&part.events.length>0,'RESOURCE_LIMIT');
    ensure(part.next===null||BigInt(part.next)===BigInt(cursor??'0')+BigInt(part.events.length),'INTEGRITY_FAILURE');await vault.devices('snapshotPage',[part.events]);cursor=part.next;
   }while(cursor!==null);return vault.devices('snapshotFinish');
  }
@@ -35,14 +35,14 @@ export class DevicesClient {
   ensure(/^[A-Za-z0-9_-]{22}$/.test(account),'INVALID_ACCOUNT');let cursor=null,head,identity,generation,bytes=0;const events=[];
   do{const q=cursor===null?(root?'?root='+root:''):'?after='+cursor+'&head='+head.digest+(root?'&root='+root:''),part=await this.call('/accounts/'+account+'/roster'+q,null,'roster-result');
    if(head)ensure(same(head,part.head)&&same(identity,part.identity)&&generation===part.generation,'ROSTER_CHANGED');else({head,identity,generation}=part);
-   bytes+=wire(part.events).length;ensure(bytes<=16777216&&events.length+part.events.length<=1000,'RESOURCE_LIMIT');
+   bytes+=wire(part.events).length;ensure(bytes<=33554432&&events.length+part.events.length<=10000,'RESOURCE_LIMIT');
    ensure(part.next===null||(part.events.length>0&&BigInt(part.next)===BigInt(cursor??'0')+BigInt(part.events.length)),'INTEGRITY_FAILURE');events.push(...part.events);cursor=part.next;
   }while(cursor!==null);
   ensure(events.length>0&&events.length===Number(head.version)+1,'INTEGRITY_FAILURE');return {identity,events,head,generation};
  }
 }
 export function verifiedSnapshot(snapshot,pins,anchor=null){
- ensure(snapshot&&Array.isArray(snapshot.events)&&snapshot.events.length>0&&snapshot.events.length<=1000&&wire(snapshot).length<=16777216,'RESOURCE_LIMIT');
+ ensure(snapshot&&Array.isArray(snapshot.events)&&snapshot.events.length>0&&snapshot.events.length<=10000&&wire(snapshot).length<=33554432,'RESOURCE_LIMIT');
  const identity=verifyRootIdentity(wire(snapshot.identity),wire(pins)),roster=newRosterForEvaluation(identity);let observed=anchor===null;
  for(const event of snapshot.events){applyRosterEventForEvaluation(roster,wire(event));if(anchor&&same(rosterDetails(roster).head,anchor))observed=true;}
  const details=rosterDetails(roster);ensure(same(details.head,snapshot.head)&&details.generation===snapshot.generation,'INTEGRITY_FAILURE');ensure(observed,'ROLLBACK_QUARANTINE');

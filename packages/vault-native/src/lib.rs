@@ -31,6 +31,7 @@ pub mod native_hello;
 mod note_local;
 pub mod notes;
 mod paged_local;
+mod secret_pages;
 pub mod shared;
 // The GPL provider/attestation/TPM/filesystem implementation is shared by source,
 // preserving its independent manifest/lock and synthetic RP. Only for_rp is exposed
@@ -510,17 +511,12 @@ impl Vault {
             s.epoch == epoch && s.revision >= i.observed_revision,
             "ROLLBACK_QUARANTINE",
         )?;
-        let f = frame(&i.conn, &s.vault_id)?;
-        let p = objects::open_local(
-            &self.codec,
-            &canonical(&f)?,
-            &key,
-            &canonical(&self.context("vault-secrets", &s.vault_id)?)?,
-        )?;
+        let mut p = self.secret_plain(&i.conn, &s, &key)?;
         let data = &p["data"];
-        self.codec.validate("p02-v1", "vault-secrets", data)?;
+        self.codec.validate("p11-sync", "secrets", data)?;
         let signing = Zeroizing::new(un64(text(&data["device_signing_secret"])?)?);
         let encryption = Zeroizing::new(un64(text(&data["device_encryption_secret"])?)?);
+        wipe_value(&mut p);
         let pair = libsodium_rs::crypto_sign::KeyPair::from_seed(&signing[..32])
             .map_err(|_| Error("INVALID_KEY_LENGTH"))?;
         check(

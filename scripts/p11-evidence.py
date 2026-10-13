@@ -22,6 +22,9 @@ paths = git('ls-files').splitlines()
 assert {p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in paths}==initial_inputs, 'Raw source changed during execution'
 prefixes = ('packages/', 'apps/', 'scripts/', 'infra/', 'experiments/p01/', '.github/workflows/')
 report = {'purpose': 'P11 staged synchronization software source receipt', 'status': 'PASS', 'role': role, 'source_commit': source_commit, 'source_tree': source_tree, 'source_tree_dirty': False, 'timestamp': datetime.now(timezone.utc).isoformat(), 'physical_acceptance': False, 'independent_review': 'NOT_RUN', 'inputs': [{'path': p, 'sha256': hashlib.sha256((ROOT/p).read_bytes()).hexdigest()} for p in paths if p.startswith(prefixes)]}
+interop=json.loads((ROOT/'artifacts/p11/native-interop-report.json').read_text())
+assert interop['status']=='PASS' and interop['source_commit']==source_commit and interop['source_tree']==source_tree and not interop['source_tree_dirty']
+report['native_interop_checks']=interop['checks'];report['verified_signed_roster_events']=interop['events']
 if role == 'linux':
     http = json.loads((ROOT/'artifacts/p11/http-report.json').read_text())
     assert http['status'] == 'PASS' and http['source_commit'] == report['source_commit'] and not http['source_tree_dirty']
