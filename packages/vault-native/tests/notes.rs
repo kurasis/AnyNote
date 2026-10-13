@@ -719,6 +719,7 @@ fn p12_native_incompressible_gigabyte_durable_resume_and_export() {
     let mut cap = f.vault.unlock_phrase(PHRASE).unwrap();
     let g = group(&f, &cap);
     let root = f.vault.path().parent().unwrap();
+    eprintln!("P12_FILE_MEMORY_BEGIN");
     let source_path = root.join("explicit-synthetic-source.bin");
     let mut source = OpenOptions::new()
         .create_new(true)
@@ -837,6 +838,7 @@ fn p12_native_incompressible_gigabyte_durable_resume_and_export() {
                 .any(|w| w == b"P12 SECRET WINDOWS NAME")
         );
     }
+    eprintln!("P12_FILE_MEMORY_END");
 }
 
 #[test]

@@ -60,4 +60,4 @@ class Sampler:
             self.peak=max(self.peak,size)
     def report(self):
         assert self.count>0 and self.peak>0,'No native notes memory samples executed'
-        return {'samples':self.count,'sample_interval_ms':250,'observed_peak_working_set_bytes':self.peak,'first_sample_working_set_bytes':self.baseline,'observed_peak_growth_bytes':max(0,self.peak-self.baseline),'scope':'actual native notes child process, includes allocator/SQLite/Argon overhead; sampled RSS/working set is not a hard ceiling or a physical WebView2 measurement'}
+        return {'samples':self.count,'sample_interval_ms':250,'observed_peak_working_set_bytes':self.peak,'first_sample_working_set_bytes':self.baseline,'observed_peak_growth_bytes':max(0,self.peak-self.baseline),'scope':'actual native 1 GB transfer phase after vault initialization/unlock, includes allocator/SQLite overhead; first phase sample is baseline; sampled RSS/working set is not a hard ceiling or a physical WebView2 measurement'}

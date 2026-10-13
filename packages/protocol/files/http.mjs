@@ -8,3 +8,11 @@ export function binary(browser,path,bytes,method=bytes?'PUT':'GET',headers={}){
   });req.setTimeout(30000,()=>req.destroy(Error('HTTP_TIMEOUT')));req.on('error',reject);req.end(bytes);
  });
 }
+// Genuine socket loss: the client submits only a prefix of an authenticated part.
+export function cutPart(browser,path,bytes){
+ return new Promise(resolve=>{const req=https.request({hostname:'127.0.0.1',port:18443,servername:'api.anynote.test',ca,path:'/api/v1'+path,method:'PUT',headers:{Host:'api.anynote.test:18443',Origin:'https://app.anynote.test:18443',Cookie:browser.cookie,'X-CSRF-TOKEN':browser.csrf,'Content-Type':'application/octet-stream','Content-Length':bytes.length}},res=>res.destroy());req.on('error',()=>resolve());req.write(bytes.subarray(0,Math.min(65536,bytes.length-1)),()=>req.destroy(Error('PUBLIC_SYNTHETIC_DISCONNECT')));});
+}
+// Drop the actual response body after server transaction headers, before client acknowledgement.
+export function loseCommitResponse(browser,path,body){
+ return new Promise((resolve,reject)=>{const data=JSON.stringify(body),req=https.request({hostname:'127.0.0.1',port:18443,servername:'api.anynote.test',ca,path:'/api/v1'+path,method:'POST',headers:{Host:'api.anynote.test:18443',Origin:'https://app.anynote.test:18443',Cookie:browser.cookie,'X-CSRF-TOKEN':browser.csrf,'Content-Type':'application/json','Content-Length':Buffer.byteLength(data)}},res=>{const status=res.statusCode;res.destroy();resolve(status);});req.on('error',reject);req.setTimeout(30000,()=>req.destroy(Error('HTTP_TIMEOUT')));req.end(data);});
+}
