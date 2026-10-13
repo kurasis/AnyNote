@@ -46,13 +46,14 @@ final class Settings
         DB::table('key_envelopes')->insert(['id' => P::b64(random_bytes(16)), 'group_id' => $c->group_id, 'epoch_number' => $c->key_epoch, 'recipient_account_id' => $c->recipient->account_id, 'recipient_kind' => $c->recipient->kind, 'recipient_key_fingerprint' => $c->recipient->encryption_key_fingerprint, 'signed_record' => P::canonical($record), 'ciphertext_bytes' => strlen(P::binary($record->body->sealed_ciphertext))]);
     }
 
-    public function create(Request $r, stdClass $body, bool $settings = true): array
+    public function create(Request $r, stdClass $body, bool $settings = true, string $kind = 'private'): array
     {
-        return DB::transaction(function () use ($r, $body, $settings) {
+        return DB::transaction(function () use ($r, $body, $settings, $kind) {
+            Protocol::require(in_array($kind, ['private', 'shared'], true) && (! $settings || $kind === 'private'), 'INVALID_REQUEST');
             $s = $this->sessions->current($r, true);
             $this->authorization->actor($this->sessions->secret($r));
             $hash = P::b64(hash('sha256', P::canonical($body), true));
-            $old = $settings ? DB::table('account_settings_genesis')->where('account_id', $s->account_id)->first() : DB::table('private_group_geneses')->where('group_id', $body->commit->body->group_id)->first();
+            $old = $settings ? DB::table('account_settings_genesis')->where('account_id', $s->account_id)->first() : DB::table($kind === 'shared' ? 'shared_group_geneses' : 'private_group_geneses')->where('group_id', $body->commit->body->group_id)->first();
             if ($old) {
                 Protocol::require(($settings || ($old->account_id === $s->account_id && $old->device_id === $s->device_id)) && $hash === $old->request_digest, 'IDEMPOTENCY_MISMATCH');
                 $this->authorization->group($this->authorization->actor($this->sessions->secret($r)), $old->group_id);
@@ -62,7 +63,7 @@ final class Settings
             if (! $settings) {
                 Protocol::require(DB::table('account_settings_genesis')->where('account_id', $s->account_id)->exists(), 'KEYS_PENDING');
                 Protocol::require(DB::table('groups')->where('owner_account_id', $s->account_id)->where('kind', 'private')->count() < 100, 'RESOURCE_LIMIT');
-                Protocol::require(! DB::table('private_group_geneses')->where('account_id', $s->account_id)->where('device_id', $s->device_id)->where('operation_id', $body->commit->body->operation_id)->exists() && ! DB::table('mutation_receipts')->where('account_id', $s->account_id)->where('device_id', $s->device_id)->where('operation_id', $body->commit->body->operation_id)->exists(), 'IDEMPOTENCY_MISMATCH');
+                Protocol::require(! DB::table($kind === 'shared' ? 'shared_group_geneses' : 'private_group_geneses')->where('account_id', $s->account_id)->where('device_id', $s->device_id)->where('operation_id', $body->commit->body->operation_id)->exists() && ! DB::table('mutation_receipts')->where('account_id', $s->account_id)->where('device_id', $s->device_id)->where('operation_id', $body->commit->body->operation_id)->exists(), 'IDEMPOTENCY_MISMATCH');
             }
             Protocol::require(count($body->pages) === 1, 'INVALID_REQUEST');
             [$i, $device, $certificate] = $this->authorization->certifiedDevice($s->account_id, $s->device_id);
@@ -84,7 +85,7 @@ final class Settings
                 Protocol::require($record->body->service_id === config('api.service_id') && $record->body->group_id === $b->group_id && $record->body->operation_id === $b->operation_id);
             }
             Protocol::require(Protocol::equal($p->signer, $sender) && Protocol::equal($v->signer, $sender) && Protocol::equal($d->signer, $sender));
-            Protocol::require($policy->cosignature === null && $p->action === 'genesis' && $p->payload->group_kind === 'private' && $p->version === '0' && $p->predecessor === null && Protocol::equal($p->members, [(object) ['account_id' => $s->account_id, 'root_fingerprint' => $i->root_fingerprint, 'role' => 'owner']]));
+            Protocol::require($policy->cosignature === null && $p->action === 'genesis' && $p->payload->group_kind === $kind && $p->version === '0' && $p->predecessor === null && Protocol::equal($p->members, [(object) ['account_id' => $s->account_id, 'root_fingerprint' => $i->root_fingerprint, 'role' => 'owner']]));
             $membership = (object) ['version' => '0', 'digest' => P::digest('p02-group-c2', 'policy', $policy)];
             $epoch = P::digest('p02-group-c2', 'epoch-intent', $intent);
             Protocol::require($v->reason === 'genesis' && $v->previous_epoch === null && $v->next_epoch === '0' && $v->retained_epochs === [] && $v->history_checkpoint_digest === null && Protocol::equal($v->expected_policy, $membership) && Protocol::equal($v->membership, $membership) && Protocol::equal($d->membership, $membership));
@@ -122,7 +123,7 @@ final class Settings
             Protocol::require($d->intent_digest === $epoch && $d->inventory_digest === $inventory && $d->record_count === (string) $count && $d->page_count === '1' && $d->epoch_inventory_digest === $epochInventory);
             Protocol::require(! DB::table('groups')->where('id', $b->group_id)->exists(), 'IDEMPOTENCY_MISMATCH');
             $g = $b->group_id;
-            DB::table('groups')->insert(['id' => $g, 'owner_account_id' => $s->account_id, 'kind' => 'private', 'state' => 'active', 'policy_sequence' => 0, 'policy_digest' => $membership->digest, 'epoch_number' => 0, 'epoch_digest' => $epoch]);
+            DB::table('groups')->insert(['id' => $g, 'owner_account_id' => $s->account_id, 'kind' => $kind, 'state' => 'active', 'policy_sequence' => 0, 'policy_digest' => $membership->digest, 'epoch_number' => 0, 'epoch_digest' => $epoch]);
             DB::table('group_memberships')->insert(['group_id' => $g, 'account_id' => $s->account_id, 'role' => 'owner', 'status' => 'active', 'joined_policy' => 0]);
             DB::table('group_policy_events')->insert(['id' => $p->operation_id, 'group_id' => $g, 'sequence' => 0, 'parent_digest' => null, 'digest' => $membership->digest, 'signed_record' => P::canonical($policy)]);
             DB::table('group_key_epochs')->insert(['id' => P::b64(random_bytes(16)), 'group_id' => $g, 'epoch_number' => 0, 'policy_digest' => $membership->digest, 'digest' => $epoch, 'signed_transition' => P::canonical($commit)]);
@@ -135,8 +136,8 @@ final class Settings
                 $genesis['device_id'] = $s->device_id;
                 $genesis['operation_id'] = $b->operation_id;
             }
-            DB::table($settings ? 'account_settings_genesis' : 'private_group_geneses')->insert($genesis);
-            $this->sync->append([['group_id' => $g, 'audience_account_id' => $s->account_id, 'kind' => $settings ? 'settings-genesis' : 'private-group-genesis', 'object_id' => $g, 'revision_id' => null, 'digest' => P::digest('p02-group-c2', 'epoch-commit', $commit)]]);
+            DB::table($settings ? 'account_settings_genesis' : ($kind === 'shared' ? 'shared_group_geneses' : 'private_group_geneses'))->insert($genesis);
+            $this->sync->append([['group_id' => $g, 'audience_account_id' => $s->account_id, 'kind' => $settings ? 'settings-genesis' : ($kind === 'shared' ? 'shared-group-genesis' : 'private-group-genesis'), 'object_id' => $g, 'revision_id' => null, 'digest' => P::digest('p02-group-c2', 'epoch-commit', $commit)]]);
 
             return ['version' => 1, 'group_id' => $g, 'commit' => $commit, 'pages' => [$page]];
         }, 3);

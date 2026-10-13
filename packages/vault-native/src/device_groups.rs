@@ -2,13 +2,13 @@
 use super::*;
 use crate::device_roster::{Roster, digest, signed};
 
-fn signer(roster: &Roster, id: &str) -> Result<Value> {
+pub(crate) fn signer(roster: &Roster, id: &str) -> Result<Value> {
     let d = roster.active(id, Some("distribute-group-key"))?;
     Ok(
         json!({"account_id":roster.pins["account_id"],"device_id":id,"root_fingerprint":roster.pins["root_fingerprint"],"recovery_generation":roster.generation,"roster_head":roster.head,"certificate_digest":d.digest}),
     )
 }
-fn recipient(roster: &Roster, id: Option<&str>) -> Result<Value> {
+pub(crate) fn recipient(roster: &Roster, id: Option<&str>) -> Result<Value> {
     let mut out = json!({"kind":if id.is_some(){"device"}else{"account-recovery"},"account_id":roster.pins["account_id"],"root_fingerprint":roster.pins["root_fingerprint"],"recovery_generation":roster.generation,"roster_head":roster.head});
     let key = if let Some(id) = id {
         let d = roster.active(id, Some("receive-group-key"))?;
@@ -23,14 +23,14 @@ fn recipient(roster: &Roster, id: Option<&str>) -> Result<Value> {
     out["encryption_key_fingerprint"] = json!(hash(&bytes));
     Ok(out)
 }
-fn key_commitment(scope: &Value, key: &[u8]) -> Result<String> {
+pub(crate) fn key_commitment(scope: &Value, key: &[u8]) -> Result<String> {
     check(key.len() == 32, "INVALID_KEY_LENGTH")?;
     let mut b = b"AnyNote/p02-group-c2/hash/group-epoch-key\0".to_vec();
     b.extend(canonical(scope)?);
     b.extend(key);
     Ok(hash(&b))
 }
-fn public_sign(codec: &Codec, kind: &str, body: Value, key: &[u8]) -> Result<Value> {
+pub(crate) fn public_sign(codec: &Codec, kind: &str, body: Value, key: &[u8]) -> Result<Value> {
     codec.validate("p02-group-c2", &format!("{kind}-body"), &body)?;
     let mut value = json!({"signature":anynote_crypto_core::crypto::sign(&codec.signing("p02-group-c2",&format!("{kind}-body"),&body)?,key)?,"body":body});
     if kind == "policy" {
@@ -39,7 +39,7 @@ fn public_sign(codec: &Codec, kind: &str, body: Value, key: &[u8]) -> Result<Val
     codec.validate("p02-group-c2", kind, &value)?;
     Ok(value)
 }
-fn common(purpose: &str, scope: &Value, operation: &str) -> Value {
+pub(crate) fn common(purpose: &str, scope: &Value, operation: &str) -> Value {
     json!({"purpose":purpose,"contract":"p02-group-c2","protocol":"anynote","protocol_version":1,"service_id":scope["service_id"],"group_id":scope["group_id"],"operation_id":operation})
 }
 fn page_commitment(page: &Value) -> Result<String> {
@@ -93,6 +93,16 @@ pub(crate) fn verify_genesis(
     snapshot: &Value,
     pins: &Value,
 ) -> Result<Value> {
+    verify_genesis_kind(codec, evidence, snapshot, pins, "private")
+}
+pub(crate) fn verify_genesis_kind(
+    codec: &Codec,
+    evidence: &Value,
+    snapshot: &Value,
+    pins: &Value,
+    kind: &str,
+) -> Result<Value> {
+    check(["private", "shared"].contains(&kind), "INVALID_REQUEST")?;
     let b = &evidence["commit"]["body"];
     let policy = &b["policy"];
     let p = &policy["body"];
@@ -132,7 +142,7 @@ pub(crate) fn verify_genesis(
     check(
         policy["cosignature"].is_null()
             && p["action"] == "genesis"
-            && p["payload"]["group_kind"] == "private"
+            && p["payload"]["group_kind"] == kind
             && p["version"] == "0"
             && p["predecessor"].is_null()
             && p["members"]
@@ -544,6 +554,17 @@ pub(crate) fn create_private_genesis(
     pins: &Value,
     signing: &[u8],
 ) -> Result<(Value, Value)> {
+    create_genesis_kind(codec, roster, installation, pins, signing, "private")
+}
+pub(crate) fn create_genesis_kind(
+    codec: &Codec,
+    roster: &Roster,
+    installation: &Scope,
+    pins: &Value,
+    signing: &[u8],
+    kind: &str,
+) -> Result<(Value, Value)> {
+    check(["private", "shared"].contains(&kind), "INVALID_REQUEST")?;
     roster.active(&installation.device_id, Some("sign-content"))?;
     let scope = json!({"service_id":installation.service_id,"group_id":random_id()});
     let op = random_id();
@@ -555,7 +576,7 @@ pub(crate) fn create_private_genesis(
     policy["predecessor"] = Value::Null;
     policy["signer"] = sender.clone();
     policy["members"] = json!([{"account_id":installation.account_id,"root_fingerprint":pins["root_fingerprint"],"role":"owner"}]);
-    policy["payload"] = json!({"group_kind":"private"});
+    policy["payload"] = json!({"group_kind":kind});
     let policy = public_sign(codec, "policy", policy, signing)?;
     let membership = json!({"version":"0","digest":digest("p02-group-c2","policy",&policy)?});
     let mut intent = common("group-epoch-intent", &scope, &op);

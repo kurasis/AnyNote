@@ -894,86 +894,6 @@
         }
       }
     },
-    "/api/v1/group-invitations/{id}/accept": {
-      "post": {
-        "operationId": "post_group_invitations_id_accept",
-        "summary": "Trusted target account signs acceptance; no access activated yet",
-        "x-implementation-phase": "P10",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/P02FileC1Id"
-            }
-          }
-        ],
-        "security": [
-          {
-            "CookieSession": []
-          },
-          {
-            "NativeBearer": []
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/P02V1ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "x-request-dto-state": "Transport wrapper is finalized by P10 before endpoint implementation; no generic body is accepted"
-      }
-    },
-    "/api/v1/group-invitations/{id}/decline": {
-      "post": {
-        "operationId": "post_group_invitations_id_decline",
-        "summary": "Trusted target declines pending admission",
-        "x-implementation-phase": "P10",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/P02FileC1Id"
-            }
-          }
-        ],
-        "security": [
-          {
-            "CookieSession": []
-          },
-          {
-            "NativeBearer": []
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/P02V1ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "x-request-dto-state": "Transport wrapper is finalized by P10 before endpoint implementation; no generic body is accepted"
-      }
-    },
     "/api/v1/groups": {
       "get": {
         "operationId": "get_groups",
@@ -1062,46 +982,6 @@
         }
       }
     },
-    "/api/v1/groups/{id}/epoch-transitions": {
-      "post": {
-        "operationId": "post_groups_id_epoch_transitions",
-        "summary": "Owner/editor optional rekey or member-executed mandatory roster-only rekey; exact expected state",
-        "x-implementation-phase": "P10",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/P02FileC1Id"
-            }
-          }
-        ],
-        "security": [
-          {
-            "CookieSession": []
-          },
-          {
-            "NativeBearer": []
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/P02V1ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "x-request-dto-state": "Transport wrapper is finalized by P10 before endpoint implementation; no generic body is accepted"
-      }
-    },
     "/api/v1/groups/{id}/files": {
       "get": {
         "operationId": "get_groups_id_files",
@@ -1141,251 +1021,13 @@
         }
       }
     },
-    "/api/v1/groups/{id}/invitations": {
-      "post": {
-        "operationId": "post_groups_id_invitations",
-        "summary": "Owner-signed pending admission intent targeting exact account root",
-        "x-implementation-phase": "P10",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/P02FileC1Id"
-            }
-          }
-        ],
-        "security": [
-          {
-            "CookieSession": []
-          },
-          {
-            "NativeBearer": []
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/P02V1ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "x-request-dto-state": "Transport wrapper is finalized by P10 before endpoint implementation; no generic body is accepted"
-      }
-    },
-    "/api/v1/groups/{id}/key-distributions": {
-      "post": {
-        "operationId": "post_groups_id_key_distributions",
-        "summary": "Same-account device grants or authorized full-history invitation grants",
-        "x-implementation-phase": "P10",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/P02FileC1Id"
-            }
-          }
-        ],
-        "security": [
-          {
-            "CookieSession": []
-          },
-          {
-            "NativeBearer": []
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/P02V1ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "x-request-dto-state": "Transport wrapper is finalized by P10 before endpoint implementation; no generic body is accepted"
-      }
-    },
-    "/api/v1/groups/{id}/key-envelopes": {
-      "get": {
-        "operationId": "get_groups_id_key_envelopes",
-        "summary": "Trusted current member: own device or own account recovery-recipient envelopes, scoped by epoch",
-        "x-implementation-phase": "P10",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/P02FileC1Id"
-            }
-          }
-        ],
-        "security": [
-          {
-            "CookieSession": []
-          },
-          {
-            "NativeBearer": []
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/P02V1ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/groups/{id}/ownership-transfer": {
-      "post": {
-        "operationId": "post_groups_id_ownership_transfer",
-        "summary": "Both identities' consent, recent auth",
-        "x-implementation-phase": "P10",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/P02FileC1Id"
-            }
-          }
-        ],
-        "security": [
-          {
-            "CookieSession": []
-          },
-          {
-            "NativeBearer": []
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/P02V1ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "x-request-dto-state": "Transport wrapper is finalized by P10 before endpoint implementation; no generic body is accepted"
-      }
-    },
-    "/api/v1/groups/{id}/policy": {
-      "get": {
-        "operationId": "get_groups_id_policy",
-        "summary": "Signed genesis and policy chain, paginated",
-        "x-implementation-phase": "P10",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/P02FileC1Id"
-            }
-          }
-        ],
-        "security": [
-          {
-            "CookieSession": []
-          },
-          {
-            "NativeBearer": []
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/P02V1ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/groups/{id}/policy-events": {
-      "post": {
-        "operationId": "post_groups_id_policy_events",
-        "summary": "Owner-signed membership/settings/archive changes",
-        "x-implementation-phase": "P10",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/P02FileC1Id"
-            }
-          }
-        ],
-        "security": [
-          {
-            "CookieSession": []
-          },
-          {
-            "NativeBearer": []
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/P02V1ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "x-request-dto-state": "Transport wrapper is finalized by P10 before endpoint implementation; no generic body is accepted"
-      }
-    },
     "/api/v1/groups/{id}/purge": {
       "post": {
         "operationId": "post_groups_id_purge",
         "summary": "Owner-signed permanent deletion; retention and operational backup limits disclosed",
-        "x-implementation-phase": "P10",
+        "x-implementation-phase": "P13",
         "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
+        "description": "Owner-controlled permanent purge requires the P13 retained-reference and trash contract.",
         "parameters": [
           {
             "name": "id",
@@ -1416,7 +1058,7 @@
             }
           }
         },
-        "x-request-dto-state": "Transport wrapper is finalized by P10 before endpoint implementation; no generic body is accepted"
+        "x-request-dto-state": "Transport wrapper is finalized by P13 before endpoint implementation; no generic body is accepted"
       }
     },
     "/api/v1/groups/{id}/snapshots": {
@@ -1568,159 +1210,6 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/P09NotesCommitRequest"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/groups/{id}/transitions": {
-      "post": {
-        "operationId": "post_groups_id_transitions",
-        "summary": "Create bounded staging descriptor for membership/epoch/checkpoint operation",
-        "x-implementation-phase": "P10",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/P02FileC1Id"
-            }
-          }
-        ],
-        "security": [
-          {
-            "CookieSession": []
-          },
-          {
-            "NativeBearer": []
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/P02V1ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "x-request-dto-state": "Transport wrapper is finalized by P10 before endpoint implementation; no generic body is accepted"
-      }
-    },
-    "/api/v1/groups/{id}/transitions/{tid}/commit": {
-      "post": {
-        "operationId": "post_groups_id_transitions_tid_commit",
-        "summary": "Atomically bind page commitment, signatures, expected heads and recipient set",
-        "x-implementation-phase": "P10",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/P02FileC1Id"
-            }
-          },
-          {
-            "name": "tid",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/P02FileC1Id"
-            }
-          }
-        ],
-        "security": [
-          {
-            "CookieSession": []
-          },
-          {
-            "NativeBearer": []
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/P02V1ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "x-request-dto-state": "Transport wrapper is finalized by P10 before endpoint implementation; no generic body is accepted"
-      }
-    },
-    "/api/v1/groups/{id}/transitions/{tid}/pages/{index}": {
-      "put": {
-        "operationId": "put_groups_id_transitions_tid_pages_index",
-        "summary": "Idempotent bounded immutable ciphertext/envelope/inventory page",
-        "x-implementation-phase": "P10",
-        "x-implemented": false,
-        "description": "Account/session/device and signed operation; see original chapter 08",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/P02FileC1Id"
-            }
-          },
-          {
-            "name": "tid",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/P02FileC1Id"
-            }
-          },
-          {
-            "name": "index",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "$ref": "#/components/schemas/P02FileC1Counter"
-            }
-          }
-        ],
-        "security": [
-          {
-            "CookieSession": []
-          },
-          {
-            "NativeBearer": []
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/P02V1ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/P02GroupC2GrantPage"
               }
             }
           }
@@ -4140,6 +3629,725 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/P09NotesGroupStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/group-invitations": {
+      "get": {
+        "operationId": "get_me_group_invitations",
+        "summary": "Signed group group-invitations",
+        "x-implementation-phase": "P10",
+        "x-implemented": true,
+        "description": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+        "parameters": [],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P10SharedInvitationsPage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{id}/journal": {
+      "get": {
+        "operationId": "get_groups_id_journal",
+        "summary": "Signed group journal",
+        "x-implementation-phase": "P10",
+        "x-implemented": true,
+        "description": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P10SharedJournal"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{id}/invites": {
+      "post": {
+        "operationId": "post_groups_id_invites",
+        "summary": "Signed group invites",
+        "x-implementation-phase": "P10",
+        "x-implemented": true,
+        "description": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P10SharedResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P10SharedInvitationRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{id}/accept": {
+      "post": {
+        "operationId": "post_groups_id_accept",
+        "summary": "Signed group accept",
+        "x-implementation-phase": "P10",
+        "x-implemented": true,
+        "description": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P10SharedResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P10SharedAcceptRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{id}/policy": {
+      "post": {
+        "operationId": "post_groups_id_policy",
+        "summary": "Signed group policy",
+        "x-implementation-phase": "P10",
+        "x-implemented": true,
+        "description": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P10SharedResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P10SharedPolicyRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{id}/owner-consent": {
+      "post": {
+        "operationId": "post_groups_id_owner_consent",
+        "summary": "Signed group owner-consent",
+        "x-implementation-phase": "P10",
+        "x-implemented": true,
+        "description": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P10SharedResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P10SharedPolicyRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{id}/epoch/begin": {
+      "post": {
+        "operationId": "post_groups_id_epoch_begin",
+        "summary": "Signed group begin",
+        "x-implementation-phase": "P10",
+        "x-implemented": true,
+        "description": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P10SharedResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P10SharedBeginRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{id}/epoch/page": {
+      "post": {
+        "operationId": "post_groups_id_epoch_page",
+        "summary": "Signed group page",
+        "x-implementation-phase": "P10",
+        "x-implemented": true,
+        "description": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P10SharedResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P10SharedPageRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{id}/epoch/commit": {
+      "post": {
+        "operationId": "post_groups_id_epoch_commit",
+        "summary": "Signed group commit",
+        "x-implementation-phase": "P10",
+        "x-implemented": true,
+        "description": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P10SharedResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P10SharedCommitRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{id}/history": {
+      "post": {
+        "operationId": "post_groups_id_history",
+        "summary": "Signed group history",
+        "x-implementation-phase": "P10",
+        "x-implemented": true,
+        "description": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P10SharedResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P10SharedHistoryRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{id}/cancel": {
+      "post": {
+        "operationId": "post_groups_id_cancel",
+        "summary": "Signed group cancel",
+        "x-implementation-phase": "P10",
+        "x-implemented": true,
+        "description": "Fresh trusted session/device, current group role; pending target acceptance is not content access.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P10SharedResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P10SharedCancelRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/close-account": {
+      "post": {
+        "operationId": "post_me_close_account",
+        "summary": "Close own account after signed shared ownership/membership resolution",
+        "x-implementation-phase": "P10",
+        "x-implemented": true,
+        "description": "Recent trusted self only. All shared memberships must be resolved by signed owner policy. Physical private-content retention is P13.",
+        "parameters": [],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P10SharedAccountCloseResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P10SharedAccountCloseRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/group-receipts/{id}": {
+      "get": {
+        "operationId": "get_me_group_receipts_id",
+        "summary": "Reconcile an immutable own-device security mutation result",
+        "x-implementation-phase": "P10",
+        "x-implemented": true,
+        "description": "Current trusted actor and current group access, or the exact pending target for acceptance/decline; explicit closed family.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P10SharedResult"
                 }
               }
             }
@@ -12681,7 +12889,10 @@
             "$ref": "#/components/schemas/P02FileC1Id"
           },
           "kind": {
-            "const": "private"
+            "enum": [
+              "private",
+              "shared"
+            ]
           },
           "owner_account_id": {
             "$ref": "#/components/schemas/P02FileC1Id"
@@ -13305,6 +13516,9 @@
           },
           "saved_digest": {
             "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "copy_audience_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
           }
         },
         "required": [
@@ -13466,24 +13680,31 @@
         "additionalProperties": false
       },
       "P09NotesLocalEvidence": {
-        "type": "object",
-        "properties": {
-          "purpose": {
-            "const": "p09-private-genesis"
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "purpose": {
+                "const": "p09-private-genesis"
+              },
+              "version": {
+                "const": 1
+              },
+              "evidence": {
+                "$ref": "#/components/schemas/P08DevicesGenesisResult"
+              }
+            },
+            "required": [
+              "purpose",
+              "version",
+              "evidence"
+            ],
+            "additionalProperties": false
           },
-          "version": {
-            "const": 1
-          },
-          "evidence": {
-            "$ref": "#/components/schemas/P08DevicesGenesisResult"
+          {
+            "$ref": "#/components/schemas/P10SharedLocalEvidence"
           }
-        },
-        "required": [
-          "purpose",
-          "version",
-          "evidence"
-        ],
-        "additionalProperties": false
+        ]
       },
       "P09NotesGroupSummary": {
         "type": "object",
@@ -13495,7 +13716,10 @@
             "$ref": "#/components/schemas/P02FileC1Id"
           },
           "kind": {
-            "const": "private"
+            "enum": [
+              "private",
+              "shared"
+            ]
           },
           "owner_account_id": {
             "$ref": "#/components/schemas/P02FileC1Id"
@@ -13552,6 +13776,703 @@
           "history_closure_required",
           "restore_quarantined",
           "settings"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedGenesisRequest": {
+        "$ref": "#/components/schemas/P08DevicesGenesisRequest"
+      },
+      "P10SharedInvitationRequest": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "invitation": {
+            "$ref": "#/components/schemas/P02GroupC2Invitation"
+          }
+        },
+        "required": [
+          "version",
+          "invitation"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedAcceptRequest": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "acceptance": {
+            "$ref": "#/components/schemas/P02GroupC2Acceptance"
+          }
+        },
+        "required": [
+          "version",
+          "acceptance"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedPolicyRequest": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "policy": {
+            "$ref": "#/components/schemas/P02GroupC2Policy"
+          }
+        },
+        "required": [
+          "version",
+          "policy"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedBeginRequest": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "intent": {
+            "$ref": "#/components/schemas/P02GroupC2EpochIntent"
+          },
+          "policy": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02GroupC2Policy"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "intent",
+          "policy"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedPageRequest": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "page": {
+            "$ref": "#/components/schemas/P02GroupC2GrantPage"
+          }
+        },
+        "required": [
+          "version",
+          "page"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedCommitRequest": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "commit": {
+            "$ref": "#/components/schemas/P02GroupC2EpochCommit"
+          }
+        },
+        "required": [
+          "version",
+          "commit"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedHistoryRequest": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "history": {
+            "$ref": "#/components/schemas/P02GroupC2History"
+          },
+          "pages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P02FileC1CheckpointPage"
+            },
+            "maxItems": 200
+          }
+        },
+        "required": [
+          "version",
+          "history",
+          "pages"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedCancelRequest": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "operation_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          }
+        },
+        "required": [
+          "version",
+          "operation_id"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedResult": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "operation_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "state": {
+            "enum": [
+              "INVITED",
+              "ACCEPTED_PENDING_GRANTS",
+              "STAGING",
+              "STAGED",
+              "ACTIVATED",
+              "POLICY_COMMITTED",
+              "HISTORY_CLOSED",
+              "CANCELLED",
+              "OWNER_CONSENT"
+            ]
+          },
+          "digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          }
+        },
+        "required": [
+          "version",
+          "group_id",
+          "operation_id",
+          "state",
+          "digest"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedPending": {
+        "type": "object",
+        "properties": {
+          "operation_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "state": {
+            "enum": [
+              "INVITED",
+              "ACCEPTED_PENDING_GRANTS",
+              "STAGING"
+            ]
+          },
+          "invitation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02GroupC2Invitation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "acceptance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02GroupC2Acceptance"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "intent": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02GroupC2EpochIntent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "policy": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02GroupC2Policy"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "pages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P02GroupC2GrantPage"
+            },
+            "maxItems": 1000
+          }
+        },
+        "required": [
+          "operation_id",
+          "state",
+          "invitation",
+          "acceptance",
+          "intent",
+          "policy",
+          "pages"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedEvent": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "policy"
+              },
+              "policy": {
+                "$ref": "#/components/schemas/P02GroupC2Policy"
+              }
+            },
+            "required": [
+              "kind",
+              "policy"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "epoch"
+              },
+              "commit": {
+                "$ref": "#/components/schemas/P02GroupC2EpochCommit"
+              },
+              "pages": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/P02GroupC2GrantPage"
+                },
+                "maxItems": 1000
+              }
+            },
+            "required": [
+              "kind",
+              "commit",
+              "pages"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "history"
+              },
+              "history": {
+                "$ref": "#/components/schemas/P02GroupC2History"
+              },
+              "pages": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/P02FileC1CheckpointPage"
+                },
+                "maxItems": 200
+              }
+            },
+            "required": [
+              "kind",
+              "history",
+              "pages"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "P10SharedJournal": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "genesis": {
+            "$ref": "#/components/schemas/P08DevicesGenesisResult"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P10SharedEvent"
+            },
+            "maxItems": 1000
+          },
+          "pending": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P10SharedPending"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "group_id",
+          "genesis",
+          "events",
+          "pending"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedInvitationsPage": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "invitations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P02GroupC2Invitation"
+            },
+            "maxItems": 20
+          },
+          "next": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "invitations",
+          "next"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedSharePin": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "service_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "owner_account_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "owner_root_fingerprint": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "genesis_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "history": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Head"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "service_id",
+          "group_id",
+          "owner_account_id",
+          "owner_root_fingerprint",
+          "genesis_digest",
+          "history"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedAccountProof": {
+        "type": "object",
+        "properties": {
+          "pins": {
+            "$ref": "#/components/schemas/P02IdentityC1IdentityPin"
+          },
+          "snapshot": {
+            "type": "object",
+            "properties": {
+              "identity": {
+                "$ref": "#/components/schemas/P02IdentityC1Identity"
+              },
+              "head": {
+                "$ref": "#/components/schemas/P02FileC1Head"
+              },
+              "generation": {
+                "$ref": "#/components/schemas/P02FileC1Counter"
+              },
+              "events": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/P02StateC1Event"
+                },
+                "maxItems": 1000
+              }
+            },
+            "required": [
+              "identity",
+              "head",
+              "generation",
+              "events"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "pins",
+          "snapshot"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedAdoptRequest": {
+        "type": "object",
+        "properties": {
+          "pin": {
+            "$ref": "#/components/schemas/P10SharedSharePin"
+          },
+          "journal": {
+            "$ref": "#/components/schemas/P10SharedJournal"
+          },
+          "accounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P10SharedAccountProof"
+            },
+            "maxItems": 200
+          }
+        },
+        "required": [
+          "pin",
+          "journal",
+          "accounts"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedLocalEvidence": {
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "const": "p10-group-proof"
+          },
+          "version": {
+            "const": 1
+          },
+          "proof": {
+            "$ref": "#/components/schemas/P10SharedAdoptRequest"
+          },
+          "attempt": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P10SharedAttempt"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "pending_key": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P10SharedPendingKey"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "purpose",
+          "version",
+          "proof",
+          "attempt"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedAttempt": {
+        "type": "object",
+        "properties": {
+          "family": {
+            "enum": [
+              "invite",
+              "accept",
+              "policy",
+              "consent",
+              "epoch",
+              "history",
+              "cancel"
+            ]
+          },
+          "body": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/P10SharedInvitationRequest"
+              },
+              {
+                "$ref": "#/components/schemas/P10SharedAcceptRequest"
+              },
+              {
+                "$ref": "#/components/schemas/P10SharedPolicyRequest"
+              },
+              {
+                "$ref": "#/components/schemas/P10SharedBeginRequest"
+              },
+              {
+                "$ref": "#/components/schemas/P10SharedCommitRequest"
+              },
+              {
+                "$ref": "#/components/schemas/P10SharedHistoryRequest"
+              },
+              {
+                "$ref": "#/components/schemas/P10SharedCancelRequest"
+              }
+            ]
+          },
+          "pages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P02GroupC2GrantPage"
+            },
+            "maxItems": 1000
+          },
+          "commit": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02GroupC2EpochCommit"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state": {
+            "enum": [
+              "PREPARED",
+              "SENT_UNKNOWN",
+              "COMMITTED",
+              "CANCELLED"
+            ]
+          }
+        },
+        "required": [
+          "family",
+          "body",
+          "pages",
+          "commit",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedPendingKey": {
+        "type": "object",
+        "properties": {
+          "service_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "key_epoch": {
+            "$ref": "#/components/schemas/P02FileC1Counter"
+          },
+          "epoch_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "group_secret": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          }
+        },
+        "required": [
+          "service_id",
+          "group_id",
+          "key_epoch",
+          "epoch_digest",
+          "group_secret"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedAccountCloseRequest": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "account_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "root_fingerprint": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "operation_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "confirmation": {
+            "const": "CLOSE_ACCOUNT"
+          }
+        },
+        "required": [
+          "version",
+          "account_id",
+          "root_fingerprint",
+          "operation_id",
+          "confirmation"
+        ],
+        "additionalProperties": false
+      },
+      "P10SharedAccountCloseResult": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "operation_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "state": {
+            "const": "PENDING_RETENTION"
+          }
+        },
+        "required": [
+          "version",
+          "operation_id",
+          "state"
         ],
         "additionalProperties": false
       }

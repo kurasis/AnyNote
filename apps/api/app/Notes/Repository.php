@@ -27,7 +27,7 @@ final class Repository
     public function group(Actor $a, string $id, string $permission = 'read'): stdClass
     {
         $g = $this->authorization->group($a, $id, $permission);
-        Protocol::require($g->kind === 'private' && $g->owner_account_id === $a->accountId, 'NOT_FOUND');
+        Protocol::require($g->kind !== 'shared' || DB::table('shared_group_geneses')->where('group_id', $id)->exists(), 'NOT_FOUND');
 
         return $g;
     }
@@ -35,16 +35,16 @@ final class Repository
     public function status(Actor $a, stdClass $g): array
     {
         $settings = DB::table('account_settings_genesis')->where('group_id', $g->id)->first();
-        $row = $settings ?? DB::table('private_group_geneses')->where('group_id', $g->id)->first();
-        Protocol::require($row !== null && $row->account_id === $a->accountId, 'NOT_FOUND');
+        $row = $settings ?? DB::table($g->kind === 'shared' ? 'shared_group_geneses' : 'private_group_geneses')->where('group_id', $g->id)->first();
+        Protocol::require($row !== null && ($g->kind === 'shared' || $row->account_id === $a->accountId), 'NOT_FOUND');
 
-        return ['version' => 1, 'group_id' => $g->id, 'kind' => 'private', 'owner_account_id' => $a->accountId, 'state' => $g->state, 'membership' => ['version' => (string) $g->policy_sequence, 'digest' => $g->policy_digest], 'key_epoch' => (string) $g->epoch_number, 'epoch_digest' => $g->epoch_digest, 'history_checkpoint_digest' => $g->history_checkpoint_digest, 'rekey_required' => (bool) $g->rekey_required, 'history_closure_required' => (bool) $g->history_closure_required, 'restore_quarantined' => (bool) $g->restore_quarantined, 'settings' => $settings !== null, 'genesis' => ['version' => 1, 'group_id' => $g->id, 'commit' => json_decode($row->commit_record), 'pages' => [json_decode($row->grant_page)]]];
+        return ['version' => 1, 'group_id' => $g->id, 'kind' => $g->kind, 'owner_account_id' => $g->owner_account_id, 'state' => $g->state, 'membership' => ['version' => (string) $g->policy_sequence, 'digest' => $g->policy_digest], 'key_epoch' => (string) $g->epoch_number, 'epoch_digest' => $g->epoch_digest, 'history_checkpoint_digest' => $g->history_checkpoint_digest, 'rekey_required' => (bool) $g->rekey_required, 'history_closure_required' => (bool) $g->history_closure_required, 'restore_quarantined' => (bool) $g->restore_quarantined, 'settings' => $settings !== null, 'genesis' => ['version' => 1, 'group_id' => $g->id, 'commit' => json_decode($row->commit_record), 'pages' => [json_decode($row->grant_page)]]];
     }
 
     public function create(Request $r, stdClass $body): array
     {
         return DB::transaction(function () use ($r, $body) {
-            $result = app(Settings::class)->create($r, $body, false);
+            $result = app(Settings::class)->create($r, $body, false, $body->commit->body->policy->body->payload->group_kind);
             $a = $this->actor($r);
 
             return $this->status($a, $this->group($a, $result['group_id']));
@@ -55,7 +55,7 @@ final class Repository
     {
         return DB::transaction(function () use ($r, $after) {
             $a = $this->actor($r);
-            $q = DB::table('groups')->where('kind', 'private')->where('owner_account_id', $a->accountId)->whereIn('state', ['active', 'archived'])->orderBy('id');
+            $q = DB::table('groups')->whereIn('id', DB::table('group_memberships')->select('group_id')->where('account_id', $a->accountId)->where('status', 'active'))->whereIn('state', ['active', 'archived'])->orderBy('id');
             if ($after !== null) {
                 $q->where('id', '>', $after);
             }

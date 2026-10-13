@@ -1485,3 +1485,14 @@ Published P08 restoration was observed; P09 draft persistence, publication and
 independently demonstrated fresh P09 restoration remain distinct. Next full batch
 is P10; scale/convergence, files, complete export/retention and packaging retain
 P11–P15 ownership. No owner action is required for independent P09 software CI.
+
+## P10 development validation — acceptance pending
+
+Local implementation diagnostics passed four maintained-crypto protected workflow/
+transport suites, three real native SQLite/restart/fault/closed-IPC tests and 89
+actual native/portable multi-account adapter checks. Earlier real HTTPS/SQL core
+cycle passed 199 checks; the expanded transfer/copy/race suite is still being
+verified. These runs used a dirty development tree and are not exact-source
+acceptance. P09 regressions passed locally. The cloud Chromium sandbox is BLOCKED;
+the new mandatory hosted browser job retains sandbox/TLS/CSP. All eighteen final
+jobs and exact-source public artifacts are required before ordinary merge.

@@ -84,7 +84,7 @@ pub(crate) fn open(
         "LOCAL_CONTEXT_MISMATCH",
     )?;
     let cipher = un64(text(&frame["ciphertext"])?)?;
-    check((16..=262160).contains(&cipher.len()), "RESOURCE_LIMIT")?;
+    check((16..=524304).contains(&cipher.len()), "RESOURCE_LIMIT")?;
     let nonce = aead::Nonce::try_from(un64(text(&frame["nonce"])?)?.as_slice())
         .map_err(|_| Error("INVALID_NONCE"))?;
     let key = aead::Key::from_bytes(key).map_err(|_| Error("INVALID_KEY_LENGTH"))?;

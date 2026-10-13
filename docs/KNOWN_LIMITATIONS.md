@@ -399,3 +399,18 @@ P09 derives old-epoch rekey blocking from verified signed revoke/reset events
 after genesis, even if a hostile service clears its unsigned maintenance flags.
 Local drafts and already witnessed reads remain available; P10 implements the
 actual transition rather than bypassing this independent guard.
+
+## P10 development boundary
+
+Shared-group software is under mandatory hosted validation; do not claim VERIFIED
+until exact-source Linux/Windows/browser and all inherited gates pass. Independent
+history pins/witnesses remain required. Missing ancestry/history, stale rosters,
+recipient/key repair and lost authority preserve local drafts and fail closed.
+Current numerical bounds and phase ownership are in P10_SHARED_GROUPS. Public cards
+need an independently trusted channel; an API-supplied fingerprint alone is insufficient.
+Account closure disables API access and schedules P13 retention, rather than silently
+purging ciphertext or changing signed shared authority. Old exposed keys/data/backup
+copies and isolated malicious-server forks remain the documented v1 limits.
+
+No production migration/deployment, release, new owner hardware trial or reviewer
+outreach is authorized by this batch. G1 physical and qualified G2/G3 remain open.

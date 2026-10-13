@@ -75,3 +75,20 @@ Route::post('/api/v1/objects/{id}/revisions', NotesController::class)->name('pos
 Route::post('/api/v1/objects/{id}/tombstone', NotesController::class)->name('post_objects_id_tombstone');
 Route::post('/api/v1/objects/{id}/restore', NotesController::class)->name('post_objects_id_restore');
 Route::get('/api/v1/me/content-receipts/{id}', NotesController::class)->name('get_me_content_receipts_id');
+
+// P10 closed signed membership, durable staging and history closure.
+Route::get('/api/v1/me/group-invitations', \App\Http\Controllers\GroupsController::class)->name('get_me_group_invitations');
+Route::get('/api/v1/groups/{id}/journal', \App\Http\Controllers\GroupsController::class)->name('get_groups_id_journal');
+Route::post('/api/v1/groups/{id}/invites', \App\Http\Controllers\GroupsController::class)->name('post_groups_id_invites');
+Route::post('/api/v1/groups/{id}/accept', \App\Http\Controllers\GroupsController::class)->name('post_groups_id_accept');
+Route::post('/api/v1/groups/{id}/policy', \App\Http\Controllers\GroupsController::class)->name('post_groups_id_policy');
+Route::post('/api/v1/groups/{id}/owner-consent', \App\Http\Controllers\GroupsController::class)->name('post_groups_id_owner_consent');
+Route::post('/api/v1/groups/{id}/epoch/begin', \App\Http\Controllers\GroupsController::class)->name('post_groups_id_epoch_begin');
+Route::post('/api/v1/groups/{id}/epoch/page', \App\Http\Controllers\GroupsController::class)->name('post_groups_id_epoch_page');
+Route::post('/api/v1/groups/{id}/epoch/commit', \App\Http\Controllers\GroupsController::class)->name('post_groups_id_epoch_commit');
+Route::post('/api/v1/groups/{id}/history', \App\Http\Controllers\GroupsController::class)->name('post_groups_id_history');
+Route::post('/api/v1/groups/{id}/cancel', \App\Http\Controllers\GroupsController::class)->name('post_groups_id_cancel');
+
+Route::post('/api/v1/me/close-account', \App\Http\Controllers\GroupsController::class)->name('post_me_close_account');
+
+Route::get('/api/v1/me/group-receipts/{id}', \App\Http\Controllers\GroupsController::class)->name('get_me_group_receipts_id');

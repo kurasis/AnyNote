@@ -60,3 +60,5 @@ Encrypted local custody: [P07 vault, locking and boundaries](docs/P07_LOCAL_VAUL
 Trusted devices and recovery: [P08 workflows and boundaries](docs/P08_TRUSTED_DEVICES.md).
 
 Private notes: [P09 vault, protected publication and commands](docs/P09_PRIVATE_NOTES.md).
+
+Shared groups: [P10 roles, signed membership and maintenance](docs/P10_SHARED_GROUPS.md). P10 is under final hosted validation; see PROGRESS and TEST_EVIDENCE.

@@ -101,13 +101,15 @@ final class DevicesController
     {
         return DB::transaction(function () use ($r, $id) {
             $s = $this->sessions->current($r, true);
+            $q = self::query($r, ['after', 'head', 'root']);
+            Protocol::require(! isset($q['root']) || P::isBinary($q['root'], 32), 'INVALID_REQUEST');
             if ($s->account_id !== $id) {
                 app(Authorization::class)->actor($this->sessions->secret($r));
-                Protocol::require(DB::table('group_memberships as a')->join('group_memberships as b', 'a.group_id', '=', 'b.group_id')->where('a.account_id', $s->account_id)->where('b.account_id', $id)->where('a.status', 'active')->where('b.status', 'active')->exists(), 'NOT_FOUND');
+                $target = DB::table('account_identities')->where('account_id', $id)->first();
+                Protocol::require((isset($q['root']) && $target && $q['root'] === $target->root_fingerprint) || DB::table('group_memberships as a')->join('group_memberships as b', 'a.group_id', '=', 'b.group_id')->where('a.account_id', $s->account_id)->where('b.account_id', $id)->where('a.status', 'active')->where('b.status', 'active')->exists(), 'NOT_FOUND');
             }
             $i = DB::table('account_identities')->where('account_id', $id)->first();
             Protocol::require($i !== null, 'NOT_FOUND');
-            $q = self::query($r, ['after', 'head']);
             Protocol::require(! isset($q['after']) || P::counter($q['after'], '1000'), 'INVALID_REQUEST');
             $head = Protocol::head($i);
             if (isset($q['head'])) {

@@ -16,7 +16,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P07 | VERIFIED | Five Node custody suites, 28 actual HTTPS/SQL and 28 sandboxed browser checks, fifteen native custody tests per Linux/Windows platform plus explicit official-header ABI; all twelve hosted gates PASS |
 | P08 | VERIFIED | Seven Node workflow suites, 16 dense QR round trips, 153 actual HTTPS/SQL checks, 33 sandboxed UI checks and nine native device tests per Linux/Windows; all fourteen hosted gates PASS |
 | P09 | VERIFIED | Eight workflow/transport suites, 131 actual HTTPS/SQL checks, 49 sandboxed two-PWA UI checks, six native note tests/platform and 16 native/PWA interop checks/platform; all sixteen hosted gates PASS |
-| P10 | NOT STARTED | P09 |
+| P10 | IN PROGRESS | Shared group API, protected portable/native workflows and EN/RU UI implemented; mandatory hosted acceptance pending |
 | P11 | NOT STARTED | P09/P10 |
 | P12 | NOT STARTED | P04/P05/P10/P11 |
 | P13 | NOT STARTED | P11/P12 |

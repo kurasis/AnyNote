@@ -5,7 +5,7 @@ import type {
 } from "../../contracts/generated/protocol.js";
 const live: P03ApiLiveness = { status: "live" };
 // @ts-expect-error a unimplemented shared-group capability cannot be asserted by a private-note client
-const implemented: Operations["post_groups_id_invitations"]["implemented"] = true;
+const implemented: Operations["post_groups_id_purge"]["implemented"] = true;
 // @ts-expect-error unknown fields are invalid DTOs
 const extra: P03ApiLiveness = { status: "live", token: "synthetic" };
 // @ts-expect-error unknown errors cannot cross the typed boundary

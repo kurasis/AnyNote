@@ -30,6 +30,7 @@ pub mod lifecycle;
 pub mod native_hello;
 mod note_local;
 pub mod notes;
+pub mod shared;
 // The GPL provider/attestation/TPM/filesystem implementation is shared by source,
 // preserving its independent manifest/lock and synthetic RP. Only for_rp is exposed
 // within the native crate so product credentials have a different exact namespace.
