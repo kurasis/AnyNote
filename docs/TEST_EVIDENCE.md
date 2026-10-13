@@ -1631,3 +1631,14 @@ Publish and independently observed fresh P11 restoration are distinct. Full phys
 G1/Hello/iPhone/memory/network and qualified G2/G3 remain open/unbooked/NOT_RUN.
 No production migration/deployment/release, new owner trial or reviewer outreach.
 Continue the full P12 handoff in NEXT_TASK.
+
+## P11 final follow-up — regression gate remains open
+
+Initial fae5e30 twenty-job code acceptance and archived raw reports remain factual.
+At 5116fad the P10 browser and all other eighteen jobs passed, but P11 browser
+failed with VAULT_LOCKED on the reader local save. No failing job is bypassed and
+no merge occurred. Content-free Worker error/operation/visibility diagnostics are
+being added to determine the originating custody lock. A closed lock-reason marker
+also lets the client immediately mask and terminate when Worker custody closes.
+Ten local P11 suites (including isolated host failure masking) and all five P07
+maintained-crypto suites passed. Final source/platform CI remains mandatory.

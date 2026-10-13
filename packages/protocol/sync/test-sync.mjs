@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {fixture,phrase,readOwnedSecrets,installation,sync as syncRoster} from '../notes/test-fixture.mjs';
 import {VaultEngine} from '../vault/engine.mjs';
+import {LocalVault} from '../vault/client.mjs';
 import {common,digest} from '../adapters/codecs/protocol-codec.mjs';
 import {groupCodecForProfile} from '../adapters/codecs/group-codec.mjs';
 import {wire} from '../adapters/codecs/identity-codec.mjs';
@@ -32,13 +33,17 @@ test('partial snapshot is encrypted, survives restart, preserves outbox and publ
   const done=await sync(f,'snapshotFinish');assert.deepEqual(done.cursor,f.cursor);assert.equal(done.projection.length,2);const summary=await notes(f,'summary');assert.equal(summary.witnessed,2);assert.equal(summary.drafts.length,2);assert.equal(summary.drafts[0].state,'SENT_UNKNOWN');assert(!JSON.stringify([...f.old.store.rows]).includes('P11 secret title'));
  }finally{await close(f);}
 });
-test('malformed inventory, forged content and changed root cannot advance the durable cursor',async()=>{
+test('malformed inventory, forged content and changed root cannot advance the durable cursor',async t=>{
  const f=await scenario();try{
   await stage(f);const forged=structuredClone(f.values[0]);forged.bundle.envelope.signature=b64(sodium.randombytes_buf(64));forged.item.envelope_digest=digest('envelope',wire(forged.bundle.envelope));await assert.rejects(()=>sync(f,'snapshotItem',forged),/CONTEXT_MISMATCH/);
   const bad=structuredClone(f.values[0]);bad.bundle.ciphertext=b64(sodium.randombytes_buf(32));await assert.rejects(()=>sync(f,'snapshotItem',bad),/CIPHERTEXT_MISMATCH/);assert.equal((await sync(f,'status')).cursor,null);
   await sync(f,'snapshotItem',f.values[0]);await sync(f,'snapshotItem',f.values[1]);await sync(f,'snapshotFinish');const root=structuredClone(f.result);root.scope.root_fingerprint=b64(sodium.randombytes_buf(32));await assert.rejects(()=>sync(f,'snapshotStart',root),/ROOT_PIN_MISMATCH/);
   const rollback=structuredClone(f.result);rollback.descriptor.watermark.sequence='1';assert.equal((await sync(f,'snapshotStart',rollback)).state,'RESTORE_QUARANTINE');assert.deepEqual((await sync(f,'status')).cursor,f.cursor);await sync(f,'deltaCancel');await sync(f,'snapshotCancel');assert.equal((await sync(f,'status')).state,'RESTORE_QUARANTINE');const pending=(await notes(f,'summary')).drafts[0].attempt_id;await assert.rejects(()=>notes(f,'send',[pending]),/RESTORE_QUARANTINE/);await assert.rejects(()=>notes(f,'prepareGroup'),/RESTORE_QUARANTINE/);await assert.rejects(()=>sync(f,'quarantine',{state:'QUARANTINED',digest:f.result.catalog_digest}),/RESTORE_QUARANTINE/);await assert.rejects(()=>sync(f,'snapshotStart',f.result),/RESTORE_QUARANTINE/);
- }finally{await close(f);}
+  const encrypted=structuredClone(f.old.store.rows),now=Date.now();t.mock.method(Date,'now',()=>now+300001);
+  await assert.rejects(()=>notes(f,'summary'),e=>e.code==='VAULT_LOCKED'&&e.lockReason==='idle-expired');t.mock.restoreAll();assert.equal(f.old.engine.lockReason,'idle-expired');assert.deepEqual(f.old.store.rows,encrypted);
+  f.old.cap=(await f.old.engine.unlock(phrase)).capability;const fresh=Date.now();t.mock.method(Date,'now',()=>fresh-1000);
+  await assert.rejects(()=>notes(f,'summary'),e=>e.code==='VAULT_LOCKED'&&e.lockReason==='clock-regression');t.mock.restoreAll();assert.equal(f.old.engine.lockReason,'clock-regression');assert.deepEqual(f.old.store.rows,encrypted);
+ }finally{t.mock.restoreAll();await close(f);}
 });
 test('filtered ranges count hidden scanned events and reject gaps, duplicate hints and scope substitution',async()=>{
  const pins={service_id:id(),account_id:id(),root_fingerprint:b64(sodium.randombytes_buf(32))},group=id(),cursor={generation:id(),sequence:'5'},page={version:1,scope:{...pins,group_id:group},from_cursor:cursor,next_cursor:{...cursor,sequence:'8'},watermark:{...cursor,sequence:'9'},scanned_count:'3',events:[],complete:false};assert.equal(checkedDelta(page,cursor,pins,group),page);
@@ -78,6 +83,15 @@ test('visible polling uses host-bound timers, bounded backoff, reconnect catch-u
  visible=false;const before=calls;await pending();assert.equal(calls,before);poller.resume();assert.equal(pending,undefined);
  visible=true;online=false;poller.resume();assert.equal(pending,undefined);online=true;fail=false;poller.resume();assert.equal(delay,0);await pending();assert.equal(delay,5000);
  poller.stop();assert.equal(pending,undefined);
+ t.mock.restoreAll();
+ // This isolates host masking on an error reply; it models no crypto or issuer.
+ const replacements={document:Object.assign(new EventTarget(),{hidden:false}),addEventListener:()=>{},removeEventListener:()=>{},Worker:class{
+  constructor(){queueMicrotask(()=>this.onmessage?.({data:{version:1,status:'READY'}}));}
+  postMessage(r){queueMicrotask(()=>this.onmessage?.({data:{version:1,id:r.id,generation:r.generation,error:'INTEGRITY_FAILURE',lock_reason:'worker-integrity'}}));}
+  terminate(){this.terminated=true;}
+ }},saved=new Map(Object.keys(replacements).map(k=>[k,Object.getOwnPropertyDescriptor(globalThis,k)]));let masks=0,client;
+ try{for(const [k,v]of Object.entries(replacements))Object.defineProperty(globalThis,k,{value:v,configurable:true,writable:true});client=new LocalVault('/unit-worker',()=>masks++);await assert.rejects(()=>client.notes('summary'),e=>e.message==='INTEGRITY_FAILURE'&&e.lockReason==='worker-integrity');assert.equal(masks,1);assert.equal(pending,undefined);}
+ finally{client?.close();for(const [k,v]of saved)if(v)Object.defineProperty(globalThis,k,v);else delete globalThis[k];}
 });
 test('additive secret inventory exceeds the frozen 660-key limit, keeps device identity and refuses an older reader',async()=>{
  const f=await fixture();let key,kek;try{

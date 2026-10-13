@@ -15,7 +15,7 @@ import {decode,common,encode,digest} from '../adapters/codecs/protocol-codec.mjs
 import {wire} from '../adapters/codecs/identity-codec.mjs';
 import {signManifest,verifyManifest} from './manifest.mjs';
 import {possession} from '../auth-client.mjs';
-import {ensure,fail,id,scope,record,metadata,same} from './store.mjs';
+import {ensure,id,scope,record,metadata,same} from './store.mjs';
 const kinds=new Set(['cache','search','draft','outbox','transfer']);
 const bounded=data=>{const bytes=wire(data);ensure(bytes.length<=4194304,'RESOURCE_LIMIT');return bytes;};
 function wipe(v){if(v instanceof Uint8Array)sodium.memzero(v);else if(v&&typeof v==='object'){for(const k of Object.keys(v)){wipe(v[k]);if(typeof v[k]==='string')v[k]='';}}}
@@ -25,7 +25,12 @@ export class VaultEngine {
   #notesTail=Promise.resolve();#notes;#notesHash;#notesFence;#workflow;#workflowHash;#workflowFence;#deviceAnchor;#key;#keys;#cap;#epoch;#last=0;#revision=0;#anchors=new Map();#busy=false;
   constructor(store){this.store=store;this.scope=scope(store.scope);this.owner=b64(sodium.randombytes_buf(16));this.vaultId=b64(sodium.randombytes_buf(16));}
   context(kind,record_id){ensure(id(record_id),'INVALID_RECORD');return {...common('local-record'),...this.scope,record_id,record_kind:kind,local_schema:1};}
-  #authorize(cap){ensure(this.#key&&cap===this.#cap,'VAULT_LOCKED');if(Date.now()-this.#last>300000||Date.now()<this.#last){this.lock();fail('VAULT_LOCKED');}this.#last=Date.now();}
+  #lockReason='explicit';
+  get lockReason(){return this.#key?null:this.#lockReason;}
+  #authorize(cap){
+    if(!this.#key||cap!==this.#cap){const e=Object.assign(Error('VAULT_LOCKED'),{code:'VAULT_LOCKED'});e.lockReason=this.#key?'capability-mismatch':this.#lockReason;throw e;}
+    const now=Date.now();if(now-this.#last>300000||now<this.#last){const reason=now<this.#last?'clock-regression':'idle-expired';this.lock(reason);const e=Object.assign(Error('VAULT_LOCKED'),{code:'VAULT_LOCKED'});e.lockReason=reason;throw e;}this.#last=now;
+  }
   async #state(tx,cap){this.#authorize(cap);const s=metadata(await tx.get(),this.scope);verifyManifest(s,this.#keys.signing.publicKey);ensure(s.epoch===this.#epoch,'STALE_CAPABILITY');ensure(s.revision>=this.#revision,'ROLLBACK_QUARANTINE');this.#revision=s.revision;return s;}
   #load(frame,key){const p=openLocal(wire(frame),key,wire(frame.context));decode(frame.context.record_kind,bounded(p.data));return p;}
   async initialize(phrase,secrets,pins,registration){
@@ -60,7 +65,7 @@ export class VaultEngine {
       this.#epoch=loaded.s.epoch;this.#revision=loaded.s.revision;this.#cap=b64(sodium.randombytes_buf(32));this.#last=Date.now();return {capability:this.#cap,epoch:String(this.#epoch),state:'unlocked'};
     }finally{wipe(secret);}
   }
-  lock(){this.#notes?.close();this.#notes=undefined;this.#workflow?.close();this.#workflow=undefined;wipe(this.#key);wipe(this.#keys);this.#key=this.#keys=this.#cap=undefined;this.#epoch=(this.#epoch??0)+1;this.#last=0;}
+  lock(reason='explicit'){this.#lockReason=reason;this.#notes?.close();this.#notes=undefined;this.#workflow?.close();this.#workflow=undefined;wipe(this.#key);wipe(this.#keys);this.#key=this.#keys=this.#cap=undefined;this.#epoch=(this.#epoch??0)+1;this.#last=0;}
   async globalLock(){this.lock();await this.store.transaction(true,async tx=>{const value=await tx.get();if(!value)return;const s=metadata(value,this.scope);s.epoch++;s.revision++;s.lease=null;await tx.set(s);});}
   async lease(cap){return this.store.transaction(true,async tx=>{const s=await this.#state(tx,cap),now=Date.now(),l=s.lease;if(l&&!(now>=l.issued&&(l.owner===this.owner||l.expires<=now))){const error=Error('WRITER_BUSY');error.vaultReason=now<l.issued?'clock-regression':'other-owner';error.vaultRemaining=Math.min(10000,Math.max(0,l.expires-now));throw error;}const fence=(l?.fence??0)+1;ensure(Number.isSafeInteger(fence),'RESOURCE_LIMIT');s.lease={owner:this.owner,fence,issued:now,expires:now+10000};s.revision++;await tx.set(s);this.#revision=s.revision;return String(fence);});}
   #fence(s,fence){const l=s.lease;ensure(l&&l.owner===this.owner&&String(l.fence)===fence&&Date.now()>=l.issued&&Date.now()<l.expires,'STALE_WRITER');}

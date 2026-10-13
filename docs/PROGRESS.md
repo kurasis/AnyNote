@@ -17,7 +17,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P08 | VERIFIED | Seven Node workflow suites, 16 dense QR round trips, 153 actual HTTPS/SQL checks, 33 sandboxed UI checks and nine native device tests per Linux/Windows; all fourteen hosted gates PASS |
 | P09 | VERIFIED | Eight workflow/transport suites, 131 actual HTTPS/SQL checks, 49 sandboxed two-PWA UI checks, six native note tests/platform and 16 native/PWA interop checks/platform; all sixteen hosted gates PASS |
 | P10 | VERIFIED | Five protected workflow/transport suites, 407 actual HTTPS/SQL checks, 40 sandboxed three-account PWA checks, three native shared tests and 89 native/portable interop checks/platform; all eighteen hosted gates PASS |
-| P11 | VERIFIED | Ten protected portable suites, 112 actual sync HTTPS/SQL checks, 418 membership/lease checks, 45 sandboxed three-account PWA checks, seven native note tests and nine new native/portable interop checks/platform; all twenty hosted gates PASS |
+| P11 | IN PROGRESS | Initial code acceptance passed all twenty jobs at fae5e30; final P11 browser exposed VAULT_LOCKED. Protected Worker lock notification/masking and content-free diagnostics are under mandatory follow-up validation |
 | P12 | NOT STARTED | P04/P05/P10/P11 |
 | P13 | NOT STARTED | P11/P12 |
 | P14 | NOT STARTED | P07–P13 and actual Windows evidence |

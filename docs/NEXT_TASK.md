@@ -1,3 +1,14 @@
+# Current prerequisite: complete P11 regression closure
+
+The first P11 code acceptance at fae5e30 remains a valid historical execution.
+Final follow-up CI at 5116fad passed nineteen jobs but the P11 browser failed with
+VAULT_LOCKED while saving the reader draft. Diagnose the original lock cause using
+closed Worker error/operation/visibility metadata. Protect the UI immediately when
+Worker custody closes; preserve encrypted work and all original security guards.
+Current local follow-up tests pass; final exact-source twenty-job acceptance and
+ordinary SHA-guard merge are still required. Do not start P12 or claim final closure
+until this prerequisite is actually satisfied. The full P12 handoff follows.
+
 # Next implementation batch
 
 ## Complete P12 encrypted large files and quota accounting

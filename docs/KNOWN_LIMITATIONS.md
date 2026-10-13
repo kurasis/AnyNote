@@ -444,3 +444,9 @@ Full physical G1 and qualified G2/G3 remain open/NOT_RUN. No production operatio
 release, new hardware trial, qualified review or outreach is implied by software CI.
 Published P10 restoration was observed; P11 draft save, Publish and independently
 observed fresh restoration are separate facts.
+
+P11 final regression gate: first fae5e30 acceptance passed, but a later exact-head
+P11 browser run exposed VAULT_LOCKED during reader draft save. Original lock-cause
+investigation and final validation remain open; current follow-up restores immediate
+client masking when the Worker closes custody. Historical code acceptance is not
+proof that this later regression gate has been closed.

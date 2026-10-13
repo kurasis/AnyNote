@@ -1,6 +1,7 @@
 # P11 synchronization, offline durability and verification
 
-P11 is **software VERIFIED**. Public exact-source execution receipts are retained
+P11 is **IN PROGRESS** pending a final browser regression investigation.
+Initial code acceptance passed all twenty jobs at fae5e30. Public exact-source execution receipts are retained
 in TEST_EVIDENCE and evidence/p11; physical and qualified review gates stay open.
 Frozen P02 records, signatures, independent pins, provider eligibility,
 TLS and CSP remain authoritative. See ADR-021.
