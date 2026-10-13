@@ -49,6 +49,25 @@ $value = match ($op) {
 
         return ['status' => 'PASS'];
     })(),
+    'p12-fault-on' => (function () {
+        DB::unprepared("CREATE TRIGGER p12_fault BEFORE INSERT ON mutation_receipts FOR EACH ROW BEGIN IF NEW.family = 'file' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Synthetic file receipt fault'; END IF; END");
+
+        return ['status' => 'armed'];
+    })(),
+    'p12-fault-off' => (function () {
+        DB::unprepared('DROP TRIGGER IF EXISTS p12_fault');
+
+        return ['status' => 'disarmed'];
+    })(),
+    'p12-transaction-state' => (function () {
+        $counts = [];
+        foreach (['file_chunks', 'publication_journal', 'mutation_receipts', 'quota_movements', 'sync_events'] as $table) {
+            $counts[$table] = DB::table($table)->count();
+        }
+
+        return ['counts' => $counts, 'counter' => (string) DB::table('sync_counters')->value('sequence'),
+            'quota' => DB::table('quota_ledgers')->orderBy('scope')->get(['scope', 'committed_bytes', 'reserved_bytes'])->all()];
+    })(),
     'p12-collect' => app(Service::class)->collect(),
     'p12-reconcile' => app(QuotaLedger::class)->reconcile(),
     'p12-expire' => (function () {
@@ -59,6 +78,18 @@ $value = match ($op) {
         DB::table('upload_sessions')->where('id', $v->upload_id)->whereIn('state', ['reserved', 'receiving'])->update(['expires_at' => now()->subSeconds(1)]);
 
         return ['status' => 'PASS'];
+    })(),
+    'p12-pruned-proof' => (function () {
+        $v = json_decode(stream_get_contents(STDIN));
+        if (! P::isBinary($v->file_version_id ?? '', 16)) {
+            throw new LogicException('Invalid synthetic file');
+        }
+        $row = DB::table('file_versions')->where('id', $v->file_version_id)->where('state', 'deleted')->first();
+        if (! $row) {
+            throw new LogicException('Synthetic file is not pruned');
+        }
+
+        return ['retained_fields' => array_keys(json_decode($row->manifest_record, true))];
     })(),
     'p12-file-state' => ['uploads' => DB::table('upload_sessions')->count(), 'committed_files' => DB::table('file_versions')->where('state', 'committed')->count(), 'file_pins' => DB::table('snapshot_file_pins')->count()],
     'p11-state' => (function () {

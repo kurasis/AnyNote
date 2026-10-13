@@ -157,12 +157,15 @@ final class Service
             $h = $this->protocol->decode('p02-file-c1', 'header', P::canonical($record->envelope->header));
             $w = $this->protocol->decode('p02-file-c1', 'wrap', P::canonical($record->wrap));
             P::verify('p02-file-c1', 'file-manifest', $h, $record->envelope->signature, $a->signingKey);
-            D::require(P::canonical($h->context) === $u->context_record && P::canonical($w->context) === $u->context_record && $h->key_wrap_digest === P::digest('p02-file-c1', 'key-wrap', $w), 'INTEGRITY_FAILURE');
+            D::require(P::canonical($h->context) === $u->context_record && P::canonical($w->context) === $u->context_record && $h->key_wrap_digest === P::digest('p02-file-c1', 'key-wrap', $w), 'INVALID_CHUNK');
             $encoded = P::canonical($record);
             $requestDigest = P::b64(hash('sha256', $encoded, true));
             $version = DB::table('file_versions')->where('id', $u->file_version_id)->lockForUpdate()->first();
             if ($u->state === 'committed') {
-                D::require($version->manifest_record === $encoded, 'IDEMPOTENCY_MISMATCH');
+                $matches = $version->state === 'deleted'
+                    ? hash_equals(json_decode($version->manifest_record)->request_digest, $requestDigest)
+                    : $version->manifest_record === $encoded;
+                D::require($matches, 'IDEMPOTENCY_MISMATCH');
 
                 return json_decode($u->receipt_record, true);
             }
@@ -170,15 +173,15 @@ final class Service
             $c = $h->context;
             $file = DB::table('file_objects')->where('id', $c->file_id)->lockForUpdate()->first();
             D::require($file->current_version_id === ($c->parents[0]->revision_id ?? null), 'STALE_REVISION');
-            D::require($h->framing->plaintext_bytes === (string) $u->plaintext_bytes && $h->framing->chunk_plaintext_bytes === (string) self::CHUNK && (int) $h->framing->chunk_count === (int) ceil($u->plaintext_bytes / self::CHUNK) && count($h->framing->parts) === (int) $h->framing->chunk_count, 'INTEGRITY_FAILURE');
+            D::require($h->framing->plaintext_bytes === (string) $u->plaintext_bytes && $h->framing->chunk_plaintext_bytes === (string) self::CHUNK && (int) $h->framing->chunk_count === (int) ceil($u->plaintext_bytes / self::CHUNK) && count($h->framing->parts) === (int) $h->framing->chunk_count, 'INVALID_CHUNK');
             $manifest = P::binary($record->manifest_ciphertext);
-            D::require(strlen($manifest) <= 65536 && strlen($manifest) >= 16 && strlen($manifest) === (int) $h->manifest_ciphertext_bytes && P::b64(hash('sha256', $manifest, true)) === $h->manifest_ciphertext_digest && strlen(P::binary($w->ciphertext)) === 48, 'INTEGRITY_FAILURE');
+            D::require(strlen($manifest) <= 65536 && strlen($manifest) >= 16 && strlen($manifest) === (int) $h->manifest_ciphertext_bytes && P::b64(hash('sha256', $manifest, true)) === $h->manifest_ciphertext_digest && strlen(P::binary($w->ciphertext)) === 48, 'INVALID_CHUNK');
             $parts = DB::table('upload_parts')->where('upload_id', $id)->orderBy('chunk_index')->get();
-            D::require($parts->count() === count($h->framing->parts), 'INTEGRITY_FAILURE');
+            D::require($parts->count() === count($h->framing->parts), 'INVALID_CHUNK');
             $actual = strlen($manifest) + 48;
             foreach ($parts as $index => $p) {
                 $signed = $h->framing->parts[$index];
-                D::require((int) $p->chunk_index === $index && $signed->index === (string) $index && $signed->ciphertext_digest === $p->digest && $signed->ciphertext_bytes === (string) $p->ciphertext_bytes && (int) $p->ciphertext_bytes === min(self::CHUNK, $u->plaintext_bytes - $index * self::CHUNK) + 16, 'INTEGRITY_FAILURE');
+                D::require((int) $p->chunk_index === $index && $signed->index === (string) $index && $signed->ciphertext_digest === $p->digest && $signed->ciphertext_bytes === (string) $p->ciphertext_bytes && (int) $p->ciphertext_bytes === min(self::CHUNK, $u->plaintext_bytes - $index * self::CHUNK) + 16, 'INVALID_CHUNK');
                 $this->blobs->verify($p);
                 $actual += (int) $p->ciphertext_bytes;
                 DB::table('file_chunks')->insert(['id' => P::b64(random_bytes(16)), 'file_version_id' => $version->id, 'chunk_index' => $index, 'blob_id' => $p->blob_id, 'digest' => $p->digest, 'ciphertext_bytes' => $p->ciphertext_bytes]);
@@ -223,7 +226,7 @@ final class Service
         }
         DB::table('upload_parts')->where('upload_id', $u->id)->delete();
         $r = DB::table('quota_reservations')->where('id', $u->reservation_id)->lockForUpdate()->first();
-        D::require($r->state === 'reserved', 'INTEGRITY_FAILURE');
+        D::require($r->state === 'reserved', 'INVALID_CHUNK');
         $this->quota->apply($this->quota->lock($u->account_id, $u->group_id), 0, -(int) $r->bytes);
         DB::table('quota_reservations')->where('id', $r->id)->update(['state' => 'released']);
         DB::table('upload_sessions')->where('id', $u->id)->update(['state' => $state]);
@@ -390,7 +393,9 @@ final class Service
                 $upload = DB::table('upload_sessions')->where('file_version_id', $v->id)->first();
                 DB::table('upload_parts')->where('upload_id', $upload->id)->delete();
                 $this->quota->apply($this->quota->lock($v->uploader_account_id, $v->group_id), -(int) $v->ciphertext_bytes, 0);
-                DB::table('file_versions')->where('id', $v->id)->update(['state' => 'deleted']);
+                $old = json_decode($v->manifest_record);
+                $compact = P::canonical((object) ['envelope' => $old->envelope, 'request_digest' => P::b64(hash('sha256', $v->manifest_record, true))]);
+                DB::table('file_versions')->where('id', $v->id)->update(['state' => 'deleted', 'manifest_record' => $compact]);
                 DB::table('publication_journal')->where('file_version_id', $v->id)->update(['state' => 'cancelled']);
                 DB::table('file_objects')->where('id', $v->file_id)->where('current_version_id', $v->id)->update(['tombstoned' => true]);
                 $this->sync->append([['group_id' => $v->group_id, 'kind' => 'file-delete', 'object_id' => $v->file_id, 'revision_id' => null, 'digest' => $v->manifest_digest]]);

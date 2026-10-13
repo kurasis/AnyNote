@@ -197,3 +197,14 @@ MariaDB transactions and protected Worker/native SQLite. All 313 native custody
 inventory records remain frozen. Git text checkout is explicit LF while uploaded
 specification and Microsoft-header bytes remain preserved; raw platform source
 hashes are independently checked. This inventory is not a qualified review or SBOM.
+
+## P12 file-transfer dependencies
+
+No new package, cryptographic primitive or prior Cargo/npm lock resolution was
+introduced. Frozen libsodium/AJV/JCS, Rust SHA-256/SQLite, verified native HTTPS,
+Laravel/MariaDB and existing Windows MoveFileExW bindings implement bounded file
+paths. Native OS file locking uses the pinned Rust standard library. Browser
+OPFS/Web Locks/MessageChannel/service workers are capability-checked; unavailable
+or failed automatic caching never authorizes plaintext spill. Maintained viewers
+and age portable export integration remain P13, without changing frozen P02 bytes.
+This dependency inventory is not a production SBOM, license clearance or audit.

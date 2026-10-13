@@ -72,6 +72,7 @@ final class Envelopes
             Protocol::require($reserve !== null && $bytes <= 245760 && $bytes <= (int) $reserve->limit_bytes - (int) $reserve->committed_bytes - (int) $reserve->reserved_bytes, 'INSUFFICIENT_STORAGE');
             if ($new !== []) {
                 DB::table('quota_ledgers')->where('scope', 'security')->increment('committed_bytes', $bytes);
+                DB::table('quota_movements')->insert(['id' => P::b64(random_bytes(16)), 'scope' => 'security', 'committed_delta' => $bytes, 'reserved_delta' => 0]);
                 foreach ($new as $record) {
                     Settings::envelope($record);
                     $c = $record->body->context;

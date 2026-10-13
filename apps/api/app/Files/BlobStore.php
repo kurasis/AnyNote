@@ -52,7 +52,7 @@ final class BlobStore
                 $part = fread($input, 65536);
                 D::require($part !== false, 'STORAGE_UNAVAILABLE');
                 $size += strlen($part);
-                D::require($size <= $expected, 'INTEGRITY_FAILURE');
+                D::require($size <= $expected, 'INVALID_CHUNK');
                 hash_update($hash, $part);
                 $offset = 0;
                 while ($offset < strlen($part)) {
@@ -61,7 +61,7 @@ final class BlobStore
                     $offset += $written;
                 }
             }
-            D::require($size === $expected, 'INTEGRITY_FAILURE');
+            D::require($size === $expected, 'INVALID_CHUNK');
             D::require(fflush($out) && fsync($out), 'STORAGE_UNAVAILABLE');
             fclose($out);
             $out = null;
@@ -80,7 +80,7 @@ final class BlobStore
     public function verify(object $part): void
     {
         $path = $this->path($part->blob_id);
-        D::require(is_file($path) && filesize($path) === (int) $part->ciphertext_bytes && P::b64(hash_file('sha256', $path, true)) === $part->digest, 'INTEGRITY_FAILURE');
+        D::require(is_file($path) && filesize($path) === (int) $part->ciphertext_bytes && P::b64(hash_file('sha256', $path, true)) === $part->digest, 'INVALID_CHUNK');
     }
 
     /** Only old unreferenced opaque files in this private adapter's own namespace. */

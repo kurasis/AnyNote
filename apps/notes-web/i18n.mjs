@@ -28,3 +28,6 @@ Object.assign(words.ru,{cleanup_file:'Очистить неприкреплён�
 
 Object.assign(words.en,{file_copy_preview:'Preview file-copy audience',file_copy:'Copy with selected source',file_copy_confirm:'Copy only the selected file into the chosen destination audience with fresh encryption.'});
 Object.assign(words.ru,{file_copy_preview:'Проверить получателей копии файла',file_copy:'Скопировать с выбранным источником',file_copy_confirm:'Скопировать только выбранный файл выбранным получателям с новым шифрованием.'});
+
+Object.assign(words.en,{file_offline:'Show verified offline files',file_offline_available:'Available offline',file_pin:'Pin verified ciphertext',file_extra_budget:'Additional pinned cache budget (bytes)',file_pin_confirm:'Reserve additional local cache space; the browser can still remove it.',file_expiry:'Unattached recovery expires'});
+Object.assign(words.ru,{file_offline:'Показать проверенные файлы без сети',file_offline_available:'Доступен без сети',file_pin:'Закрепить проверенный файл',file_extra_budget:'Дополнительный лимит локального кеша (байт)',file_pin_confirm:'Разрешаю дополнительное место для кеша; браузер всё равно может удалить его.',file_expiry:'Срок восстановления неприкреплённого файла'});

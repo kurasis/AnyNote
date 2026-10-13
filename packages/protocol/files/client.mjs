@@ -59,9 +59,9 @@ export class TransferManager {
   }catch(e){await sink.abort();throw e;}finally{if(reader)await this.command('close',{reader_id:reader.reader_id}).catch(()=>{});this.#active.delete(abort);}
  }
  async range(group_id,file_version_id,offset,length,sink){
-  ensure(Number.isSafeInteger(offset)&&Number.isSafeInteger(length)&&offset>=0&&length>=0&&length<=1000000000,'RESOURCE_LIMIT');const abort=new AbortController();this.#active.add(abort);let reader;
+  ensure(Number.isSafeInteger(offset)&&Number.isSafeInteger(length)&&offset>=0&&length>=0&&length<=1000000000,'RESOURCE_LIMIT');const abort=new AbortController();this.#active.add(abort);abort.signal.addEventListener('abort',()=>{void sink.abort();},{once:true});let reader;
   try{const record=await this.transport.call('/files/'+file_version_id+'/manifest','GET',undefined,abort.signal);reader=await this.command('open',{group_id,file_version_id,record});ensure(offset+length<=Number(reader.plaintext_bytes),'INVALID_CHUNK_INDEX');
-   for(let index=Math.floor(offset/CHUNK);length>0&&index<=Math.floor((offset+length-1)/CHUNK);index++){const ciphertext=await this.transport.call('/files/'+file_version_id+'/chunks/'+index,'GET',undefined,abort.signal),p=await this.command('range',{reader_id:reader.reader_id,index,ciphertext});try{await sink.write(p.plaintext.subarray(Math.max(0,offset-index*CHUNK),Math.min(p.plaintext.length,offset+length-index*CHUNK)));}finally{p.plaintext.fill(0);ciphertext.fill(0);}}
+   for(let index=Math.floor(offset/CHUNK);length>0&&index<=Math.floor((offset+length-1)/CHUNK);index++){ensure(!abort.signal.aborted,'RESUME_REQUIRED');const ciphertext=await this.transport.call('/files/'+file_version_id+'/chunks/'+index,'GET',undefined,abort.signal),p=await this.command('range',{reader_id:reader.reader_id,index,ciphertext});try{await sink.write(p.plaintext.subarray(Math.max(0,offset-index*CHUNK),Math.min(p.plaintext.length,offset+length-index*CHUNK)));}finally{p.plaintext.fill(0);ciphertext.fill(0);}}
    await sink.finish();return {verified_range:{offset,length},file_complete:false};
   }catch(e){await sink.abort();throw e;}finally{if(reader)await this.command('close',{reader_id:reader.reader_id}).catch(()=>{});this.#active.delete(abort);}
  }

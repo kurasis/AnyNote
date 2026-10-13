@@ -83,7 +83,7 @@ final class FilesController
         if ($shape !== null) {
             $this->contracts->value('p12', $shape, $value);
         } else {
-            D::require(P::counter($value->index, '119') && P::counter($value->ciphertext_bytes, '8388624') && P::isBinary($value->ciphertext_digest, 32), 'INTEGRITY_FAILURE');
+            D::require(P::counter($value->index, '119') && P::counter($value->ciphertext_bytes, '8388624') && P::isBinary($value->ciphertext_digest, 32), 'INVALID_CHUNK');
         }
 
         return response()->json($result);

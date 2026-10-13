@@ -165,7 +165,7 @@ final class Service
             $items = [];
             foreach ($rows as $file) {
                 $this->notes->group($a, $file->group_id);
-                D::require($file->state === 'committed', 'INTEGRITY_FAILURE');
+                D::require($file->state === 'committed', 'INVALID_CHUNK');
                 $items[] = json_decode($file->manifest_record);
             }
 
@@ -214,13 +214,13 @@ final class Service
             $rows = DB::table('object_revisions as r')->join('objects as o', 'r.object_id', '=', 'o.id')->join('object_key_wraps as w', 'r.revision_id', '=', 'w.revision_id')->whereIn('r.group_id', $groupIds)->orderBy('r.group_id')->orderByRaw('CAST(o.kind AS CHAR)')->orderBy('r.object_id')->orderBy('r.revision_id')->limit(50001)->get(['r.group_id', 'o.id', 'r.object_id', 'r.revision_id', 'r.envelope_digest', 'r.signed_envelope', 'r.ciphertext_bytes', 'w.wrap_record', 'o.kind', 'o.thread_id', 'o.archived', 'o.tombstoned', 'o.created_sequence', 'o.updated_sequence', DB::raw('OCTET_LENGTH(r.ciphertext) AS stored_bytes'), DB::raw('SHA2(r.ciphertext,256) AS stored_hash')]);
             D::require($rows->count() <= 50000, 'RESOURCE_LIMIT');
             $expected = DB::table('object_revisions')->whereIn('group_id', $groupIds)->count();
-            D::require($rows->count() === $expected, 'INTEGRITY_FAILURE');
+            D::require($rows->count() === $expected, 'INVALID_CHUNK');
             $items = [];
             $records = [];
             foreach ($rows as $row) {
                 $envelope = json_decode($row->signed_envelope);
                 $context = $envelope->header->context;
-                D::require((string) $row->stored_bytes === (string) $row->ciphertext_bytes && hash_equals(strtolower(bin2hex(P::binary($envelope->header->ciphertext_digest))), $row->stored_hash), 'INTEGRITY_FAILURE');
+                D::require((string) $row->stored_bytes === (string) $row->ciphertext_bytes && hash_equals(strtolower(bin2hex(P::binary($envelope->header->ciphertext_digest))), $row->stored_hash), 'INVALID_CHUNK');
                 $item = (object) ['group_id' => $row->group_id, 'object_kind' => $row->kind, 'object_id' => $row->object_id, 'revision_id' => $row->revision_id, 'envelope_digest' => $row->envelope_digest, 'payload_status' => $context->action === 'soft-delete' ? 'tombstone' : 'retained'];
                 $ref = $this->notes->reference($row);
                 $items[] = $item;
@@ -314,9 +314,9 @@ final class Service
             D::require($stored !== null, 'NOT_FOUND');
             $v = json_decode($stored->inventory_record);
             $this->notes->group($a, $stored->group_id);
-            D::require(DB::table('reference_pins')->where('snapshot_id', $id)->where('revision_id', $revision)->exists(), 'INTEGRITY_FAILURE');
+            D::require(DB::table('reference_pins')->where('snapshot_id', $id)->where('revision_id', $revision)->exists(), 'INVALID_CHUNK');
             $result = $this->notes->bundle($r, $v->item->object_id, $revision);
-            D::require(P::digest('p02-v1', 'envelope', $result['bundle']['envelope']) === $v->item->envelope_digest, 'INTEGRITY_FAILURE');
+            D::require(P::digest('p02-v1', 'envelope', $result['bundle']['envelope']) === $v->item->envelope_digest, 'INVALID_CHUNK');
 
             return ['version' => 1, 'snapshot_id' => $id, 'item' => $v->item, 'bundle' => $result['bundle'], 'reference' => $v->reference];
         }, 3);

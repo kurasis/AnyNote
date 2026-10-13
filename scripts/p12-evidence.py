@@ -15,7 +15,7 @@ assert not git('status','--porcelain') and git('rev-parse','HEAD')==commit and g
 assert before=={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in paths}
 report={'purpose':'P12 exact-source encrypted file software receipt','status':'PASS','role':role,'source_commit':commit,'source_tree':tree,'source_tree_dirty':False,'timestamp':datetime.now(timezone.utc).isoformat(),'physical_acceptance':False,'independent_review':'NOT_RUN','native_tests_executed':sum(int(x) for x in re.findall(r'test result: ok\. (\d+) passed',result.stdout)),'native_gigabyte_test':True,'inputs':[{'path':p,'sha256':before[p]} for p in paths if p.startswith(('packages/','apps/','scripts/','infra/','experiments/p01/','.github/workflows/'))]}
 if role=='linux':
-    for directory,name in [('p12','http'),('p10','browser')]:
+    for directory,name in [('p12','http'),('p12','membership'),('p10','browser')]:
         value=json.loads((ROOT/f'artifacts/{directory}/{name}-report.json').read_text());assert value['status']=='PASS' and value['source_commit']==commit and not value['source_tree_dirty'];report[name+'_checks']=value['checks']
     assert value['p12_files']['gigabyte_bytes']==1000000000 and value['chromium_sandbox'] is True
 (ROOT/'artifacts/p12').mkdir(parents=True,exist_ok=True);(ROOT/'artifacts/p12/source-report.json').write_text(json.dumps(report,indent=2)+'\n')

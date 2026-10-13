@@ -6,11 +6,16 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createHash,randomBytes} from 'node:crypto';
 import {control} from './notes/http-fixture.mjs';
-import {execFileSync} from 'node:child_process';
+import {Synchronizer,SyncClient} from './sync/client.mjs';
+import {NotesClient} from './notes/client.mjs';
+import {AuthClient} from './auth-client.mjs';
+import {execFileSync,execFile} from 'node:child_process';
+import {promisify} from 'node:util';
+const execute=promisify(execFile);
 import {account,privateGroup,ok,notes,ident,publish,edit,content,prepare,pathFor} from './sync/http-fixture.mjs';
 import {binary} from './files/http.mjs';
 import {hash,sodium} from './adapters/primitives.mjs';
-let checks=0;const same=(a,b)=>{assert.deepEqual(a,b);checks++;};const fs=[];
+let checks=0;const same=(a,b)=>{assert.deepEqual(a,b);checks++;};const fs=[];let cleanupVersion,cleanupFinish,cleanupReceipt;
 async function denial(f,path,code,body,method){const r=await f.browser.call(path,body,method);same(r.json?.error?.code,code);}
 try{
  const f=await account('p12-owner-'+Date.now()),other=await account('p12-other-'+Date.now());fs.push(f,other);const g=await privateGroup(f),hidden=await privateGroup(other),call=(op,x)=>f.engine.notes(f.cap,'files',[op,x]);
@@ -22,16 +27,27 @@ try{
    const p=await call('part',{draft_id:made.draft_id,source,index});ciphertext.push(p.ciphertext);const route='/uploads/'+p.upload_id+'/parts/'+index,r=await binary(f.browser,route,p.ciphertext);same(r.status,200);await call('ackPart',{draft_id:made.draft_id,part:r.json});same((await binary(f.browser,route,p.ciphertext)).json,r.json);
    const bad=new Uint8Array(p.ciphertext);bad[0]^=1;same((await binary(f.browser,route,bad)).json.error.code,'IDEMPOTENCY_MISMATCH');same((await binary(other.browser,route,p.ciphertext)).json.error.code,'NOT_FOUND');
   }
-  const finished=await call('finish',{draft_id:made.draft_id}),committed=await ok(f.browser,'/uploads/'+finished.upload_id+'/commit',finished.request);same(await ok(f.browser,'/uploads/'+finished.upload_id+'/commit',finished.request),committed);const bound=await call('committed',{draft_id:made.draft_id,receipt:committed});same(bound.state,'UNATTACHED');const after=await ok(f.browser,'/me/storage');same(BigInt(after.committed_bytes)-BigInt(before.committed_bytes),BigInt(committed.ciphertext_bytes));same(after.reserved_bytes,before.reserved_bytes);
+  const finished=await call('finish',{draft_id:made.draft_id});
+  if(size===1){const beforeFault=control('p12-transaction-state');control('p12-fault-on');try{await denial(f,'/uploads/'+finished.upload_id+'/commit','TEMPORARY_UNAVAILABLE',finished.request);}finally{control('p12-fault-off');}same(control('p12-transaction-state'),beforeFault);same((await ok(f.browser,'/uploads/'+finished.upload_id)).state,'RECEIVING');}
+  let committed;if(size===8388609){const results=await Promise.all([ok(f.browser,'/uploads/'+finished.upload_id+'/commit',finished.request),execute('python3',['scripts/p06-stack.py','control','p12-collect'])]);committed=results[0];same(JSON.parse(results[1].stdout).deleted_files,0);}else committed=await ok(f.browser,'/uploads/'+finished.upload_id+'/commit',finished.request);same(await ok(f.browser,'/uploads/'+finished.upload_id+'/commit',finished.request),committed);const bound=await call('committed',{draft_id:made.draft_id,receipt:committed});same(bound.state,'UNATTACHED');const after=await ok(f.browser,'/me/storage');same(BigInt(after.committed_bytes)-BigInt(before.committed_bytes),BigInt(committed.ciphertext_bytes));same(after.reserved_bytes,before.reserved_bytes);
   const record=await ok(f.browser,'/files/'+committed.file_version_id+'/manifest'),reader=await call('open',{group_id:g.group_id,file_version_id:committed.file_version_id,record});
   for(let i=0;i<ciphertext.length;i++){const r=await binary(f.browser,'/files/'+committed.file_version_id+'/chunks/'+i);same(r.status,200);const decrypted=await call('decrypt',{reader_id:reader.reader_id,ciphertext:r.bytes});same(hash(decrypted.plaintext),hash(bytes.subarray(i*8388608,Math.min(bytes.length,(i+1)*8388608))));sodium.memzero(decrypted.plaintext);}
   same((await call('complete',{reader_id:reader.reader_id})).complete,true);await denial(other,'/files/'+committed.file_version_id+'/manifest','NOT_FOUND');await denial(f,'/uploads/'+finished.upload_id,'INVALID_REQUEST',undefined,'DELETE');
   const unattached=await ok(f.browser,'/me/unattached-files');assert(unattached.items.some(x=>x.file_version_id===committed.file_version_id));checks++;
+  if(size===0){cleanupVersion=committed.file_version_id;cleanupFinish=finished;cleanupReceipt=committed;}
   if(size===1){const thread=await publish(f,edit(g.group_id,'thread',null,null,content('P12 thread'))),draft=await notes(f,'save',[edit(g.group_id,'entry',null,thread.object_id,content('P12 linked'))]);await notes(f,'attach',[{draft_id:draft.draft_id,file_draft_id:made.draft_id}]);const queued=await notes(f,'queue',[draft.draft_id]),sent=await notes(f,'send',[queued.attempt_id]),receipt=await ok(f.browser,pathFor(sent.request),sent.request);await notes(f,'ack',[queued.attempt_id,receipt]);assert(!(await ok(f.browser,'/me/unattached-files')).items.some(x=>x.file_version_id===committed.file_version_id));checks++;
    const wrong=await notes(other,'save',[edit(hidden.group_id,'thread',null,null,content('wrong'))]);await assert.rejects(notes(other,'attach',[{draft_id:wrong.draft_id,file_draft_id:made.draft_id}]),/ATTACHMENT_CONTEXT_MISMATCH/);checks++;
   }
   sodium.memzero(bytes);
  }
+ const missingSource=new Blob(['missing part']),missing=await call('prepare',{group_id:g.group_id,source:missingSource});await ok(f.browser,'/groups/'+g.group_id+'/uploads',missing.request);const missingPart=await call('part',{draft_id:missing.draft_id,source:missingSource,index:0});await call('ackPart',{draft_id:missing.draft_id,part:{index:'0',ciphertext_bytes:String(missingPart.ciphertext.length),ciphertext_digest:hash(missingPart.ciphertext)}});const missingFinish=await call('finish',{draft_id:missing.draft_id});await denial(f,'/uploads/'+missing.request.upload_id+'/commit','INVALID_CHUNK',missingFinish.request);await ok(f.browser,'/uploads/'+missing.request.upload_id,undefined,'DELETE');
+ const snapshot=await ok(f.browser,'/snapshots',{version:1,operation_id:ident(),purpose:'resync',group_id:g.group_id});assert(Number(snapshot.files.count)>=5);checks++;const filePage=await ok(f.browser,'/snapshots/'+snapshot.descriptor.snapshot_id+'/files?start=0');same(filePage.items.length,Number(snapshot.files.count));await denial(other,'/snapshots/'+snapshot.descriptor.snapshot_id+'/files','NOT_FOUND');await denial(f,'/files/'+cleanupVersion+'/unattached','INVALID_REQUEST',undefined,'DELETE');await ok(f.browser,'/snapshots/'+snapshot.descriptor.snapshot_id,undefined,'DELETE');
+ const auth=new AuthClient('https://api.anynote.test:18443',async(url,options)=>{const u=new URL(url);assert.equal(u.origin,'https://api.anynote.test:18443');const result=await f.browser.call(u.pathname.slice('/api/v1'.length)+u.search,options.body?JSON.parse(options.body):undefined,options.method);return new Response(JSON.stringify(result.json),{status:result.status,headers:{'Content-Type':'application/json'}});});
+ const synchronizer=new Synchronizer({transport:new SyncClient(auth),vault:{notes:(op,args=[])=>f.engine.notes(f.cap,op,args)},notes:new NotesClient(auth),authorize:async()=>{},group:async id=>{await notes(f,'group',[await ok(f.browser,'/groups/'+id)]);}});
+ const synced=await synchronizer.catchUp();same(synced.state,'SYNCED');assert(synced.cursor);checks++;same((await call('history',{group_id:g.group_id})).length,5);
+ // A completed synchronizer cancels its lease; explicit cleanup can now reclaim bytes.
+ const active=control('p12-file-state');assert(active.file_pins>=0);checks++;
+ const beforeDelete=await ok(f.browser,'/me/storage');same((await ok(f.browser,'/files/'+cleanupVersion+'/unattached',undefined,'DELETE')).state,'RECLAIMABLE');same((await ok(f.browser,'/me/storage')).committed_bytes,beforeDelete.committed_bytes);assert(control('p12-collect').deleted_files>=1);checks++;await denial(f,'/files/'+cleanupVersion+'/manifest','NOT_FOUND');same(control('p12-pruned-proof',JSON.stringify({file_version_id:cleanupVersion})).retained_fields,['envelope','request_digest']);same(await ok(f.browser,'/uploads/'+cleanupFinish.upload_id+'/commit',cleanupFinish.request),cleanupReceipt);same(control('p12-reconcile').differences,[]);
  if(process.argv.includes('--gigabyte')){
   const root=mkdtempSync(join(tmpdir(),'anynote-p12-owned-')),path=join(root,'explicit-public-synthetic.bin'),fd=openSync(path,'wx');const expected=createHash('sha256');
   try{for(let left=1000000000;left>0;){const p=randomBytes(Math.min(left,8388608));writeSync(fd,p);expected.update(p);left-=p.length;}}finally{closeSync(fd);}

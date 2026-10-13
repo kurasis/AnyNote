@@ -875,3 +875,46 @@ unchanged. The existing device snapshot IPC has the matching public-only 32 MiB
 limit; all other P07 IPC budgets remain unchanged. Additive paged secret roots make
 older clients refuse unlock before any private-store mutation. P10 public account
 proof list capacity matches this bounded replay; it grants no new authority.
+
+## ADR-022 — immutable file intent, bounded streaming and byte journals
+
+Preserve frozen P02 file/signature/AAD bytes. P12 adds closed HTTP and local control
+profiles, not a new cipher. A stable encrypted local intent can hold multiple
+immutable publication attempts; prove actual source content before nonce reuse,
+reconcile an unknown receipt, and burn cancelled/expired attempts before fresh
+keys/IDs. Re-encrypt cross-group copies after an explicit current-audience fence.
+Source paths, names, full/per-part plaintext hashes and keys stay in protected
+custody. Bind the additive file profile in the device-signed local manifest so
+marker removal cannot trick an older writer into private-store mutation.
+
+File commit validates exact framing, ordered stored bytes, manifest/key-wrap chain
+and current authority, then atomically records actual ciphertext quota, receipt,
+file event and recoverable unattached state. Attachment is a separate signed note
+publication; neither quota nor acknowledgement loss discards its only intent.
+Durable operation identity outlives staging expiry. Only new durable progress can
+renew the bounded 72-hour lease. The original 100 GB limit includes encrypted
+retained content; physical database/log/backup overhead remains separately sized.
+
+GC/pin coordination precedes group/file/quota locks; the event counter remains
+last. Snapshot file pins and paginated manifest commitments precede lease exposure;
+protected file witnesses precede cursor publication. Cleanup preserves references,
+retained parents, active pins and pending uploads, releases bytes only after
+physical deletion, and retains compact signed manifests/receipts. Reconciliation
+reports journal differences first. Pre-P12 counter baselines do not prove physical
+inventory and cannot silently authorize production correction or restore.
+
+Explicit plaintext exports use bounded host-selected sinks or a single-use
+initiating-window-bound service-worker channel. Authenticate the complete file
+before finalizing output; partial ranges cannot certify a full file. Downloaded
+ciphertext caches have separate 1 GiB/5 GiB budgets and explicit additional pinned
+space. Active/incomplete jobs are not automatic eviction candidates. Generic local
+mutation cannot erase pending upload/draft state. Cache loss cannot erase remote
+content; browser persistence and physical Files/OS lifecycle remain measured gates.
+
+Frozen transport errors remain frozen. INTEGRITY_FAILURE is local-only: server
+file/frame integrity failures use INVALID_CHUNK; internal ledger invariant failures
+use INVALID_REQUEST. Local crypto keeps its specific verification errors. A
+read-only server-code check prevents local-only error leakage into HTTP handlers.
+P13 owns safe previews, complete retention/history/export/import; P14/P15 own
+complete hosts and physical acceptance. No qualified composition review, universal
+freshness, secure erasure or production readiness follows from software CI.

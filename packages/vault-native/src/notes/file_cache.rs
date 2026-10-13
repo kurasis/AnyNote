@@ -12,6 +12,7 @@ pub struct CipherCache {
 pub struct CacheJob {
     directory: PathBuf,
     metadata: Value,
+    _budget_lock: File,
 }
 impl CacheJob {
     pub fn pin(&mut self, additional_budget: u64, confirmed: bool) -> Result<()> {
@@ -108,6 +109,14 @@ impl CipherCache {
         strict(&bytes, 262144)
     }
     pub fn begin(&self, codec: &Codec, record: &Value) -> Result<CacheJob> {
+        let budget_lock = OpenOptions::new()
+            .create(true)
+            .truncate(false)
+            .read(true)
+            .write(true)
+            .open(self.root.join("budget.lock"))
+            .map_err(|_| Error("STORAGE_UNAVAILABLE"))?;
+        budget_lock.try_lock().map_err(|_| Error("VAULT_BUSY"))?;
         codec.validate("p02-v1", "export-file-record", record)?;
         let h = &record["envelope"]["header"];
         let name = Self::name(
@@ -123,7 +132,9 @@ impl CipherCache {
                 .iter()
                 .sum::<u64>();
         let mut entries = Vec::new();
-        let mut used = 0;
+        let mut used = 0u64;
+        let mut extra = 0u64;
+        let mut previous = None;
         for entry in fs::read_dir(&self.root).map_err(|_| Error("STORAGE_UNAVAILABLE"))? {
             let entry = entry.map_err(|_| Error("STORAGE_UNAVAILABLE"))?;
             let path = entry.path();
@@ -134,25 +145,40 @@ impl CipherCache {
             {
                 continue;
             }
-            if let Ok(metadata) = Self::metadata(&path) {
-                if metadata["name"] == name {
-                    continue;
-                }
-                let size = metadata["bytes"]
-                    .as_u64()
-                    .ok_or(Error("INTEGRITY_FAILURE"))?;
-                used += size;
-                entries.push((
-                    metadata["touched"].as_u64().unwrap_or(0),
-                    path,
-                    size,
-                    metadata["pinned"] == true,
-                ));
+            let metadata = Self::metadata(&path).map_err(|_| Error("INTEGRITY_FAILURE"))?;
+            let size = metadata["bytes"]
+                .as_u64()
+                .ok_or(Error("INTEGRITY_FAILURE"))?;
+            let pinned = metadata["pinned"] == true;
+            if pinned {
+                extra = extra
+                    .checked_add(
+                        metadata["additional_budget"]
+                            .as_u64()
+                            .ok_or(Error("INTEGRITY_FAILURE"))?,
+                    )
+                    .ok_or(Error("RESOURCE_LIMIT"))?;
             }
+            if metadata["name"] == name {
+                check(metadata["record"] == *record, "INTEGRITY_FAILURE")?;
+                previous = Some(metadata);
+                continue;
+            }
+            used = used.checked_add(size).ok_or(Error("RESOURCE_LIMIT"))?;
+            entries.push((
+                metadata["touched"].as_u64().unwrap_or(0),
+                path,
+                size,
+                pinned || metadata["complete"] != true,
+            ));
         }
+        let limit = self
+            .budget
+            .checked_add(extra)
+            .ok_or(Error("RESOURCE_LIMIT"))?;
         entries.sort_by_key(|e| e.0);
         for (_, path, size, pinned) in entries {
-            if used + bytes <= self.budget {
+            if used + bytes <= limit {
                 break;
             }
             if !pinned {
@@ -160,18 +186,22 @@ impl CipherCache {
                 used -= size;
             }
         }
-        check(used + bytes <= self.budget, "INSUFFICIENT_STORAGE")?;
+        check(used + bytes <= limit, "INSUFFICIENT_STORAGE")?;
         let directory = self.root.join(&name);
         fs::create_dir_all(&directory).map_err(|_| Error("INSUFFICIENT_STORAGE"))?;
-        let metadata = json!({"version":1,"name":name,"bytes":bytes,"touched":now()?,"pinned":false,"complete":false,"record":record,"parts":[]});
+        let metadata = json!({"version":1,"name":name,"bytes":bytes,"touched":now()?,"pinned":previous.as_ref().is_some_and(|m| m["pinned"] == true),"additional_budget":previous.as_ref().and_then(|m|m["additional_budget"].as_u64()).unwrap_or(0),"complete":false,"record":record,"parts":[]});
         atomic(&directory.join("manifest.json"), &canonical(&metadata)?)?;
         Ok(CacheJob {
             directory,
             metadata,
+            _budget_lock: budget_lock,
         })
     }
     pub fn put(&self, job: &mut CacheJob, index: usize, cipher: &[u8]) -> Result<()> {
-        let part = &job.metadata["record"]["envelope"]["header"]["framing"]["parts"][index];
+        let part = job.metadata["record"]["envelope"]["header"]["framing"]["parts"]
+            .as_array()
+            .and_then(|parts| parts.get(index))
+            .ok_or(Error("INVALID_CHUNK_INDEX"))?;
         check(
             cipher.len() <= 8388624
                 && anynote_crypto_core::codec::num(&part["index"])? == index as u64
@@ -208,6 +238,45 @@ impl CipherCache {
         job.metadata = complete;
         Ok(())
     }
+    /// Trusted host destination only; authenticate cached bytes before atomic finalization.
+    pub fn atomic_export(
+        &self,
+        vault: &Vault,
+        cap: &Capability,
+        group: &str,
+        version: &str,
+        destination: &Path,
+        overwrite_confirmed: bool,
+    ) -> Result<Value> {
+        let path = self.root.join(Self::name(group, version)?);
+        let metadata = Self::metadata(&path)?;
+        check(metadata["complete"] == true, "OFFLINE_UNAVAILABLE")?;
+        let context = &metadata["record"]["envelope"]["header"]["context"];
+        check(
+            context["group_id"] == group && context["file_version_id"] == version,
+            "CONTEXT_MISMATCH",
+        )?;
+        let count = anynote_crypto_core::codec::num(
+            &metadata["record"]["envelope"]["header"]["framing"]["chunk_count"],
+        )?;
+        let mut parts = (0..count).map(|index| {
+            let file = File::open(path.join(index.to_string()))
+                .map_err(|_| Error("OFFLINE_UNAVAILABLE"))?;
+            let mut bytes = Vec::new();
+            file.take(8388625)
+                .read_to_end(&mut bytes)
+                .map_err(|_| Error("STORAGE_UNAVAILABLE"))?;
+            check(bytes.len() <= 8388624, "RESOURCE_LIMIT")?;
+            Ok(bytes)
+        });
+        vault.atomic_export_file(
+            cap,
+            &metadata["record"],
+            &mut parts,
+            destination,
+            overwrite_confirmed,
+        )
+    }
     pub fn verify(
         &self,
         vault: &Vault,
@@ -218,6 +287,11 @@ impl CipherCache {
         let path = self.root.join(Self::name(group, version)?);
         let metadata = Self::metadata(&path)?;
         check(metadata["complete"] == true, "OFFLINE_UNAVAILABLE")?;
+        let context = &metadata["record"]["envelope"]["header"]["context"];
+        check(
+            context["group_id"] == group && context["file_version_id"] == version,
+            "CONTEXT_MISMATCH",
+        )?;
         let mut reader = vault.file_reader(cap, &metadata["record"])?;
         let count = anynote_crypto_core::codec::num(
             &metadata["record"]["envelope"]["header"]["framing"]["chunk_count"],

@@ -60,7 +60,7 @@ final class QuotaLedger
                     $differences[] = ['scope' => $row->scope, 'expected_committed_bytes' => (string) $c, 'expected_reserved_bytes' => (string) $r, 'observed_committed_bytes' => (string) $row->committed_bytes, 'observed_reserved_bytes' => (string) $row->reserved_bytes];
                     if ($correct) {
                         if ($c < 0 || $r < 0 || $c + $r > (int) $row->limit_bytes) {
-                            throw new ApiException('INTEGRITY_FAILURE');
+                            throw new ApiException('INVALID_REQUEST');
                         }
                         DB::table('quota_ledgers')->where('scope', $row->scope)->update(['committed_bytes' => $c, 'reserved_bytes' => $r]);
                     }

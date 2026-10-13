@@ -22,6 +22,7 @@ fn response(value: anynote_auth_native::FileResponse) -> Result<Value> {
     if value.status != 200 {
         return Err(Error(match parsed["error"]["code"].as_str() {
             Some("NOT_FOUND") => "NOT_FOUND",
+            Some("INVALID_CHUNK") => "INVALID_CHUNK",
             Some("UPLOAD_EXPIRED") => "UPLOAD_EXPIRED",
             Some("REKEY_RESTART_REQUIRED") => "REKEY_RESTART_REQUIRED",
             Some("QUOTA_EXCEEDED") => "QUOTA_EXCEEDED",
@@ -76,6 +77,79 @@ fn identity(file: &mut File, signal: &LockSignal, generation: u64) -> Result<Val
     Ok(json!({"size":size,"parts":parts,"digest":b64(&digest.finalize())}))
 }
 impl Vault {
+    pub fn restart_file(
+        &self,
+        cap: &Capability,
+        network: Network<'_>,
+        old_draft: &str,
+        selected: SelectedSource<'_>,
+    ) -> Result<Value> {
+        use anynote_auth_native::FileOperation;
+        let request = self.file_request(cap, old_draft)?;
+        let upload = text(&request["upload_id"])?;
+        let status = response(self.file_http(
+            cap,
+            network.credential_id,
+            network.adapter,
+            FileOperation::Status { upload },
+        )?)?;
+        if status["state"] == "COMMITTED" {
+            self.file_committed(cap, old_draft, &status["receipt"])?;
+            return Ok(
+                json!({"draft_id":old_draft,"receipt":status["receipt"],"restart":"not-needed"}),
+            );
+        }
+        let closed = if status["state"] == "EXPIRED" || status["state"] == "CANCELLED" {
+            status
+        } else {
+            response(self.file_http(
+                cap,
+                network.credential_id,
+                network.adapter,
+                FileOperation::Cancel { upload },
+            )?)?
+        };
+        self.burn_file_attempt(cap, old_draft, &closed, true)?;
+        let options = json!({"previous_draft_id":old_draft});
+        let prepared = self.prepare_file_bound(
+            cap,
+            selected.group,
+            selected.file,
+            selected.name,
+            selected.media,
+            Some(&options),
+        )?;
+        Ok(prepared)
+    }
+    pub fn burn_file_attempt(
+        &self,
+        cap: &Capability,
+        draft: &str,
+        status: &Value,
+        confirmed: bool,
+    ) -> Result<()> {
+        check(confirmed, "CONFIRMATION_REQUIRED")?;
+        self.lease(cap)?;
+        let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
+        let s = self.authorize(&mut i, cap)?;
+        let mut control = self.file_control(&i, &s)?;
+        let (mut reference, mut data) = self.file_read(&i, &s, &control, draft)?;
+        let result = (|| {
+            check(
+                data["receipt"].is_null()
+                    && status["upload_id"] == data["upload_id"]
+                    && (status["state"] == "EXPIRED" || status["state"] == "CANCELLED"),
+                "RECONCILIATION_REQUIRED",
+            )?;
+            reference["state"] = json!("SUPERSEDED");
+            data["state"] = json!("SUPERSEDED");
+            let pos = index(&control, "transfers", "draft_id", draft)?;
+            control["transfers"][pos] = reference.clone();
+            self.file_write(&mut i, cap, &s, &control, &reference, &data)
+        })();
+        wipe_value(&mut data);
+        result
+    }
     pub fn file_copy_preview(
         &self,
         cap: &Capability,
@@ -138,7 +212,7 @@ impl Vault {
                 source,
                 text(&data["name"])?,
                 text(&data["media"])?,
-                Some(&preview["preview"]["policy"]),
+                Some(&json!({"policy":preview["preview"]["policy"]})),
             )
         })();
         wipe_value(&mut data);
@@ -233,6 +307,7 @@ impl Vault {
         let s = self.authorize(&mut i, cap)?;
         let control = self.file_control(&i, &s)?;
         let (_, mut data) = self.file_read(&i, &s, &control, draft)?;
+        check(data["state"] != "SUPERSEDED", "IMMUTABLE_ATTEMPT")?;
         let result = json!({"version":1,"upload_id":data["upload_id"],"context":data["context"],"plaintext_bytes":data["source"]["size"].as_u64().ok_or(Error("INTEGRITY_FAILURE"))?.to_string()});
         wipe_value(&mut data);
         Ok(result)
@@ -667,7 +742,7 @@ impl Vault {
         let s = self.authorize(&mut i, cap)?;
         let (author, policy, _key) = self.file_authority(&mut i, &s, group)?;
         check(
-            expected_policy.is_none_or(|p| p == &policy),
+            expected_policy.is_none_or(|p| p["policy"].is_null() || p["policy"] == policy),
             "COPY_CONFIRMATION_REQUIRED",
         )?;
         let context = json!({"contract":"p02-file-c1","protocol":"anynote","protocol_version":1,"service_id":self.scope.service_id,"group_id":group,"file_id":random_id(),"file_version_id":random_id(),"operation_id":random_id(),"author":author,"policy":policy,"parents":[],"file_format":"xchacha20poly1305-chunks-c1","manifest_schema":1});
@@ -677,11 +752,25 @@ impl Vault {
             proof["size"].as_u64().ok_or(Error("RESOURCE_LIMIT"))?,
         )?;
         let draft = random_id();
-        let reference = json!({"draft_id":draft,"record_id":random_id(),"group_id":group,"state":"NEEDS_SOURCE","file_version_id":context["file_version_id"]});
+        let mut reference = json!({"draft_id":draft,"record_id":random_id(),"group_id":group,"state":"NEEDS_SOURCE","file_version_id":context["file_version_id"]});
         let mut data = json!({"purpose":"p12-file-transfer","version":1,"draft_id":draft,"upload_id":random_id(),"context":context,"source":proof,"name":name,"media":media,"writer":writer.checkpoint(text(&proof["digest"])?)?,"acknowledged":[],"record":null,"receipt":null,"state":"NEEDS_SOURCE"});
         let mut control = self.file_control(&i, &s)?;
+        let local_draft =
+            if let Some(old) = expected_policy.and_then(|p| p["previous_draft_id"].as_str()) {
+                let old = find(&control, "transfers", "draft_id", old)?;
+                check(old["state"] == "SUPERSEDED", "RECONCILIATION_REQUIRED")?;
+                if old["local_draft_id"].is_null() {
+                    old["draft_id"].clone()
+                } else {
+                    old["local_draft_id"].clone()
+                }
+            } else {
+                json!(draft)
+            };
+        reference["local_draft_id"] = local_draft.clone();
+        data["local_draft_id"] = local_draft;
         list(&mut control, "transfers")?.push(reference.clone());
-        let result = json!({"draft_id":draft,"request":{"version":1,"upload_id":data["upload_id"],"context":context,"plaintext_bytes":proof["size"].as_u64().unwrap().to_string()}});
+        let result = json!({"draft_id":draft,"local_draft_id":data["local_draft_id"],"request":{"version":1,"upload_id":data["upload_id"],"context":context,"plaintext_bytes":proof["size"].as_u64().unwrap().to_string()}});
         let saved = self.file_write(&mut i, cap, &s, &control, &reference, &data);
         wipe_value(&mut data);
         saved?;
@@ -700,6 +789,7 @@ impl Vault {
         let mut control = self.file_control(&i, &s)?;
         let (mut reference, mut data) = self.file_read(&i, &s, &control, draft)?;
         let result = (|| {
+            check(data["state"] != "SUPERSEDED", "IMMUTABLE_ATTEMPT")?;
             let (_, policy, _) = self.file_authority(&mut i, &s, text(&reference["group_id"])?)?;
             check(
                 policy == data["context"]["policy"],
@@ -776,6 +866,7 @@ impl Vault {
         let mut control = self.file_control(&i, &s)?;
         let (mut reference, mut data) = self.file_read(&i, &s, &control, draft)?;
         let result = (|| {
+            check(data["state"] != "SUPERSEDED", "IMMUTABLE_ATTEMPT")?;
             let (_, policy, key) =
                 self.file_authority(&mut i, &s, text(&reference["group_id"])?)?;
             check(

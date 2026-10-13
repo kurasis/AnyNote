@@ -316,7 +316,7 @@
     },
     {
       "path": "apps/api/app/Devices/Envelopes.php",
-      "sha256": "f486f6753c5285d68a09d5c090cb480e84b20ae3534808382747532083a84039"
+      "sha256": "de1d70803f65a146b29f5d83ac8fe534c8cb72776519beaa46b13369b4211197"
     },
     {
       "path": "apps/api/app/Devices/Lifecycle.php",
@@ -372,7 +372,7 @@
     },
     {
       "path": "apps/api/app/Sync/Service.php",
-      "sha256": "02faf4a312b6c8d1ec72d20a1860fcb8d92b13a568c5fdca8a6a4e7a9c7aeb9c"
+      "sha256": "4b9f5eec00e46d5cd5ffb3984877e13055523dbc7739cb35cb2633dd276e4c02"
     },
     {
       "path": "apps/api/app/Http/Controllers/SyncController.php",

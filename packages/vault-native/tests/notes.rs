@@ -876,7 +876,17 @@ fn p12_native_ciphertext_cache_verifies_bytes_and_refuses_corruption() {
     let cache = CipherCache::for_vault(&f.vault).unwrap();
     let mut job = cache.begin(&Codec::new().unwrap(), record).unwrap();
     cache.put(&mut job, 0, &cipher).unwrap();
+    assert_eq!(
+        cache.begin(&Codec::new().unwrap(), record).err().unwrap().0,
+        "VAULT_BUSY"
+    );
+    job.pin(1048576, true).unwrap();
     cache.finish(&mut job).unwrap();
+    drop(job);
+    let mut replacement = cache.begin(&Codec::new().unwrap(), record).unwrap();
+    cache.put(&mut replacement, 0, &cipher).unwrap();
+    cache.finish(&mut replacement).unwrap();
+    drop(replacement);
     let version = record["envelope"]["header"]["context"]["file_version_id"]
         .as_str()
         .unwrap();
@@ -887,10 +897,28 @@ fn p12_native_ciphertext_cache_verifies_bytes_and_refuses_corruption() {
         .join(format!("p12-downloaded-ciphertext-{}", f.scope.profile_id))
         .join(format!("{}_{version}", g["group_id"].as_str().unwrap()));
     let manifest = std::fs::read(directory.join("manifest.json")).unwrap();
+    let meta: Value = serde_json::from_slice(&manifest).unwrap();
+    assert_eq!(meta["pinned"], true);
+    assert_eq!(meta["additional_budget"], 1048576);
     assert!(
         !manifest
             .windows(b"PRIVATE CACHE NAME".len())
             .any(|w| w == b"PRIVATE CACHE NAME")
+    );
+    let offline_destination = root.join("explicit-offline-export.bin");
+    cache
+        .atomic_export(
+            &f.vault,
+            &cap,
+            g["group_id"].as_str().unwrap(),
+            version,
+            &offline_destination,
+            false,
+        )
+        .unwrap();
+    assert_eq!(
+        std::fs::read(&offline_destination).unwrap(),
+        b"public synthetic encrypted cache fixture"
     );
     let mut wrong = cipher.clone();
     wrong[0] ^= 1;
@@ -901,5 +929,115 @@ fn p12_native_ciphertext_cache_verifies_bytes_and_refuses_corruption() {
             .unwrap_err()
             .0,
         "CHUNK_DIGEST_MISMATCH"
+    );
+}
+
+#[test]
+fn p12_native_copy_burn_and_atomic_export_keep_original_recoverable() {
+    use std::fs::OpenOptions;
+    use std::io::Write;
+    let f = Fixture::new();
+    let cap = f.vault.unlock_phrase(PHRASE).unwrap();
+    let g = group(&f, &cap);
+    let group_id = g["group_id"].as_str().unwrap();
+    let root = f.vault.path().parent().unwrap();
+    let mut source = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create_new(true)
+        .open(root.join("explicit-copy-source.bin"))
+        .unwrap();
+    source.write_all(b"public source for native copy").unwrap();
+    let original = f
+        .vault
+        .prepare_file(
+            &cap,
+            group_id,
+            &mut source,
+            "copy.bin",
+            "application/octet-stream",
+        )
+        .unwrap();
+    let draft = original["draft_id"].as_str().unwrap();
+    let cipher = f.vault.file_part(&cap, draft, &mut source, 0).unwrap();
+    let preview = f.vault.file_copy_preview(&cap, draft, group_id).unwrap();
+    assert!(
+        f.vault
+            .copy_selected_file(&cap, draft, group_id, &mut source, "wrong", true)
+            .is_err()
+    );
+    let copy = f
+        .vault
+        .copy_selected_file(
+            &cap,
+            draft,
+            group_id,
+            &mut source,
+            preview["digest"].as_str().unwrap(),
+            true,
+        )
+        .unwrap();
+    assert_ne!(
+        copy["request"]["context"]["file_version_id"],
+        original["request"]["context"]["file_version_id"]
+    );
+    assert_ne!(
+        cipher,
+        f.vault
+            .file_part(&cap, copy["draft_id"].as_str().unwrap(), &mut source, 0)
+            .unwrap()
+    );
+    let part = json!({"index":"0","ciphertext_bytes":cipher.len().to_string(),"ciphertext_digest":hash(&cipher)});
+    let finished = f.vault.file_finish(&cap, draft, &[part]).unwrap();
+    let record = &finished["request"]["record"];
+    let destination = root.join("explicit-verified-export.bin");
+    let mut parts = std::iter::once(Ok(cipher.clone()));
+    assert_eq!(
+        f.vault
+            .atomic_export_file(&cap, record, &mut parts, &destination, false)
+            .unwrap()["complete"],
+        true
+    );
+    assert_eq!(
+        std::fs::read(&destination).unwrap(),
+        b"public source for native copy"
+    );
+    let wrong_destination = root.join("wrong.incomplete");
+    let mut bad = cipher.clone();
+    bad[0] ^= 1;
+    let mut parts = std::iter::once(Ok(bad));
+    assert!(
+        f.vault
+            .atomic_export_file(&cap, record, &mut parts, &wrong_destination, false)
+            .is_err()
+    );
+    assert!(!wrong_destination.exists());
+    f.vault
+        .burn_file_attempt(
+            &cap,
+            draft,
+            &json!({"upload_id":original["request"]["upload_id"],"state":"EXPIRED"}),
+            true,
+        )
+        .unwrap();
+    assert_eq!(
+        f.vault.file_request(&cap, draft).unwrap_err().0,
+        "IMMUTABLE_ATTEMPT"
+    );
+    assert_eq!(
+        f.vault
+            .file_part(&cap, draft, &mut source, 0)
+            .unwrap_err()
+            .0,
+        "IMMUTABLE_ATTEMPT"
+    );
+    assert_eq!(
+        f.vault
+            .file_transfers(&cap)
+            .unwrap()
+            .as_array()
+            .unwrap()
+            .len(),
+        2
     );
 }
