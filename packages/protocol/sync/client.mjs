@@ -58,7 +58,7 @@ export class Synchronizer {
    s=await this.command('deltaFinish');await this.transport.call('/sync/ack','ack-request','ack-result',{version:1,cursor:s.cursor,group_id:s.scope.group_id});if(page.complete)return s;
   }
   // Bounded work yields to the visible host, which schedules another catch-up.
-  return s;
+  return {...s,catch_up_pending:true};
  }
 }
 

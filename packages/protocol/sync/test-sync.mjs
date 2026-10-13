@@ -40,9 +40,16 @@ test('malformed inventory, forged content and changed root cannot advance the du
   const rollback=structuredClone(f.result);rollback.descriptor.watermark.sequence='1';assert.equal((await sync(f,'snapshotStart',rollback)).state,'RESTORE_QUARANTINE');assert.deepEqual((await sync(f,'status')).cursor,f.cursor);await sync(f,'deltaCancel');await sync(f,'snapshotCancel');assert.equal((await sync(f,'status')).state,'RESTORE_QUARANTINE');const pending=(await notes(f,'summary')).drafts[0].attempt_id;await assert.rejects(()=>notes(f,'send',[pending]),/RESTORE_QUARANTINE/);await assert.rejects(()=>notes(f,'prepareGroup'),/RESTORE_QUARANTINE/);await assert.rejects(()=>sync(f,'quarantine',{state:'QUARANTINED',digest:f.result.catalog_digest}),/RESTORE_QUARANTINE/);await assert.rejects(()=>sync(f,'snapshotStart',f.result),/RESTORE_QUARANTINE/);
  }finally{await close(f);}
 });
-test('filtered ranges count hidden scanned events and reject gaps, duplicate hints and scope substitution',()=>{
+test('filtered ranges count hidden scanned events and reject gaps, duplicate hints and scope substitution',async()=>{
  const pins={service_id:id(),account_id:id(),root_fingerprint:b64(sodium.randombytes_buf(32))},group=id(),cursor={generation:id(),sequence:'5'},page={version:1,scope:{...pins,group_id:group},from_cursor:cursor,next_cursor:{...cursor,sequence:'8'},watermark:{...cursor,sequence:'9'},scanned_count:'3',events:[],complete:false};assert.equal(checkedDelta(page,cursor,pins,group),page);
  for(const changed of [{scanned_count:'2'},{complete:true},{scope:{...page.scope,account_id:id()}},{next_cursor:{...cursor,sequence:'10'}},{next_cursor:{...cursor,generation:id()}}])assert.throws(()=>checkedDelta({...page,...changed},cursor,pins,group));
+ const f=await scenario();try{
+  await stage(f);for(const v of f.values)await sync(f,'snapshotItem',v);await sync(f,'snapshotFinish');let pages=0;
+  const high=BigInt(f.cursor.sequence)+101000n,transport={call:async(path)=>{if(path==='/sync/ack')return;assert(path.startsWith('/sync?'));pages++;const from=(await sync(f,'status')).cursor,next=BigInt(from.sequence)+1000n;return {version:1,scope:f.result.scope,from_cursor:from,next_cursor:{...from,sequence:String(next)},watermark:{...from,sequence:String(high)},scanned_count:'1000',events:[],complete:next===high};}};
+  const client=new Synchronizer({transport,vault:{notes:(_op,[op,x])=>sync(f,op,x)},authorize:async()=>{},group:async()=>{}});
+  const first=await client.catchUp();assert.equal(first.catch_up_pending,true);assert.equal(pages,100);assert.equal(first.cursor.sequence,String(high-1000n));
+  const done=await client.catchUp();assert(!done.catch_up_pending);assert.equal(pages,101);assert.equal(done.cursor.sequence,String(high));assert.equal((await notes(f,'summary')).drafts.length,2);
+ }finally{await close(f);}
 });
 test('compaction frees only superseded ciphertext and keeps signed history, current heads and pending work',async()=>{
  const f=await scenario();try{

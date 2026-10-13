@@ -80,7 +80,7 @@ async function keyFor(status){
  if(status.kind==='shared'||status.key_epoch!=='0'){await shared('keys',{group_id:status.group_id}).catch(async e=>{if(e.message!=='ROSTER_CHANGED')throw e;});return;}
 
  let cursor=null,count=0,found=[];
- do{const part=await devices.call('/me/device-envelopes'+(cursor?'?after='+cursor:''),null,'envelope-result');count+=part.records.length;if(count>660)throw Error('RESOURCE_LIMIT');found.push(...part.records.filter(r=>r.body.context.group_id===status.group_id&&r.body.context.key_epoch==='0'));cursor=part.next;if(found.length)break;}while(cursor!==null);
+ do{const part=await devices.call('/me/device-envelopes'+(cursor?'?after='+cursor:''),null,'envelope-result');count+=part.records.length;if(count>10000)throw Error('RESOURCE_LIMIT');found.push(...part.records.filter(r=>r.body.context.group_id===status.group_id&&r.body.context.key_epoch==='0'));cursor=part.next;if(found.length)break;}while(cursor!==null);
  if(found.length)await vault.devices('acceptKeys',[status.genesis,found]);
 }
 function concealGroup(id){
@@ -115,7 +115,7 @@ async function synchronize(){
  for(const p of s.projection)references.set(p.reference.object_id,{group_id:p.group_id,...p.reference});
  for(const p of s.projection)if(p.reference.object_kind!=='entry'&&p.reference.heads.length){const v=await vault.notes('cached',[p.reference.heads[0].revision_id]);titles.set(p.reference.object_id,v.payload.title);}
  $('draft-recovery-target').replaceChildren();for(const [id,r]of references){const g=groups.get(r.group_id);if(g?.kind==='private'&&!g.settings&&g.owner_account_id===selected.account_id&&r.object_kind==='thread'&&!r.tombstoned){const option=document.createElement('option');option.value=r.group_id+'/'+id;option.textContent=(titles.get(r.group_id)??text('private'))+' / '+(titles.get(id)??text('untitled'));$('draft-recovery-target').append(option);}}
- renderGroups();await summary();$('sync-state').textContent=text('synced');return s;
+ renderGroups();await summary();$('sync-state').textContent=text(s.catch_up_pending?'syncing':'synced');return s;
 }
 async function refresh(){await flushIfDirty();await prove();if(groupSelected)await groupStatus(groupSelected);await loadGroups();await copyDestinations();if(groupSelected&&groups.has(groupSelected))await openGroup(groupSelected);await retryPending();await summary();}
 async function openGroup(id){
