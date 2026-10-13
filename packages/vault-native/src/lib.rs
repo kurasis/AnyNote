@@ -30,6 +30,7 @@ pub mod lifecycle;
 pub mod native_hello;
 mod note_local;
 pub mod notes;
+mod paged_local;
 pub mod shared;
 // The GPL provider/attestation/TPM/filesystem implementation is shared by source,
 // preserving its independent manifest/lock and synthetic RP. Only for_rp is exposed
@@ -667,7 +668,8 @@ impl Vault {
                 r.id != s.vault_id
                     && r.id != device_local::control_id(&self.scope)?
                     && r.id != note_local::control_id(&self.scope)?
-                    && !note_owned.contains_key(&r.id),
+                    && !note_owned.contains_key(&r.id)
+                    && !self.note_part_owned(&tx, &s, &key, &r.id)?,
                 "RESERVED_RECORD",
             )?;
             let old: Option<Vec<u8>> = db(tx
@@ -764,7 +766,8 @@ impl Vault {
             id != s.vault_id
                 && id != device_local::control_id(&self.scope)?
                 && id != note_local::control_id(&self.scope)?
-                && !owned.contains_key(id),
+                && !owned.contains_key(id)
+                && !self.note_part_owned(&i.conn, &s, &i.secrets.as_ref().unwrap().key, id)?,
             "RESERVED_RECORD",
         )?;
         let f = frame(&i.conn, id)?;
@@ -835,6 +838,22 @@ impl Vault {
                 let bytes: Vec<u8> = db(row.get(1))?;
                 let f = strict(&bytes, 8_388_608)?;
                 let kind = text(&f["context"]["record_kind"])?;
+                if f["contract"] == "p11-local-v1" {
+                    let new = paged_local::rotate(
+                        &self.codec,
+                        &self.scope,
+                        &s.pins,
+                        &id,
+                        &f,
+                        &old_key,
+                        &key,
+                    )?;
+                    db(tx.execute(
+                        "UPDATE records SET frame=?1 WHERE id=?2",
+                        params![canonical(&new)?, id],
+                    ))?;
+                    continue;
+                }
                 let note = f["contract"] == "p09-local-v1";
                 let additive = f["contract"] == "p08-local-v1";
                 let mut p = if note {

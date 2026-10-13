@@ -176,6 +176,103 @@ fn receipt(request: &Value) -> Value {
     json!({"receipt":{"contract":"p02-v1","protocol":"anynote","protocol_version":1,"purpose":"mutation-receipt","operation_id":c["operation_id"],"revision_id":c["revision_id"],"envelope_digest":ed,"status":"COMMITTED","cursor":{"generation":c["service_id"],"sequence":"1"}},"heads":[{"revision_id":c["revision_id"],"envelope_digest":ed}]})
 }
 #[test]
+fn staged_sync_cursor_is_atomic_and_restore_regression_keeps_drafts() {
+    let f = Fixture::new();
+    let cap = f.vault.unlock_phrase(PHRASE).unwrap();
+    let g = group(&f, &cap);
+    let (_, _, sent) = attempt(&f, &cap, &g);
+    let bundle = &sent["request"]["bundle"];
+    let x = &bundle["envelope"]["header"]["context"];
+    let ed = digest("p02-v1", "envelope", &bundle["envelope"]);
+    let item = json!({"group_id":g["group_id"],"object_kind":"thread","object_id":x["object_id"],"revision_id":x["revision_id"],"envelope_digest":ed,"payload_status":"retained"});
+    let snapshot_id = id();
+    let page = json!({"contract":"p02-v1","protocol":"anynote","protocol_version":1,"purpose":"snapshot-page","snapshot_id":snapshot_id,"page_index":"0","items":[item]});
+    let status = group_status(&f, &g);
+    let mut catalog_bytes = b"AnyNote/P11/catalog\0".to_vec();
+    catalog_bytes.extend(1u32.to_be_bytes());
+    let b = canonical(&status).unwrap();
+    catalog_bytes.extend((b.len() as u32).to_be_bytes());
+    catalog_bytes.extend(b);
+    let mut inventory = b"AnyNote/p02-v1/hash/snapshot-inventory\0".to_vec();
+    inventory.extend(1u32.to_be_bytes());
+    inventory.extend(1u64.to_be_bytes());
+    for n in [0, 1, canonical(&page).unwrap().len() as u32] {
+        inventory.extend(n.to_be_bytes());
+    }
+    inventory.extend(
+        anynote_crypto_core::crypto::un64(&digest("p02-v1", "snapshot-page", &page)).unwrap(),
+    );
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_millis();
+    let cursor = json!({"generation":id(),"sequence":"3"});
+    let scope = json!({"service_id":f.scope.service_id,"account_id":f.scope.account_id,"root_fingerprint":f.pins["root_fingerprint"],"group_id":g["group_id"]});
+    let result = json!({"version":1,"scope":scope,"descriptor":{"contract":"p02-v1","protocol":"anynote","protocol_version":1,"purpose":"snapshot-descriptor","snapshot_id":snapshot_id,"account_id":f.scope.account_id,"device_id":f.scope.device_id,"snapshot_purpose":"resync","watermark":cursor,"created_at":now.to_string(),"expires_at":(now+1800000).to_string(),"page_count":"1","item_count":"1","inventory_digest":hash(&inventory)},"catalog_count":"1","catalog_digest":hash(&catalog_bytes)});
+    command(
+        &f,
+        &cap,
+        json!({"action":"sync","request":{"action":"snapshot-start","result":result}}),
+    );
+    command(
+        &f,
+        &cap,
+        json!({"action":"sync","request":{"action":"catalog","page":{"version":1,"snapshot_id":snapshot_id,"start":"0","groups":[status],"next":null}}}),
+    );
+    command(
+        &f,
+        &cap,
+        json!({"action":"sync","request":{"action":"snapshot-page","result":{"version":1,"scope":scope,"page":page}}}),
+    );
+    let finish: NotesRequest =
+        serde_json::from_value(json!({"action":"sync","request":{"action":"snapshot-finish"}}))
+            .unwrap();
+    assert_eq!(
+        f.vault.notes_command(&cap, finish).unwrap_err().0,
+        "SYNC_GAP"
+    );
+    command(
+        &f,
+        &cap,
+        json!({"action":"sync","request":{"action":"snapshot-item","result":{"version":1,"snapshot_id":snapshot_id,"item":item,"bundle":bundle,"reference":{"object_id":x["object_id"],"object_kind":"thread","thread_id":null,"archived":false,"tombstoned":false,"created_sequence":"3","updated_sequence":"3","heads":[{"revision_id":x["revision_id"],"envelope_digest":ed}]}}}}),
+    );
+    assert!(
+        command(
+            &f,
+            &cap,
+            json!({"action":"sync","request":{"action":"status"}})
+        )["cursor"]
+            .is_null()
+    );
+    f.vault.lock_all().unwrap();
+    let reopened = Vault::open(f.vault.path(), f.scope.clone()).unwrap();
+    let c = reopened.unlock_phrase(PHRASE).unwrap();
+    let finish: NotesRequest =
+        serde_json::from_value(json!({"action":"sync","request":{"action":"snapshot-finish"}}))
+            .unwrap();
+    let done = reopened.notes_command(&c, finish).unwrap();
+    assert_eq!(done["cursor"], cursor);
+    assert_eq!(
+        reopened
+            .notes_command(&c, NotesRequest::Summary {})
+            .unwrap()["drafts"]
+            .as_array()
+            .unwrap()
+            .len(),
+        1
+    );
+    let mut old = result.clone();
+    old["descriptor"]["watermark"]["sequence"] = json!("2");
+    let start: NotesRequest = serde_json::from_value(
+        json!({"action":"sync","request":{"action":"snapshot-start","result":old}}),
+    )
+    .unwrap();
+    let blocked = reopened.notes_command(&c, start).unwrap();
+    assert_eq!(blocked["state"], "RESTORE_QUARANTINE");
+    assert_eq!(blocked["cursor"], cursor);
+    reopened.lock_all().unwrap();
+}
+#[test]
 fn native_note_restart_and_encrypted_sqlite_wal_inspection() {
     let f = Fixture::new();
     let cap = f.vault.unlock_phrase(PHRASE).unwrap();

@@ -10,3 +10,6 @@ Object.assign(words.ru,{access_lost:'Доступ удалён. Несинхро
 
 Object.assign(words.en,{reader_read_only:'Saved locally. You need an editor or owner role to publish in this group.',role_forbidden:'Your role does not permit this action. Local work is preserved.',key_repair:'The delivered key does not match the verified group. Ask a trusted member to repair delivery; local work is preserved.'});
 Object.assign(words.ru,{reader_read_only:'Сохранено на устройстве. Для публикации в этой группе нужна роль редактора или владельца.',role_forbidden:'Ваша роль не разрешает это действие. Локальная работа сохранена.',key_repair:'Переданный ключ не соответствует проверенной группе. Попросите доверенного участника исправить передачу; локальная работа сохранена.'});
+
+Object.assign(words.en,{sync_now:'Sync now',sync_attention:'Synchronization paused. Your local work is preserved.',restore_quarantine:'The service appears to have rolled back. Synchronization is blocked; your local work is preserved.'});
+Object.assign(words.ru,{sync_now:'Синхронизировать',sync_attention:'Синхронизация приостановлена. Локальные изменения сохранены.',restore_quarantine:'Обнаружен откат сервера. Синхронизация заблокирована; локальные изменения сохранены.'});

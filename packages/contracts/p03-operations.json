@@ -291,11 +291,12 @@
       "method": "POST",
       "path": "/api/v1/groups/{id}/snapshots",
       "summary": "snapshots",
-      "authorization": "See original chapter 08; no implicit public data access",
+      "authorization": "Current trusted account/device session, exact request scope and every-page current access; hints are not cryptographic authority.",
       "operation_id": "post_groups_id_snapshots",
       "phase": "P11",
-      "implemented": false,
-      "request": "snapshot-request"
+      "implemented": true,
+      "response": "p11-sync/snapshot-result",
+      "request": "p11-sync/snapshot-request"
     },
     {
       "method": "GET",
@@ -598,10 +599,11 @@
       "method": "GET",
       "path": "/api/v1/mutations/{operation_id}",
       "summary": "{operation_id}",
-      "authorization": "See original chapter 08; no implicit public data access",
+      "authorization": "Current trusted account/device session, exact request scope and every-page current access; hints are not cryptographic authority.",
       "operation_id": "get_mutations_operation_id",
       "phase": "P11",
-      "implemented": false
+      "implemented": true,
+      "response": "p09-notes/receipt-result"
     },
     {
       "method": "POST",
@@ -666,57 +668,64 @@
       "method": "POST",
       "path": "/api/v1/snapshots",
       "summary": "snapshots",
-      "authorization": "See original chapter 08; no implicit public data access",
+      "authorization": "Current trusted account/device session, exact request scope and every-page current access; hints are not cryptographic authority.",
       "operation_id": "post_snapshots",
       "phase": "P11",
-      "implemented": false,
-      "request": "snapshot-request"
+      "implemented": true,
+      "response": "p11-sync/snapshot-result",
+      "request": "p11-sync/snapshot-request"
     },
     {
       "method": "DELETE",
       "path": "/api/v1/snapshots/{id}",
       "summary": "{id}",
-      "authorization": "See original chapter 08; no implicit public data access",
+      "authorization": "Current trusted account/device session, exact request scope and every-page current access; hints are not cryptographic authority.",
       "operation_id": "delete_snapshots_id",
       "phase": "P11",
-      "implemented": false
+      "implemented": true,
+      "response": "p11-sync/cancel-result"
     },
     {
       "method": "GET",
       "path": "/api/v1/snapshots/{id}/pages",
       "summary": "pages",
-      "authorization": "See original chapter 08; no implicit public data access",
+      "authorization": "Current trusted account/device session, exact request scope and every-page current access; hints are not cryptographic authority.",
       "operation_id": "get_snapshots_id_pages",
       "phase": "P11",
-      "implemented": false
+      "implemented": true,
+      "response": "p11-sync/snapshot-page-result"
     },
     {
       "method": "POST",
       "path": "/api/v1/snapshots/{id}/renew",
       "summary": "renew",
-      "authorization": "See original chapter 08; no implicit public data access",
+      "authorization": "Current trusted account/device session, exact request scope and every-page current access; hints are not cryptographic authority.",
       "operation_id": "post_snapshots_id_renew",
       "phase": "P11",
-      "implemented": false
+      "implemented": true,
+      "response": "p11-sync/snapshot-result",
+      "request": "p11-sync/renew-request"
     },
     {
       "method": "GET",
       "path": "/api/v1/sync",
       "summary": "sync",
-      "authorization": "See original chapter 08; no implicit public data access",
+      "authorization": "Current trusted account/device session, exact request scope and every-page current access; hints are not cryptographic authority.",
       "operation_id": "get_sync",
       "phase": "P11",
-      "implemented": false
+      "implemented": true,
+      "response": "p11-sync/delta-page"
     },
     {
       "method": "POST",
       "path": "/api/v1/sync/ack",
       "summary": "ack",
-      "authorization": "See original chapter 08; no implicit public data access",
+      "authorization": "Current trusted account/device session, exact request scope and every-page current access; hints are not cryptographic authority.",
       "operation_id": "post_sync_ack",
       "phase": "P11",
-      "implemented": false,
-      "request": "sync-ack"
+      "implemented": true,
+      "response": "p11-sync/ack-result",
+      "request": "p11-sync/ack-request"
     },
     {
       "method": "GET",
@@ -1157,6 +1166,26 @@
         "NativeBearer"
       ],
       "response": "p10-shared/result"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/snapshots/{id}/catalog",
+      "summary": "get snapshots id catalog",
+      "authorization": "Current snapshot owner account/device/session and every-page current group access.",
+      "operation_id": "get_snapshots_id_catalog",
+      "phase": "P11",
+      "implemented": true,
+      "response": "p11-sync/catalog-page"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/snapshots/{id}/revisions/{revision}",
+      "summary": "get snapshots id revisions revision",
+      "authorization": "Current snapshot owner account/device/session and every-page current group access.",
+      "operation_id": "get_snapshots_id_revisions_revision",
+      "phase": "P11",
+      "implemented": true,
+      "response": "p11-sync/snapshot-bundle"
     }
   ]
 }

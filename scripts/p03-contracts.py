@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-COMPONENTS = ['p02-file-c1', 'p02-identity-c1', 'p02-state-c1', 'p02-group-c2', 'p02-v1', 'p03-api', 'p04-api', 'p06-auth', 'p08-devices', 'p09-notes', 'p10-shared']
+COMPONENTS = ['p02-file-c1', 'p02-identity-c1', 'p02-state-c1', 'p02-group-c2', 'p02-v1', 'p03-api', 'p04-api', 'p06-auth', 'p08-devices', 'p09-notes', 'p10-shared', 'p11-sync']
 
 def pascal(value):
     return ''.join(part[:1].upper() + part[1:] for part in re.split('[^A-Za-z0-9]+', value))
@@ -108,6 +108,7 @@ def outputs():
     inputs += ['apps/api/bootstrap/app.php','apps/api/routes/web.php','apps/api/routes/console.php','apps/api/app/Http/Controllers/CapabilitiesController.php','scripts/p06_compatibility.py','scripts/check-p06.py','packages/contracts/p06-compatibility.json','docs/reference/p04/composer-p04.lock','apps/api/app/Http/Controllers/AuthController.php','apps/api/app/Http/Middleware/AuthSession.php','apps/api/app/Http/Middleware/SessionCsrf.php','apps/api/config/passkeys.php','apps/api/config/session.php','apps/api/config/auth.php','apps/api/database/migrations/2026_10_11_000004_create_authentication_lifecycle.php','packages/auth-native/Cargo.toml','packages/auth-native/Cargo.lock','packages/auth-native/dependency-inventory.json','packages/protocol/auth-client.mjs','packages/protocol/auth-formats.mjs'] + sorted(str(p.relative_to(ROOT)) for p in (ROOT/'apps/api/app/Auth').rglob('*.php'))
     inputs += sorted(str(p.relative_to(ROOT)) for p in (ROOT/'apps/api/app/Devices').rglob('*.php')) + ['apps/api/app/Http/Controllers/DevicesController.php','apps/api/database/migrations/2026_10_12_000005_create_trusted_device_lifecycle.php','packages/protocol/devices/client.mjs']
     inputs += sorted(str(p.relative_to(ROOT)) for p in (ROOT/'apps/api/app/Groups').rglob('*.php')) + ['apps/api/app/Http/Controllers/GroupsController.php', 'apps/api/database/migrations/2026_10_13_000008_create_shared_group_journal.php', 'scripts/p10-port-group.py', 'packages/protocol/shared/custody-methods.inc.mjs', 'packages/protocol/shared/client.mjs']
+    inputs += sorted(str(p.relative_to(ROOT)) for p in (ROOT/'apps/api/app/Sync').rglob('*.php')) + ['apps/api/app/Http/Controllers/SyncController.php','apps/api/database/migrations/2026_10_13_000009_create_sync_snapshots.php', 'packages/protocol/sync/codec.mjs', 'packages/protocol/sync/paged-local.mjs', 'packages/protocol/sync/client.mjs']
     manifest={'version':1,'scope':'P03_P04_P06_P08_GENERATION_NOT_RUNTIME_AUTHORITY','inputs':[{'path':p,'sha256':hashlib.sha256((ROOT/p).read_bytes()).hexdigest()} for p in inputs],'outputs':[{'path':p,'sha256':hashlib.sha256(v.encode()).hexdigest()} for p,v in products.items()],'structures':len(definitions),'operations':len(operations)}
     products['packages/contracts/generated/manifest.json']=dumped(manifest)
     return products,manifest

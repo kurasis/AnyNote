@@ -17,7 +17,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P08 | VERIFIED | Seven Node workflow suites, 16 dense QR round trips, 153 actual HTTPS/SQL checks, 33 sandboxed UI checks and nine native device tests per Linux/Windows; all fourteen hosted gates PASS |
 | P09 | VERIFIED | Eight workflow/transport suites, 131 actual HTTPS/SQL checks, 49 sandboxed two-PWA UI checks, six native note tests/platform and 16 native/PWA interop checks/platform; all sixteen hosted gates PASS |
 | P10 | VERIFIED | Five protected workflow/transport suites, 407 actual HTTPS/SQL checks, 40 sandboxed three-account PWA checks, three native shared tests and 89 native/portable interop checks/platform; all eighteen hosted gates PASS |
-| P11 | NOT STARTED | P09/P10 |
+| P11 | IN PROGRESS | Commit-ordered scoped feeds, consistent pinned snapshots, protected staged application, conflict/offline UX and mandatory software acceptance in development |
 | P12 | NOT STARTED | P04/P05/P10/P11 |
 | P13 | NOT STARTED | P11/P12 |
 | P14 | NOT STARTED | P07–P13 and actual Windows evidence |

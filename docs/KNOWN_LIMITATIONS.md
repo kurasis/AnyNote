@@ -414,3 +414,13 @@ copies and isolated malicious-server forks remain the documented v1 limits.
 
 No production migration/deployment, release, new owner hardware trial or reviewer
 outreach is authorized by this batch. G1 physical and qualified G2/G3 remain open.
+
+
+### P11 development state
+
+P11 is in progress. New transport, leased snapshots, paged encrypted control and
+staged portable/native application do not yet establish complete convergence,
+compaction, migration/rollback or platform acceptance. The current logical local
+profile remains bounded to 32 MiB and existing key/roster limits still need their
+full P11 treatment. Cloud Chromium sandbox is unavailable; hosted mandatory checks
+remain required. No physical or qualified external acceptance is implied.

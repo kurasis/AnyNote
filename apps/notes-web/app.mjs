@@ -1,4 +1,5 @@
 import {SharedClient} from '../../packages/protocol/shared/client.mjs';
+import {SyncClient,Synchronizer,VisiblePoller} from '../../packages/protocol/sync/client.mjs';
 import {LocalVault} from '../../packages/protocol/vault/client.mjs';
 import {profiles} from '../../packages/protocol/vault/registry.mjs';
 import {AuthClient} from '../../packages/protocol/auth-client.mjs';
@@ -11,10 +12,12 @@ let language=navigator.language.startsWith('ru')?'ru':'en',selected,groupSelecte
 const roles=new Map(),groups=new Map(),titles=new Map(),references=new Map();
 const auth=new AuthClient(ANYNOTE_AUTH_ISSUER),devices=new DevicesClient(auth),api=new NotesClient(auth);
 const sharing=new SharedClient(auth);
+let synchronizer,poller;
 const text=k=>words[language][k]??words.en[k]??k;
 const vault=new LocalVault('/auth/vault-worker.js',mask);
 function erase(v){if(v&&typeof v==='object')for(const k of Object.keys(v)){if(typeof v[k]==='string')v[k]='';else erase(v[k]);}}
 function mask(){
+ poller?.stop();synchronizer=undefined;
  generation++;clearTimeout(timer);editor&&erase(editor);editor=undefined;pendingConflict&&erase(pendingConflict);pendingConflict=undefined;
  roles.clear();groups.clear();titles.clear();references.clear();preferences=[];settingsGroup=undefined;groupSelected=threadSelected=undefined;server=false;
  $('workspace').hidden=true;$('unlock-panel').hidden=false;$('editor').hidden=true;$('conflict').hidden=true;
@@ -35,7 +38,8 @@ function reportError(e){
  $('status').textContent=text(messages[key]??'attention');
 }
 function run(action){
- const g=generation;
+ const g=generation;$('status').dataset.busy='true';$('status').textContent=text('working');
+ for(const id of ['unlock','login','create-group','create-thread','save-note','save-local','refresh','retry'])$(id).disabled=true;
  const r=tail.then(async()=>{
   if(g!==generation)throw Error('STALE_CAPABILITY');
   delete $('status').dataset.error;$('status').dataset.busy='true';$('status').textContent=text('working');
@@ -101,6 +105,16 @@ async function loadGroups(more=false){
   try{await keyFor(g);const state=await api.call('/objects/'+g.group_id,null,'object-state');references.set(g.group_id,{group_id:g.group_id,...state.object});const opened=await openRevision(g.group_id,state.object,state.object.heads[0]);titles.set(g.group_id,opened.payload.title);if(g.settings){preferences=opened.payload.preferences;settingsHeads=state.object.heads;}}
   catch(e){if(!['NOT_FOUND','KEYS_PENDING'].includes(e.message))throw e;}
  }renderGroups();await summary();
+}
+async function synchronize(){
+ await flushIfDirty();if(!server)await prove();
+ // Current authorization is checked even if removal made the group feed invisible.
+ for(const [id,g]of [...groups])if(!g.pending){try{await groupStatus(id);}catch(e){if(e.message!=='NOT_FOUND')throw e;}}
+ synchronizer??=new Synchronizer({transport:new SyncClient(auth),vault,notes:api,authorize:async()=>{if(!server)await prove();else await devices.sync(vault,selected.account_id);},group:async id=>{const g=await groupStatus(id);await keyFor(g);},active:()=>!$('workspace').hidden&&!document.hidden});
+ $('sync-state').textContent=text('syncing');const s=await synchronizer.catchUp();
+ for(const p of s.projection)references.set(p.reference.object_id,{group_id:p.group_id,...p.reference});
+ for(const p of s.projection)if(p.reference.object_kind!=='entry'&&p.reference.heads.length){const v=await vault.notes('cached',[p.reference.heads[0].revision_id]);titles.set(p.reference.object_id,v.payload.title);}
+ renderGroups();await summary();$('sync-state').textContent=text('synced');return s;
 }
 async function refresh(){await flushIfDirty();await prove();if(groupSelected)await groupStatus(groupSelected);await loadGroups();await copyDestinations();if(groupSelected&&groups.has(groupSelected))await openGroup(groupSelected);await retryPending();await summary();}
 async function openGroup(id){
@@ -225,7 +239,12 @@ $('profiles').onchange=()=>run(async()=>{await vault.lock();selected=JSON.parse(
 $('unlock').onclick=()=>run(async g=>{
  if(!selected)throw Error('PROFILE_REQUIRED');const phrase=$('phrase').value;$('phrase').value='';await vault.unlock(phrase);checkGeneration(g);$('workspace').hidden=false;$('unlock-panel').hidden=true;$('lock-state').textContent=text('unlocked');await loadLocal();
  try{await refresh();}catch(e){if(['AUTH_REQUIRED','SESSION_EXPIRED','TEMPORARY_UNAVAILABLE'].includes(e.message)||e.name==='TypeError'){$('status').textContent=text('local_only');server=false;}else throw e;}
+ poller=new VisiblePoller({catchUp:()=>{const task=tail.then(()=>synchronize());tail=task.catch(()=>{});return task;},onError:e=>{$('sync-state').textContent=text(e.message==='RESTORE_QUARANTINE'?'restore_quarantine':e.message==='KEYS_PENDING'?'key_pending':'sync_attention');}});poller.start();
 });
+$('sync-now').onclick=()=>run(synchronize);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)poller?.resume();});
+addEventListener('online',()=>poller?.resume());
+addEventListener('offline',()=>{$('sync-state').textContent=text('local_only');if(!$('workspace').hidden)vault.notes('sync',['offline',{}]).catch(reportError);});
 $('refresh').onclick=()=>run(refresh);$('retry').onclick=()=>run(async()=>{await prove();await retryPending();await summary();});
 $('create-group-form').onsubmit=e=>{e.preventDefault();run(createGroup);};$('create-thread-form').onsubmit=e=>{e.preventDefault();run(createThread);};
 $('more-groups').onclick=()=>run(()=>loadGroups(true));$('more-threads').onclick=()=>run(()=>loadThreads(true));$('more-entries').onclick=()=>run(()=>loadEntries(true));

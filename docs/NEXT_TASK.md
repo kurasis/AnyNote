@@ -84,3 +84,21 @@ P12 owns physical file/source/resume/quota, P13 full search/export/retention and
 physical account/group purge, P14/P15 complete hosts, P16 operational deployment and
 P17 qualified review. Full physical G1/Hello/iPhone/memory/network and qualified G2/G3
 remain open/unbooked/NOT_RUN. No new owner action is required for P11 software CI.
+
+
+## Current P11 development checkpoint
+
+Continue `feat/p11-sync` in the existing checkout. P11_SYNC.md describes the current
+paths and outstanding full acceptance. Additive transport/schema, pinned snapshots,
+paged local control and staged portable/native cursor publication are implemented.
+Four P11 portable suites, seven native note suites, unchanged five P10 suites,
+strict Clippy and the CSP static build passed locally. Local source is development
+evidence, not final exact-source acceptance. Preserve staged synchronization state,
+all existing SQL content and private candidate keys.
+
+Use `python3 scripts/check-p11.py`, actual `node packages/protocol/p11-http.mjs`
+against the owned P06 stack, serial all-feature native tests and all inherited
+gates. The new incremental-sync workflow adds Linux/Windows gates, for twenty total.
+Cloud Chromium sandbox is unavailable; use the real hosted sandboxed gates without
+a bypass. Complete all remaining requirements above before marking P11 verified,
+merging, replacing this handoff with P12 or claiming final publication/restoration.

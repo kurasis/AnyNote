@@ -4,7 +4,7 @@
   "inputs": [
     {
       "path": "scripts/p03-contracts.py",
-      "sha256": "91a503fa7a0fbdd31cdd8a667b77f1dbdbdd47c5351758725e83e572fcb4df06"
+      "sha256": "2e6c021aa54de712b1af650176fd45e221acf02a14bae342f4c19148f4ab5a99"
     },
     {
       "path": "scripts/p04_compatibility.py",
@@ -76,7 +76,7 @@
     },
     {
       "path": "packages/contracts/p03-operations.json",
-      "sha256": "07e81eab51682feb78a2fcd0ff97c52398739a9662f11733aeca3bb69c72c200"
+      "sha256": "c4a5d34115a4f4a9abe9909235dad4f7482594c840935ac96a16b0215ab8e14f"
     },
     {
       "path": "packages/contracts/p02-errors.json",
@@ -159,12 +159,16 @@
       "sha256": "83a5e7d2e68e1e8608b13ffdc846e4ad879aa681e805915cf302c9eae7baf50a"
     },
     {
+      "path": "packages/contracts/p11-sync.schema.json",
+      "sha256": "72e6dd1ee1b1a8582b6b4edd8f5e725ffce69c66451e89d96fb55db210677d2c"
+    },
+    {
       "path": "apps/api/bootstrap/app.php",
       "sha256": "f6f42a13c253a77a8d5a5600fcd536f949b6f34f93ac1995c5912d49e9806ad9"
     },
     {
       "path": "apps/api/routes/web.php",
-      "sha256": "77e63c6790523f8c4ea14f269253f6a2d0cc1d67345d101e92435f1225781b34"
+      "sha256": "2774832357240adf9966e3ad7d80b6caeda1317663e9e9aa889c8472aa5dfc8d"
     },
     {
       "path": "apps/api/routes/console.php",
@@ -240,7 +244,7 @@
     },
     {
       "path": "apps/api/app/Auth/Contracts.php",
-      "sha256": "daf0553ea5e8ca38842f60a6a3c3d79b48f218aa8d4da129c4b510f15de8598f"
+      "sha256": "474e05ea74fc768090d659034956adf2091ce8d3e13ded0502201817910227c1"
     },
     {
       "path": "apps/api/app/Auth/Maintenance.php",
@@ -361,34 +365,58 @@
     {
       "path": "packages/protocol/shared/client.mjs",
       "sha256": "1eae0cfc8e7d55fdefa4bc4262fe81a23291ac9333d922f77d87bd25c0410f4f"
+    },
+    {
+      "path": "apps/api/app/Sync/Service.php",
+      "sha256": "94cbb1ff16baf603919a33f39d101540400f030856c4248cf1195b63f3be3c1d"
+    },
+    {
+      "path": "apps/api/app/Http/Controllers/SyncController.php",
+      "sha256": "62d1a7e77ce7bedcd79cc6516b7cfb458a97358ffd7cc4d9fa7c01eb0ea90ac8"
+    },
+    {
+      "path": "apps/api/database/migrations/2026_10_13_000009_create_sync_snapshots.php",
+      "sha256": "7301f775f1e940933e29725a779ecf9538dabd2903b0e2039d3e856394fa4185"
+    },
+    {
+      "path": "packages/protocol/sync/codec.mjs",
+      "sha256": "5d9a3e3201e3866c2dbda6370281d0360599de49c4677734b14589d44b44fcfb"
+    },
+    {
+      "path": "packages/protocol/sync/paged-local.mjs",
+      "sha256": "4e116d9ac7262a54f112686c85fc43e5b9b6637019718f6b94f6a178a7918217"
+    },
+    {
+      "path": "packages/protocol/sync/client.mjs",
+      "sha256": "1b82992ae2814e17c50599c069d76850f01832cfdee3fcf92f5995731cf9f1a0"
     }
   ],
   "outputs": [
     {
       "path": "packages/contracts/generated/openapi.json",
-      "sha256": "2d28d7742982bf04c62513370bc4156677aabdcb5a2400fa0b6e4e5e56e304b7"
+      "sha256": "cb3d16c5b6be5311fe3bb27d9929ec912b795f39432fce055d4a81a713da3d0f"
     },
     {
       "path": "packages/contracts/generated/protocol.d.ts",
-      "sha256": "f9fb19178d31c08f4db152de41d1bbc3168069894ed041209eb7eb5b6e153915"
+      "sha256": "4b48999703ea0c57270a629b8bceb9615f89e7331927f036bd08491b31201f8c"
     },
     {
       "path": "packages/contracts/generated/runtime-schemas.json",
-      "sha256": "0120f96a046ea376d2499bbd0e53621b8645d8efe02a5c9265e6cd953c56582a"
+      "sha256": "5e016c885b72d9d09cb69c04b185d5d708bbdf79ee931bc2a7322101d3bf0db7"
     },
     {
       "path": "apps/api/app/Generated/Dtos.php",
-      "sha256": "3da30378faaa5a9b1570b8744d9c9548c48dea5a63048f539051deff868e2779"
+      "sha256": "d4695aabb4d808667ac5c1f094734e5d579ea1e2ce300b04297bc41d4ebee30f"
     },
     {
       "path": "apps/api/app/Generated/catalogue.json",
-      "sha256": "244a4fe641ef416da32dd84a2a1fa0f99e94fcc4b9db8ce1dc4f60e59cc0a85a"
+      "sha256": "659c3aa565ee63bfc559b450d2bd763eb0a9cf41790528396bb2b7de1de5665d"
     },
     {
       "path": "apps/api/app/Generated/schemas.json",
-      "sha256": "0120f96a046ea376d2499bbd0e53621b8645d8efe02a5c9265e6cd953c56582a"
+      "sha256": "5e016c885b72d9d09cb69c04b185d5d708bbdf79ee931bc2a7322101d3bf0db7"
     }
   ],
-  "structures": 264,
-  "operations": 95
+  "structures": 288,
+  "operations": 97
 }

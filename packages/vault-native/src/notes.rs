@@ -1,4 +1,5 @@
 //! Current account-private content authority, encrypted SQLite journal and closed native commands.
+pub mod sync;
 use super::*;
 use crate::device_groups::{create_private_genesis, historical, verify_genesis};
 use crate::device_roster::{Roster, digest};
@@ -7,6 +8,9 @@ use std::collections::BTreeMap;
 #[derive(Deserialize)]
 #[serde(tag = "action", rename_all = "kebab-case", deny_unknown_fields)]
 pub enum NotesRequest {
+    Sync {
+        request: sync::Request,
+    },
     Summary {},
     PrepareGroup {},
     PrepareShared {},
@@ -72,6 +76,7 @@ impl NotesRequest {
             Self::Group { status } => wipe_value(status),
             Self::Ack { result, .. } => wipe_value(result),
             Self::Open { request } => wipe_value(request),
+            Self::Sync { request } => request.wipe(),
             _ => (),
         }
     }
@@ -121,6 +126,15 @@ pub(crate) fn protected_ids(c: &Value) -> Result<BTreeMap<String, String>> {
                 ids.insert(text(&item[key])?.into(), kind.into()).is_none(),
                 "DUPLICATE_RECORD",
             )?;
+        }
+    }
+    for slot in ["stage", "pending"] {
+        if let Some(items) = c["sync"][slot]["items"].as_array() {
+            for item in items {
+                let id = text(&item["cache_id"])?;
+                check(ids.get(id).is_none_or(|k| k == "cache"), "DUPLICATE_RECORD")?;
+                ids.insert(id.into(), "cache".into());
+            }
         }
     }
     Ok(ids)
@@ -218,18 +232,68 @@ impl Vault {
             .query_row("SELECT frame FROM records WHERE id=?1", [&id], |r| r.get(0))
             .optional())?;
         match old {
-            Some(bytes) => note_local::open(
-                &self.scope,
-                &s.pins,
-                &id,
-                "note-control",
-                &strict(&bytes, 8_388_608)?,
-                key,
-            ),
+            Some(bytes) => {
+                let f = strict(&bytes, 8_388_608)?;
+                let v = if f["contract"] == "p11-local-v1" {
+                    paged_local::open(
+                        &self.codec,
+                        conn,
+                        &self.scope,
+                        &s.pins,
+                        (&id, "note-control"),
+                        &f,
+                        key,
+                    )?
+                } else {
+                    note_local::open(&self.scope, &s.pins, &id, "note-control", &f, key)?
+                };
+                self.codec.validate("p11-sync", "note-control", &v)?;
+                Ok(v)
+            }
             None => Ok(
                 json!({"purpose":"p09-private-control","version":1,"groups":[],"drafts":[],"attempts":[],"witnesses":[]}),
             ),
         }
+    }
+    pub(crate) fn note_part_owned(
+        &self,
+        conn: &Connection,
+        s: &State,
+        key: &[u8],
+        id: &str,
+    ) -> Result<bool> {
+        let ctl = note_local::control_id(&self.scope)?;
+        let roots = self.note_control(conn, s, key)?;
+        let mut checks = vec![(ctl, "note-control")];
+        for g in values(&roots, "groups")? {
+            checks.push((text(&g["record_id"])?.to_owned(), "group-evidence"));
+        }
+        for (root, kind) in checks {
+            let exists: i64 = db(conn.query_row(
+                "SELECT count(*) FROM records WHERE id=?1",
+                [&root],
+                |r| r.get(0),
+            ))?;
+            if exists == 0 {
+                continue;
+            }
+            let f = frame(conn, &root)?;
+            if f["contract"] != "p11-local-v1" {
+                continue;
+            }
+            let mut m =
+                paged_local::manifest(&self.codec, &self.scope, &s.pins, &root, kind, &f, key)?;
+            let found = m["parts"]
+                .as_array()
+                .ok_or(Error("INTEGRITY_FAILURE"))?
+                .iter()
+                .any(|p| p["record_id"] == id);
+            wipe_value(&mut m);
+            if found {
+                return Ok(true);
+            }
+        }
+        Ok(false)
     }
     fn note_read(
         &self,
@@ -250,7 +314,19 @@ impl Vault {
         }
         let key = &i.secrets.as_ref().ok_or(Error("VAULT_LOCKED"))?.key;
         let out = if kind == "group-evidence" {
-            note_local::open(&self.scope, &s.pins, id, kind, &f, key)?
+            if f["contract"] == "p11-local-v1" {
+                paged_local::open(
+                    &self.codec,
+                    &i.conn,
+                    &self.scope,
+                    &s.pins,
+                    (id, kind),
+                    &f,
+                    key,
+                )?
+            } else {
+                note_local::open(&self.scope, &s.pins, id, kind, &f, key)?
+            }
         } else {
             objects::open_local(
                 &self.codec,
@@ -379,7 +455,7 @@ impl Vault {
             )?;
             w
         } else {
-            check(values(c, "witnesses")?.len() < 512, "RESOURCE_LIMIT")?;
+            check(values(c, "witnesses")?.len() < 10000, "RESOURCE_LIMIT")?;
             let w = json!({"group_id":x["group_id"],"object_id":x["object_id"],"revision_id":x["revision_id"],"envelope_digest":ed,"object_kind":x["object_kind"],"thread_id":x["thread_id"],"archived":x["archived"],"action":x["action"],"cache_id":random_id()});
             list(c, "witnesses")?.push(w.clone());
             w
@@ -401,9 +477,9 @@ impl Vault {
         writes: &[Write],
         add_key: Option<&Value>,
     ) -> Result<()> {
-        self.codec.validate("p09-notes", "local-control", control)?;
+        self.codec.validate("p11-sync", "note-control", control)?;
         check(
-            canonical(control)?.len() <= 524288 && writes.len() <= 16,
+            canonical(control)?.len() <= 33_554_432 && writes.len() <= 16,
             "RESOURCE_LIMIT",
         )?;
         let ids = protected_ids(control)?;
@@ -411,6 +487,8 @@ impl Vault {
         let old_ids = protected_ids(&old_control)?;
         let key = Zeroizing::new(i.secrets.as_ref().unwrap().key.to_vec());
         let mut frames = Vec::new();
+        let mut remove_parts = Vec::new();
+        let mut new_parts = std::collections::BTreeSet::new();
         let mut seen = std::collections::BTreeSet::new();
         let device = self.device_saved(i, before)?.0;
         let mut blocked = std::collections::BTreeSet::from([
@@ -473,7 +551,46 @@ impl Vault {
                 }
             }
             let f = if w.kind == "group-evidence" {
-                note_local::seal(&self.scope, &before.pins, &w.id, &w.kind, &w.data, &key)?
+                self.codec
+                    .validate("p09-notes", "local-evidence", &w.data)?;
+                let prior: Option<Vec<u8>> = db(i
+                    .conn
+                    .query_row("SELECT frame FROM records WHERE id=?1", [&w.id], |r| {
+                        r.get(0)
+                    })
+                    .optional())?;
+                if let Some(bytes) = prior {
+                    let f = strict(&bytes, 8_388_608)?;
+                    if f["contract"] == "p11-local-v1" {
+                        let mut m = paged_local::manifest(
+                            &self.codec,
+                            &self.scope,
+                            &before.pins,
+                            &w.id,
+                            &w.kind,
+                            &f,
+                            &key,
+                        )?;
+                        for p in m["parts"].as_array().ok_or(Error("INTEGRITY_FAILURE"))? {
+                            remove_parts.push(text(&p["record_id"])?.to_owned());
+                        }
+                        wipe_value(&mut m);
+                    }
+                }
+                let (f, parts) = paged_local::prepare(
+                    &self.codec,
+                    &self.scope,
+                    &before.pins,
+                    &w.id,
+                    &w.kind,
+                    &w.data,
+                    &key,
+                )?;
+                for (id, bytes) in parts {
+                    check(new_parts.insert(id.clone()), "DUPLICATE_RECORD")?;
+                    frames.push((id, bytes));
+                }
+                f
             } else {
                 self.codec.validate("p02-v1", &w.kind, &w.data)?;
                 objects::seal_local(
@@ -524,7 +641,30 @@ impl Vault {
             frames.push((before.vault_id.clone(), canonical(&result?)?));
         }
         let id = note_local::control_id(&self.scope)?;
-        let ctl = note_local::seal(
+        let prior: Option<Vec<u8>> = db(i
+            .conn
+            .query_row("SELECT frame FROM records WHERE id=?1", [&id], |r| r.get(0))
+            .optional())?;
+        if let Some(bytes) = prior {
+            let f = strict(&bytes, 8_388_608)?;
+            if f["contract"] == "p11-local-v1" {
+                let mut m = paged_local::manifest(
+                    &self.codec,
+                    &self.scope,
+                    &before.pins,
+                    &id,
+                    "note-control",
+                    &f,
+                    &key,
+                )?;
+                for p in m["parts"].as_array().ok_or(Error("INTEGRITY_FAILURE"))? {
+                    remove_parts.push(text(&p["record_id"])?.to_owned());
+                }
+                wipe_value(&mut m);
+            }
+        }
+        let (ctl, parts) = paged_local::prepare(
+            &self.codec,
             &self.scope,
             &before.pins,
             &id,
@@ -532,6 +672,10 @@ impl Vault {
             control,
             &key,
         )?;
+        for (id, bytes) in parts {
+            check(new_parts.insert(id.clone()), "DUPLICATE_RECORD")?;
+            frames.push((id, bytes));
+        }
         frames.push((id, canonical(&ctl)?));
         let tx = db(i
             .conn
@@ -542,6 +686,19 @@ impl Vault {
             "STALE_WRITER",
         )?;
         self.fence(&s, fence)?;
+        for id in &new_parts {
+            check(
+                db(
+                    tx.query_row("SELECT count(*) FROM records WHERE id=?1", [id], |r| {
+                        r.get::<_, i64>(0)
+                    }),
+                )? == 0,
+                "RESERVED_RECORD",
+            )?;
+        }
+        for id in &remove_parts {
+            db(tx.execute("DELETE FROM records WHERE id=?1", [id]))?;
+        }
         for (id, bytes) in &frames {
             db(tx.execute("INSERT INTO records(id,frame) VALUES(?1,?2) ON CONFLICT(id) DO UPDATE SET frame=excluded.frame",params![id,bytes]))?;
         }
@@ -690,7 +847,7 @@ impl Vault {
         let record = if let Some(r) = old {
             text(&r["record_id"])?.into()
         } else {
-            check(values(c, "groups")?.len() < 100, "RESOURCE_LIMIT")?;
+            check(values(c, "groups")?.len() < 1000, "RESOURCE_LIMIT")?;
             let r = random_id();
             list(c, "groups")?
                 .push(json!({"group_id":group,"record_id":r,"state":"COMMITTED","status":null}));
@@ -842,6 +999,15 @@ impl Vault {
         let snapshot = self.snapshot_for_groups(&mut i, &s)?;
         let roster = Roster::replay(&self.codec, &snapshot, &s.pins, i.device_anchor.as_ref())?;
         let result = (|| match &request {
+            NotesRequest::Sync { request } => self.note_sync(
+                &mut i,
+                cap,
+                &s,
+                fence,
+                &mut c,
+                (&snapshot, &roster),
+                request,
+            ),
             NotesRequest::Summary {} => {
                 let mut drafts = Vec::new();
                 for d in values(&c, "drafts")? {
@@ -883,7 +1049,7 @@ impl Vault {
             }
             NotesRequest::PrepareShared {} => {
                 own(&roster, &self.scope, &i.secrets.as_ref().unwrap().signing)?;
-                check(values(&c, "groups")?.len() < 100, "RESOURCE_LIMIT")?;
+                check(values(&c, "groups")?.len() < 1000, "RESOURCE_LIMIT")?;
                 let (request, mut key) = crate::device_groups::create_genesis_kind(
                     &self.codec,
                     &roster,
@@ -923,7 +1089,7 @@ impl Vault {
             }
             NotesRequest::PrepareGroup {} => {
                 own(&roster, &self.scope, &i.secrets.as_ref().unwrap().signing)?;
-                check(values(&c, "groups")?.len() < 100, "RESOURCE_LIMIT")?;
+                check(values(&c, "groups")?.len() < 1000, "RESOURCE_LIMIT")?;
                 let (request, mut key) = create_private_genesis(
                     &self.codec,
                     &roster,
@@ -1024,7 +1190,7 @@ impl Vault {
                         d.digest == signer["certificate_digest"],
                         "UNANCHORED_HISTORY",
                     )?;
-                    check(values(&c, "groups")?.len() < 100, "RESOURCE_LIMIT")?;
+                    check(values(&c, "groups")?.len() < 1000, "RESOURCE_LIMIT")?;
                     record_id = random_id();
                     list(&mut c,"groups")?.push(json!({"group_id":group,"record_id":record_id,"state":"COMMITTED","status":null}));
                 }
@@ -1165,7 +1331,7 @@ impl Vault {
                 if let Ok(n) = index(&c, "drafts", "draft_id", &draft_id) {
                     c["drafts"][n] = r.clone();
                 } else {
-                    check(values(&c, "drafts")?.len() < 512, "RESOURCE_LIMIT")?;
+                    check(values(&c, "drafts")?.len() < 10000, "RESOURCE_LIMIT")?;
                     list(&mut c, "drafts")?.push(r.clone());
                 }
                 let writes = [Write {
@@ -1222,7 +1388,7 @@ impl Vault {
                     wipe_value(&mut data);
                     return Ok(out);
                 }
-                check(values(&c, "attempts")?.len() < 512, "RESOURCE_LIMIT")?;
+                check(values(&c, "attempts")?.len() < 10000, "RESOURCE_LIMIT")?;
                 data["context"]["author"] =
                     author(&roster, &self.scope, &i.secrets.as_ref().unwrap().signing)?;
                 data["context"]["policy"] = policy(&info);
@@ -1473,6 +1639,20 @@ impl Vault {
         roster: &Roster,
         request: &Value,
     ) -> Result<Value> {
+        let result = self.note_verify(i, s, c, (snapshot, roster), request)?;
+        let write = self.note_cache(c, &request["bundle"])?;
+        self.note_commit(i, cap, s, fence, c, &[write], None)?;
+        Ok(result)
+    }
+    fn note_verify(
+        &self,
+        i: &mut Inner,
+        s: &State,
+        c: &Value,
+        evidence: (&Value, &Roster),
+        request: &Value,
+    ) -> Result<Value> {
+        let (snapshot, roster) = evidence;
         self.codec.validate("p09-notes", "open-request", request)?;
         let b = &request["bundle"];
         self.codec.validate("p02-v1", "bundle", b)?;
@@ -1519,8 +1699,7 @@ impl Vault {
                 payload["metadata_kind"] != "account-preferences",
                 "PRIVATE_NAMESPACE_REQUIRED",
             )?;
-            let write = self.note_cache(c, b)?;
-            self.note_commit(i, cap, s, fence, c, &[write], None)?;
+
             return Ok(
                 json!({"payload":payload,"envelope_digest":digest("p02-v1","envelope",&b["envelope"])?}),
             );
@@ -1567,8 +1746,7 @@ impl Vault {
             &un64(text(&actor.certificate["body"]["device_signing_key"])?)?,
             &canonical(x)?,
         )?;
-        let write = self.note_cache(c, b)?;
-        self.note_commit(i, cap, s, fence, c, &[write], None)?;
+
         Ok(json!({"payload":payload,"envelope_digest":ed}))
     }
 }

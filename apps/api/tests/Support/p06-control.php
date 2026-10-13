@@ -20,6 +20,28 @@ if (! $app->runningInConsole() || ! $app->environment('testing') || config('data
 }
 $op = $argv[1] ?? '';
 $value = match ($op) {
+    'p11-state' => (function () {
+        return ['snapshots' => DB::table('snapshot_sessions')->count(), 'active' => DB::table('snapshot_sessions')->where('state', 'active')->count(), 'pins' => DB::table('reference_pins')->count(), 'items' => DB::table('snapshot_items')->count(), 'pages' => DB::table('snapshot_pages')->count(), 'catalog' => DB::table('snapshot_catalog')->count()];
+    })(),
+    'p11-expire' => (function () {
+        $v = json_decode(stream_get_contents(STDIN));
+        if (! $v instanceof stdClass || ! P::isBinary($v->id ?? null, 16)) {
+            throw new LogicException('Invalid synthetic snapshot');
+        }
+        DB::table('snapshot_sessions')->where('id', $v->id)->update(['expires_at' => now()->subMinute()]);
+
+        return ['status' => 'expired'];
+    })(),
+    'p11-fault-on' => (function () {
+        DB::unprepared("CREATE TRIGGER p11_fault BEFORE INSERT ON snapshot_pages FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Synthetic snapshot materialization fault'");
+
+        return ['status' => 'installed'];
+    })(),
+    'p11-fault-off' => (function () {
+        DB::unprepared('DROP TRIGGER IF EXISTS p11_fault');
+
+        return ['status' => 'removed'];
+    })(),
     'p09-state' => (function () {
         $counts = [];
         foreach (['objects', 'object_revisions', 'object_heads', 'object_key_wraps', 'revision_parents', 'private_group_geneses', 'mutation_receipts', 'sync_events'] as $t) {

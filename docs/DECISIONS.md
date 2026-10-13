@@ -838,3 +838,32 @@ context/AAD, signatures and all cryptographic predicates remain intact.
 Large-scale synchronization/compaction is P11. No universal server freshness,
 physical acceptance, independently reviewed composition or production release is
 implied by these implementation decisions. Exact execution evidence is separate.
+
+## ADR-021 — filtered transport, pinned snapshots and paged local custody
+
+Keep frozen P02 cursors, object bytes, snapshot pages/descriptors and their exact
+inventory commitment. The earlier dense P02 sync evaluation model cannot describe
+filtered global positions; finalize the unimplemented P03 HTTP sync endpoints with
+a closed supplemental P11 page binding scope, captured watermark and the last
+safely scanned position. Sparse visible hints never authorize content or skipping
+unscanned records. Exact signatures, independent root/history pins and accepted
+writer/recipient authority remain necessary. Record incomplete/bad pages without
+advancing the durable cursor.
+
+Materialize one MariaDB read view under the existing collector boundary, commit
+immutable references and pins before exposing a fixed <=30 minute resync lease,
+and reauthorize every page/content reference. Normal business/security locks
+precede the GC boundary, then sorted group locks; snapshot reads do not allocate
+a new content cursor or hold a transaction across HTTP. Export/physical collector
+and operational production restore remain P13/P16 work.
+
+Protected local indexes/public proofs are segmented into bounded encrypted part frames
+under the existing random L, with a closed separately versioned manifest and
+exact scope/digest/count binding. A private candidate group key stays in the
+protected encrypted manifest rather than opaque encrypted public parts. Legacy frames are
+readable during an additive transactional migration; old clients must refuse the
+new profile. Root/index/page updates, staged application and cursor publication
+are fenced and atomic; generic mutation/eviction cannot alter their dependencies.
+No plaintext last-write-wins, implicit resurrection, unverifiable history trust or
+universal hostile-server freshness is introduced. Actual software/restore/fault
+execution evidence is required separately, not inferred from these decisions.

@@ -3946,3 +3946,416 @@ final readonly class P10SharedAccountCloseResult implements \JsonSerializable
         return $values;
     }
 }
+
+final readonly class P11SyncScope implements \JsonSerializable
+{
+    public function __construct(
+        public string $service_id,
+        public string $account_id,
+        public string $root_fingerprint,
+        public null|string $group_id,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncHint implements \JsonSerializable
+{
+    public function __construct(
+        public string $event_id,
+        public string $sequence,
+        public null|string $group_id,
+        public string $kind,
+        public string $object_id,
+        public null|string $revision_id,
+        public string $digest,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncDeltaPage implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $scope,
+        public array $from_cursor,
+        public array $next_cursor,
+        public array $watermark,
+        public string $scanned_count,
+        public array $events,
+        public bool $complete,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncSnapshotRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $operation_id,
+        public string $purpose,
+        public null|string $group_id,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncSnapshotResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $scope,
+        public array $descriptor,
+        public string $catalog_count,
+        public string $catalog_digest,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncCatalogPage implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $snapshot_id,
+        public string $start,
+        public array $groups,
+        public null|string $next,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncSnapshotPageResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $scope,
+        public array $page,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncSnapshotBundle implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $snapshot_id,
+        public array $item,
+        public array $bundle,
+        public array $reference,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncDeltaBundle implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $item,
+        public array $bundle,
+        public array $reference,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncRenewRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncCancelResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $snapshot_id,
+        public string $state,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncAckRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $cursor,
+        public null|string $group_id,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncAckResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $cursor,
+        public string $state,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncLocalPart implements \JsonSerializable
+{
+    public function __construct(
+        public string $purpose,
+        public int $version,
+        public string $index,
+        public string $bytes,
+        public string $digest,
+        public string $record_bytes,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncPartRef implements \JsonSerializable
+{
+    public function __construct(
+        public string $record_id,
+        public string $digest,
+        public string $bytes,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncManifest implements \JsonSerializable
+{
+    public function __construct(
+        public string $purpose,
+        public int $version,
+        public string $kind,
+        public array $parts,
+        public string $digest,
+        public string $bytes,
+        public array|null $private,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncLocalContext implements \JsonSerializable
+{
+    public function __construct(
+        public string $purpose,
+        public int $version,
+        public string $service_id,
+        public string $account_id,
+        public string $device_id,
+        public string $profile_id,
+        public string $record_id,
+        public string $record_kind,
+        public string $root_fingerprint,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncLocalFrame implements \JsonSerializable
+{
+    public function __construct(
+        public string $contract,
+        public string $protocol,
+        public int $protocol_version,
+        public string $purpose,
+        public array $context,
+        public string $nonce,
+        public string $ciphertext,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncNoteControl implements \JsonSerializable
+{
+    public function __construct(
+        public string $purpose,
+        public int $version,
+        public array $groups,
+        public array $drafts,
+        public array $attempts,
+        public array $witnesses,
+        public array|null $sync = null,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        if ($values['sync'] === null) { unset($values['sync']); }
+        return $values;
+    }
+}
+
+final readonly class P11SyncRetryItem implements \JsonSerializable
+{
+    public function __construct(
+        public array $item,
+        public string $cache_id,
+        public string $reason,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncSyncGroup implements \JsonSerializable
+{
+    public function __construct(
+        public string $group_id,
+        public string $record_id,
+        public bool $verified,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncStagedItem implements \JsonSerializable
+{
+    public function __construct(
+        public array $item,
+        public string $cache_id,
+        public array $witness,
+        public array $reference,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncSnapshotStage implements \JsonSerializable
+{
+    public function __construct(
+        public array $result,
+        public array $catalog,
+        public string $catalog_next,
+        public array $pages,
+        public array $items,
+        public array $inventory,
+        public null|string $last,
+        public string $all_items,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P11SyncSyncControl implements \JsonSerializable
+{
+    public function __construct(
+        public string $purpose,
+        public int $version,
+        public array $scope,
+        public array|null $cursor,
+        public array|null $watermark,
+        public array|null $stage,
+        public array $groups,
+        public array|null $pending,
+        public array $retry,
+        public array $projection,
+        public string $state,
+        public null|string $quarantine,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
