@@ -2,7 +2,9 @@
 import {randomBytes,createHash} from 'node:crypto';
 import {openSync,writeSync,closeSync,createReadStream} from 'node:fs';
 import {join} from 'node:path';
+import {browserMemory} from './p12-browser-memory.mjs';
 export async function filesCase({page,action,check,scratch,control}){
+ const memory=browserMemory();try{
  await page.bringToFront();await page.locator('#groups button').filter({hasText:'PUBLIC browser shared group'}).click();await page.waitForFunction(()=>!document.getElementById('status').dataset.busy);await page.locator('#threads button').filter({hasText:'PUBLIC browser shared thread'}).click();await page.waitForFunction(()=>!document.getElementById('status').dataset.busy);await action(page,'new-entry');await page.locator('#note-title').fill('PUBLIC P12 attached entry');
  const source=join(scratch,'P12_PUBLIC_SELECTED_FILE.bin'),fd=openSync(source,'wx'),expected=createHash('sha256');
  try{for(let left=1000000000;left>0;){const bytes=randomBytes(Math.min(left,8388608));writeSync(fd,bytes);expected.update(bytes);left-=bytes.length;}}finally{closeSync(fd);}
@@ -20,5 +22,5 @@ export async function filesCase({page,action,check,scratch,control}){
  await page.locator('#file-items button').filter({hasText:'Attach to this entry'}).first().click();await page.waitForFunction(()=>!document.getElementById('status').dataset.busy,null,{timeout:90000});await action(page,'save-note');await action(page,'file-refresh');check((await page.locator('#save-state').getAttribute('data-state'))==='COMMITTED','P12_FILE_AND_ENTRY_BOTH_COMMITTED');
  const inspection=control('p09-inspect',JSON.stringify({markers:['P12_PUBLIC_SELECTED_FILE.bin']}));check(inspection.status==='PASS','P12_SQL_LOG_FILENAME_INSPECTION');
  const storage=await page.evaluate(async()=>{const {IndexedVault}=await import('/auth/vault-store.js'),store=await new IndexedVault(JSON.parse(document.getElementById('profiles').value)).open();try{return await store.transaction(false,async tx=>{const rows=[];await tx.each(r=>rows.push(r));return JSON.stringify({state:await tx.get(),rows});});}finally{store.close();}});check(!storage.includes('P12_PUBLIC_SELECTED_FILE.bin'),'P12_INDEXEDDB_FILENAME_INSPECTION');
- await page.locator('#lock').click();await page.waitForFunction(()=>document.getElementById('workspace').hidden);check(await page.locator('#workspace').isHidden()&&await page.locator('#file-items').textContent()==='','P12_LIFECYCLE_MASKS_FILE_VIEW');return {gigabyte_bytes:bytes,checks:12,physical_acceptance:false,stream_completion:'actual desktop saved output hash; iPhone Files acceptance remains NOT_RUN'};
+ await page.locator('#lock').click();await page.waitForFunction(()=>document.getElementById('workspace').hidden);check(await page.locator('#workspace').isHidden()&&await page.locator('#file-items').textContent()==='','P12_LIFECYCLE_MASKS_FILE_VIEW');return {gigabyte_bytes:bytes,memory:memory.finish(),checks:12,physical_acceptance:false,stream_completion:'actual desktop saved output hash; iPhone Files acceptance remains NOT_RUN'};}finally{memory.abort();}
 }

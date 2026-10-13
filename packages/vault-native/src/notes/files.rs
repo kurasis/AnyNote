@@ -591,7 +591,7 @@ impl Vault {
         )?;
         let snapshot = self.snapshot_for_groups(i, s)?;
         let roster = Roster::replay(&self.codec, &snapshot, &s.pins, i.device_anchor.as_ref())?;
-        let (reference, _, info) = self.note_info(i, s, &notes, &snapshot, group)?;
+        let (reference, evidence, info) = self.note_info(i, s, &notes, &snapshot, group)?;
         writable(
             &reference,
             &info,
@@ -599,10 +599,27 @@ impl Vault {
             &self.scope,
             &i.secrets.as_ref().unwrap().signing,
         )?;
+        let key = self.note_key(i, s, group, &info)?;
+        let expected = if let Some(epochs) = info["epochs"].as_array() {
+            epochs
+                .iter()
+                .find(|e| e["key_epoch"] == policy(&info)["key_epoch"])
+                .ok_or(Error("KEYS_PENDING"))?["key_commitment"]
+                .clone()
+        } else {
+            evidence["commit"]["body"]["intent"]["body"]["key_commitment"].clone()
+        };
+        check(
+            crate::device_groups::key_commitment(
+                &json!({"service_id":self.scope.service_id,"group_id":group}),
+                &key,
+            )? == expected,
+            "KEY_REPAIR_REQUIRED",
+        )?;
         Ok((
             author(&roster, &self.scope, &i.secrets.as_ref().unwrap().signing)?,
             policy(&info),
-            self.note_key(i, s, group, &info)?,
+            key,
         ))
     }
     fn file_write(
