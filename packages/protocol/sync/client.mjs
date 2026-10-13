@@ -63,7 +63,7 @@ export class Synchronizer {
 
 export class VisiblePoller {
  #timer;#running=false;#backoff=0;#stopped=true;
- constructor({catchUp,onError,visible=()=>!document.hidden,online=()=>navigator.onLine,random=Math.random,setTimer=setTimeout,clearTimer=clearTimeout}){Object.assign(this,{catchUp,onError,visible,online,random,setTimer,clearTimer});}
+ constructor({catchUp,onError,visible=()=>!document.hidden,online=()=>navigator.onLine,random=Math.random,setTimer=(fn,ms)=>globalThis.setTimeout(fn,ms),clearTimer=id=>globalThis.clearTimeout(id)}){Object.assign(this,{catchUp,onError,visible,online,random,setTimer,clearTimer});}
  start(){this.#stopped=false;this.resume();}
  stop(){this.#stopped=true;this.clearTimer(this.#timer);}
  resume(){this.clearTimer(this.#timer);if(!this.#stopped&&this.visible()&&this.online())this.#timer=this.setTimer(()=>this.#tick(),0);}

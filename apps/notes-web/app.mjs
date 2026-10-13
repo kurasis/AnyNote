@@ -242,6 +242,7 @@ $('unlock').onclick=()=>run(async g=>{
  poller=new VisiblePoller({catchUp:()=>{const task=tail.then(()=>synchronize());tail=task.catch(()=>{});return task;},onError:e=>{$('sync-state').textContent=text(e.message==='RESTORE_QUARANTINE'?'restore_quarantine':e.message==='KEYS_PENDING'?'key_pending':'sync_attention');}});poller.start();
 });
 $('sync-now').onclick=()=>run(synchronize);
+$('sync-compact').onclick=()=>run(async()=>{await flushIfDirty();const result=await vault.notes('sync',['compact',{limit:16}]);$('sync-state').textContent=text(result.compacted?'cache_compacted':'cache_current');});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)poller?.resume();});
 addEventListener('online',()=>poller?.resume());
 addEventListener('offline',()=>{$('sync-state').textContent=text('local_only');if(!$('workspace').hidden)vault.notes('sync',['offline',{}]).catch(reportError);});

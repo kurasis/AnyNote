@@ -4250,6 +4250,21 @@ final readonly class P11SyncLocalFrame implements \JsonSerializable
     }
 }
 
+final readonly class P11SyncHeaderEvidence implements \JsonSerializable
+{
+    public function __construct(
+        public string $purpose,
+        public int $version,
+        public array $envelope,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
 final readonly class P11SyncNoteControl implements \JsonSerializable
 {
     public function __construct(

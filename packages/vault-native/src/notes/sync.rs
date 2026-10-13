@@ -1,12 +1,19 @@
 //! Staged encrypted synchronization; the existing content verifier remains authoritative.
 use super::*;
 use std::collections::BTreeSet;
+struct Sensitive(Value);
+impl Drop for Sensitive {
+    fn drop(&mut self) {
+        wipe_value(&mut self.0);
+    }
+}
 
 #[derive(Deserialize)]
 #[serde(tag = "action", rename_all = "kebab-case", deny_unknown_fields)]
 pub enum Request {
     Status {},
     Offline {},
+    Compact { limit: u8 },
     Quarantine { state: String, digest: String },
     SnapshotStart { result: Value },
     Catalog { page: Value },
@@ -135,6 +142,67 @@ impl Vault {
         let mut writes = Vec::new();
         match request {
             Request::Status {} => return Ok(c["sync"].clone()),
+            Request::Compact { limit } => {
+                check(*limit >= 1 && *limit <= 16, "INVALID_REQUEST")?;
+                check(
+                    !c["sync"]["cursor"].is_null()
+                        && c["sync"]["stage"].is_null()
+                        && c["sync"]["pending"].is_null(),
+                    "SYNC_GAP",
+                )?;
+                let mut keep = BTreeSet::new();
+                for p in values(&c["sync"], "projection")? {
+                    for h in values(&p["reference"], "heads")? {
+                        keep.insert(text(&h["revision_id"])?.to_owned());
+                    }
+                }
+                for d in values(c, "drafts")? {
+                    let data =
+                        Sensitive(self.note_read(i, state, c, text(&d["record_id"])?, "draft")?);
+                    for p in values(&data.0["context"], "parents")? {
+                        keep.insert(text(&p["revision_id"])?.to_owned());
+                    }
+                }
+                for a in values(c, "attempts")? {
+                    let data = self.note_read(i, state, c, text(&a["record_id"])?, "outbox")?;
+                    if data["state"] != "COMMITTED" {
+                        for p in
+                            values(&data["bundle"]["envelope"]["header"]["context"], "parents")?
+                        {
+                            keep.insert(text(&p["revision_id"])?.to_owned());
+                        }
+                    }
+                }
+                for w in values(c, "witnesses")? {
+                    if (!c["sync"]["scope"]["group_id"].is_null()
+                        && w["group_id"] != c["sync"]["scope"]["group_id"])
+                        || keep.contains(text(&w["revision_id"])?)
+                    {
+                        continue;
+                    }
+                    let data = self.note_read(i, state, c, text(&w["cache_id"])?, "cache")?;
+                    if data["purpose"] == "p11-header-evidence" {
+                        continue;
+                    }
+                    let b = self.codec.decode(
+                        "p02-v1",
+                        "bundle",
+                        &un64(text(&data["record_bytes"])?)?,
+                    )?;
+                    check(
+                        digest("p02-v1", "envelope", &b["envelope"])? == w["envelope_digest"],
+                        "INTEGRITY_FAILURE",
+                    )?;
+                    writes.push(Write{id:text(&w["cache_id"])?.into(),kind:"cache".into(),data:json!({"purpose":"p11-header-evidence","version":1,"envelope":b["envelope"]})});
+                    if writes.len() == *limit as usize {
+                        break;
+                    }
+                }
+                self.note_commit(i, cap, state, fence, c, &writes, None)?;
+                return Ok(
+                    json!({"compacted":writes.len(),"scope":"superseded-ciphertext-only","signed_headers_retained":true,"drafts_retained":true}),
+                );
+            }
             Request::Quarantine { state, digest } => {
                 check(
                     ["QUARANTINED", "RESTORE_QUARANTINE"].contains(&state.as_str())

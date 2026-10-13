@@ -261,6 +261,69 @@ fn staged_sync_cursor_is_atomic_and_restore_regression_keeps_drafts() {
             .len(),
         1
     );
+    let run = |request: Value| {
+        reopened
+            .notes_command(&c, serde_json::from_value(request).unwrap())
+            .unwrap()
+    };
+    let mut update = edit(&g, "PUBLIC native current after sync");
+    update["object_id"] = x["object_id"].clone();
+    update["action"] = json!("update");
+    update["parents"] = json!([{"revision_id":x["revision_id"],"envelope_digest":ed}]);
+    let saved = run(json!({"action":"save","edit":update}));
+    let queued = run(json!({"action":"queue","draft_id":saved["draft_id"]}));
+    let sent2 = run(json!({"action":"send","attempt_id":queued["attempt_id"]}));
+    let b2 = &sent2["request"]["bundle"];
+    let c2 = &b2["envelope"]["header"]["context"];
+    let ed2 = digest("p02-v1", "envelope", &b2["envelope"]);
+    run(
+        json!({"action":"ack","attempt_id":queued["attempt_id"],"result":receipt(&sent2["request"])}),
+    );
+    let next = json!({"generation":cursor["generation"],"sequence":"4"});
+    run(
+        json!({"action":"sync","request":{"action":"delta-start","page":{"version":1,"scope":scope,"from_cursor":cursor,"next_cursor":next,"watermark":next,"scanned_count":"1","complete":true,"events":[{"event_id":id(),"sequence":"4","group_id":g["group_id"],"object_id":x["object_id"],"revision_id":c2["revision_id"],"digest":ed2,"kind":"object-commit"}]}}}),
+    );
+    run(
+        json!({"action":"sync","request":{"action":"delta-item","result":{"version":1,"item":{"group_id":g["group_id"],"object_kind":"thread","object_id":x["object_id"],"revision_id":c2["revision_id"],"envelope_digest":ed2,"payload_status":"retained"},"bundle":b2,"reference":{"object_id":x["object_id"],"object_kind":"thread","thread_id":null,"archived":false,"tombstoned":false,"created_sequence":"3","updated_sequence":"4","heads":[{"revision_id":c2["revision_id"],"envelope_digest":ed2}]}}}}),
+    );
+    run(json!({"action":"sync","request":{"action":"delta-finish"}}));
+    let connection = rusqlite::Connection::open(reopened.path()).unwrap();
+    connection.execute_batch("CREATE TRIGGER p11_compact_fault BEFORE INSERT ON records BEGIN SELECT RAISE(ABORT,'PUBLIC_SYNTHETIC_COMPACT_FAULT'); END;").unwrap();
+    let compact: NotesRequest =
+        serde_json::from_value(json!({"action":"sync","request":{"action":"compact","limit":1}}))
+            .unwrap();
+    assert!(reopened.notes_command(&c, compact).is_err());
+    connection
+        .execute_batch("DROP TRIGGER p11_compact_fault")
+        .unwrap();
+    assert_eq!(
+        run(json!({"action":"sync","request":{"action":"compact","limit":1}}))["compacted"],
+        1
+    );
+    let cached: NotesRequest =
+        serde_json::from_value(json!({"action":"cached","revision_id":x["revision_id"]})).unwrap();
+    assert_eq!(
+        reopened.notes_command(&c, cached).unwrap_err().0,
+        "PAYLOAD_UNAVAILABLE"
+    );
+    assert_eq!(
+        run(json!({"action":"cached","revision_id":c2["revision_id"]}))["payload"]["title"],
+        "PUBLIC native current after sync"
+    );
+    assert_eq!(
+        run(json!({"action":"summary"}))["drafts"]
+            .as_array()
+            .unwrap()
+            .len(),
+        1
+    );
+    run(
+        json!({"action":"open","request":{"group_id":g["group_id"],"object_kind":"thread","object_id":x["object_id"],"thread_id":null,"revision_id":x["revision_id"],"bundle":bundle}}),
+    );
+    assert_eq!(
+        run(json!({"action":"sync","request":{"action":"status"}}))["cursor"],
+        next
+    );
     let mut old = result.clone();
     old["descriptor"]["watermark"]["sequence"] = json!("2");
     let start: NotesRequest = serde_json::from_value(
@@ -269,7 +332,7 @@ fn staged_sync_cursor_is_atomic_and_restore_regression_keeps_drafts() {
     .unwrap();
     let blocked = reopened.notes_command(&c, start).unwrap();
     assert_eq!(blocked["state"], "RESTORE_QUARANTINE");
-    assert_eq!(blocked["cursor"], cursor);
+    assert_eq!(blocked["cursor"], next);
     reopened.lock_all().unwrap();
 }
 #[test]

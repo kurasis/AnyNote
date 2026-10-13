@@ -13,3 +13,6 @@ Object.assign(words.ru,{reader_read_only:'Сохранено на устройс
 
 Object.assign(words.en,{sync_now:'Sync now',sync_attention:'Synchronization paused. Your local work is preserved.',restore_quarantine:'The service appears to have rolled back. Synchronization is blocked; your local work is preserved.'});
 Object.assign(words.ru,{sync_now:'Синхронизировать',sync_attention:'Синхронизация приостановлена. Локальные изменения сохранены.',restore_quarantine:'Обнаружен откат сервера. Синхронизация заблокирована; локальные изменения сохранены.'});
+
+Object.assign(words.en,{compact_cache:'Free older cached bodies',cache_compacted:'Older downloaded bodies freed. Signed history, current heads and drafts are preserved. Earlier bodies can be downloaded again.',cache_current:'No eligible older bodies in this batch.'});
+Object.assign(words.ru,{compact_cache:'Освободить старый кэш',cache_compacted:'Старые загруженные тела освобождены. Подписанная история, текущие версии и черновики сохранены. Предыдущие тела можно загрузить снова.',cache_current:'В этой порции нет старых тел для освобождения.'});

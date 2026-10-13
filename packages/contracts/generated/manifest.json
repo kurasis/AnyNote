@@ -160,7 +160,7 @@
     },
     {
       "path": "packages/contracts/p11-sync.schema.json",
-      "sha256": "72e6dd1ee1b1a8582b6b4edd8f5e725ffce69c66451e89d96fb55db210677d2c"
+      "sha256": "e2762fe455637bac3e5046b8fb873749ad3ea1cfc46caf018d944e49538d9441"
     },
     {
       "path": "apps/api/bootstrap/app.php",
@@ -384,29 +384,29 @@
     },
     {
       "path": "packages/protocol/sync/paged-local.mjs",
-      "sha256": "4e116d9ac7262a54f112686c85fc43e5b9b6637019718f6b94f6a178a7918217"
+      "sha256": "d9f3525cfc12c38546ab553cf63709ac6d1403839578d72282619d0168303831"
     },
     {
       "path": "packages/protocol/sync/client.mjs",
-      "sha256": "a854c11ecabca05c10ca70ab47fd9819d1f0fc63aacdcedd38bc95e48ca8b4ce"
+      "sha256": "b7cb4bd3f8352e117576980830cf37f35c78f23c67cad99a1a4bad4ab3761e0b"
     }
   ],
   "outputs": [
     {
       "path": "packages/contracts/generated/openapi.json",
-      "sha256": "cb3d16c5b6be5311fe3bb27d9929ec912b795f39432fce055d4a81a713da3d0f"
+      "sha256": "bf21cd514a168f8c86c73912eaddb2747cdaef0e9286e48cdf22e0f37ad1105a"
     },
     {
       "path": "packages/contracts/generated/protocol.d.ts",
-      "sha256": "4b48999703ea0c57270a629b8bceb9615f89e7331927f036bd08491b31201f8c"
+      "sha256": "2c98dbc03a43d95bdeb7e83c600e2c95cd9dd13511a537807f0980f934de8bbb"
     },
     {
       "path": "packages/contracts/generated/runtime-schemas.json",
-      "sha256": "5e016c885b72d9d09cb69c04b185d5d708bbdf79ee931bc2a7322101d3bf0db7"
+      "sha256": "23818dcb0fc16da3c711eb5eab0fcf794440ab6e5de65e5a12e63a6b7cbbe183"
     },
     {
       "path": "apps/api/app/Generated/Dtos.php",
-      "sha256": "d4695aabb4d808667ac5c1f094734e5d579ea1e2ce300b04297bc41d4ebee30f"
+      "sha256": "1dc932690f0deee906a11928202eb2ce552e565d326f9fd37588aaa8c4c9b9bd"
     },
     {
       "path": "apps/api/app/Generated/catalogue.json",
@@ -414,9 +414,9 @@
     },
     {
       "path": "apps/api/app/Generated/schemas.json",
-      "sha256": "5e016c885b72d9d09cb69c04b185d5d708bbdf79ee931bc2a7322101d3bf0db7"
+      "sha256": "23818dcb0fc16da3c711eb5eab0fcf794440ab6e5de65e5a12e63a6b7cbbe183"
     }
   ],
-  "structures": 288,
+  "structures": 289,
   "operations": 97
 }

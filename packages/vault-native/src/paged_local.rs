@@ -24,6 +24,7 @@ fn context(scope: &Scope, pins: &Value, id: &str, kind: &str) -> Result<Value> {
                 "group-evidence",
                 "sync-control",
                 "content-part",
+                "cache",
             ]
             .contains(&kind),
         "INVALID_LOCAL_FRAME",

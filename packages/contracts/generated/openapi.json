@@ -15045,7 +15045,8 @@
             "enum": [
               "note-control",
               "group-evidence",
-              "sync-control"
+              "sync-control",
+              "cache"
             ]
           },
           "parts": {
@@ -15122,7 +15123,8 @@
               "note-control",
               "group-evidence",
               "sync-control",
-              "content-part"
+              "content-part",
+              "cache"
             ]
           },
           "root_fingerprint": {
@@ -15180,6 +15182,26 @@
           "context",
           "nonce",
           "ciphertext"
+        ],
+        "additionalProperties": false
+      },
+      "P11SyncHeaderEvidence": {
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "const": "p11-header-evidence"
+          },
+          "version": {
+            "const": 1
+          },
+          "envelope": {
+            "$ref": "#/components/schemas/P02V1Envelope"
+          }
+        },
+        "required": [
+          "purpose",
+          "version",
+          "envelope"
         ],
         "additionalProperties": false
       },

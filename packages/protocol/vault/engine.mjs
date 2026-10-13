@@ -1,5 +1,6 @@
+import {syncValue} from '../sync/codec.mjs';
 import {canonicalBytes} from '../adapters/core.mjs';
-import {pagedFrame,preparePaged,readPaged,openManifest,sealManifest,rotatePagedFrame} from '../sync/paged-local.mjs';
+import {pagedFrame,publicPartIds,preparePaged,readPaged,openManifest,sealManifest,rotatePagedFrame} from '../sync/paged-local.mjs';
 import {bootstrapControl} from '../devices/bootstrap.mjs';
 import {NotesWorkflow} from '../notes/workflow.mjs';
 import {noteControlId,sealNoteLocal,openNoteLocal,noteFrameHash} from '../notes/local.mjs';
@@ -117,14 +118,14 @@ export class VaultEngine {
   }
   async #storePaged(tx,pins,id,kind,data,old){
     const prior=old?.contract==='p11-local-v1'?openManifest(old,this.scope,pins,id,kind,this.#key):null,prepared=preparePaged(this.scope,pins,id,kind,data,this.#key);
-    for(const row of prepared.records){ensure(!await tx.read(row.id),'RESERVED_RECORD');await tx.put(row);}
+    try{for(const row of prepared.records){ensure(!await tx.read(row.id),'RESERVED_RECORD');await tx.put(row);}
     if(prior)for(const part of prior.parts)await tx.remove(part.record_id);
-    return prepared.frame;
+    return prepared.frame;}finally{if(prior?.private)prior.private.pending_key.group_secret='';}
   }
   async #criticalPart(tx,id){
     const s=metadata(await tx.get(),this.scope),root=await tx.read(noteControlId(this.scope));
     if(root?.frame.contract==='p11-local-v1'&&openManifest(root.frame,this.scope,s.pins,noteControlId(this.scope),'note-control',this.#key).parts.some(p=>p.record_id===id))return true;
-    const control=await this.#noteControl(tx);for(const ref of control?.groups??[]){const row=await tx.read(ref.record_id);if(row?.frame.contract==='p11-local-v1'&&openManifest(row.frame,this.scope,s.pins,ref.record_id,'group-evidence',this.#key).parts.some(p=>p.record_id===id))return true;}
+    const control=await this.#noteControl(tx);for(const ref of [...(control?.groups??[]),...[...this.#noteIds(control??{groups:[],drafts:[],attempts:[],witnesses:[]})].filter(([,kind])=>kind==='cache').map(([record_id])=>({record_id}))]){const row=await tx.read(ref.record_id);if(row?.frame.contract==='p11-local-v1'&&publicPartIds(row.frame,this.scope,s.pins,ref.record_id,row.frame.context.record_kind,this.#key).includes(id))return true;}
     return false;
   }
   async #noteControl(tx){
@@ -137,6 +138,7 @@ export class VaultEngine {
   }
   async #noteRead(cap,id,kind){
     return this.store.transaction(false,async tx=>{const s=await this.#state(tx,cap),control=await this.#noteControl(tx);ensure(control&&this.#noteIds(control).get(id)===kind,'RESERVED_RECORD');const row=await tx.read(id);ensure(row,'RECORD_NOT_FOUND');const f=record(this.scope,row.frame);ensure(f.context.record_id===id&&f.context.record_kind===kind,'LOCAL_CONTEXT_MISMATCH');
+      if(kind==='cache'&&f.contract==='p11-local-v1')return syncValue('header-evidence',await readPaged(f,this.scope,s.pins,id,kind,this.#key,p=>tx.read(p)));
       return kind==='group-evidence'?(f.contract==='p11-local-v1'?noteValue('local-evidence',await readPaged(f,this.scope,s.pins,id,kind,this.#key,p=>tx.read(p))):openNoteLocal(f,this.scope,s.pins,id,kind,this.#key)):this.#load(f,this.#key).data;
     });
   }
@@ -151,8 +153,9 @@ export class VaultEngine {
       for(const v of values){
         ensure(ids.get(v.id)===v.kind,'RESERVED_RECORD');const oldRow=await tx.read(v.id);ensure(!oldRow||oldIds.get(v.id)===v.kind,'RESERVED_RECORD');
         if(v.kind==='outbox'&&oldRow){const p=this.#load(oldRow.frame,this.#key);try{ensure(p.data.attempt_id===v.data.attempt_id&&p.data.revision_id===v.data.revision_id&&p.data.attempt_digest===v.data.attempt_digest&&digest('bundle',wire(p.data.bundle))===digest('bundle',wire(v.data.bundle)),'IMMUTABLE_ATTEMPT');const transitions={QUEUED:['QUEUED','SENT_UNKNOWN','CONFLICT','REKEY_REQUIRED','ACCESS_LOST'],SENT_UNKNOWN:['SENT_UNKNOWN','COMMITTED','CONFLICT','REKEY_REQUIRED','ACCESS_LOST'],CONFLICT:['CONFLICT'],REKEY_REQUIRED:['REKEY_REQUIRED'],ACCESS_LOST:['ACCESS_LOST'],COMMITTED:['COMMITTED']};ensure(transitions[p.data.state].includes(v.data.state),'INVALID_OUTBOX_TRANSITION');}finally{wipe(p);}}
-        let frame;if(v.kind==='group-evidence'){noteValue('local-evidence',v.data);frame=await this.#storePaged(tx,s.pins,v.id,v.kind,v.data,oldRow?.frame);}
-        else{decode(v.kind,bounded(v.data));frame=decode('local-envelope',sealLocal(wire({...common('local-record-plaintext'),context:this.context(v.kind,v.id),data:v.data}),this.#key));}
+        let frame;if(v.kind==='cache'&&v.data.purpose==='p11-header-evidence'){syncValue('header-evidence',v.data);frame=await this.#storePaged(tx,s.pins,v.id,v.kind,v.data,oldRow?.frame);}
+        else if(v.kind==='group-evidence'){noteValue('local-evidence',v.data);frame=await this.#storePaged(tx,s.pins,v.id,v.kind,v.data,oldRow?.frame);}
+        else{if(oldRow?.frame.contract==='p11-local-v1'){const prior=openManifest(oldRow.frame,this.scope,s.pins,v.id,v.kind,this.#key);for(const part of prior.parts)await tx.remove(part.record_id);}decode(v.kind,bounded(v.data));frame=decode('local-envelope',sealLocal(wire({...common('local-record-plaintext'),context:this.context(v.kind,v.id),data:v.data}),this.#key));}
         await tx.put({id:v.id,frame});
       }
       if(extra.addKeys){const row=await tx.read(s.vault_id),p=this.#load(row.frame,this.#key);try{for(const value of extra.addKeys){const old=p.data.group_keys.find(k=>k.group_id===value.group_id&&k.key_epoch===value.key_epoch);ensure(!old||(old.epoch_digest===value.epoch_digest&&old.group_secret===value.group_secret),'INTEGRITY_FAILURE');if(!old)p.data.group_keys.push(structuredClone(value));}p.data.group_keys.sort((a,b)=>{const x=a.group_id+'/'+a.key_epoch.padStart(19,'0'),y=b.group_id+'/'+b.key_epoch.padStart(19,'0');return x<y?-1:x>y?1:0;});decode('vault-secrets',bounded(p.data));row.frame=decode('local-envelope',sealLocal(wire(p),this.#key));await tx.put(row);}finally{wipe(p);}}

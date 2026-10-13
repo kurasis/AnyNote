@@ -268,6 +268,11 @@ impl Vault {
         for g in values(&roots, "groups")? {
             checks.push((text(&g["record_id"])?.to_owned(), "group-evidence"));
         }
+        for (id, kind) in protected_ids(&roots)? {
+            if kind == "cache" {
+                checks.push((id, "cache"));
+            }
+        }
         for (root, kind) in checks {
             let exists: i64 = db(conn.query_row(
                 "SELECT count(*) FROM records WHERE id=?1",
@@ -313,7 +318,19 @@ impl Vault {
             check(old == &hash(&bytes), "ROLLBACK_QUARANTINE")?;
         }
         let key = &i.secrets.as_ref().ok_or(Error("VAULT_LOCKED"))?.key;
-        let out = if kind == "group-evidence" {
+        let out = if kind == "cache" && f["contract"] == "p11-local-v1" {
+            let v = paged_local::open(
+                &self.codec,
+                &i.conn,
+                &self.scope,
+                &s.pins,
+                (id, kind),
+                &f,
+                key,
+            )?;
+            self.codec.validate("p11-sync", "header-evidence", &v)?;
+            v
+        } else if kind == "group-evidence" {
             if f["contract"] == "p11-local-v1" {
                 paged_local::open(
                     &self.codec,
@@ -550,32 +567,39 @@ impl Vault {
                     result?;
                 }
             }
-            let f = if w.kind == "group-evidence" {
-                self.codec
-                    .validate("p09-notes", "local-evidence", &w.data)?;
-                let prior: Option<Vec<u8>> = db(i
-                    .conn
-                    .query_row("SELECT frame FROM records WHERE id=?1", [&w.id], |r| {
-                        r.get(0)
-                    })
-                    .optional())?;
-                if let Some(bytes) = prior {
-                    let f = strict(&bytes, 8_388_608)?;
-                    if f["contract"] == "p11-local-v1" {
-                        let mut m = paged_local::manifest(
-                            &self.codec,
-                            &self.scope,
-                            &before.pins,
-                            &w.id,
-                            &w.kind,
-                            &f,
-                            &key,
-                        )?;
-                        for p in m["parts"].as_array().ok_or(Error("INTEGRITY_FAILURE"))? {
-                            remove_parts.push(text(&p["record_id"])?.to_owned());
-                        }
-                        wipe_value(&mut m);
+            let prior: Option<Vec<u8>> = db(i
+                .conn
+                .query_row("SELECT frame FROM records WHERE id=?1", [&w.id], |r| {
+                    r.get(0)
+                })
+                .optional())?;
+            if let Some(bytes) = prior {
+                let f = strict(&bytes, 8_388_608)?;
+                if f["contract"] == "p11-local-v1" {
+                    let mut m = paged_local::manifest(
+                        &self.codec,
+                        &self.scope,
+                        &before.pins,
+                        &w.id,
+                        &w.kind,
+                        &f,
+                        &key,
+                    )?;
+                    for p in m["parts"].as_array().ok_or(Error("INTEGRITY_FAILURE"))? {
+                        remove_parts.push(text(&p["record_id"])?.to_owned());
                     }
+                    wipe_value(&mut m);
+                }
+            }
+            let f = if w.kind == "group-evidence"
+                || (w.kind == "cache" && w.data["purpose"] == "p11-header-evidence")
+            {
+                if w.kind == "cache" {
+                    self.codec
+                        .validate("p11-sync", "header-evidence", &w.data)?;
+                } else {
+                    self.codec
+                        .validate("p09-notes", "local-evidence", &w.data)?;
                 }
                 let (f, parts) = paged_local::prepare(
                     &self.codec,
@@ -753,12 +777,17 @@ impl Vault {
             .filter(|w| w["group_id"] == group)
         {
             let cache = self.note_read(i, s, c, text(&w["cache_id"])?, "cache")?;
-            let bundle =
+            let envelope = if cache["purpose"] == "p11-header-evidence" {
+                self.codec.validate("p11-sync", "header-evidence", &cache)?;
+                cache["envelope"].clone()
+            } else {
                 self.codec
-                    .decode("p02-v1", "bundle", &un64(text(&cache["record_bytes"])?)?)?;
-            let ctx = &bundle["envelope"]["header"]["context"];
+                    .decode("p02-v1", "bundle", &un64(text(&cache["record_bytes"])?)?)?["envelope"]
+                    .clone()
+            };
+            let ctx = &envelope["header"]["context"];
             check(
-                digest("p02-v1", "envelope", &bundle["envelope"])? == w["envelope_digest"],
+                digest("p02-v1", "envelope", &envelope)? == w["envelope_digest"],
                 "INTEGRITY_FAILURE",
             )?;
             out.push(json!({"object_kind":ctx["object_kind"],"object_id":ctx["object_id"],"revision_id":ctx["revision_id"],"envelope_digest":w["envelope_digest"],"parents":ctx["parents"],"payload_status":"retained"}));
@@ -1605,6 +1634,10 @@ impl Vault {
                 check(valid_id(revision_id), "INVALID_REQUEST")?;
                 let w = find(&c, "witnesses", "revision_id", revision_id)?;
                 let cache = self.note_read(&mut i, &s, &c, text(&w["cache_id"])?, "cache")?;
+                check(
+                    cache["purpose"] != "p11-header-evidence",
+                    "PAYLOAD_UNAVAILABLE",
+                )?;
                 let b =
                     self.codec
                         .decode("p02-v1", "bundle", &un64(text(&cache["record_bytes"])?)?)?;

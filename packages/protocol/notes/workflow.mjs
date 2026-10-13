@@ -152,11 +152,11 @@ export class NotesWorkflow {
    const cached=this.#cache(b);await this.#commit({records:[cached]});return {payload,envelope_digest:ed};
   }
   if(op==='cached'){
-   ensure(args.length===1&&id(args[0]),'INVALID_REQUEST');const w=this.#state.witnesses.find(w=>w.revision_id===args[0]);ensure(w,'RECORD_NOT_FOUND');const cache=decode('cache',wire(await this.read(w.cache_id,'cache'))),b=decode('bundle',un64(cache.record_bytes));ensure(digest('envelope',wire(b.envelope))===w.envelope_digest,'INTEGRITY_FAILURE');return this.command('open',[{group_id:w.group_id,object_id:w.object_id,revision_id:w.revision_id,object_kind:b.envelope.header.context.object_kind,thread_id:b.envelope.header.context.thread_id,bundle:b}]);
+   ensure(args.length===1&&id(args[0]),'INVALID_REQUEST');const w=this.#state.witnesses.find(w=>w.revision_id===args[0]);ensure(w,'RECORD_NOT_FOUND');const data=await this.read(w.cache_id,'cache');ensure(data.purpose!=='p11-header-evidence','PAYLOAD_UNAVAILABLE');const cache=decode('cache',wire(data)),b=decode('bundle',un64(cache.record_bytes));ensure(digest('envelope',wire(b.envelope))===w.envelope_digest,'INTEGRITY_FAILURE');return this.command('open',[{group_id:w.group_id,object_id:w.object_id,revision_id:w.revision_id,object_kind:b.envelope.header.context.object_kind,thread_id:b.envelope.header.context.thread_id,bundle:b}]);
   }
   ensure(false,'INVALID_NOTE_COMMAND');
  }
- async #historyRecords(group){const out=[];for(const w of this.#state.witnesses.filter(w=>w.group_id===group)){const c=decode('cache',wire(await this.read(w.cache_id,'cache'))),bundle=decode('bundle',un64(c.record_bytes)),b=bundle.envelope.header.context;ensure(digest('envelope',wire(bundle.envelope))===w.envelope_digest,'INTEGRITY_FAILURE');out.push({object_kind:b.object_kind,object_id:b.object_id,revision_id:b.revision_id,envelope_digest:w.envelope_digest,parents:b.parents,payload_status:'retained'});}return out.sort((a,b)=>a.revision_id<b.revision_id?-1:1);}
+ async #historyRecords(group){const out=[];for(const w of this.#state.witnesses.filter(w=>w.group_id===group)){const data=await this.read(w.cache_id,'cache'),envelope=data.purpose==='p11-header-evidence'?syncValue('header-evidence',data).envelope:decode('bundle',un64(decode('cache',wire(data)).record_bytes)).envelope,b=envelope.header.context;ensure(digest('envelope',wire(envelope))===w.envelope_digest,'INTEGRITY_FAILURE');out.push({object_kind:b.object_kind,object_id:b.object_id,revision_id:b.revision_id,envelope_digest:w.envelope_digest,parents:b.parents,payload_status:'retained'});}return out.sort((a,b)=>a.revision_id<b.revision_id?-1:1);}
  async #syncVerify(item,bundle,reference,previous=[]){
   checkedBundle(item,bundle);noteValue('object-ref',reference);const c=bundle.envelope.header.context;
   ensure(reference.object_id===item.object_id&&reference.object_kind===item.object_kind&&reference.thread_id===c.thread_id,'CONTEXT_MISMATCH');
@@ -177,6 +177,14 @@ export class NotesWorkflow {
   if(op==='status')return output();
   if(op==='offline'){ensure(Object.keys(x).length===0,'INVALID_REQUEST');if(!['QUARANTINED','RESTORE_QUARANTINE'].includes(s.state))s.state='OFFLINE';await this.#commit();return output();}
   if(op==='quarantine'){ensure(typeof x.digest==='string'&&['QUARANTINED','RESTORE_QUARANTINE'].includes(x.state),'INVALID_REQUEST');s.state=x.state;s.quarantine=x.digest;await this.#commit();return output();}
+  if(op==='compact'){
+   ensure(Object.keys(x).length===1&&Number.isSafeInteger(x.limit)&&x.limit>=1&&x.limit<=16,'INVALID_REQUEST');ensure(s.cursor&&!s.stage&&!s.pending,'SYNC_GAP');
+   const keep=new Set(s.projection.flatMap(p=>p.reference.heads.map(h=>h.revision_id)));
+   for(const d of this.#state.drafts){const data=(await this.#draft(d.draft_id)).data;for(const p of data.context.parents)keep.add(p.revision_id);}
+   for(const a of this.#state.attempts){const data=(await this.#attempt(a.attempt_id)).data;if(data.state!=='COMMITTED')for(const p of data.bundle.envelope.header.context.parents)keep.add(p.revision_id);}
+   const records=[];for(const w of this.#state.witnesses){if(s.scope.group_id!==null&&w.group_id!==s.scope.group_id)continue;if(keep.has(w.revision_id))continue;const data=await this.read(w.cache_id,'cache');if(data.purpose==='p11-header-evidence')continue;const b=decode('bundle',un64(decode('cache',wire(data)).record_bytes));ensure(digest('envelope',wire(b.envelope))===w.envelope_digest,'INTEGRITY_FAILURE');records.push({id:w.cache_id,kind:'cache',data:syncValue('header-evidence',{purpose:'p11-header-evidence',version:1,envelope:b.envelope})});if(records.length===x.limit)break;}
+   if(records.length)await this.#commit({records});return {compacted:records.length,scope:'superseded-ciphertext-only',signed_headers_retained:true,drafts_retained:true};
+  }
   if(op==='snapshotStart'){
    const r=checkedSnapshot(x,this.pins,this.scope.device_id,x.scope.group_id);ensure(!s.pending,'PUBLICATION_PENDING');
    ensure(!s.cursor||same(s.scope,r.scope),'LOCAL_CONTEXT_MISMATCH');

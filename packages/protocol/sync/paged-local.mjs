@@ -12,6 +12,7 @@ export function openManifest(frame,scope,pins,id,kind,key){
  const f=pagedFrame(frame),c=context(scope,pins,id,kind);ensure(same(f.context,c),'LOCAL_CONTEXT_MISMATCH');const plain=decrypt(un64(f.ciphertext),aad(c),un64(f.nonce),key);
  try{const m=syncValue('manifest',strictJson(plain,65536));ensure(m.kind===kind&&(kind==='group-evidence'||m.private===null)&&BigInt(m.bytes)>0n&&BigInt(m.bytes)<=33554432n&&new Set(m.parts.map(p=>p.record_id)).size===m.parts.length,'INTEGRITY_FAILURE');return m;}finally{sodium.memzero(plain);}
 }
+export function publicPartIds(frame,scope,pins,id,kind,key){const m=openManifest(frame,scope,pins,id,kind,key);try{return m.parts.map(p=>p.record_id);}finally{if(m.private)m.private.pending_key.group_secret='';}}
 export function sealManifest(scope,pins,id,kind,manifest,key){
  syncValue('manifest',manifest);const c=context(scope,pins,id,kind),plain=canonicalBytes(wire(manifest)),nonce=sodium.randombytes_buf(24);
  try{ensure(plain.length<=65536,'RESOURCE_LIMIT');return pagedFrame({contract:'p11-local-v1',protocol:'anynote',protocol_version:1,purpose:'paged-content-local',context:c,nonce:b64(nonce),ciphertext:b64(encrypt(plain,aad(c),nonce,key))});}finally{sodium.memzero(plain);}

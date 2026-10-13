@@ -32,6 +32,11 @@ survives restart, while missing pages, unverified content and storage abort prev
 advancement. A lower cursor or changed transport generation enters persistent
 `RESTORE_QUARANTINE`; a newer unsigned server response cannot clear it.
 
+Bounded cache compaction retains every signed header and witnessed ancestry. It
+protects current heads and pending draft/outbox bases, works under the same atomic
+lease fence, and permits exact historical payload download later. SQL/transaction
+abort preserves the previous payload. It does not purge server content.
+
 The notes UI has English/Russian sync controls and visible/online polling with five
 second base interval, bounded jitter, fifteen-to-sixty-second failure backoff and
 immediate reconnect/resume scheduling. Cooperative removal hides accessible views
@@ -39,11 +44,11 @@ after saving the dirty editor locally. Security hints request fresh signed autho
 and a consistent snapshot; they never authorize a local mutation by themselves.
 No continuous iOS background service is promised.
 
-Current local verification: four maintained-crypto portable suites, seven actual
+Current local verification: six maintained-crypto portable suites, seven actual
 native SQLite note suites including staged snapshot restart/rollback, unchanged five
 P10 portable suites, strict native Clippy and the strict-CSP static build passed.
-The small actual HTTPS/SQL staged snapshot smoke passed. The broader HTTP suite and
-all hosted gates still require completed execution at the final exact source.
+The small actual HTTPS/SQL staged snapshot smoke passed. The broader actual TLS/SQL suite passed 104 checks in development; all hosted
+gates still require completed execution at the final exact source.
 Cloud Chromium cannot start its required sandbox; hosted browser acceptance is
 mandatory and is not replaced by disabling it.
 

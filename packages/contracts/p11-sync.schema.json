@@ -447,7 +447,8 @@
           "enum": [
             "note-control",
             "group-evidence",
-            "sync-control"
+            "sync-control",
+            "cache"
           ]
         },
         "parts": {
@@ -524,7 +525,8 @@
             "note-control",
             "group-evidence",
             "sync-control",
-            "content-part"
+            "content-part",
+            "cache"
           ]
         },
         "root_fingerprint": {
@@ -582,6 +584,26 @@
         "context",
         "nonce",
         "ciphertext"
+      ],
+      "additionalProperties": false
+    },
+    "header-evidence": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "const": "p11-header-evidence"
+        },
+        "version": {
+          "const": 1
+        },
+        "envelope": {
+          "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/envelope"
+        }
+      },
+      "required": [
+        "purpose",
+        "version",
+        "envelope"
       ],
       "additionalProperties": false
     },

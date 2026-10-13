@@ -1537,3 +1537,18 @@ The cloud browser failed to start its required Chromium sandbox. No sandbox/TLS/
 CSP checks were disabled. The broader HTTP suite and final exact-source hosted
 acceptance remain pending; local development receipts have a dirty source flag
 and cannot establish final phase acceptance. See P11_SYNC.md and NEXT_TASK.md.
+
+P11 follow-up: the actual HTTPS/SQL transport suite passed 104 checks locally,
+including three separate authenticated accounts, immutable snapshot/write overlap,
+hidden ranges, malformed query rejection, exact retry, expiry/cancel, acknowledgement
+and materialization rollback. Six portable suites now include bounded header-only
+cache compaction and host-bound browser timer/backoff behavior. Seven native SQLite
+note suites passed with compaction/delta/re-download and SQL fault rollback added
+to the synchronization suite. Strict Clippy and the CSP build passed.
+
+First hosted runs found an obsolete P03 phase/operation assertion and a browser
+Window timer receiver error. These are fixed, not bypassed. Native Windows/MSVC
+P09/P10 jobs passed at the development head; this is still not final P11 acceptance.
+The diagnostic local source receipt produced while files changed during execution
+is discarded. Future P11 receipts compare the source head/tree/raw hashes and clean
+state before and after native execution. No invalid development receipt is archived.
