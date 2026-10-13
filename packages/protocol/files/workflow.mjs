@@ -31,8 +31,8 @@ export class FileWorkflow {
    const out=[];for(const w of (this.#control.witnesses??[]).filter(w=>w.group_id===x.group_id)){const data=await this.readRecord(w.record_id,'file-evidence'),e=data.envelope,c=e.header.context;check(envelopeDigest(wire(e))===w.envelope_digest,'INTEGRITY_FAILURE');out.push({object_kind:'file-manifest',object_id:c.file_id,revision_id:c.file_version_id,envelope_digest:w.envelope_digest,parents:c.parents,payload_status:'retained'});}return out;
   }
   if(op==='prepare'){
-   const s=source(x.source),auth=await this.authority(x.group_id,true),identityProof=await identity(s);let writer;
-   try{
+   const s=source(x.source),auth=await this.authority(x.group_id,true);let writer;
+   try{const identityProof=await identity(s);
     check(this.#control.transfers.length<512,'RESOURCE_LIMIT');
     const context={contract:'p02-file-c1',protocol:'anynote',protocol_version:1,service_id:this.scope.service_id,group_id:x.group_id,file_id:x.file_id??random(),file_version_id:random(),operation_id:random(),author:structuredClone(auth.author),policy:structuredClone(auth.policy),parents:x.parents??[],file_format:'xchacha20poly1305-chunks-c1',manifest_schema:1};
     writer=new FileWriter(wire(context),s.size);writer.bindSource(identityProof.digest);

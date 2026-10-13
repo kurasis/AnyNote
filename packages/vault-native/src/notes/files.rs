@@ -794,6 +794,21 @@ impl Vault {
         key_info["policy"] = c["policy"].clone();
         key_info["epoch_digest"] = c["policy"]["epoch_digest"].clone();
         let key = self.note_key(&i, &s, group, &key_info)?;
+        if info["policy"].is_object() {
+            let epoch = info["epochs"]
+                .as_array()
+                .ok_or(Error("KEYS_PENDING"))?
+                .iter()
+                .find(|e| e["key_epoch"] == c["policy"]["key_epoch"])
+                .ok_or(Error("KEYS_PENDING"))?;
+            check(
+                crate::device_groups::key_commitment(
+                    &json!({"service_id":self.scope.service_id,"group_id":group}),
+                    &key,
+                )? == epoch["key_commitment"],
+                "KEY_REPAIR_REQUIRED",
+            )?;
+        }
         let reader = FileReader::open(
             &self.codec,
             &canonical(record)?,

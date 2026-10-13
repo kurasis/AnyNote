@@ -3,7 +3,7 @@ import {safeFilename} from './client.mjs';
 import {ensure} from '../vault/store.mjs';
 export async function browserSink(name,size){
  ensure(Number.isSafeInteger(size)&&size>=0&&size<=1000000000,'RESOURCE_LIMIT');
- if(typeof showSaveFilePicker==='function'){
+ if(!navigator.serviceWorker?.controller&&typeof showSaveFilePicker==='function'){
   const handle=await showSaveFilePicker({suggestedName:safeFilename(name)}),writer=await handle.createWritable({keepExistingData:false});return {write:b=>writer.write(b),finish:()=>writer.close(),abort:()=>writer.abort()};
  }
  const worker=navigator.serviceWorker?.controller;ensure(worker,'STREAM_SINK_UNAVAILABLE');const channel=new MessageChannel();let pending,closed=false;

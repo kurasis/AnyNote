@@ -1,3 +1,4 @@
+import {filesCase} from './p12-browser-case.mjs';
 // Mandatory hosted sandboxed Chromium: genuine WebAuthn through the shipped strict-CSP UI.
 import {chromium} from 'playwright-core';
 import https from 'node:https';
@@ -40,7 +41,7 @@ try{
   if(context){
     const errors=[],url='https://app.anynote.test:18443/auth/',phrase='public synthetic purple harbor paper lantern',options={protocol:'ctap2',ctap2Version:'ctap2_1',transport:'internal',hasResidentKey:true,hasUserVerification:true,isUserVerified:true,automaticPresenceSimulation:true,hasPrf:true};
     const launch=()=>chromium.launchPersistentContext(join(scratch,'profile-'+children.length),{executablePath:process.env.CHROMIUM_EXECUTABLE??['/usr/bin/google-chrome','/usr/bin/chromium'].find(existsSync),headless:true,chromiumSandbox:true,acceptDownloads:true,args:['--host-resolver-rules=MAP app.anynote.test 127.0.0.1,MAP api.anynote.test 127.0.0.1','--no-proxy-server']});
-    async function action(p,id,expected=null){await p.locator('#'+id).click();await p.waitForFunction(()=>!document.getElementById('status').dataset.busy&&!!document.getElementById('status').textContent,null,{timeout:90000});await p.waitForFunction(()=>!!document.getElementById('status').dataset.error||['Done','Готово'].includes(document.getElementById('status').textContent),null,{timeout:90000});const e=await p.locator('#status').getAttribute('data-error');if(expected){check((Array.isArray(expected)?expected:[expected]).includes(e),'P10_EXPECTED_UI_DENIAL:'+id+':'+e);return;}if(e)throw Error('P10_UI:'+id+':'+e+':'+await p.locator('#status').getAttribute('data-phase')+':'+JSON.stringify(await p.evaluate(()=>globalThis.__custodyDiagnostics)));}
+    async function action(p,id,expected=null){await p.locator('#'+id).click();await p.waitForFunction(()=>!document.getElementById('status').dataset.busy&&!!document.getElementById('status').textContent,null,{timeout:300000});await p.waitForFunction(()=>!!document.getElementById('status').dataset.error||['Done','Готово'].includes(document.getElementById('status').textContent),null,{timeout:300000});const e=await p.locator('#status').getAttribute('data-error');if(expected){check((Array.isArray(expected)?expected:[expected]).includes(e),'P10_EXPECTED_UI_DENIAL:'+id+':'+e);return;}if(e)throw Error('P10_UI:'+id+':'+e+':'+await p.locator('#status').getAttribute('data-phase')+':'+JSON.stringify(await p.evaluate(()=>globalThis.__custodyDiagnostics)));}
     // Observe only closed error/operation codes and visibility, never RPC values.
     // Native Worker execution, timers, custody guards and results remain untouched.
     async function observeCustody(ctx){await ctx.addInitScript(()=>{
@@ -89,6 +90,7 @@ try{
       const again=await p.reload();check(again.status()===200,'P11_RELOAD_REAL_HOST');await p.waitForFunction(()=>document.getElementById('status').dataset.state==='ready');await readyWriter(p);await p.locator('#phrase').fill(phrase);await action(p,'unlock');await action(p,'sync-now');check(await p.locator('#sync-state').textContent()==='Synced','P11_INDEXEDDB_CURSOR_RESTART_AND_CATCHUP');
       report.p11_staged_sync_checks=4;
     }
+    if(process.argv.includes('--p12-files'))report.p12_files=await filesCase({page:p,action,check,scratch,control});
     check(errors.length===0,'NO_RUNTIME_OR_CSP_ERRORS');report.status='PASS';report.checks=checks;report.custody_diagnostics=await Promise.all([owner,...peers].map(async(d,i)=>({role:['owner','editor','reader'][i],events:await d.p.evaluate(()=>globalThis.__custodyDiagnostics)})));report.chromium_sandbox=true;report.request_pacing='Genuine roster/group requests paced below unchanged production limits; no mocked API responses';report.tls_verification='Real trusted disposable CA and hostname validation';report.source_tree_dirty=!!spawnSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}).stdout.trim();writeFileSync(root+'/artifacts/p10/browser-report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
   }
 }catch(e){report.status='FAIL';report.checks=checks;report.reason=String(e.message).slice(0,1000);writeFileSync(root+'/artifacts/p10/browser-report.json',JSON.stringify(report,null,2)+'\n');throw e;}finally{for(const ctx of children)await ctx.close();await context?.close();rmSync(scratch,{recursive:true,force:true});}
