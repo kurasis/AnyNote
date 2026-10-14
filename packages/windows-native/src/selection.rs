@@ -111,6 +111,7 @@ pub struct Destination {
     partial: PathBuf,
     file: Option<File>,
     complete: bool,
+    preserve: bool,
 }
 impl Destination {
     pub fn create(target: &Path) -> Result<Self> {
@@ -135,6 +136,7 @@ impl Destination {
             partial,
             file: Some(file),
             complete: false,
+            preserve: false,
         })
     }
     pub fn writer(&mut self) -> Result<&mut File> {
@@ -180,6 +182,10 @@ impl Destination {
     pub fn encrypted_path(&self) -> &Path {
         &self.partial
     }
+    /// Only call after authenticated ciphertext and its encrypted recovery journal are durable.
+    pub fn preserve_encrypted(&mut self) {
+        self.preserve = true;
+    }
 }
 impl Write for Destination {
     fn write(&mut self, b: &[u8]) -> std::io::Result<usize> {
@@ -198,7 +204,7 @@ impl Write for Destination {
 impl Drop for Destination {
     fn drop(&mut self) {
         self.file.take();
-        if !self.complete {
+        if !self.complete && !self.preserve {
             let _ = std::fs::remove_file(&self.partial);
         }
     }

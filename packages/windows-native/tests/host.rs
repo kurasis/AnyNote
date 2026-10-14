@@ -13,14 +13,17 @@ fn host(f: &Fixture) -> Host {
             scope: f.scope.clone(),
             service: Service {
                 issuer: "https://synthetic.example".into(),
-                app: "https://synthetic.example".into(),
+                app: "https://synthetic-app.example".into(),
                 pins: f.pins.clone(),
             },
             credential_id: id(),
         },
         f.vault.clone(),
-        anynote_auth_native::Adapter::new("https://synthetic.example", "https://synthetic.example")
-            .unwrap(),
+        anynote_auth_native::Adapter::new(
+            "https://synthetic.example",
+            "https://synthetic-app.example",
+        )
+        .unwrap(),
     )
 }
 fn binding() -> Binding {
@@ -202,7 +205,7 @@ fn recovered_file_parts_use_fresh_keys_protected_checkpoints_and_reject_differen
             .recovered_file_part(&cap, draft, 0, bytes)
             .unwrap_err()
             .0,
-        "STALE_CAPABILITY"
+        "VAULT_LOCKED"
     );
     for e in std::fs::read_dir(f.vault.path().parent().unwrap()).unwrap() {
         let e = e.unwrap();
@@ -212,4 +215,50 @@ fn recovered_file_parts_use_fresh_keys_protected_checkpoints_and_reject_differen
             assert!(!data.windows(13).any(|w| w == b"recovered.txt"));
         }
     }
+}
+
+#[test]
+fn native_private_portable_proof_and_selected_keys_match_authenticated_source() {
+    let f = Fixture::new();
+    let cap = f.vault.unlock_phrase(PHRASE).unwrap();
+    let g = group(&f, &cap);
+    let (_, queue, sent) = attempt(&f, &cap, &g);
+    command(
+        &f,
+        &cap,
+        json!({"action":"ack","attempt_id":queue["attempt_id"],"result":receipt(&sent["request"])}),
+    );
+    let record = &sent["request"]["bundle"];
+    let c = &record["envelope"]["header"]["context"];
+    let item = json!({"group_id":g["group_id"],"object_id":c["object_id"],"revision_id":c["revision_id"],"object_kind":c["object_kind"],"payload_status":"retained","envelope_digest":digest("p02-v1","envelope",&record["envelope"])});
+    let proof = f
+        .vault
+        .portable_public(&cap, &[g["group_id"].as_str().unwrap().into()])
+        .unwrap();
+    assert_eq!(proof["pins"].as_array().unwrap().len(), 1);
+    assert!(proof["pins"][0]["history"].is_object());
+    assert_eq!(proof["document"]["profile"], "p13-public-proof-v1");
+    let selected = f.vault.portable_selected_key(&cap, &item, record).unwrap();
+    assert_eq!(selected["key_kind"], "object-dek");
+    assert_eq!(selected["revision_id"], c["revision_id"]);
+    assert!(selected["file_data_dek"].is_null());
+    let mut wrong = item.clone();
+    wrong["revision_id"] = json!(id());
+    assert_eq!(
+        f.vault
+            .portable_selected_key(&cap, &wrong, record)
+            .unwrap_err()
+            .0,
+        "EXPORT_SOURCE_MISMATCH"
+    );
+    let mut header = json!({"contract":"p02-v1","protocol":"anynote","protocol_version":1,"purpose":"export-footer","export_id":id(),"header_digest":hash(b"synthetic verified header"),"inventory_digest":hash(b"synthetic inventory"),"page_count":"0","item_count":"0","total_item_bytes":"0","signer":proof["signer"]});
+    let expected = header.clone();
+    header["item_count"] = json!("1");
+    assert_eq!(
+        f.vault
+            .sign_portable_footer(&cap, &header, &expected)
+            .unwrap_err()
+            .0,
+        "EXPORT_SOURCE_MISMATCH"
+    );
 }

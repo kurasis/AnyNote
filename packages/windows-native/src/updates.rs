@@ -1,5 +1,6 @@
 //! Signed updater policy: operator-installed trust only; no key or endpoint from API/UI.
 use crate::*;
+use base64::{Engine, engine::general_purpose::STANDARD};
 use serde::Deserialize;
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -11,13 +12,26 @@ pub struct UpdatePolicy {
 impl UpdatePolicy {
     pub fn validate(&self) -> Result<()> {
         let u = url::Url::parse(&self.endpoint).map_err(|_| Error("INVALID_UPDATE_POLICY"))?;
+        let key = STANDARD
+            .decode(&self.public_key)
+            .ok()
+            .and_then(|b| String::from_utf8(b).ok())
+            .ok_or(Error("INVALID_UPDATE_POLICY"))?;
+        let lines = key.lines().collect::<Vec<_>>();
+        check(
+            lines.len() == 2
+                && lines[0].starts_with("untrusted comment:")
+                && STANDARD
+                    .decode(lines[1])
+                    .is_ok_and(|b| b.len() == 42 && b[..2] == *b"Ed"),
+            "INVALID_UPDATE_POLICY",
+        )?;
         check(
             u.scheme() == "https"
                 && u.username().is_empty()
                 && u.password().is_none()
                 && u.fragment().is_none()
                 && self.public_key.len() <= 4096
-                && self.public_key.starts_with("RW")
                 && ["stable", "candidate"].contains(&self.channel.as_str()),
             "INVALID_UPDATE_POLICY",
         )

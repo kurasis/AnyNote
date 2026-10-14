@@ -33,7 +33,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           rustup override set 1.99.0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          foreach ($package in @('packages/protocol','apps/desktop')) {
+          foreach ($package in @('packages/protocol','packages/content-browser','apps/desktop')) {
             npm --prefix $package ci --no-audit --no-fund
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }

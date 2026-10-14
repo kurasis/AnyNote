@@ -2,13 +2,17 @@
 import {writePortable,PortableReader} from '../../../packages/protocol/content/portable.mjs';
 import {wire} from '../../../packages/protocol/adapters/codecs/identity-codec.mjs';
 import {strictJson} from '../../../packages/protocol/src/strict-json.mjs';
-const CAP=16777216,queue=[];let pending=Buffer.alloc(0),waiter,ended=false;
+const CAP=16777216,queue=[],waiters=[];let pending=Buffer.alloc(0),ended=false;
 process.stdin.on('data',b=>{pending=Buffer.concat([pending,b]);pump();});process.stdin.on('end',()=>{ended=true;pump();});
-function pump(){while(pending.length>=8){const kind=pending.readUInt32BE(0),size=pending.readUInt32BE(4);if(size>CAP){process.exitCode=1;process.stdin.destroy();waiter?.reject(Error('RESOURCE_LIMIT'));return;}if(pending.length<8+size)break;queue.push({kind,bytes:Buffer.from(pending.subarray(8,8+size))});pending=pending.subarray(8+size);if(queue.length>2){process.stdin.pause();break;}}
- if(waiter&&(queue.length||ended)){const w=waiter;waiter=undefined;if(queue.length)w.resolve(queue.shift());else w.reject(Error('BRIDGE_CLOSED'));process.stdin.resume();}}
-async function take(){if(queue.length){const frame=queue.shift();process.stdin.resume();pump();return frame;}if(ended)throw Error('BRIDGE_CLOSED');return new Promise((resolve,reject)=>waiter={resolve,reject});}
+function accepts(w,frame){return !w.kinds||w.kinds.includes(frame.kind);}
+function pump(){
+ while(pending.length>=8){const kind=pending.readUInt32BE(0),size=pending.readUInt32BE(4);if(size>CAP){process.exitCode=1;process.stdin.destroy();for(const w of waiters.splice(0))w.reject(Error('RESOURCE_LIMIT'));return;}if(pending.length<8+size)break;queue.push({kind,bytes:Buffer.from(pending.subarray(8,8+size))});pending=pending.subarray(8+size);if(queue.length>=4){process.stdin.pause();break;}}
+ for(let i=0;i<waiters.length;){const w=waiters[i],index=queue.findIndex(f=>accepts(w,f));if(index>=0){waiters.splice(i,1);w.resolve(queue.splice(index,1)[0]);}else if(ended){waiters.splice(i,1);w.reject(Error('BRIDGE_CLOSED'));}else i++;}
+ if(queue.length<4)process.stdin.resume();
+}
+async function take(kinds){const index=queue.findIndex(f=>!kinds||kinds.includes(f.kind));if(index>=0){const frame=queue.splice(index,1)[0];pump();return frame;}if(ended)throw Error('BRIDGE_CLOSED');return new Promise((resolve,reject)=>{waiters.push({kinds,resolve,reject});pump();});}
 async function send(kind,bytes=Buffer.alloc(0)){if(bytes.length>CAP)throw Error('RESOURCE_LIMIT');const h=Buffer.alloc(8);h.writeUInt32BE(kind);h.writeUInt32BE(bytes.length,4);await new Promise((resolve,reject)=>process.stdout.write(Buffer.concat([h,bytes]),e=>e?reject(e):resolve()));}
-const json=(v)=>Buffer.from(JSON.stringify(v)),expect=async k=>{const f=await take();if(f.kind!==k)throw Error('INVALID_BRIDGE_FRAME');return f.bytes;},ack=async()=>{const b=await expect(9);if(b.length)throw Error('INVALID_BRIDGE_FRAME');};
+const json=(v)=>Buffer.from(JSON.stringify(v)),expect=async k=>{const f=await take([k]);if(f.kind!==k)throw Error('INVALID_BRIDGE_FRAME');return f.bytes;},ack=async()=>{const b=await expect(9);if(b.length)throw Error('INVALID_BRIDGE_FRAME');};
 const clear=v=>{if(v&&typeof v==='object')for(const k of Object.keys(v)){clear(v[k]);if(typeof v[k]==='string')v[k]='';}};
 let init,reader;
 try{
@@ -18,7 +22,7 @@ try{
   const result=await writePortable({header:init.header,signer:init.signer,kit:init.kit,entries:entries(),sign:async bytes=>{await send(5,bytes);return expect(6);},sink:{async write(bytes){await send(7,bytes);await ack();},async finish(){await send(12);await ack();},async abort(){await send(10,json({error:'EXPORT_INTERRUPTED'}));}}});
   await send(8,json(result));clear(result);
  }else if(init.mode==='inspect'){
-  const source=()=>{let offset=0;return new ReadableStream({async pull(controller){await send(13,json({offset:String(offset),bytes:65536}));const frame=await take();if(frame.kind===4){controller.close();return;}if(frame.kind!==3||frame.bytes.length>65536)throw Error('INVALID_BRIDGE_FRAME');offset+=frame.bytes.length;controller.enqueue(frame.bytes);}});};
+  const source=()=>{let offset=0;return new ReadableStream({async pull(controller){await send(13,json({offset:String(offset),bytes:65536}));const frame=await take([3,4]);if(frame.kind===4){controller.close();return;}if(frame.kind!==3||frame.bytes.length>65536)throw Error('INVALID_BRIDGE_FRAME');offset+=frame.bytes.length;controller.enqueue(frame.bytes);}});};
   reader=new PortableReader(source,init.kit);clear(init.kit);const report=await reader.validate();
   await send(8,json(report));await ack();
   await reader.recover({

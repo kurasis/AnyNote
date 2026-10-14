@@ -36,7 +36,8 @@ impl Vault {
             if data["purpose"] != "p10-group-proof" {
                 let records = self.note_history_records(&mut i, &s, &control, group)?;
                 let local = json!({"purpose":"p10-group-proof","version":1,"proof":proof,"attempt":null,"pending_key":null});
-                let secrets = self.secret_plain(&i.conn, &s, &i.secrets.as_ref().unwrap().key)?;
+                let mut secrets =
+                    self.secret_plain(&i.conn, &s, &i.secrets.as_ref().unwrap().key)?;
                 let outcome = crate::shared::command(
                     &self.codec,
                     &crate::shared::Request::History {
@@ -50,7 +51,9 @@ impl Vault {
                     &i.secrets.as_ref().unwrap().signing,
                     &i.secrets.as_ref().unwrap().encryption,
                     &secrets["data"],
-                )?;
+                );
+                wipe_value(&mut secrets);
+                let outcome = outcome?;
                 let h = &outcome.result["body"];
                 let head = json!({"version":h["history"]["body"]["sequence"],"digest":digest("p02-group-c2","history",&h["history"])?});
                 proof["pin"]["history"] = head;
@@ -85,6 +88,25 @@ impl Vault {
     ) -> Result<Value> {
         let context = &record["envelope"]["header"]["context"];
         let file = item["object_kind"] == "file-manifest";
+        check(
+            context["service_id"] == self.scope.service_id
+                && item["group_id"] == context["group_id"]
+                && item["object_id"] == context[if file { "file_id" } else { "object_id" }]
+                && item["revision_id"]
+                    == context[if file {
+                        "file_version_id"
+                    } else {
+                        "revision_id"
+                    }]
+                && item["envelope_digest"]
+                    == digest(
+                        if file { "p02-file-c1" } else { "p02-v1" },
+                        if file { "file-envelope" } else { "envelope" },
+                        &record["envelope"],
+                    )?
+                && item["payload_status"] != "pruned",
+            "EXPORT_SOURCE_MISMATCH",
+        )?;
         if file {
             let _ = self.file_reader(cap, record)?;
         }
@@ -142,6 +164,10 @@ impl Vault {
             file_key = manifest["file_data_key"].clone();
             wipe_value(&mut manifest);
         }
+        check(
+            self.signal.generation() == cap.generation,
+            "STALE_CAPABILITY",
+        )?;
         Ok(
             json!({"contract":"p02-v1","protocol":"anynote","protocol_version":1,"purpose":"export-selected-key","service_id":context["service_id"],"group_id":group,"object_id":if file{&context["file_id"]}else{&context["object_id"]},"revision_id":item["revision_id"],"key_kind":if file{"manifest-and-file-deks"}else{"object-dek"},"object_dek":b64(&key),"file_data_dek":file_key}),
         )
@@ -162,9 +188,9 @@ impl Vault {
             body["signer"] == author(&roster, &self.scope, &i.secrets.as_ref().unwrap().signing)?,
             "ROSTER_CHANGED",
         )?;
-        Ok(un64(&anynote_crypto_core::crypto::sign(
+        un64(&anynote_crypto_core::crypto::sign(
             &self.codec.signing("p02-v1", "export-footer-body", body)?,
             &i.secrets.as_ref().unwrap().signing,
-        )?)?)
+        )?)
     }
 }

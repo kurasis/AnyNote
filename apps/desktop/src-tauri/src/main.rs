@@ -190,7 +190,7 @@ fn main() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
-            product, profile, file_job, open_link
+            product, profile, file_job, open_link, update
         ])
         .setup(|app| {
             let root = app.path().app_local_data_dir()?.join("profiles");
@@ -246,4 +246,62 @@ fn open_link(window: tauri::WebviewWindow, url: String) -> Result<(), String> {
         .opener()
         .open_url(url, None::<&str>)
         .map_err(|_| "SYSTEM_BROWSER_UNAVAILABLE".into())
+}
+
+#[tauri::command]
+async fn update(
+    window: tauri::WebviewWindow,
+    state: tauri::State<'_, Arc<State>>,
+    generation: u64,
+    install: bool,
+    confirmed: bool,
+) -> Result<Value, String> {
+    binding(&window)?;
+    let host = state.host()?;
+    host.capability(generation).map_err(|e| e.0)?;
+    let bytes = std::fs::read(
+        state
+            .root
+            .parent()
+            .ok_or("STORAGE_UNAVAILABLE")?
+            .join("update-policy.json"),
+    )
+    .map_err(|_| "UPDATE_TRUST_NOT_CONFIGURED")?;
+    let policy: anynote_windows_native::updates::UpdatePolicy =
+        serde_json::from_value(anynote_crypto_core::codec::strict(&bytes, 65536).map_err(|e| e.0)?)
+            .map_err(|_| "INVALID_UPDATE_POLICY")?;
+    policy.validate().map_err(|e| e.0)?;
+    use tauri_plugin_updater::UpdaterExt;
+    let updater = window
+        .app_handle()
+        .updater_builder()
+        .pubkey(policy.public_key.clone())
+        .endpoints(vec![
+            tauri::Url::parse(&policy.endpoint).map_err(|_| "INVALID_UPDATE_POLICY")?,
+        ])
+        .map_err(|_| "INVALID_UPDATE_POLICY")?
+        .build()
+        .map_err(|_| "INVALID_UPDATE_POLICY")?;
+    let Some(next) = updater.check().await.map_err(|_| "UPDATE_UNAVAILABLE")? else {
+        return Ok(json!({"state":"CURRENT"}));
+    };
+    policy
+        .version("0.14.0", &next.version, "windows-x86_64", &policy.channel)
+        .map_err(|e| e.0)?;
+    if !install {
+        return Ok(
+            json!({"state":"AVAILABLE","version":next.version,"channel":policy.channel,"signature_required":true}),
+        );
+    }
+    if !confirmed {
+        return Err("CONFIRMATION_REQUIRED".into());
+    }
+    let bytes = next
+        .download(|_, _| {}, || {})
+        .await
+        .map_err(|_| "UPDATE_INTEGRITY_FAILURE")?;
+    host.capability(generation).map_err(|e| e.0)?;
+    state.lock();
+    next.install(bytes).map_err(|_| "UPDATE_INSTALL_FAILED")?;
+    Ok(json!({"state":"INSTALLING"}))
 }

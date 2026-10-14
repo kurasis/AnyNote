@@ -1,7 +1,7 @@
 //! Actual captured native resync, published atomically by the existing P11 verifier.
 use crate::host::Host;
 use crate::*;
-use anynote_auth_native::{FileOperation, control::Route};
+use anynote_auth_native::control::Route;
 use anynote_local_vault::Capability;
 use serde_json::json;
 impl Host {
@@ -95,23 +95,20 @@ impl Host {
                         .or_else(|| page["items"].as_array())
                         .ok_or(Error("INVALID_PAGE"))?
                     {
-                        let response = self.vault.file_http(
-                            cap,
-                            &self.profile.credential_id,
-                            &self.adapter,
-                            FileOperation::Manifest {
-                                version: string(item, "file_version_id")?,
-                            },
-                        )?;
-                        check(response.status == 200, "API_DENIED")?;
-                        let record = anynote_crypto_core::codec::strict(&response.bytes, 1048576)?;
+                        let c = &item["envelope"]["header"]["context"];
                         self.vault.observe_file(
                             cap,
-                            string(item, "group_id")?,
-                            string(item, "file_version_id")?,
-                            &record,
+                            string(c, "group_id")?,
+                            string(c, "file_version_id")?,
+                            item,
                         )?;
-                        inventory.push(item.clone());
+                        let bytes = anynote_crypto_core::codec::domain(
+                            "p02-file-c1",
+                            "hash",
+                            "file-envelope",
+                            &anynote_crypto_core::codec::canonical(&item["envelope"])?,
+                        );
+                        inventory.push(json!({"group_id":c["group_id"],"file_id":c["file_id"],"file_version_id":c["file_version_id"],"envelope_digest":anynote_crypto_core::crypto::hash(&bytes)}));
                     }
                     check(inventory.len() <= 1000, "RESOURCE_LIMIT")?;
                     if page["next"].is_null() {

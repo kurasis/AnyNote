@@ -20,6 +20,6 @@ serde_json = { version = "=1.0.151", features = ["float_roundtrip"] }
 zeroize = "=1.9.1"
 raw-window-handle = "=0.6.2"
 [target.'cfg(windows)'.dependencies]
-windows-sys = { version = "=0.61.2", features = ["Win32_Foundation", "Win32_UI_WindowsAndMessaging", "Win32_UI_Controls", "Win32_UI_Input_KeyboardAndMouse", "Win32_System_SystemInformation", "Win32_System_RemoteDesktop"] }
+windows-sys = { version = "=0.61.2", features = ["Win32_Foundation", "Win32_UI_WindowsAndMessaging", "Win32_UI_Controls", "Win32_UI_Shell", "Win32_UI_Input_KeyboardAndMouse", "Win32_System_SystemInformation", "Win32_System_RemoteDesktop"] }
 [features]
 integration-harness = ["anynote-windows-native/integration-harness"]

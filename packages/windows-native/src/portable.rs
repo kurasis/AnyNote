@@ -266,7 +266,7 @@ impl Host {
                     Route::ExportPage,
                     Some(&snapshot),
                     None,
-                    &[("index", &n.to_string())],
+                    &[("start", &n.to_string())],
                     None,
                 )?;
                 check(page["scope"] == lease["scope"], "EXPORT_SOURCE_MISMATCH")?;
@@ -534,6 +534,7 @@ impl Host {
                             "EXPORT_SOURCE_MISMATCH",
                         )?;
                         self.save_native_job(&cap,&export_id,&json!({"purpose":"p14-native-export","version":1,"state":"OUTPUT_PENDING","kit":result["kit"],"target":target,"partial":destination.as_ref().unwrap().encrypted_path()}))?;
+                        destination.as_mut().unwrap().preserve_encrypted();
                         job.check(self.current())?;
                         destination.take().unwrap().finish()?;
                         self.save_native_job(&cap,&export_id,&json!({"purpose":"p14-native-export","version":1,"state":"COMPLETE","kit":result["kit"]}))?;

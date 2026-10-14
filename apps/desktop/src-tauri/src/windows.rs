@@ -10,8 +10,8 @@ use windows_sys::Win32::{
         SystemInformation::GetTickCount64,
     },
     UI::{
-        Controls::{DefSubclassProc, RemoveWindowSubclass, SetWindowSubclass},
         Input::KeyboardAndMouse::{GetLastInputInfo, LASTINPUTINFO},
+        Shell::{DefSubclassProc, RemoveWindowSubclass, SetWindowSubclass},
         WindowsAndMessaging::{
             PBT_APMSUSPEND, WM_ENDSESSION, WM_NCDESTROY, WM_POWERBROADCAST, WM_WTSSESSION_CHANGE,
             WTS_SESSION_LOCK,
