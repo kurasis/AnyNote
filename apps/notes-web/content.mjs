@@ -18,19 +18,19 @@ export function contentUI({vault,getGroup,text,run,open,files,authorize}){
     if(!value.results.length&&!value.rebuild_required)results.append(make('li',null,text('no_local_matches')));
   });
   rebuild.onclick=()=>run(async()=>{const seen=generation;await command('clearIndex',{confirm:true});let after=0,indexed=0,skipped=0;
-    do{const page=await command('catalog',{after});for(let n=0;n<page.items.length;n+=16){if(seen!==generation||document.hidden)throw Error('RESUME_REQUIRED');const done=await command('index',{revision_ids:page.items.slice(n,n+16).map(i=>i.revision_id)});indexed+=done.indexed;skipped+=done.skipped?.length??0;state.textContent=text('search_indexed')+' '+indexed+' / '+page.known+'; '+text('search_unavailable')+' '+skipped;}after=page.next;}while(after!==null);
+    do{const page=await command('catalog',{after});for(let n=0;n<page.items.length;n+=16){if(seen!==generation||document.hidden)throw Error('RESUME_REQUIRED');const done=await command('index',{items:page.items.slice(n,n+16)});indexed+=done.indexed;skipped+=done.skipped?.length??0;state.textContent=text('search_indexed')+' '+indexed+' / '+page.known+'; '+text('search_unavailable')+' '+skipped;}after=page.next;}while(after!==null);
     coverage(await command('coverage',scope()));
   });
   query.onkeydown=event=>{if(event.key==='Enter'){event.preventDefault();search.click();}};
   return {
     translate(){legend.textContent=text('content_tools');search.textContent=text('vault_search');rebuild.textContent=text('rebuild_search');known.textContent=text('search_known_only');},
     close(){generation++;renderer.close();query.value='';state.textContent='';results.replaceChildren();view.replaceChildren();thumbnail?.fill(0);thumbnail=undefined;},
-    async preview(group_id,file_version_id){
-      const seen=generation;renderer.close();thumbnail?.fill(0);thumbnail=undefined;view.replaceChildren();await authorize(group_id);
-      const manager=files(),record=await manager.transport.call('/files/'+file_version_id+'/manifest'),metadata=await manager.command('observe',{group_id,file_version_id,record});
+    async preview(group_id,file_version_id,offlineRecord){
+      const seen=generation;renderer.close();thumbnail?.fill(0);thumbnail=undefined;view.replaceChildren();await authorize(group_id,Boolean(offlineRecord));
+      const manager=files(),record=offlineRecord??await manager.transport.call('/files/'+file_version_id+'/manifest'),metadata=await manager.command('observe',{group_id,file_version_id,record});
       const size=Number(record.envelope.header.framing.plaintext_bytes);if(size>PREVIEW_LIMITS.imageBytes)throw Error('PREVIEW_RESOURCE_LIMIT');
       let bytes=new Uint8Array(size),offset=0,complete=false;
-      try{await manager.download(group_id,file_version_id,{write:part=>{if(seen!==generation||offset+part.length>size)throw Error('PREVIEW_CANCELLED');bytes.set(part,offset);offset+=part.length;},finish:()=>{if(offset!==size)throw Error('PREVIEW_CANCELLED');complete=true;},abort:()=>{bytes.fill(0);}});
+      try{const sink={write:part=>{if(seen!==generation||offset+part.length>size)throw Error('PREVIEW_CANCELLED');bytes.set(part,offset);offset+=part.length;},finish:()=>{if(offset!==size)throw Error('PREVIEW_CANCELLED');complete=true;},abort:()=>{bytes?.fill(0);}};if(offlineRecord)await manager.cache.export(vault,group_id,file_version_id,sink);else await manager.download(group_id,file_version_id,sink);
         if(!complete||seen!==generation||document.hidden)throw Error('PREVIEW_CANCELLED');
         const kind=bytes[0]===37&&bytes[1]===80&&bytes[2]===68&&bytes[3]===70?'pdf':bytes[0]===137||bytes[0]===255||bytes[0]===82&&bytes[1]===73?'image':'text';
         const source=bytes;bytes=undefined;let result;try{result=await renderer.render(kind,source);}finally{if(source.byteLength)source.fill(0);}if(seen!==generation){result.bitmap?.close();result.thumbnail?.fill(0);throw Error('PREVIEW_CANCELLED');}

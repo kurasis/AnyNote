@@ -489,3 +489,10 @@ per-transfer mobile memory bound. Buffers are chunk-bounded in the implementatio
 these aggregate results require process/heap attribution and P15 optimization and
 real-device measurement before advertising the mobile memory target. Native
 transfer-phase observations are independently scoped in the platform receipts.
+
+P13 development: component implementation and checks are recorded in
+[evidence/p13/DEVELOPMENT.md](evidence/p13/DEVELOPMENT.md). Search/native SQLite,
+maintained isolated previews, captured leases/pruned full resync, and actual Linux
+1 GB standard-age offline recovery are implemented. Whole product export/import,
+complete thumbnail/retention/cache lifecycle and final phase acceptance are still
+in progress. A component passing with a dirty tree is not a final CI receipt.

@@ -4682,3 +4682,133 @@ final readonly class P12FilesSnapshotFilesPage implements \JsonSerializable
         return $values;
     }
 }
+
+final readonly class P13ContentExportRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $operation_id,
+        public array $group_ids,
+        public bool $include_history,
+        public bool $include_trash,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P13ContentRenewRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P13ContentExportResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $scope,
+        public array $descriptor,
+        public string $catalog_count,
+        public string $catalog_digest,
+        public string $lease_expires_at_ms,
+        public string $maximum_expires_at_ms,
+        public string $served_bytes,
+        public array $selection,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P13ContentExportPageResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $scope,
+        public array $page,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P13ContentExportRecordResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $snapshot_id,
+        public array $item,
+        public array $record,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P13ContentPortableEvidence implements \JsonSerializable
+{
+    public function __construct(
+        public string $profile,
+        public int $version,
+        public array $groups,
+        public array $accounts,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P13ContentExportHeaderItem implements \JsonSerializable
+{
+    public function __construct(
+        public array $item,
+        public array $envelope,
+        public string $record_bytes,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P13ContentExportHeaderPage implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $snapshot_id,
+        public string $start,
+        public array $items,
+        public null|string $next,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}

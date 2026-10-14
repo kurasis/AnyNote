@@ -1257,6 +1257,133 @@
         "NativeBearer"
       ],
       "response": "p12-files/snapshot-files-page"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/exports",
+      "summary": "Bounded captured export with current account/device/group authorization",
+      "authorization": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+      "operation_id": "post_exports",
+      "phase": "P13",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "request": "p13-content/export-request",
+      "response": "p13-content/export-result"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/exports/{id}",
+      "summary": "Bounded captured export with current account/device/group authorization",
+      "authorization": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+      "operation_id": "get_exports_id",
+      "phase": "P13",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p13-content/export-result"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/exports/{id}/renew",
+      "summary": "Bounded captured export with current account/device/group authorization",
+      "authorization": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+      "operation_id": "post_exports_id_renew",
+      "phase": "P13",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "request": "p13-content/renew-request",
+      "response": "p13-content/export-result"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/exports/{id}",
+      "summary": "Bounded captured export with current account/device/group authorization",
+      "authorization": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+      "operation_id": "delete_exports_id",
+      "phase": "P13",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p13-content/cancel-result"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/exports/{id}/catalog",
+      "summary": "Bounded captured export with current account/device/group authorization",
+      "authorization": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+      "operation_id": "get_exports_id_catalog",
+      "phase": "P13",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p13-content/catalog-page"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/exports/{id}/pages",
+      "summary": "Bounded captured export with current account/device/group authorization",
+      "authorization": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+      "operation_id": "get_exports_id_pages",
+      "phase": "P13",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p13-content/export-page-result"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/exports/{id}/records/{revision}",
+      "summary": "Bounded captured export with current account/device/group authorization",
+      "authorization": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+      "operation_id": "get_exports_id_records_revision",
+      "phase": "P13",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p13-content/export-record-result"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/exports/{id}/files/{revision}/chunks/{index}",
+      "summary": "Bounded captured export with current account/device/group authorization",
+      "authorization": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+      "operation_id": "get_exports_id_files_revision_chunks_index",
+      "phase": "P13",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/exports/{id}/headers",
+      "summary": "Bounded captured public envelopes and original cipher record lengths",
+      "authorization": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+      "operation_id": "get_exports_id_headers",
+      "phase": "P13",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p13-content/export-header-page"
     }
   ]
 }

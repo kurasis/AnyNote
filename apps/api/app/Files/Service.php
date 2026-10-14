@@ -341,7 +341,7 @@ final class Service
                 if ($lease->state !== 'active' || $lease->expires_at > now()->format('Y-m-d H:i:s')) {
                     return;
                 }
-                foreach (['snapshot_file_pins', 'reference_pins', 'snapshot_items', 'snapshot_pages', 'snapshot_catalog'] as $table) {
+                foreach (['export_snapshot_items', 'export_snapshot_pages', 'snapshot_progress', 'snapshot_file_pins', 'reference_pins', 'snapshot_items', 'snapshot_pages', 'snapshot_catalog'] as $table) {
                     DB::table($table)->where('snapshot_id', $lease->id)->delete();
                 }
                 DB::table('snapshot_sessions')->where('id', $lease->id)->update(['state' => 'expired']);

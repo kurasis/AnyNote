@@ -1,0 +1,20 @@
+[package]
+name = "anynote-content-native"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.99"
+license = "GPL-3.0-only"
+publish = false
+description = "Protected native content coordination and standard streaming age"
+
+[dependencies]
+anynote-local-vault = { path = "../vault-native" }
+anynote-crypto-core = { path = "../crypto-core" }
+age = "=0.12.1"
+unicode-normalization = "=0.1.25"
+serde_json = "=1.0.151"
+zeroize = "=1.9.1"
+libsodium-rs = "=0.2.5"
+
+[dev-dependencies]
+tempfile = "=3.27.0"

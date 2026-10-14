@@ -5,7 +5,7 @@ import {strictJson} from '../src/strict-json.mjs';
 import {ensure, id} from '../vault/store.mjs';
 
 export const CONTENT_PROFILE = 'p13-content-v1';
-export const CONTENT_KINDS = new Set(['content-control', 'search-page', 'export-state', 'import-state', 'preview-state', 'content-part']);
+export const CONTENT_KINDS = new Set(['content-control', 'search-page', 'file-metadata', 'export-state', 'import-state', 'preview-state', 'content-part']);
 const MAX_BYTES = 16777216;
 const PART_BYTES = 262144;
 export const contentControlId = scope => b64(un64(hash(Buffer.concat([

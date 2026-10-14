@@ -17,6 +17,7 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 use zeroize::{Zeroize, Zeroizing};
+pub mod content;
 #[cfg_attr(not(windows), allow(dead_code))]
 mod custody;
 mod device_groups;
@@ -109,6 +110,8 @@ struct Rotation {
 struct State {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     file_profile: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    content_profile: Option<String>,
     rotation: Option<Rotation>,
     schema: u32,
     scope: Scope,
@@ -128,6 +131,10 @@ impl State {
                     .file_profile
                     .as_deref()
                     .is_none_or(|p| p == "p12-files-v1")
+                && self
+                    .content_profile
+                    .as_deref()
+                    .is_none_or(|p| p == "p13-content-v1")
                 && self.scope == *s
                 && self.epoch > 0
                 && self.revision > 0
@@ -459,6 +466,7 @@ impl Vault {
             manifest,
             schema: 1,
             file_profile: None,
+            content_profile: None,
             scope: self.scope.clone(),
             epoch: 1,
             revision: 1,
@@ -841,6 +849,14 @@ impl Vault {
                 let bytes: Vec<u8> = db(row.get(1))?;
                 let f = strict(&bytes, 8_388_608)?;
                 let kind = text(&f["context"]["record_kind"])?;
+                if f["contract"] == "p13-content-v1" {
+                    let new = content::rotate(&self.scope, &s.pins, &id, kind, &f, &old_key, &key)?;
+                    db(tx.execute(
+                        "UPDATE records SET frame=?1 WHERE id=?2",
+                        params![canonical(&new)?, id],
+                    ))?;
+                    continue;
+                }
                 if f["contract"] == "p11-local-v1" {
                     let new = paged_local::rotate(
                         &self.codec,
@@ -1112,6 +1128,9 @@ fn expected_manifest(scope: &Scope, s: &State) -> Value {
     let mut body = manifest_body(scope, &s.pins, &s.vault_id);
     if let Some(profile) = &s.file_profile {
         body["file_profile"] = json!(profile);
+    }
+    if let Some(profile) = &s.content_profile {
+        body["content_profile"] = json!(profile);
     }
     body
 }

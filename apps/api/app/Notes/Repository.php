@@ -172,7 +172,7 @@ final class Repository
             $o = $this->object($a, $id);
             $row = DB::table('object_revisions')->where('group_id', $o->group_id)->where('object_id', $id)->where('revision_id', $revision)->first();
             $wrap = DB::table('object_key_wraps')->where('revision_id', $revision)->first();
-            Protocol::require($row !== null && $wrap !== null, 'NOT_FOUND');
+            Protocol::require($row !== null && $wrap !== null && $row->payload_status === 'retained', 'NOT_FOUND');
 
             return ['version' => 1, 'group_id' => $o->group_id, 'object_id' => $id, 'revision_id' => $revision, 'bundle' => ['envelope' => json_decode($row->signed_envelope), 'wrap' => json_decode($wrap->wrap_record), 'ciphertext' => P::b64($row->ciphertext)]];
         }, 3);

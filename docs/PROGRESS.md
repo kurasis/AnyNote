@@ -19,7 +19,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P10 | VERIFIED | Five protected workflow/transport suites, 407 actual HTTPS/SQL checks, 40 sandboxed three-account PWA checks, three native shared tests and 89 native/portable interop checks/platform; all eighteen hosted gates PASS |
 | P11 | VERIFIED | Ten portable suites, 112 actual sync HTTP/SQL checks, 418 membership/lease checks, 45 sandboxed PWA checks, seven native notes and nine new interop checks/platform; all twenty final code jobs PASS; Worker masking and background idle guards verified |
 | P12 | VERIFIED | Twelve portable file tests, 368 actual file HTTPS/SQL checks, 452 shared-authority checks, 60 sandboxed PWA checks, native 1 GB/cache/atomic export on Linux/MSVC; all twenty-two software gates PASS; physical G1/U11/U12 and qualified G2/G3 remain open |
-| P13 | IN PROGRESS | Protected paged content namespace and verified local search implemented; four development tests pass; previews, retention and complete portable export/import remain in progress |
+| P13 | IN PROGRESS | Protected search/previews, native custody, captured exports, pruned resync and streaming offline recovery implemented and checked; product import, thumbnails, retention controls and final acceptance remain in progress |
 | P14 | NOT STARTED | P07–P13 and actual Windows evidence |
 | P15 | NOT STARTED | P01/P07–P13 and actual iPhone evidence |
 | P16 | NOT STARTED | P04/P08/P11–P13 and appropriately sized synthetic host |
@@ -745,3 +745,15 @@ in docs/evidence/p12. Frozen spec/P02 corpora and prior dependency locks remain
 unchanged. Full physical G1/U11/U12 and qualified G2/G3 remain OPEN/NOT_RUN.
 Complete P13 handoff is NEXT_TASK. Final documentation-head CI, ordinary guarded
 merge and final configuration persistence require their separate actual outcomes.
+
+### P13 component development checkpoint
+
+P13 remains IN PROGRESS. Search, isolated previews, native protected records and
+search coordination, captured export leases, report-first note compaction and
+pruned full resync, downloaded-cache controls, streaming age/archive primitives
+and a clean offline reader now have development checks. Actual Linux 1 GB recovery
+and independent Go age interoperability passed without plaintext temporary files.
+See [component evidence](evidence/p13/DEVELOPMENT.md). Complete product export /
+resumable import, derived thumbnails, remaining retention controls and full P13 /
+inherited exact-source acceptance remain required. PR26 remains a draft; this is
+not the P14 handoff or phase completion.

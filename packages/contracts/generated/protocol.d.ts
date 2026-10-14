@@ -270,8 +270,8 @@ export type P11SyncSnapshotRequest = { readonly "version": 1; readonly "operatio
 export type P11SyncSnapshotResult = { readonly "version": 1; readonly "scope": P11SyncScope; readonly "descriptor": P02V1SnapshotDescriptor; readonly "catalog_count": P02FileC1Counter; readonly "catalog_digest": P02FileC1Digest; readonly "files"?: { readonly "count": string; readonly "digest": P02FileC1Digest } };
 export type P11SyncCatalogPage = { readonly "version": 1; readonly "snapshot_id": P02FileC1Id; readonly "start": P02FileC1Counter; readonly "groups": ReadonlyArray<P09NotesGroupStatus>; readonly "next": (P02FileC1Counter) | (null) };
 export type P11SyncSnapshotPageResult = { readonly "version": 1; readonly "scope": P11SyncScope; readonly "page": P02V1SnapshotPage };
-export type P11SyncSnapshotBundle = { readonly "version": 1; readonly "snapshot_id": P02FileC1Id; readonly "item": P02V1SnapshotItem; readonly "bundle": P02V1Bundle; readonly "reference": P09NotesObjectRef };
-export type P11SyncDeltaBundle = { readonly "version": 1; readonly "item": P02V1SnapshotItem; readonly "bundle": P02V1Bundle; readonly "reference": P09NotesObjectRef };
+export type P11SyncSnapshotBundle = { readonly "version": 1; readonly "snapshot_id": P02FileC1Id; readonly "item": P02V1SnapshotItem; readonly "bundle": (P02V1Bundle) | (P02V1ExportPrunedRecord); readonly "reference": P09NotesObjectRef };
+export type P11SyncDeltaBundle = { readonly "version": 1; readonly "item": P02V1SnapshotItem; readonly "bundle": (P02V1Bundle) | (P02V1ExportPrunedRecord); readonly "reference": P09NotesObjectRef };
 export type P11SyncRenewRequest = { readonly "version": 1 };
 export type P11SyncCancelResult = { readonly "version": 1; readonly "snapshot_id": P02FileC1Id; readonly "state": "CANCELLED" };
 export type P11SyncAckRequest = { readonly "version": 1; readonly "cursor": P02V1Cursor; readonly "group_id": (P02FileC1Id) | (null) };
@@ -306,6 +306,16 @@ export type P12FilesStorage = { readonly "version": 1; readonly "limit_bytes": s
 export type P12FilesReclaimResult = { readonly "version": 1; readonly "file_version_id": P02FileC1Id; readonly "state": "RECLAIMABLE" };
 export type P12FilesManifestResult = P02V1ExportFileRecord;
 export type P12FilesSnapshotFilesPage = { readonly "version": 1; readonly "snapshot_id": P02FileC1Id; readonly "start": string; readonly "items": ReadonlyArray<P12FilesManifestResult>; readonly "next": (string) | (null) };
+export type P13ContentExportRequest = { readonly "version": 1; readonly "operation_id": P02FileC1Id; readonly "group_ids": ReadonlyArray<P02FileC1Id>; readonly "include_history": boolean; readonly "include_trash": boolean };
+export type P13ContentRenewRequest = { readonly "version": 1 };
+export type P13ContentExportResult = { readonly "version": 1; readonly "scope": P11SyncScope; readonly "descriptor": P02V1SnapshotDescriptor; readonly "catalog_count": P02FileC1Counter; readonly "catalog_digest": P02FileC1Digest; readonly "lease_expires_at_ms": P02FileC1Counter; readonly "maximum_expires_at_ms": P02FileC1Counter; readonly "served_bytes": P02FileC1Counter; readonly "selection": { readonly "version": 1; readonly "operation_id": P02FileC1Id; readonly "group_ids": ReadonlyArray<P02FileC1Id>; readonly "include_history": boolean; readonly "include_trash": boolean } };
+export type P13ContentCatalogPage = P11SyncCatalogPage;
+export type P13ContentCancelResult = P11SyncCancelResult;
+export type P13ContentExportPageResult = { readonly "version": 1; readonly "scope": P11SyncScope; readonly "page": P02V1SnapshotPage };
+export type P13ContentExportRecordResult = { readonly "version": 1; readonly "snapshot_id": P02FileC1Id; readonly "item": P02V1SnapshotItem; readonly "record": (P02V1Bundle) | (P02V1ExportFileRecord) | (P02V1ExportPrunedRecord) };
+export type P13ContentPortableEvidence = { readonly "profile": "p13-public-proof-v1"; readonly "version": 1; readonly "groups": ReadonlyArray<P10SharedAdoptRequest>; readonly "accounts": ReadonlyArray<P10SharedAccountProof> };
+export type P13ContentExportHeaderItem = { readonly "item": P02V1SnapshotItem; readonly "envelope": (P02V1Envelope) | (P02FileC1Envelope); readonly "record_bytes": P02FileC1Counter };
+export type P13ContentExportHeaderPage = { readonly "version": 1; readonly "snapshot_id": P02FileC1Id; readonly "start": P02FileC1Counter; readonly "items": ReadonlyArray<P13ContentExportHeaderItem>; readonly "next": (P02FileC1Counter) | (null) };
 export interface Operations {
 "post_accounts_register": { readonly phase: "P06"; readonly implemented: true; readonly request: P06AuthRegisterRequest; readonly response: P06AuthRegisterResult };
 "get_accounts_id_identity": { readonly phase: "P08"; readonly implemented: true; readonly request: never; readonly response: P08DevicesIdentityResult };
@@ -405,4 +415,13 @@ export interface Operations {
 "get_snapshots_id_catalog": { readonly phase: "P11"; readonly implemented: true; readonly request: never; readonly response: P11SyncCatalogPage };
 "get_snapshots_id_revisions_revision": { readonly phase: "P11"; readonly implemented: true; readonly request: never; readonly response: P11SyncSnapshotBundle };
 "get_snapshots_id_files": { readonly phase: "P12"; readonly implemented: true; readonly request: never; readonly response: P12FilesSnapshotFilesPage };
+"post_exports": { readonly phase: "P13"; readonly implemented: true; readonly request: P13ContentExportRequest; readonly response: P13ContentExportResult };
+"get_exports_id": { readonly phase: "P13"; readonly implemented: true; readonly request: never; readonly response: P13ContentExportResult };
+"post_exports_id_renew": { readonly phase: "P13"; readonly implemented: true; readonly request: P13ContentRenewRequest; readonly response: P13ContentExportResult };
+"delete_exports_id": { readonly phase: "P13"; readonly implemented: true; readonly request: never; readonly response: P13ContentCancelResult };
+"get_exports_id_catalog": { readonly phase: "P13"; readonly implemented: true; readonly request: never; readonly response: P13ContentCatalogPage };
+"get_exports_id_pages": { readonly phase: "P13"; readonly implemented: true; readonly request: never; readonly response: P13ContentExportPageResult };
+"get_exports_id_records_revision": { readonly phase: "P13"; readonly implemented: true; readonly request: never; readonly response: P13ContentExportRecordResult };
+"get_exports_id_files_revision_chunks_index": { readonly phase: "P13"; readonly implemented: true; readonly request: never; readonly response: never };
+"get_exports_id_headers": { readonly phase: "P13"; readonly implemented: true; readonly request: never; readonly response: P13ContentExportHeaderPage };
 }

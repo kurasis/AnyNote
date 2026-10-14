@@ -10477,7 +10477,14 @@
             "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/snapshot-item"
           },
           "bundle": {
-            "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/bundle"
+            "oneOf": [
+              {
+                "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/bundle"
+              },
+              {
+                "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/export-pruned-record"
+              }
+            ]
           },
           "reference": {
             "$ref": "urn:anynote:p09:notes:v1#/$defs/object-ref"
@@ -10502,7 +10509,14 @@
             "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/snapshot-item"
           },
           "bundle": {
-            "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/bundle"
+            "oneOf": [
+              {
+                "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/bundle"
+              },
+              {
+                "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/export-pruned-record"
+              }
+            ]
           },
           "reference": {
             "$ref": "urn:anynote:p09:notes:v1#/$defs/object-ref"
@@ -11872,6 +11886,289 @@
                 "pattern": "^(0|[1-9][0-9]*)$",
                 "maxLength": 19,
                 "format": "decimal-u63"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "snapshot_id",
+          "start",
+          "items",
+          "next"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "urn:anynote:p13:content:v1",
+    "$defs": {
+      "export-request": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "operation_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "group_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+            },
+            "maxItems": 1000,
+            "uniqueItems": true
+          },
+          "include_history": {
+            "type": "boolean"
+          },
+          "include_trash": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "version",
+          "operation_id",
+          "group_ids",
+          "include_history",
+          "include_trash"
+        ],
+        "additionalProperties": false
+      },
+      "renew-request": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "export-result": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "scope": {
+            "$ref": "urn:anynote:p11:sync:v1#/$defs/scope"
+          },
+          "descriptor": {
+            "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/snapshot-descriptor"
+          },
+          "catalog_count": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+          },
+          "catalog_digest": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+          },
+          "lease_expires_at_ms": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+          },
+          "maximum_expires_at_ms": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+          },
+          "served_bytes": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+          },
+          "selection": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "const": 1
+              },
+              "operation_id": {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+              },
+              "group_ids": {
+                "type": "array",
+                "items": {
+                  "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+                },
+                "maxItems": 1000,
+                "uniqueItems": true
+              },
+              "include_history": {
+                "type": "boolean"
+              },
+              "include_trash": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "version",
+              "operation_id",
+              "group_ids",
+              "include_history",
+              "include_trash"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "version",
+          "scope",
+          "descriptor",
+          "catalog_count",
+          "catalog_digest",
+          "lease_expires_at_ms",
+          "maximum_expires_at_ms",
+          "served_bytes",
+          "selection"
+        ],
+        "additionalProperties": false
+      },
+      "catalog-page": {
+        "$ref": "urn:anynote:p11:sync:v1#/$defs/catalog-page"
+      },
+      "cancel-result": {
+        "$ref": "urn:anynote:p11:sync:v1#/$defs/cancel-result"
+      },
+      "export-page-result": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "scope": {
+            "$ref": "urn:anynote:p11:sync:v1#/$defs/scope"
+          },
+          "page": {
+            "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/snapshot-page"
+          }
+        },
+        "required": [
+          "version",
+          "scope",
+          "page"
+        ],
+        "additionalProperties": false
+      },
+      "export-record-result": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "snapshot_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "item": {
+            "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/snapshot-item"
+          },
+          "record": {
+            "oneOf": [
+              {
+                "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/bundle"
+              },
+              {
+                "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/export-file-record"
+              },
+              {
+                "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/export-pruned-record"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "snapshot_id",
+          "item",
+          "record"
+        ],
+        "additionalProperties": false
+      },
+      "portable-evidence": {
+        "type": "object",
+        "properties": {
+          "profile": {
+            "const": "p13-public-proof-v1"
+          },
+          "version": {
+            "const": 1
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "urn:anynote:p10:shared:v1#/$defs/adopt-request"
+            },
+            "maxItems": 200
+          },
+          "accounts": {
+            "type": "array",
+            "items": {
+              "$ref": "urn:anynote:p10:shared:v1#/$defs/account-proof"
+            },
+            "maxItems": 1000
+          }
+        },
+        "required": [
+          "profile",
+          "version",
+          "groups",
+          "accounts"
+        ],
+        "additionalProperties": false
+      },
+      "export-header-item": {
+        "type": "object",
+        "properties": {
+          "item": {
+            "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/snapshot-item"
+          },
+          "envelope": {
+            "oneOf": [
+              {
+                "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/envelope"
+              },
+              {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/envelope"
+              }
+            ]
+          },
+          "record_bytes": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+          }
+        },
+        "required": [
+          "item",
+          "envelope",
+          "record_bytes"
+        ],
+        "additionalProperties": false
+      },
+      "export-header-page": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "snapshot_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "start": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/export-header-item"
+            },
+            "maxItems": 100
+          },
+          "next": {
+            "anyOf": [
+              {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
               },
               {
                 "type": "null"

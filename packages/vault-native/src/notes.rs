@@ -276,6 +276,17 @@ impl Vault {
         key: &[u8],
         id: &str,
     ) -> Result<bool> {
+        if id == crate::content::control_id(&self.scope)? {
+            return Ok(true);
+        }
+        let candidate: Option<Vec<u8>> = db(conn
+            .query_row("SELECT frame FROM records WHERE id=?1", [id], |r| r.get(0))
+            .optional())?;
+        if let Some(bytes) = candidate
+            && strict(&bytes, 8_388_608)?["contract"] == "p13-content-v1"
+        {
+            return Ok(true);
+        }
         let ctl = note_local::control_id(&self.scope)?;
         let roots = self.note_control(conn, s, key)?;
         let mut checks = vec![(ctl, "note-control"), (s.vault_id.clone(), "vault-secrets")];
@@ -1909,10 +1920,32 @@ impl Vault {
         evidence: (&Value, &Roster),
         request: &Value,
     ) -> Result<Value> {
+        self.note_verify_payload(i, s, c, evidence, request, false)
+    }
+    pub(crate) fn note_verify_payload(
+        &self,
+        i: &mut Inner,
+        s: &State,
+        c: &Value,
+        evidence: (&Value, &Roster),
+        request: &Value,
+        allow_pruned: bool,
+    ) -> Result<Value> {
         let (snapshot, roster) = evidence;
-        self.codec.validate("p09-notes", "open-request", request)?;
         let b = &request["bundle"];
-        self.codec.validate("p02-v1", "bundle", b)?;
+        let pruned = allow_pruned && b["payload_status"] == "pruned";
+        if !pruned {
+            self.codec.validate("p09-notes", "open-request", request)?;
+        }
+        self.codec.validate(
+            "p02-v1",
+            if pruned {
+                "export-pruned-record"
+            } else {
+                "bundle"
+            },
+            b,
+        )?;
         let x = &b["envelope"]["header"]["context"];
         let (_, _, info) = self.note_info(i, s, c, snapshot, text(&request["group_id"])?)?;
         if info["policy"].is_object() {
@@ -1930,6 +1963,9 @@ impl Vault {
             let (proof, verified) = self.note_shared_proof(i, s, c, snapshot, &data)?;
             let cert =
                 crate::shared::object_author(&self.codec, &proof, &verified, b, &self.scope)?;
+            if pruned {
+                return Ok(json!({"envelope_digest":digest("p02-v1","envelope",&b["envelope"])?}));
+            }
             let mut key_info = info.clone();
             key_info["policy"] = x["policy"].clone();
             key_info["epoch_digest"] = x["policy"]["epoch_digest"].clone();
@@ -1995,6 +2031,16 @@ impl Vault {
                 && w["envelope_digest"] == ed
         });
         check(current || known, "UNANCHORED_HISTORY")?;
+        if pruned {
+            anynote_crypto_core::crypto::verify(
+                &self
+                    .codec
+                    .signing("p02-v1", "header", &b["envelope"]["header"])?,
+                text(&b["envelope"]["signature"])?,
+                &un64(text(&actor.certificate["body"]["device_signing_key"])?)?,
+            )?;
+            return Ok(json!({"envelope_digest":ed}));
+        }
         let key = self.note_key(i, s, text(&request["group_id"])?, &info)?;
         let payload = objects::open_object(
             &self.codec,

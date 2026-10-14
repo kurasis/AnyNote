@@ -927,3 +927,48 @@ staged payload/location atomically. Changed group/object/revision/digest/kind,
 ancestry or author context remains a protective failure; no rollback/authority
 predicate or historical verification is waived. Portable/native interleaving and
 restart regressions exercise the distinction without fabricating hardware results.
+
+## ADR-023 — derived content custody and reference-safe payload compaction
+
+P13 introduces an additive device-signed protected-content profile. Search words,
+source names and content jobs stay under L with exact service/account/device/
+profile/root/record/part binding. Generic record writes and eviction cannot address
+this namespace. Native coordinators accept opaque revision IDs and open source
+payloads through existing certified-content authority; renderer-supplied plaintext
+never establishes a verified index. Missing, stale, unavailable and unanchored
+coverage remain explicit. Rebuild retires only derived search pages.
+
+Note retention may release ciphertext/wrap bytes after strong references and time
+policy permit it. Keep original signed envelopes and immutable ancestry forever.
+P13 changes the SQL update guards only for a one-way retained-to-pruned transition;
+no metadata rewrite or row deletion is permitted. Releasing note attachment refs
+requires successful containing-payload compaction in the same GC transaction.
+Quota movements and the final counter commit share that transaction. Physical DB
+page reclamation is separate from logical ciphertext accounting. Full resync can
+carry the frozen compact pruned record without fabricating a decryptable payload.
+
+An export captures both note and file references under the existing SQL/GC pin
+boundary before exposure. Every read rechecks current account/device/session/group
+access. Original captured descriptor bytes remain immutable; mutable lease expiry
+is separate and capped at 24 hours. Only new validated requested record/chunk work
+permits renewal, never an empty heartbeat or repeated frame; this is explicitly
+not evidence of completed network transfer or durable client storage.
+
+Use maintained standard age streams and preserve frozen P02 USTAR/header/footer/
+inventory/signature/original ciphertext bytes. A new export gets an independent
+X25519 identity. Keys are selected DEKs inside the encrypted stream, not root,
+device, session or group private keys. Offline recovery first validates outer end,
+footer/inventory/signatures/authority, then all content AEAD/full-file digests,
+before exposing recovered data. Explicit plaintext output is a separately selected
+sink. Intermediate history-chain packaging and full product export/import remain
+pending implementation and acceptance; these component decisions do not complete
+P13 or the independent security/physical gates.
+
+P13 public evidence adds the explicitly typed `p13-public-proof-v1` compact
+identity layout. It carries the existing P10 complete public journals, including
+intermediate signed history checkpoints, whose omission would prevent replaying
+later epochs. Original P02 ciphertext, signed frame, footer/inventory, standard
+age and USTAR/path bytes remain unchanged. The new reader dispatches by a closed
+evidence profile and validates the existing journal/root/group predicates. Older
+readers refuse this unsupported layout; they are not treated as compatible
+export/import clients. The legacy frozen evidence remains independently readable.

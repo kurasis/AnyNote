@@ -7,6 +7,7 @@ import {groupCodecForProfile} from '../adapters/codecs/group-codec.mjs';
 import {wire} from '../adapters/codecs/identity-codec.mjs';
 import {contentControlId} from './local.mjs';
 import {tokens, indexDocument} from './search.mjs';
+import {hash} from '../adapters/primitives.mjs';
 const gc=groupCodecForProfile('p02-group-c2');
 const notes=(f,op,args=[])=>f.old.engine.notes(f.old.cap,op,args);
 const content=(f,op,x={})=>notes(f,'content',[op,x]);
@@ -49,4 +50,18 @@ test('Unicode token bounds disclose truncation without treating repeated words a
  const context={object_kind:'entry',group_id:'group',object_id:'entry',revision_id:'revision',thread_id:'thread',action:'create'};
  assert.equal(indexDocument(context,{title:'same same',markdown:''},'digest').token_coverage,'complete');
  assert.equal(indexDocument(context,{title:'x'.repeat(65),markdown:''},'digest').token_coverage,'bounded');
+});
+test('filenames enter protected search only after authenticated manifest verification and remain encrypted on disk',async()=>{
+ const f=await fixture();try{const g=await group(f),source=new Blob(['public synthetic file source']),file=(op,x={})=>notes(f,'files',[op,x]);
+  const made=await file('prepare',{group_id:g.group_id,source,name:'Секретный документ.pdf'}),part=await file('part',{draft_id:made.draft_id,source,index:0});
+  await file('ackPart',{draft_id:made.draft_id,part:{index:'0',ciphertext_bytes:String(part.ciphertext.length),ciphertext_digest:hash(part.ciphertext)}});
+  const finished=await file('finish',{draft_id:made.draft_id}),record=finished.request.record,c=record.envelope.header.context;
+  await file('observe',{group_id:g.group_id,file_version_id:c.file_version_id,record});
+  assert.equal(f.old.store.state.manifest.body.content_profile,'p13-content-v1');
+  await content(f,'index',{items:[{group_id:g.group_id,object_id:c.file_id,revision_id:c.file_version_id,object_kind:'file-manifest'}]});
+  const found=await content(f,'search',{query:'секретный документ'});assert.equal(found.results[0].object_kind,'file-manifest');assert.equal(found.results[0].title,'Секретный документ.pdf');
+  assert(!JSON.stringify([...f.old.store.rows.values()]).includes('Секретный'));
+  await f.old.engine.globalLock();f.old.engine=new VaultEngine(f.old.store);f.old.cap=(await f.old.engine.unlock(phrase)).capability;
+  assert.equal((await content(f,'search',{query:'документ'})).results.length,1);
+ }finally{await close(f);}
 });

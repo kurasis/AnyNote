@@ -643,3 +643,88 @@ fn non_windows_hello_has_no_software_fallback() {
     );
     assert_eq!(f.vault.status().unwrap(), "locked");
 }
+
+#[test]
+fn p13_multipart_custody_reserves_namespace_rotates_and_rejects_downgrade() {
+    let f = TestVault::new();
+    let cap = f.vault.unlock_phrase(PHRASE).unwrap();
+    let root = anynote_local_vault::content::control_id(&f.scope).unwrap();
+    let data = json!({"purpose":"p13-native-search","version":1,"private_title":"P13 PRIVATE NATIVE SEARCH TOKEN","body":"x".repeat(300000)});
+    let before = f
+        .vault
+        .content_read(&cap, &root, "content-control")
+        .unwrap();
+    f.vault
+        .content_commit(
+            &cap,
+            before.revision,
+            &[Record {
+                id: root.clone(),
+                kind: "content-control".into(),
+                data: data.clone(),
+            }],
+            &[],
+        )
+        .unwrap();
+    assert_eq!(
+        f.vault
+            .content_read(&cap, &root, "content-control")
+            .unwrap()
+            .data
+            .unwrap(),
+        data
+    );
+    f.inspector(&["P13 PRIVATE NATIVE SEARCH TOKEN"]);
+    let fence = f.vault.lease(&cap).unwrap();
+    assert_eq!(
+        f.vault.evict_cache(&cap, fence, &root).unwrap_err().0,
+        "RESERVED_RECORD"
+    );
+    assert_eq!(
+        f.vault
+            .content_commit(
+                &cap,
+                before.revision,
+                &[Record {
+                    id: root.clone(),
+                    kind: "content-control".into(),
+                    data: data.clone()
+                }],
+                &[]
+            )
+            .unwrap_err()
+            .0,
+        "STALE_WRITER"
+    );
+    f.vault
+        .rotate_to_phrase(&cap, "public synthetic p13 rotated phrase", true)
+        .unwrap();
+    let next = f
+        .vault
+        .unlock_phrase("public synthetic p13 rotated phrase")
+        .unwrap();
+    assert_eq!(
+        f.vault
+            .content_read(&next, &root, "content-control")
+            .unwrap()
+            .data
+            .unwrap(),
+        data
+    );
+    f.vault.lock();
+    let db = f.db();
+    let raw: String = db
+        .query_row("SELECT value FROM meta", [], |r| r.get(0))
+        .unwrap();
+    let mut state: Value = serde_json::from_str(&raw).unwrap();
+    state.as_object_mut().unwrap().remove("content_profile");
+    db.execute("UPDATE meta SET value=?1", [state.to_string()])
+        .unwrap();
+    assert_eq!(
+        f.vault
+            .unlock_phrase("public synthetic p13 rotated phrase")
+            .unwrap_err()
+            .0,
+        "INTEGRITY_FAILURE"
+    );
+}

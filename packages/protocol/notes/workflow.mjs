@@ -7,7 +7,7 @@ import {decode as fileDecode,inventoryCommitment,signingInput as fileSigningInpu
 import {sodium,b64,un64,hash} from '../adapters/primitives.mjs';
 import {wire,same} from '../adapters/codecs/identity-codec.mjs';
 import {canonicalBytes,sealObject,openObject} from '../adapters/core.mjs';
-import {common,decode,digest} from '../adapters/codecs/protocol-codec.mjs';
+import {common,decode,digest,signingInput} from '../adapters/codecs/protocol-codec.mjs';
 import {verifiedSnapshot,historicalSnapshot} from '../devices/client.mjs';
 import {privateGenesis,verifyGenesis} from '../devices/genesis.mjs';
 import {activeCertificateForEvaluation,rosterDetails} from '../devices/roster.mjs';
@@ -16,15 +16,20 @@ import {stateDigest} from '../adapters/codecs/state-codec.mjs';
 import {noteValue} from './client.mjs';
 import {FileWorkflow} from '../files/workflow.mjs';
 import {ContentWorkflow} from '../content/workflow.mjs';
+import {ProtectedExport} from '../content/protected-export.mjs';
+import {contentValue} from '../content/client.mjs';
+import {FileReader} from '../adapters/files.mjs';
+import {aad} from '../adapters/codecs/protocol-codec.mjs';
+import {fileAad,decode as portableFileDecode} from '../adapters/codecs/codec.mjs';
 import {ensure,id} from '../vault/store.mjs';
 const random=()=>b64(sodium.randombytes_buf(16));
 const valueHash=v=>hash(canonicalBytes(wire(v)));
 const requestFor=b=>{const c=b.envelope.header.context;return noteValue('commit-request',{group_id:c.group_id,object_id:c.object_id,object_kind:c.object_kind,action:c.action,thread_id:c.thread_id,bundle:b});};
 function wipe(v){if(v instanceof Uint8Array)sodium.memzero(v);else if(v&&typeof v==='object')for(const k of Object.keys(v)){wipe(v[k]);if(typeof v[k]==='string')v[k]='';}}
 export class NotesWorkflow {
- #defer;#state;#proof;#snapshot;#keys;#copyAudience;#files;#contents;
- constructor({scope,pins,keys,load,read,persist,devices,secrets,files,content}){this.scope=scope;this.pins=pins;this.#keys=keys;this.load=load;this.read=read;this.persist=persist;this.devices=devices;this.secrets=secrets;this.files=files;this.content=content;}
- close(){this.#contents?.close();this.#contents=undefined;this.#files?.close();this.#files=undefined;this.#state=this.#proof=this.#snapshot=undefined;}
+ #defer;#state;#proof;#snapshot;#keys;#copyAudience;#files;#contents;#portable;#portableFile;
+ constructor({scope,pins,keys,load,read,persist,devices,secrets,files,content,portableTransport}){this.scope=scope;this.pins=pins;this.#keys=keys;this.load=load;this.read=read;this.persist=persist;this.devices=devices;this.secrets=secrets;this.files=files;this.content=content;this.portableTransport=portableTransport;}
+ close(){this.#portable?.close();this.#portable=undefined;this.#portableFile?.close();this.#portableFile=undefined;this.#fileCatalogIds.clear();this.#contents?.close();this.#contents=undefined;this.#files?.close();this.#files=undefined;this.#state=this.#proof=this.#snapshot=undefined;}
  async #ready(){
   if(!this.#state)this.#state=(await this.load())??{purpose:'p09-private-control',version:1,groups:[],drafts:[],attempts:[],witnesses:[]};
   noteValue('local-control',this.#state);
@@ -81,15 +86,17 @@ export class NotesWorkflow {
  async #commit(extra={}){noteValue('local-control',this.#state);if(this.#defer){this.#defer.push(extra);return;}await this.persist(this.#state,extra);}
  async command(op,args=[]){
   await this.#ready();
+  if(op==='portable'){ensure(args.length===2&&this.portableTransport,'INVALID_CONTENT_COMMAND');return this.#portableCommand(args[0],args[1]);}
   if(op==='content'){
    ensure(args.length===2&&this.content,'INVALID_CONTENT_COMMAND');
-   this.#contents??=new ContentWorkflow({...this.content,accessible:()=>this.#contentAccessible(),catalog:()=>this.#contentCatalog(),open:revision=>this.#readVerifiedCached(revision)});
-   return this.#contents.command(args[0],args[1]);
+   return this.#contentWorkflow().command(args[0],args[1]);
   }
   if(op==='files'){
    ensure(args.length===2&&this.files,'INVALID_FILE_COMMAND');
    this.#files??=new FileWorkflow({scope:this.scope,...this.files,authority:(g,w,e)=>this.#fileAuthority(g,w,e)});
-   return this.#files.command(args[0],args[1]);
+   const result=await this.#files.command(args[0],args[1]);
+   if(this.content&&['open','observe'].includes(args[0])&&args[1].record){try{await this.#contentWorkflow().rememberFile(args[1].record);result.search_index_status='metadata-local-saved';}catch(e){if(!['INSUFFICIENT_STORAGE','STORAGE_FAILURE','STORAGE_ABORTED','RESOURCE_LIMIT'].includes(e.message))throw e;result.search_index_status='pending';}}
+   return result;
   }
   if(op==='attach'){
    ensure(args.length===1&&id(args[0]?.draft_id)&&id(args[0]?.file_draft_id),'INVALID_REQUEST');const {ref,data}=await this.#draft(args[0].draft_id);
@@ -194,9 +201,80 @@ export class NotesWorkflow {
   }
   ensure(false,'INVALID_NOTE_COMMAND');
  }
+ async #exportHeader(item,envelope){
+  const c=envelope.header.context,file=item.object_kind==='file-manifest';
+  ensure(c.service_id===this.scope.service_id&&c.group_id===item.group_id&&(file?c.file_id:c.object_id)===item.object_id&&(file?c.file_version_id:c.revision_id)===item.revision_id&&(file?fileSigningDigest(wire(envelope)):digest('envelope',wire(envelope)))===item.envelope_digest,'CONTEXT_MISMATCH');
+  const info=await this.#info(c.group_id);let certificate;
+  if(info.verified){const reader=groupApi.groupSenderForEvaluation(info.verified.token,this.scope.account_id,this.scope.device_id,'receive-group-key');let authority;
+   try{authority=file?groupApi.checkHistoricalFileForEvaluation(info.verified.token,wire(envelope),reader):groupApi.checkHistoricalObjectForEvaluation(info.verified.token,wire(envelope),reader);}
+   catch(e){if(e.message!=='UNANCHORED_HISTORY'||!same(c.policy,info.info.policy))throw e;authority=file?groupApi.checkCurrentFileForEvaluation(info.verified.token,wire(envelope)):groupApi.checkCurrentObjectForEvaluation(info.verified.token,wire(envelope));}
+   certificate=authority.certificate;
+  }else{ensure(c.author.account_id===this.scope.account_id&&c.author.root_fingerprint===this.pins.root_fingerprint&&same(c.policy,this.#policy(info.info)),'CONTEXT_MISMATCH');const past=historicalSnapshot(this.#snapshot,this.pins,c.author.roster);certificate=activeCertificateForEvaluation(past.roster,c.author.device_id,'sign-content');ensure(certificateDetails(certificate).body.recovery_generation===c.author.recovery_generation,'CONTEXT_MISMATCH');const known=file?(await this.files?.readControl())?.witnesses?.some(w=>w.file_version_id===c.file_version_id&&w.envelope_digest===item.envelope_digest):this.#state.witnesses.some(w=>w.revision_id===c.revision_id&&w.envelope_digest===item.envelope_digest);ensure(this.#proof.details.devices.some(d=>d.device_id===c.author.device_id&&d.status==='ACTIVE'&&d.generation===c.author.recovery_generation)||known,'UNANCHORED_HISTORY');}
+  const publicKey=un64(certificateDetails(certificate).body.device_signing_key);ensure(sodium.crypto_sign_verify_detached(un64(envelope.signature),file?fileSigningInput('header',wire(envelope.header)):signingInput('header',wire(envelope.header)),publicKey),'INVALID_SIGNATURE');return {info,publicKey};
+ }
+ async #exportKey(item,record){
+  const c=record.envelope.header.context,file=item.object_kind==='file-manifest',verified=await this.#exportHeader(item,record.envelope),group=await this.#key(c.group_id,verified.info.info,c.policy.key_epoch);let dek,plain;
+  try{
+   if(file){const reader=new FileReader(wire(record),group,verified.publicKey,wire(c));if(record.envelope.header.framing.chunk_count==='0')reader.finish();else reader.close();dek=sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null,un64(record.wrap.ciphertext),fileAad(wire(record.envelope.header),'wrap-aad'),un64(record.wrap.nonce),group);plain=sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null,un64(record.manifest_ciphertext),fileAad(wire(record.envelope.header),'manifest-aad'),un64(record.envelope.header.manifest_nonce),dek);const manifest=portableFileDecode('manifest',plain);return {...common('export-selected-key'),service_id:c.service_id,group_id:c.group_id,object_id:c.file_id,revision_id:c.file_version_id,key_kind:'manifest-and-file-deks',object_dek:b64(dek),file_data_dek:manifest.file_data_key};}
+   const payload=openObject(wire(record),group,verified.publicKey,wire(c));wipe(payload);dek=sodium.crypto_aead_xchacha20poly1305_ietf_decrypt(null,un64(record.wrap.ciphertext),aad('object-key-wrap',{context:c}),un64(record.wrap.nonce),group);return {...common('export-selected-key'),service_id:c.service_id,group_id:c.group_id,object_id:c.object_id,revision_id:c.revision_id,key_kind:'object-dek',object_dek:b64(dek),file_data_dek:null};
+  }finally{wipe(group);wipe(dek);wipe(plain);}
+ }
+ async #exportProofs(groups,headers){
+  const proofs=new Map(),accounts=new Map([[this.pins.account_id,{pins:structuredClone(this.pins),snapshot:structuredClone(this.#snapshot)}]]),privateTokens=new Map();
+  for(const status of groups){const local=await this.#info(status.group_id);ensure(same(status.membership,local.info.membership)&&status.key_epoch===(local.info.policy?.key_epoch??'0')&&status.epoch_digest===local.info.epoch_digest,'POLICY_CHANGED');
+   let proof;if(local.verified){proof=structuredClone(local.data.proof);const own=proof.accounts.find(a=>a.pins.account_id===this.scope.account_id);own.snapshot=structuredClone(this.#snapshot);}
+   else{proof={pin:genesisPin(local.evidence),journal:{version:1,group_id:status.group_id,genesis:local.evidence,events:[],pending:null},accounts:[{pins:structuredClone(this.pins),snapshot:structuredClone(this.#snapshot)}]};const token=replayGroup(proof,{ownPins:this.pins,localGenesis:true}).token;groupApi.custodyWitnesses(token,await this.#historyRecords(status.group_id));privateTokens.set(status.group_id,token);}
+   proof.journal.pending=null;proofs.set(status.group_id,proof);for(const a of proof.accounts){const old=accounts.get(a.pins.account_id);if(old)ensure(same(old.pins,a.pins),'ROOT_PIN_MISMATCH');accounts.set(a.pins.account_id,structuredClone(a));}
+  }
+  for(const row of headers)await this.#exportHeader(row.item,row.envelope);
+  const pending=headers.filter(row=>privateTokens.has(row.item.group_id)),knownByGroup=new Map([...privateTokens].map(([id,token])=>[id,new Map(groupApi.observedHistoryRecordsForEvaluation(token).map(r=>[r.revision_id,r]))])),waiting=new Map(),counts=new Map(),ready=[];
+  for(const row of pending){const c=row.envelope.header.context,known=knownByGroup.get(row.item.group_id);let missing=0;for(const p of c.parents)if(known.get(p.revision_id)?.envelope_digest!==p.envelope_digest){missing++;const key=row.item.group_id+'/'+p.revision_id;const children=waiting.get(key)??[];children.push(row);waiting.set(key,children);}counts.set(row,missing);if(!missing)ready.push(row);}
+  let accepted=0;while(ready.length){const row=ready.pop(),token=privateTokens.get(row.item.group_id),c=row.envelope.header.context,known=knownByGroup.get(row.item.group_id);ensure(c.parents.every(p=>known.get(p.revision_id)?.envelope_digest===p.envelope_digest),'MISSING_SOURCE_ANCESTRY');if(row.item.object_kind==='file-manifest')groupApi.observeAcceptedFileForEvaluation(token,wire(row.envelope));else groupApi.observeAcceptedObjectForEvaluation(token,wire(row.envelope));known.set(row.item.revision_id,{envelope_digest:row.item.envelope_digest});accepted++;for(const child of waiting.get(row.item.group_id+'/'+row.item.revision_id)??[]){counts.set(child,counts.get(child)-1);if(counts.get(child)===0)ready.push(child);}}
+  ensure(accepted===pending.length,'MISSING_SOURCE_ANCESTRY');
+  const pins=[];
+  for(const [group_id,proof]of proofs){let verified;
+   const token=privateTokens.get(group_id);if(token){const records=groupApi.observedHistoryRecordsForEvaluation(token),pages=[];let batch=[];const page=items=>({purpose:'history-inventory-page',contract:'p02-file-c1',version:1,service_id:this.scope.service_id,group_id,page_index:String(pages.length),records:items});for(const record of records){if(batch.length&&(batch.length===500||wire(page([...batch,record])).length>1048576)){pages.push(page(batch));batch=[];}batch.push(record);}if(batch.length)pages.push(page(batch));
+    const history=JSON.parse(new TextDecoder().decode(groupBuilders.historyForEvaluation(token,groupApi.groupSenderForEvaluation(token,this.scope.account_id,this.scope.device_id),this.#keys.signing.privateKey,pages.map(wire))));groupApi.endorseGroupHistoryForEvaluation(token,wire(history),pages.map(wire),groupApi.independentHistoryWitnessForEvaluation(token));const head={version:history.body.sequence,digest:groupCodec.groupDigest('history',wire(history))};proof.pin.history=head;proof.journal.events.push({kind:'history',history,pages});verified=groupApi.groupDetails(token);
+   }else verified=replayGroup(proof,{ownPins:this.pins,known:proof}).details;
+   pins.push({group_id,genesis_digest:proof.pin.genesis_digest,policy:verified.policy,epoch:verified.epoch,history:verified.history});sharedValue('adopt-request',proof);
+  }
+  const document=contentValue('portable-evidence',{profile:'p13-public-proof-v1',version:1,accounts:[...accounts.values()],groups:[...proofs.values()]});ensure(wire(document).length<=16777216,'RESOURCE_LIMIT');return {document,pins};
+ }
+ async #portableCommand(op,x){
+  if(op==='cancel'){this.#portable?.close();this.#portable=undefined;this.#portableFile?.close();this.#portableFile=undefined;return {cancelled:true};}
+  if(op==='begin'){
+   ensure(x.confirm===true&&!this.#portable,'CONFIRMATION_REQUIRED');this.#own();const signer=this.#author();
+   this.#portable=new ProtectedExport({transport:this.portableTransport(),scope:this.scope,pins:this.pins,signer,sign:bytes=>sodium.crypto_sign_detached(bytes,this.#keys.signing.privateKey),authorize:async()=>{await this.#ready();this.#own();},proofs:(groups,headers)=>this.#exportProofs(groups,headers),selected:(item,record)=>this.#exportKey(item,record),verifyChunk:async(item,record,index,cipher)=>{
+    if(index===0){this.#portableFile?.close();const a=await this.#fileAuthority(item.group_id,false,record.envelope);try{this.#portableFile=new FileReader(wire(record),a.key,a.publicKey,wire(record.envelope.header.context));}finally{wipe(a.key);}}
+    ensure(this.#portableFile,'INCOMPLETE_FILE');const bytes=this.#portableFile.decryptNext(cipher);wipe(bytes);if(index===Number(record.envelope.header.framing.chunk_count)-1){this.#portableFile.finish();this.#portableFile=undefined;}
+   }});
+   try{return await this.#portable.begin(x.result);}catch(e){this.#portable.close();this.#portable=undefined;throw e;}
+  }
+  ensure(op==='next'&&Object.keys(x).length===0&&this.#portable,'INVALID_CONTENT_COMMAND');try{const result=await this.#portable.next();if(result.done)this.#portable=undefined;return result;}catch(e){this.#portable.close();this.#portable=undefined;this.#portableFile?.close();this.#portableFile=undefined;throw e;}
+ }
  async #contentAccessible(){this.#own();const result=new Set();for(const group of this.#state.groups){const {info}=await this.#info(group.group_id);if(!info.policy||info.members.some(m=>m.account_id===this.scope.account_id&&m.status!=='removed'))result.add(group.group_id);}return result;}
- #contentCatalog(){const heads=new Map((this.#state.sync?.projection??[]).map(p=>[p.reference.object_id,new Set(p.reference.heads.map(h=>h.revision_id))]));return this.#state.witnesses.map(w=>({...w,payload_status:'retained',current:heads.has(w.object_id)?heads.get(w.object_id).has(w.revision_id):null}));}
- async #readVerifiedCached(revision){ensure(!this.#defer,'PUBLICATION_PENDING');const original=this.#state;this.#state=structuredClone(original);this.#defer=[];try{const opened=await this.command('cached',[revision]);return {...opened,state:'verified'};}finally{this.#state=original;this.#defer=undefined;}}
+ #contentWorkflow(){ensure(this.content,'INVALID_CONTENT_COMMAND');return this.#contents??=new ContentWorkflow({...this.content,accessible:()=>this.#contentAccessible(),catalog:()=>this.#contentCatalog(),open:revision=>this.#readVerifiedCached(revision)});}
+ #fileCatalogIds=new Map();
+ async #contentCatalog(){
+  const heads=new Map((this.#state.sync?.projection??[]).map(p=>[p.reference.object_id,new Set(p.reference.heads.map(h=>h.revision_id))]));
+  const result=this.#state.witnesses.map(w=>({...w,payload_status:'retained',current:heads.has(w.object_id)?heads.get(w.object_id).has(w.revision_id):null}));
+  const files=await this.files?.readControl(),known=new Map((this.#contents?.fileReferences()??[]).map(f=>[f.file_version_id,f]));
+  for(const w of files?.witnesses??[]){let ref=known.get(w.file_version_id)??this.#fileCatalogIds.get(w.file_version_id);
+   if(!ref||ref.envelope_digest!==w.envelope_digest){const evidence=await this.files.readRecord(w.record_id,'file-evidence'),c=evidence.envelope.header.context;ensure(fileSigningDigest(wire(evidence.envelope))===w.envelope_digest&&c.group_id===w.group_id&&c.file_version_id===w.file_version_id,'INTEGRITY_FAILURE');ref={file_id:c.file_id,envelope_digest:w.envelope_digest};this.#fileCatalogIds.set(w.file_version_id,ref);}
+   result.push({...w,object_id:ref.file_id,revision_id:w.file_version_id,object_kind:'file-manifest',thread_id:null,payload_status:'retained',current:null});
+  }return result;
+ }
+ async #readVerifiedCached(selector){
+  ensure(!this.#defer,'PUBLICATION_PENDING');const revision=typeof selector==='string'?selector:selector.revision_id;
+  if(selector.object_kind==='file-manifest'){
+   const record=await this.#contentWorkflow().fileRecord(revision),context=record.envelope.header.context;
+   ensure(context.group_id===selector.group_id&&context.file_id===selector.object_id&&context.file_version_id===revision,'CONTEXT_MISMATCH');
+   this.#files??=new FileWorkflow({scope:this.scope,...this.files,authority:(g,w,e)=>this.#fileAuthority(g,w,e)});
+   const metadata=await this.#files.command('observe',{group_id:context.group_id,file_version_id:revision,record});
+   return {state:'verified',envelope_digest:metadata.envelope_digest,payload:{context:{group_id:context.group_id,object_id:context.file_id,revision_id:revision,object_kind:'file-manifest',thread_id:null,action:'create'},title:metadata.name,markdown:'',tags:[],checklist:[]}};
+  }
+  const original=this.#state;this.#state=structuredClone(original);this.#defer=[];try{const opened=await this.command('cached',[revision]);return {...opened,state:'verified'};}finally{this.#state=original;this.#defer=undefined;}
+ }
  async #historyRecords(group){const out=[];for(const w of this.#state.witnesses.filter(w=>w.group_id===group)){const data=await this.read(w.cache_id,'cache'),envelope=data.purpose==='p11-header-evidence'?syncValue('header-evidence',data).envelope:decode('bundle',un64(decode('cache',wire(data)).record_bytes)).envelope,b=envelope.header.context;ensure(digest('envelope',wire(envelope))===w.envelope_digest,'INTEGRITY_FAILURE');out.push({object_kind:b.object_kind,object_id:b.object_id,revision_id:b.revision_id,envelope_digest:w.envelope_digest,parents:b.parents,payload_status:'retained'});}if(this.files){const files=await this.files.readControl(),ids=(files?.witnesses??[]).filter(w=>w.group_id===group);for(const w of ids){const evidence=await this.files.readRecord(w.record_id,'file-evidence'),c=evidence.envelope.header.context;ensure(fileDecode('envelope',wire(evidence.envelope))&&w.envelope_digest===fileSigningDigest(wire(evidence.envelope)),'INTEGRITY_FAILURE');out.push({object_kind:'file-manifest',object_id:c.file_id,revision_id:c.file_version_id,envelope_digest:w.envelope_digest,parents:c.parents,payload_status:'retained'});}}return out.sort((a,b)=>a.revision_id<b.revision_id?-1:1);}
  async #syncVerify(item,bundle,reference,previous=[]){
   checkedBundle(item,bundle);noteValue('object-ref',reference);const c=bundle.envelope.header.context;
@@ -204,6 +282,15 @@ export class NotesWorkflow {
   const original=this.#state;this.#state=structuredClone(original);this.#defer=[];
   for(const x of previous)if(!this.#state.witnesses.some(w=>w.revision_id===x.witness.revision_id))this.#state.witnesses.push(structuredClone(x.witness));
   try{
+   if(item.payload_status==='pruned'){
+    const {info}=await this.#info(item.group_id);let cert;
+    if(info.policy){const shared=await this.#info(item.group_id);cert=groupApi.checkHistoricalObjectForEvaluation(shared.verified.token,wire(bundle.envelope),groupApi.groupSenderForEvaluation(shared.verified.token,this.scope.account_id,this.scope.device_id,'receive-group-key')).certificate;}
+    else{ensure(c.service_id===this.scope.service_id&&c.author.account_id===this.scope.account_id&&c.author.root_fingerprint===this.pins.root_fingerprint&&same(c.policy,this.#policy(info)),'CONTEXT_MISMATCH');const past=historicalSnapshot(this.#snapshot,this.pins,c.author.roster);cert=activeCertificateForEvaluation(past.roster,c.author.device_id,'sign-content');ensure(certificateDetails(cert).body.recovery_generation===c.author.recovery_generation,'CONTEXT_MISMATCH');ensure(this.#proof.details.devices.some(d=>d.device_id===c.author.device_id&&d.status==='ACTIVE'&&d.generation===c.author.recovery_generation)||this.#state.witnesses.some(w=>w.revision_id===item.revision_id&&w.envelope_digest===item.envelope_digest),'UNANCHORED_HISTORY');}
+    ensure(sodium.crypto_sign_verify_detached(un64(bundle.envelope.signature),signingInput('header',wire(bundle.envelope.header)),un64(certificateDetails(cert).body.device_signing_key)),'INVALID_SIGNATURE');
+    const old=this.#state.witnesses.find(w=>w.revision_id===item.revision_id);if(old)ensure(old.envelope_digest===item.envelope_digest&&old.group_id===item.group_id&&old.object_id===item.object_id,'ROLLBACK_QUARANTINE');
+    const witness=old??{group_id:c.group_id,object_id:c.object_id,revision_id:c.revision_id,envelope_digest:item.envelope_digest,object_kind:c.object_kind,thread_id:c.thread_id,archived:c.archived,action:c.action,cache_id:random()};
+    const record={id:witness.cache_id,kind:'cache',data:syncValue('header-evidence',{purpose:'p11-header-evidence',version:1,envelope:bundle.envelope})};return {value:{item:structuredClone(item),cache_id:witness.cache_id,witness:structuredClone(witness),reference:structuredClone(reference)},record};
+   }
    const opened=await this.command('open',[{group_id:item.group_id,object_id:item.object_id,revision_id:item.revision_id,object_kind:item.object_kind,thread_id:c.thread_id,bundle}]);wipe(opened);
    const witness=structuredClone(this.#state.witnesses.find(w=>w.revision_id===item.revision_id)),record=this.#defer.flatMap(e=>e.records??[]).find(r=>r.id===witness.cache_id);
    ensure(record,'INTEGRITY_FAILURE');return {value:{item:structuredClone(item),cache_id:witness.cache_id,witness,reference:structuredClone(reference)},record};

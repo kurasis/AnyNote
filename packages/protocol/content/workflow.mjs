@@ -1,12 +1,15 @@
 import {sodium, b64, Buffer} from '../adapters/primitives.mjs';
+import {envelopeDigest} from '../adapters/codecs/codec.mjs';
+import {wire} from '../adapters/codecs/identity-codec.mjs';
 import {ensure, id} from '../vault/store.mjs';
 import {coverage, indexDocument, searchDocument, searchFingerprint, SEARCH_LIMITS} from './search.mjs';
 
 const random = () => b64(sodium.randombytes_buf(16));
-const key = x => x.object_id + '/' + x.revision_id;
+const key = x => [x.group_id,x.object_kind,x.object_id,x.revision_id].join('/');
 export function contentState(value) {
   ensure(value && value.purpose === 'p13-content-control' && value.version === 1 &&
-    Array.isArray(value.pages) && value.pages.length <= 625 && Array.isArray(value.jobs) && value.jobs.length <= 32 &&
+    Array.isArray(value.pages) && value.pages.length <= 688 && Array.isArray(value.jobs) && value.jobs.length <= 32 &&
+    (value.files===undefined||Array.isArray(value.files)&&value.files.length<=1000&&value.files.every(f=>id(f.record_id)&&id(f.file_version_id)&&id(f.file_id)&&id(f.group_id)&&typeof f.envelope_digest==='string')) &&
     (value.failures === undefined || Array.isArray(value.failures) && value.failures.length <= 10000 && value.failures.every(f => id(f.revision_id) && ['PAYLOAD_UNAVAILABLE','UNANCHORED_HISTORY','KEYS_PENDING'].includes(f.code))) &&
     value.pages.every(p => id(p.record_id) && typeof p.digest === 'string' && Array.isArray(p.documents) && p.documents.length <= 16 &&
       p.documents.every(d => id(d.group_id) && id(d.object_id) && id(d.revision_id) && typeof d.envelope_digest === 'string')), 'INVALID_CONTENT_CONTROL');
@@ -16,6 +19,7 @@ export function contentState(value) {
 }
 export function contentIds(control) {
   const result = new Map(control.pages.map(p => [p.record_id, 'search-page']));
+  for(const file of control.files??[]){ensure(!result.has(file.record_id),'DUPLICATE_RECORD');result.set(file.record_id,'file-metadata');}
   for (const job of control.jobs) {
     ensure(id(job.record_id) && ['export-state', 'import-state', 'preview-state'].includes(job.kind) && !result.has(job.record_id), 'INVALID_CONTENT_CONTROL');
     result.set(job.record_id, job.kind);
@@ -29,11 +33,26 @@ function wipe(value) {
 export class ContentWorkflow {
   #control; #cache = new Map(); #cacheBytes = 0;
   constructor({load, read, persist, catalog, accessible, open}) { Object.assign(this, {load, read, persist, catalog, accessible, open}); }
+  fileReferences(){return structuredClone(this.#control?.files??[]);}
   close() { wipe(this.#control); for (const value of this.#cache.values()) wipe(value.value); this.#cache.clear(); this.#cacheBytes = 0; this.#control = undefined; }
   async #ready() {
     const next = contentState(await this.load() ?? {purpose: 'p13-content-control', version: 1, pages: [], jobs: []});
     if (this.#control && searchFingerprint(next) !== searchFingerprint(this.#control)) this.close();
     this.#control = next;
+  }
+  async rememberFile(record) {
+    await this.#ready();const c=record.envelope.header.context,digest=envelopeDigest(wire(record.envelope));
+    this.#control.files??=[];const previous=this.#control.files.find(f=>f.file_version_id===c.file_version_id);
+    if(previous){ensure(previous.envelope_digest===digest&&previous.group_id===c.group_id,'ROLLBACK_QUARANTINE');return;}
+    ensure(this.#control.files.length<1000,'RESOURCE_LIMIT');const record_id=random();
+    this.#control.files.push({record_id,group_id:c.group_id,file_id:c.file_id,file_version_id:c.file_version_id,envelope_digest:digest});
+    this.#control.failures=(this.#control.failures??[]).filter(f=>f.revision_id!==c.file_version_id);
+    try{await this.persist(this.#control,[{id:record_id,kind:'file-metadata',data:{purpose:'p13-file-metadata',version:1,record}}]);}finally{this.close();}
+  }
+  async fileRecord(revision) {
+    await this.#ready();const ref=this.#control.files?.find(f=>f.file_version_id===revision);ensure(ref,'PAYLOAD_UNAVAILABLE');
+    const data=await this.read(ref.record_id,'file-metadata');ensure(data.purpose==='p13-file-metadata'&&data.version===1&&envelopeDigest(wire(data.record.envelope))===ref.envelope_digest,'INTEGRITY_FAILURE');
+    return data.record;
   }
   async #page(ref) {
     let value = this.#cache.get(ref.record_id)?.value;
@@ -54,7 +73,7 @@ export class ContentWorkflow {
     await this.#ready(); const accessible = await this.accessible();
     ensure(x.group_id === undefined || accessible.has(x.group_id), 'ROLE_FORBIDDEN');
     const failures=new Map((this.#control.failures??[]).map(f=>[f.revision_id,f.code]));
-    const catalog = (await this.catalog()).filter(d => accessible.has(d.group_id) && (!x.group_id || d.group_id === x.group_id)).map(d=>({...d,payload_status:failures.get(d.revision_id)==='PAYLOAD_UNAVAILABLE'?'pruned':failures.get(d.revision_id)==='UNANCHORED_HISTORY'?'unanchored':d.payload_status}));
+    const catalog = (await this.catalog()).filter(d => accessible.has(d.group_id) && (!x.group_id || d.group_id === x.group_id)).map(d=>({...d,payload_status:failures.get(d.revision_id)==='PAYLOAD_UNAVAILABLE'?'unavailable':failures.get(d.revision_id)==='UNANCHORED_HISTORY'?'unanchored':failures.get(d.revision_id)==='KEYS_PENDING'?'keys-pending':d.payload_status}));
     const indexed = this.#control.pages.flatMap(p => p.documents).filter(d => accessible.has(d.group_id) && (!x.group_id || d.group_id === x.group_id));
     const report = () => {const value=coverage(catalog,indexed,accessible);if(this.#control.source_stale){value.stale+=value.indexed;value.indexed=0;}return {...value,rebuild_required:this.#control.source_stale===true,scope:x.group_id??'accessible-account',known_corpus_only:true};};
     if(op==='catalog'){const start=x.after??0;ensure(Number.isSafeInteger(start)&&start>=0&&start<=catalog.length,'INVALID_SEARCH_QUERY');const items=catalog.slice(start,start+100).map(d=>({group_id:d.group_id,object_id:d.object_id,revision_id:d.revision_id,object_kind:d.object_kind,payload_status:d.payload_status,current:d.current}));return {items,next:start+items.length<catalog.length?start+items.length:null,known:catalog.length,known_corpus_only:true};}
@@ -68,19 +87,20 @@ export class ContentWorkflow {
       return {cleared_pages: removed.length, remote_content_preserved: true, pending_work_preserved: true};
     }
     if (op === 'index') {
-      ensure(!this.#control.source_stale || this.#control.pages.length === 0, 'INDEX_REBUILD_REQUIRED');
-      ensure(Array.isArray(x.revision_ids) && x.revision_ids.length > 0 && x.revision_ids.length <= 16 && new Set(x.revision_ids).size === x.revision_ids.length, 'SEARCH_RESOURCE_LIMIT');
+      ensure(!this.#control.source_stale || this.#control.pages.length === 0, 'INDEX_REBUILD_REQUIRED');this.#control.source_stale=false;
+      const selectors=x.items??x.revision_ids;
+      ensure(Array.isArray(selectors)&&selectors.length>0&&selectors.length<=16&&new Set(selectors.map(s=>typeof s==='string'?s:key(s))).size===selectors.length,'SEARCH_RESOURCE_LIMIT');
       const documents = [], skipped=[];
-      for (const revision_id of x.revision_ids) {
-        const expected = catalog.find(d => d.revision_id === revision_id); ensure(expected, 'RECORD_NOT_FOUND');
-        let verified;try{verified=await this.open(revision_id);}catch(e){if(!['PAYLOAD_UNAVAILABLE','UNANCHORED_HISTORY','KEYS_PENDING'].includes(e.message))throw e;skipped.push({revision_id,code:e.message});continue;}
+      for (const selector of selectors) {
+        const expected = catalog.find(d => typeof selector==='string'?d.revision_id===selector:key(d)===key(selector)); ensure(expected, 'RECORD_NOT_FOUND');const revision_id=expected.revision_id;
+        let verified;try{verified=await this.open(expected);}catch(e){if(!['PAYLOAD_UNAVAILABLE','UNANCHORED_HISTORY','KEYS_PENDING'].includes(e.message))throw e;skipped.push({revision_id,code:e.message});continue;}
         try { ensure(verified.state === 'verified' && verified.envelope_digest === expected.envelope_digest, 'INTEGRITY_FAILURE');
           const document = indexDocument(verified.payload.context, verified.payload, verified.envelope_digest);
           ensure(document.group_id === expected.group_id && document.object_id === expected.object_id && document.revision_id === revision_id, 'CONTEXT_MISMATCH');
           documents.push(document); }
         finally { wipe(verified); }
       }
-      this.#control.failures=[...(this.#control.failures??[]).filter(f=>!x.revision_ids.includes(f.revision_id)),...skipped];
+      const revisions=selectors.map(s=>typeof s==='string'?s:s.revision_id);this.#control.failures=[...(this.#control.failures??[]).filter(f=>!revisions.includes(f.revision_id)),...skipped];
       const replaced = new Set(documents.map(key)), old = this.#control.pages.filter(p => p.documents.some(d => replaced.has(key(d))));
       const partial = this.#control.pages.find(p => p.documents.length < 16 && !old.includes(p));
       if (partial) old.push(partial);
@@ -91,7 +111,7 @@ export class ContentWorkflow {
       for (let n = 0; n < all.length; n += 16) {
         const data = {purpose: 'p13-search-page', version: 1, documents: all.slice(n, n + 16)}, record_id = random();
         this.#control.pages.push({record_id, digest: searchFingerprint(data), documents: data.documents.map(d =>
-          ({group_id: d.group_id, object_id: d.object_id, revision_id: d.revision_id, envelope_digest: d.envelope_digest, token_coverage: d.token_coverage}))});
+          ({group_id: d.group_id, object_id: d.object_id, revision_id: d.revision_id, object_kind:d.object_kind,envelope_digest: d.envelope_digest, token_coverage: d.token_coverage}))});
         records.push({id: record_id, kind: 'search-page', data});
       }
       ensure(this.#control.pages.flatMap(p => p.documents).length <= SEARCH_LIMITS.documents, 'SEARCH_RESOURCE_LIMIT');

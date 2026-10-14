@@ -27,7 +27,7 @@ const frameHash=f=>f?.contract===CONTENT_PROFILE?hash(canonicalBytes(wire(conten
 const descriptor=w=>{const {nonce,ciphertext,...d}=w;return d;};
 export class VaultEngine {
   #notesTail=Promise.resolve();#notes;#notesHash;#notesFence;#workflow;#workflowHash;#workflowFence;#deviceAnchor;#key;#keys;#cap;#epoch;#last=0;#revision=0;#anchors=new Map();#busy=false;
-  constructor(store){this.store=store;this.scope=scope(store.scope);this.owner=b64(sodium.randombytes_buf(16));this.vaultId=b64(sodium.randombytes_buf(16));}
+  constructor(store,{portableTransport}={}){this.portableTransport=portableTransport;this.store=store;this.scope=scope(store.scope);this.owner=b64(sodium.randombytes_buf(16));this.vaultId=b64(sodium.randombytes_buf(16));}
   context(kind,record_id){ensure(id(record_id),'INVALID_RECORD');return {...common('local-record'),...this.scope,record_id,record_kind:kind,local_schema:1};}
   #lockReason='explicit';
   get lockReason(){return this.#key?null:this.#lockReason;}
@@ -221,8 +221,8 @@ export class VaultEngine {
       return readContent(row.frame,this.scope,state.pins,id,kind,this.#key,p=>tx.read(p));
     }),
     persist:async(control,records=[],remove=[])=>{
-      const value=structuredClone(contentState(control));delete value.source_stale;value.source_note_hash=this.#notesHash;
-      const ids=contentIds(value),fence=this.#notesFence;
+      const value=structuredClone(contentState(control));delete value.source_stale;value.source_note_hash=control.source_stale&&control.pages.length?control.source_note_hash:this.#notesHash;
+      const ids=contentIds(value),fence=await this.lease(cap);this.#notesFence=fence;
       const result=await this.store.transaction(true,async tx=>{
         const state=await this.#state(tx,cap);this.#fence(state,fence);
         const root=contentControlId(this.scope),old=await tx.read(root);ensure((old?frameHash(old.frame):null)===this.#contentHash,'STALE_WRITER');
@@ -248,7 +248,7 @@ export class VaultEngine {
     this.#authorize(cap);ensure(typeof operation==='string'&&Array.isArray(args)&&args.length<=3&&(operation==='files'?args.length===2:wire(args).length<=4194304),'RESOURCE_LIMIT');
     const {s,currentHash}=await this.store.transaction(false,async tx=>{const s=await this.#state(tx,cap),row=await tx.read(noteControlId(this.scope));return {s,currentHash:row?frameHash(row.frame):null};});
     if(this.#notes&&currentHash!==this.#notesHash){this.#notes.close();this.#notes=undefined;}this.#notesHash=currentHash;this.#notesFence=await this.lease(cap);
-    this.#notes??=new NotesWorkflow({scope:this.scope,pins:s.pins,keys:this.#keys,load:()=>this.store.transaction(false,async tx=>{await this.#state(tx,cap);return this.#noteControl(tx);}),read:(id,kind)=>this.#noteRead(cap,id,kind),persist:(c,e)=>this.#persistNotes(cap,c,e),devices:()=>this.#loadDevices(cap,false),secrets:async()=>{const loaded=await this.#loadDevices(cap,true);return loaded.secrets;},files:this.#filesAdapter(cap),content:this.#contentAdapter(cap)});
+    this.#notes??=new NotesWorkflow({scope:this.scope,pins:s.pins,keys:this.#keys,load:()=>this.store.transaction(false,async tx=>{await this.#state(tx,cap);return this.#noteControl(tx);}),read:(id,kind)=>this.#noteRead(cap,id,kind),persist:(c,e)=>this.#persistNotes(cap,c,e),devices:()=>this.#loadDevices(cap,false),secrets:async()=>{const loaded=await this.#loadDevices(cap,true);return loaded.secrets;},files:this.#filesAdapter(cap),content:this.#contentAdapter(cap),portableTransport:this.portableTransport});
     try{const result=structuredClone(await this.#notes.command(operation,args));this.#authorize(cap);await this.store.transaction(false,tx=>this.#state(tx,cap));return result;}catch(e){this.#notes?.close();this.#notes=undefined;throw e;}
   }
   async evict(cap,fence,recordId){return this.store.transaction(true,async tx=>{const s=await this.#state(tx,cap);this.#fence(s,fence);ensure(recordId!==s.vault_id&&!await this.#reserved(tx,recordId),'RESERVED_RECORD');const r=await tx.read(recordId);ensure(r,'RECORD_NOT_FOUND');ensure(record(this.scope,r.frame).context.record_kind==='cache','UNSYNCED_WORK_PROTECTED');await tx.remove(recordId);s.revision++;await tx.set(s);this.#revision=s.revision;this.#anchors.delete(recordId);return {state:'cache-evicted'};});}
