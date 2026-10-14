@@ -31,3 +31,9 @@ Object.assign(words.ru,{file_copy_preview:'Проверить получател
 
 Object.assign(words.en,{file_offline:'Show verified offline files',file_offline_available:'Available offline',file_pin:'Pin verified ciphertext',file_extra_budget:'Additional pinned cache budget (bytes)',file_pin_confirm:'Reserve additional local cache space; the browser can still remove it.',file_expiry:'Unattached recovery expires'});
 Object.assign(words.ru,{file_offline:'Показать проверенные файлы без сети',file_offline_available:'Доступен без сети',file_pin:'Закрепить проверенный файл',file_extra_budget:'Дополнительный лимит локального кеша (байт)',file_pin_confirm:'Разрешаю дополнительное место для кеша; браузер всё равно может удалить его.',file_expiry:'Срок восстановления неприкреплённого файла'});
+
+Object.assign(words.en,{file_restart:'Restart with fresh encryption',file_restart_confirm:'Reconcile the old attempt, then restart with fresh encryption in this group.'});
+Object.assign(words.ru,{file_restart:'Начать заново с новым шифрованием',file_restart_confirm:'Проверить результат старой попытки, затем начать новую с новым шифрованием в этой группе.'});
+
+Object.assign(words.en,{file_receipt_recovered:'The original file had already committed; its receipt was recovered. No new file was uploaded.'});
+Object.assign(words.ru,{file_receipt_recovered:'Исходный файл уже был загружен; квитанция восстановлена. Новая загрузка не создавалась.'});

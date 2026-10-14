@@ -13,9 +13,9 @@ self.addEventListener('fetch',event=>{
  const prefix=new URL('file-export/',self.registration.scope).href;if(!event.request.url.startsWith(prefix))return;
  const token=event.request.url.slice(prefix.length),ticket=tickets.get(token);tickets.delete(token);
  const denied=()=>new Response('Export unavailable',{status:410,headers:{'Cache-Control':'no-store'}});
- if(!/^[0-9a-f]{32}$/.test(token)||!ticket||(event.clientId?event.clientId!==ticket.client:event.request.mode!=='navigate')||ticket.expires<Date.now()||event.request.method!=='GET'||event.request.headers.has('Range')){event.respondWith(denied());return;}
+ if(!/^[0-9a-f]{32}$/.test(token)||!ticket||(event.clientId?event.clientId!==ticket.client:event.request.mode!=='navigate')||ticket.expires<Date.now()||event.request.method!=='GET'||event.request.headers.has('Range')){if(ticket){const code=event.clientId&&event.clientId!==ticket.client?'EXPORT_CLIENT_MISMATCH':!event.clientId&&event.request.mode!=='navigate'?'EXPORT_MODE_DENIED':'EXPORT_ROUTE_DENIED';ticket.port.postMessage({error:true,code});ticket.port.close();}event.respondWith(denied());return;}
  let resolve,bytes=0,buffer,ended=false,timer,done;const lifetime=new Promise(r=>done=r);event.waitUntil(lifetime);
- const finish=()=>{ended=true;resolve?.();resolve=null;clearTimeout(timer);buffer?.fill(0);buffer=null;ticket.port.postMessage({error:true});ticket.port.close();done();};
+ const finish=()=>{ended=true;resolve?.();resolve=null;clearTimeout(timer);buffer?.fill(0);buffer=null;ticket.port.postMessage({error:true,code:'EXPORT_INTERRUPTED'});ticket.port.close();done();};
  const stream=new ReadableStream({
   start(controller){
    ticket.port.onmessage=({data})=>{
