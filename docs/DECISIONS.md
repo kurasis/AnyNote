@@ -1021,3 +1021,36 @@ a locked Worker whose typed refusal locked again, preventing subsequent unlock.
 Scope/access changes while unlocked still cancel normally, and stale export
 finally blocks cannot cancel a later generation. A host lifecycle regression
 and the original real P12 lock/resume/1 GB scenario cover this behavior.
+
+## P14 immutable receipt reconciliation and native boundaries
+
+The Windows host reuses the maintained native vault/protocol implementations.
+A renderer receives typed content/results, never private device/group/root keys,
+native bearer credentials or a generic path/SQL/HTTP/signing facility. A bundled
+standard-age helper has bounded anonymous frames, pinned runtime/script bytes
+and no network/addon permission; four queued frames plus one fixed frame buffer
+replace growing-buffer copies. Exact-byte sources and protected journals survive
+lock, unknown receipt and reselect. All original specification/P02 and earlier
+dependency locks remain frozen.
+
+An already queued attempt is immutable even if its source draft has newer text.
+The host reconciles the old receipt first; ACK retires only the exact acknowledged
+source. The UI retains a newer draft and its rewritten known parent after ACK.
+Definitive refusal classifications retain source/attempt records and require a
+fresh operation for later publication. Network uncertainty is never treated as
+a definitive denial. Actual API tests include the server-commit/lost-receipt/new
+edit sequence. Existing receipts can be acknowledged after a role downgrade,
+without attempting a new writer action.
+
+Production Linux retains strict file and directory fsync. Windows PHP cannot open
+a directory through its stream API. Only the marked disposable Windows Actions
+backend uses a pinned helper performing actual FlushFileBuffers on its own volume
+in addition to per-file fsync. That privileged CI helper is not installed in the
+current-user owner application and does not change the required production stack.
+
+Windows updater trust comes only from an operator-installed public policy. Signed
+canonical application/platform/channel/version/URL/digest claims and maintained
+Tauri payload signatures are independently verified. HTTPS-only clients, bounded
+requests/download size, a single-operation permit and generation cancellation
+cover stalled transfers as well as arriving chunks. Ephemeral CI signatures are
+software test material, never production signing identity or release approval.

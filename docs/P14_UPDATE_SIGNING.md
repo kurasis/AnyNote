@@ -22,7 +22,10 @@ HTTPS URL and artifact digest. It then uses the maintained Tauri updater's
 payload-signature verification with `requireSignedVersion: true` and downgrade
 protection enabled. The authenticated artifact digest must match the signed
 claims before installation. Downloads are cancelled above 512 MiB or when the
-vault generation changes. A failed update must leave the encrypted profile and
+vault generation changes, including a stalled response. Metadata checks have a 30-second
+request timeout and payload requests a 30-minute bound, with HTTPS-only redirects
+and a 10-second connection timeout. Only one update operation runs at a time.
+A failed update must leave the encrypted profile and
 outbox in place; the installer does not own deletion of that data.
 
 Publisher order:

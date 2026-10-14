@@ -20,6 +20,7 @@ struct State {
     host: Mutex<Option<Arc<Host>>>,
     root: PathBuf,
     modal: AtomicUsize,
+    updating: std::sync::atomic::AtomicBool,
     generation: Arc<AtomicU64>,
     app: OnceLock<tauri::AppHandle>,
 }
@@ -520,6 +521,7 @@ fn main() {
                 host: Mutex::new(None),
                 root,
                 modal: AtomicUsize::new(0),
+                updating: std::sync::atomic::AtomicBool::new(false),
                 generation: Arc::new(AtomicU64::new(0)),
                 app: OnceLock::new(),
             });
@@ -575,6 +577,36 @@ fn open_link(window: tauri::WebviewWindow, url: String) -> Result<(), String> {
         .map_err(|_| "SYSTEM_BROWSER_UNAVAILABLE".into())
 }
 
+struct UpdatePermit(Arc<State>);
+impl Drop for UpdatePermit {
+    fn drop(&mut self) {
+        self.0.updating.store(false, Ordering::SeqCst);
+    }
+}
+struct UpdateWatch(Arc<std::sync::atomic::AtomicBool>);
+impl Drop for UpdateWatch {
+    fn drop(&mut self) {
+        self.0.store(true, Ordering::SeqCst);
+    }
+}
+fn watch_update(
+    host: Arc<Host>,
+    generation: u64,
+    abort: futures_util::future::AbortHandle,
+) -> UpdateWatch {
+    let done = Arc::new(std::sync::atomic::AtomicBool::new(false));
+    let stop = done.clone();
+    std::thread::spawn(move || {
+        while !stop.load(Ordering::SeqCst) {
+            if host.current() != generation {
+                abort.abort();
+                break;
+            }
+            std::thread::sleep(std::time::Duration::from_millis(100));
+        }
+    });
+    UpdateWatch(done)
+}
 #[tauri::command]
 async fn update(
     window: tauri::WebviewWindow,
@@ -584,16 +616,26 @@ async fn update(
     confirmed: bool,
 ) -> Result<Value, String> {
     binding(&window)?;
+    if state
+        .updating
+        .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
+        .is_err()
+    {
+        return Err("HOST_BUSY".into());
+    }
+    let _permit = UpdatePermit(state.inner().clone());
     let host = state.host()?;
     host.capability(generation).map_err(|e| e.0)?;
-    let bytes = std::fs::read(
-        state
-            .root
-            .parent()
-            .ok_or("STORAGE_UNAVAILABLE")?
-            .join("update-policy.json"),
-    )
-    .map_err(|_| "UPDATE_TRUST_NOT_CONFIGURED")?;
+    let policy_path = state
+        .root
+        .parent()
+        .ok_or("STORAGE_UNAVAILABLE")?
+        .join("update-policy.json");
+    let mut selected_policy =
+        Source::open(&policy_path, 65536).map_err(|_| "UPDATE_TRUST_NOT_CONFIGURED")?;
+    let bytes = selected_policy
+        .small(65536)
+        .map_err(|_| "INVALID_UPDATE_POLICY")?;
     let policy: anynote_windows_native::updates::UpdatePolicy =
         serde_json::from_value(anynote_crypto_core::codec::strict(&bytes, 65536).map_err(|e| e.0)?)
             .map_err(|_| "INVALID_UPDATE_POLICY")?;
@@ -602,6 +644,12 @@ async fn update(
     let updater = window
         .app_handle()
         .updater_builder()
+        .timeout(std::time::Duration::from_secs(30))
+        .configure_client(|client| {
+            client
+                .https_only(true)
+                .connect_timeout(std::time::Duration::from_secs(10))
+        })
         .pubkey(policy.public_key.clone())
         .endpoints(vec![
             tauri::Url::parse(&policy.endpoint).map_err(|_| "INVALID_UPDATE_POLICY")?,
@@ -609,9 +657,18 @@ async fn update(
         .map_err(|_| "INVALID_UPDATE_POLICY")?
         .build()
         .map_err(|_| "INVALID_UPDATE_POLICY")?;
-    let Some(next) = updater.check().await.map_err(|_| "UPDATE_UNAVAILABLE")? else {
+    let (check_abort, check_registration) = futures_util::future::AbortHandle::new_pair();
+    let check_watch = watch_update(host.clone(), generation, check_abort);
+    let checked = futures_util::future::Abortable::new(updater.check(), check_registration)
+        .await
+        .map_err(|_| "UPDATE_CANCELLED")?
+        .map_err(|_| "UPDATE_UNAVAILABLE")?;
+    drop(check_watch);
+    host.capability(generation).map_err(|e| e.0)?;
+    let Some(mut next) = checked else {
         return Ok(json!({"state":"CURRENT"}));
     };
+    next.timeout = Some(std::time::Duration::from_secs(1800));
     let claims = policy
         .signed_claims(
             &window.app_handle().package_info().version.to_string(),
@@ -654,6 +711,7 @@ async fn update(
     }
     host.capability(generation).map_err(|e| e.0)?;
     let (abort, registration) = futures_util::future::AbortHandle::new_pair();
+    let download_watch = watch_update(host.clone(), generation, abort.clone());
     let cancel = abort.clone();
     let owned = host.clone();
     let mut downloaded = 0u64;
@@ -673,6 +731,7 @@ async fn update(
         registration,
     )
     .await;
+    drop(download_watch);
     let bytes = result
         .map_err(|_| "UPDATE_CANCELLED_OR_TOO_LARGE")?
         .map_err(|_| "UPDATE_INTEGRITY_FAILURE")?;

@@ -112,3 +112,35 @@ exact-source receipt collector. A Windows gate also found a provider import styl
 issue; the maintained Pint formatter fixed it and all 102 PHP files pass lint.
 No required failed check has been bypassed. See P14_WINDOWS.md for the operator
 and build guide; installed GUI/update acceptance is still pending.
+
+After the fixed helper frame buffer, the expanded release-mode gigabyte round
+trip passes all 50 checks. Observed peaks are 239,906,816 native and 405,811,200
+helper bytes, compared with the earlier 812,802,048 helper peak. This is an actual
+Linux development measurement; source was dirty because unrelated host acceptance
+work continued during the run. It is not final exact-source/Windows acceptance
+or a formal same-process incremental-memory-target claim.
+
+Updater requests now have independent generation cancellation, bounded request
+timeouts, HTTPS-only clients and a single-operation permit. Windows acceptance
+also stages a native SENT_UNKNOWN immutable outbox before installation, verifies
+its exact attempt/draft digest after the actual upgrade/restart, and publishes
+that original attempt. Actual raster/PDF workers are exercised in isolated native
+preview windows. These expanded Windows checks are pending the next source run.
+
+The native API regression run now passes 57 checks, including an actual server
+commit whose receipt is withheld from native custody, a newer saved edit, exact
+receipt reconciliation, retention of that newer edit and its subsequent fresh
+publication. Host reconciliation checks receipts before send/writer authorization.
+Definitive conflict/access/rekey refusals classify the immutable attempt while
+retaining its original record and draft; uncertain network outcomes stay pending.
+The UI keeps the newer protected draft visible after an older receipt is recovered.
+
+The native sharing suite now passes 20 checks, including a server-committed
+receiver publication whose receipt is withheld until after a role downgrade.
+The receiver acknowledges that exact receipt without another send or writer
+authorization; an unrelated unpublished draft remains protected and blocked.
+The expanded case also exposed a stale history inventory: access/history
+operations now capture current verified peer publications before preparation.
+An explicit native-confirmed pending-access cancellation reconciles its result
+before retiring the pending key. UI entry creation and attachment preservation
+were corrected during host review. Final Windows acceptance remains outstanding.

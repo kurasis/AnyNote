@@ -7,7 +7,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: windows-application-${{ github.ref }}
+  # Preserve costly independent exact-source native/GUI runs while a later source queues.
+  group: windows-application-${{ github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}
   cancel-in-progress: true
 jobs:
   host-windows-build:

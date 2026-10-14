@@ -276,6 +276,30 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                     job.finish(result.clone());
                     result
                 }
+                Some("prepare-note-attempt") => {
+                    let cap = host.capability(host.current())?;
+                    let queued = host.vault.notes_command(
+                        cap.as_ref(),
+                        anynote_local_vault::notes::NotesRequest::Queue {
+                            draft_id: command["draft_id"]
+                                .as_str()
+                                .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?
+                                .to_owned(),
+                        },
+                    )?;
+                    let sent = host.vault.notes_command(
+                        cap.as_ref(),
+                        anynote_local_vault::notes::NotesRequest::Send {
+                            attempt_id: queued["attempt_id"]
+                                .as_str()
+                                .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?
+                                .to_owned(),
+                        },
+                    )?;
+                    Ok(
+                        json!({"attempt_id":queued["attempt_id"],"request_sha256":anynote_crypto_core::crypto::hash(&canonical(&sent["request"])?),"request":sent["request"] }),
+                    )
+                }
                 Some("copy-file") => {
                     let draft = command["draft_id"]
                         .as_str()

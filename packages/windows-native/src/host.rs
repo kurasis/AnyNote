@@ -516,6 +516,10 @@ impl Host {
                 Some("RATE_LIMITED") => "RATE_LIMITED",
                 Some("SYNC_CURSOR_EXPIRED") => "SYNC_CURSOR_EXPIRED",
                 Some("REKEY_REQUIRED") => "REKEY_REQUIRED",
+                Some("HISTORY_CLOSURE_REQUIRED") => "HISTORY_CLOSURE_REQUIRED",
+                Some("POLICY_CHANGED") => "POLICY_CHANGED",
+                Some("ROSTER_CHANGED") => "ROSTER_CHANGED",
+                Some("ACCESS_REVOKED") => "ACCESS_REVOKED",
                 Some("SESSION_EXPIRED" | "AUTH_REQUIRED") => "REAUTH_REQUIRED",
                 Some("ROLE_FORBIDDEN") => "ROLE_FORBIDDEN",
                 Some("IDEMPOTENCY_MISMATCH") => "IDEMPOTENCY_MISMATCH",
@@ -701,6 +705,27 @@ impl Host {
     pub fn publish(&self, cap: &Capability, draft: &str) -> Result<Value> {
         self.publish_bound(cap, draft, false)
     }
+    fn publication_error(&self, cap: &Capability, attempt: &str, error: Error) -> Error {
+        if matches!(
+            error.0,
+            "STALE_REVISION"
+                | "REKEY_REQUIRED"
+                | "HISTORY_CLOSURE_REQUIRED"
+                | "POLICY_CHANGED"
+                | "ROSTER_CHANGED"
+                | "ROLE_FORBIDDEN"
+                | "NOT_FOUND"
+                | "ACCESS_REVOKED"
+        ) {
+            // Preserve the immutable attempt and source, but classify a definitive
+            // refusal so a later reviewed publication uses a fresh operation.
+            let _ = self.notes(
+                cap,
+                json!({"action":"reject","attempt_id":attempt,"code":error.0}),
+            );
+        }
+        error
+    }
     fn publish_bound(&self, cap: &Capability, draft: &str, merge: bool) -> Result<Value> {
         id(draft)?;
         let d = match self.notes(cap, json!({"action":"draft","draft_id":draft})) {
@@ -719,19 +744,48 @@ impl Host {
             Err(e) => return Err(e),
         };
         let group = string(&d["payload"]["context"], "group_id")?;
-        check(
-            merge
-                || d["payload"]["context"]["parents"]
-                    .as_array()
-                    .ok_or(Error("INTEGRITY_FAILURE"))?
-                    .len()
-                    <= 1,
-            "CONFLICT_CONFIRMATION_REQUIRED",
-        )?;
         self.group(cap, group)?;
-        let queued = self.notes(cap, json!({"action":"queue","draft_id":draft}))?;
-        let attempt = string(&queued, "attempt_id")?;
-        let sent = self.notes(cap, json!({"action":"send","attempt_id":attempt}))?;
+        let summary = self.notes(cap, json!({"action":"summary"}))?;
+        let pending = summary["drafts"]
+            .as_array()
+            .ok_or(Error("INTEGRITY_FAILURE"))?
+            .iter()
+            .find(|d| {
+                d["draft_id"] == draft
+                    && matches!(d["state"].as_str(), Some("QUEUED" | "SENT_UNKNOWN"))
+            })
+            .and_then(|d| d["attempt_id"].as_str())
+            .map(str::to_owned);
+        let attempt = if let Some(attempt) = pending {
+            attempt
+        } else {
+            check(
+                merge
+                    || d["payload"]["context"]["parents"]
+                        .as_array()
+                        .ok_or(Error("INTEGRITY_FAILURE"))?
+                        .len()
+                        <= 1,
+                "CONFLICT_CONFIRMATION_REQUIRED",
+            )?;
+            let queued = self.notes(cap, json!({"action":"queue","draft_id":draft}))?;
+            string(&queued, "attempt_id")?.to_owned()
+        };
+        // An existing receipt is read/acked before any fresh writer check or send.
+        // This also permits reconciling an already committed attempt after role loss.
+        match self.api(cap, Route::Receipt, Some(&attempt), None, &[], None) {
+            Ok(result) => {
+                return self.notes(
+                    cap,
+                    json!({"action":"ack","attempt_id":attempt,"result":result}),
+                );
+            }
+            Err(Error("NOT_FOUND")) => (),
+            Err(e) => return Err(e),
+        }
+        let sent = self
+            .notes(cap, json!({"action":"send","attempt_id":attempt}))
+            .map_err(|e| self.publication_error(cap, &attempt, e))?;
         let request = &sent["request"];
         let c = &request["bundle"]["envelope"]["header"]["context"];
         let route = if c["action"] == "soft-delete" {
@@ -752,21 +806,9 @@ impl Host {
         } else {
             string(c, "object_id")?
         };
-        let receipt = self.api(
-            cap,
-            Route::Receipt,
-            Some(string(c, "operation_id")?),
-            None,
-            &[],
-            None,
-        );
-        let result = match receipt {
-            Ok(v) => v,
-            Err(Error("NOT_FOUND")) => {
-                self.api(cap, route, Some(resource), None, &[], Some(request))?
-            }
-            Err(e) => return Err(e),
-        };
+        let result = self
+            .api(cap, route, Some(resource), None, &[], Some(request))
+            .map_err(|e| self.publication_error(cap, &attempt, e))?;
         self.notes(
             cap,
             json!({"action":"ack","attempt_id":attempt,"result":result}),
@@ -1217,7 +1259,7 @@ impl Host {
         parents: Value,
         action: &str,
     ) -> Value {
-        json!({"draft_id":null,"group_id":group,"object_id":object,"object_kind":kind,"thread_id":thread,"action":action,"parents":parents,"archived":false,"content":{"title":content["title"],"markdown":content["markdown"],"metadata_kind":content["metadata_kind"],"tags":content["tags"],"checklist":content["checklist"],"summary_entry_id":content["summary_entry_id"],"preferences":content["preferences"]}})
+        json!({"draft_id":null,"group_id":group,"object_id":object,"object_kind":kind,"thread_id":thread,"action":action,"parents":parents,"archived":false,"attachments":content["context"]["attachments"].as_array().cloned().unwrap_or_default(),"content":{"title":content["title"],"markdown":content["markdown"],"metadata_kind":content["metadata_kind"],"tags":content["tags"],"checklist":content["checklist"],"summary_entry_id":content["summary_entry_id"],"preferences":content["preferences"]}})
     }
     fn list_open(
         &self,
@@ -1410,7 +1452,24 @@ impl Host {
         confirmed: bool,
     ) -> Result<Value> {
         check(confirmed, "CONFIRMATION_REQUIRED")?;
+        if !matches!(action, "retry" | "cancel") {
+            // Capture peer publications before changing their authority or endorsing
+            // a history inventory; a stale local catalog is not a complete closure.
+            self.resync(cap)?;
+        }
         self.shared_proof(cap, group)?;
+        if action == "cancel" {
+            let request=self.notes(cap,json!({"action":"shared","request":{"action":"cancel-attempt","group_id":group,"confirmed":true}}))?;
+            let result = self.api(
+                cap,
+                Route::CancelShared,
+                Some(group),
+                None,
+                &[],
+                Some(&request),
+            )?;
+            return self.notes(cap,json!({"action":"shared","request":{"action":"finish-cancel","group_id":group,"result":result}}));
+        }
         let request = match action {
             "retry" => json!({"action":"retry","group_id":group}),
             "history" => json!({"action":"history","group_id":group}),
