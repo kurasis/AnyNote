@@ -1,7 +1,9 @@
 # CI-owned real Windows dialog/lifecycle automation. Never used by the product.
-param([ValidateSet('file','consent','foreground','wts-lock','wts-unlock','memory')][string]$Operation,[int]$ProcessId,[string]$Value)
+param([ValidateSet('file','consent','foreground','wts-lock','wts-unlock','memory','clipboard-read','clipboard-other')][string]$Operation,[int]$ProcessId,[string]$Value)
 $ErrorActionPreference='Stop'
 if($env:GITHUB_ACTIONS -ne 'true'){throw 'Synthetic Windows Actions runner required'}
+if($Operation -eq 'clipboard-read'){[Console]::Write([string](Get-Clipboard -Raw));exit}
+if($Operation -eq 'clipboard-other'){Set-Clipboard -Value 'P14 synthetic other application copy';exit}
 Add-Type -AssemblyName UIAutomationClient
 Add-Type -AssemblyName UIAutomationTypes
 Add-Type @'

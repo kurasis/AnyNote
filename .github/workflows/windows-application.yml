@@ -54,18 +54,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Unchanged baseline and closed native capability audit
         run: python scripts/check-p14.py
-      - name: Native host and maintained WebView2 single installer
-        id: desktop-build
+      - name: Native custody tests and release acceptance driver
+        id: native-core
         run: |
           cargo test --manifest-path packages/windows-native/Cargo.toml --locked -j 4 -- --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo build --manifest-path packages/windows-native/Cargo.toml --release --features integration-harness --locked -j 4
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python scripts/p14-dependencies.py --stage
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          npm --prefix apps/desktop run tauri -- build --ci -- --locked -j 4
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          git diff --exit-code
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830
         if: steps.native-cache.outputs.cache-hit != 'true'
@@ -74,6 +68,15 @@ jobs:
             packages/windows-native/target
             apps/desktop/src-tauri/target
           key: ${{ steps.native-cache.outputs.cache-primary-key }}
+      - name: Maintained WebView2 single installer
+        id: desktop-build
+        run: |
+          python scripts/p14-dependencies.py --stage
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm --prefix apps/desktop run tauri -- build --ci -- --locked -j 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Actual owned Windows TLS, PHP and MariaDB
         run: |
           $env:ANYNOTE_TEST_PYTHON = (Get-Command python).Source
@@ -105,6 +108,14 @@ jobs:
         run: |
           npm --prefix apps/desktop run tauri -- build --ci --no-bundle --features integration-harness -- --locked -j 4
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Ephemeral synthetic next-version installer for real updater acceptance
+        run: |
+          New-Item -ItemType Directory -Force .local/p14-candidate | Out-Null
+          Copy-Item apps/desktop/src-tauri/target/release/anynote-desktop.exe .local/p14-tools/instrumented-host.exe
+          npm --prefix apps/desktop run tauri -- build --ci --config '{"version":"0.14.1"}' -- --locked -j 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Move-Item apps/desktop/src-tauri/target/release/bundle/nsis/*0.14.1*.exe .local/p14-candidate/
+          Copy-Item .local/p14-tools/instrumented-host.exe apps/desktop/src-tauri/target/release/anynote-desktop.exe
       - name: Actual installed Windows and WebView2 dialogs lifecycle SQL and 1 GB workflows
         run: |
           python scripts/p14-windows-services.py trust

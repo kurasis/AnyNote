@@ -276,6 +276,27 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                     job.finish(result.clone());
                     result
                 }
+                Some("copy-file") => {
+                    let draft = command["draft_id"]
+                        .as_str()
+                        .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?;
+                    let destination = command["destination_group"]
+                        .as_str()
+                        .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?;
+                    let preview =
+                        host.selected_file_copy_preview(host.current(), draft, destination)?;
+                    let source = Source::open(
+                        std::path::Path::new(
+                            command["source"]
+                                .as_str()
+                                .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?,
+                        ),
+                        1000000000,
+                    )?;
+                    Ok(
+                        json!({"job_id":host.start_selected_file_copy(host.current(),draft,destination,source,preview["digest"].as_str().ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?)?}),
+                    )
+                }
                 Some("kit") => host.save_kit(
                     host.current(),
                     command["export_id"]
@@ -319,8 +340,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                             116010000000,
                         )?,
                         command["kit"].clone(),
-                        None,
-                        None,
+                        command["destination"].as_str(),
+                        command["resume"].as_str(),
                         &a,
                     )
                 }

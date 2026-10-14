@@ -1,4 +1,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+mod clipboard;
 use anynote_windows_native::{
     bridge::Assets,
     host::{Binding, Host, Request, Service},
@@ -72,6 +73,7 @@ impl State {
         }
     }
     fn lock(&self) {
+        clipboard::clear();
         self.mask();
         if let Ok(h) = self.host() {
             h.lock();
@@ -116,8 +118,11 @@ async fn product(
         let revoke=if let Request::Device{action,value:Some(value),confirmed:true}=&request {
             if action=="revoke" {Some(host.revoke_preview(generation,value).map_err(|e|e.0.to_owned())?)}else{None}
         }else{None};
-        let pairing_preview=if matches!(&request,Request::Pairing{request:anynote_windows_native::pairing::Command::Approve{confirmed:true}|anynote_windows_native::pairing::Command::Confirm{confirmed:true}|anynote_windows_native::pairing::Command::Cancel{confirmed:true}}){Some(host.pairing_command(&host.capability(generation).map_err(|e|e.0.to_owned())?,&anynote_windows_native::pairing::Command::Status{}).map_err(|e|e.0.to_owned())?)}else{None};
+        let pairing_preview=if matches!(&request,Request::Pairing{request:anynote_windows_native::pairing::Command::Approve{confirmed:true}|anynote_windows_native::pairing::Command::Confirm{confirmed:true}|anynote_windows_native::pairing::Command::Cancel{confirmed:true}}){Some(host.pairing_command(host.capability(generation).map_err(|e|e.0.to_owned())?.as_ref(),&anynote_windows_native::pairing::Command::Status{}).map_err(|e|e.0.to_owned())?)}else{None};
+        let copy_preview=if let Request::CopyNote{source_group,destination_group,revision_id,..}=&request{Some(host.execute(&b,generation,Request::CopyPreview{source_group:source_group.clone(),destination_group:destination_group.clone(),revision_id:revision_id.clone()}).map_err(|e|e.0.to_owned())?)}else{None};
         let consent = match &request {
+            Request::CopyNote {confirmed:true,..}=>Some(format!("{}\n{}",if ru{"Создать отдельный черновик с этими проверенными получателями? Исходная запись сохраняется."}else{"Create a separate draft for these verified recipients? The original is retained."},serde_json::to_string_pretty(&copy_preview.as_ref().unwrap()["preview"]).map_err(|_|"INVALID_REQUEST")?)),
+            Request::RecoverDraft {draft_id,destination_group,destination_thread,confirmed:true}=>Some(format!("{}\nDraft: {}\nGroup: {}\nThread: {}",if ru{"Сохранить отдельную копию в вашей личной группе? Исходный черновик сохраняется."}else{"Save a separate copy in your private group? The original draft is retained."},draft_id,destination_group,destination_thread)),
             Request::ResolveDraft {draft_id,confirmed:true}=>Some(format!("{}\n{}",if ru{"Опубликовать проверенный результат объединения всех выбранных конфликтующих веток?"}else{"Publish the reviewed resolution of all selected conflict branches?"},draft_id)),
             Request::Shared {group_id,action,target_account_id,role,confirmed:true}=>Some(format!("{}\nGroup: {}\nAction: {}\nAccount: {}\nRole: {}",if ru{"Применить изменение доступа к общей группе?"}else{"Apply this shared-group access change?"},group_id,action,target_account_id.as_deref().unwrap_or("—"),role.as_deref().unwrap_or("—"))),
             Request::Device {confirmed:true,..}=>Some(if let Some(preview)=&revoke {format!("{}\n{}",if ru{"Отозвать эти устройства и все перечисленные дочерние устройства?"}else{"Revoke these devices and every listed descendant?"},serde_json::to_string(&preview["affected"]).map_err(|_|"INVALID_REQUEST")?)}else{if ru{"Подтвердить выбранное изменение доверенных устройств?"}else{"Confirm the selected trusted-device change?"}.into()}),
@@ -235,6 +240,9 @@ fn profile_id_check(id: &str) -> Result<(), String> {
 #[serde(tag = "operation", rename_all = "kebab-case", deny_unknown_fields)]
 enum FileCommand {
     PairingPng {},
+    SavePairingPng {
+        png_base64: String,
+    },
     ExportAccountCard {},
     ExportGroupCard {
         group_id: String,
@@ -259,6 +267,15 @@ enum FileCommand {
     },
     SaveOwnership {
         group_id: String,
+    },
+    CopySavedText {
+        group_id: String,
+        object_id: String,
+        revision_id: String,
+    },
+    CopyFile {
+        draft_id: String,
+        destination_group: String,
     },
     Upload {
         group_id: String,
@@ -414,7 +431,35 @@ async fn file_job(
   FileCommand::OwnershipConsent{group_id}=>{let cosign=true;let policy=pick_public(&window,&state,ru)?;public_consent(&window,&state,ru,&format!("{}\n{}",if cosign{if ru{"Согласиться стать владельцем группы? Проверьте личности прежнего и нового владельца."}else{"Consent to becoming this group's owner? Verify both current and incoming owner identities."}}else{if ru{"Завершить передачу владения с независимым согласием нового владельца?"}else{"Complete the independently consented ownership transfer?"}},serde_json::to_string_pretty(&policy["body"]).map_err(|_|"INVALID_REQUEST")?))?;let result=host.ownership_step(generation,&group_id,&policy,cosign).map_err(|e|e.0)?;if cosign{save_public(&window,&state,&host,generation,ru,"AnyNote-ownership-consented.json",&result["policy"])}else{Ok(result["result"].clone())}},
   FileCommand::OwnershipCommit{group_id}=>{let cosign=false;let policy=pick_public(&window,&state,ru)?;public_consent(&window,&state,ru,&format!("{}\n{}",if cosign{if ru{"Согласиться стать владельцем группы? Проверьте личности прежнего и нового владельца."}else{"Consent to becoming this group's owner? Verify both current and incoming owner identities."}}else{if ru{"Завершить передачу владения с независимым согласием нового владельца?"}else{"Complete the independently consented ownership transfer?"}},serde_json::to_string_pretty(&policy["body"]).map_err(|_|"INVALID_REQUEST")?))?;let result=host.ownership_step(generation,&group_id,&policy,cosign).map_err(|e|e.0)?;if cosign{save_public(&window,&state,&host,generation,ru,"AnyNote-ownership-consented.json",&result["policy"])}else{Ok(result["result"].clone())}},
   FileCommand::SaveOwnership{group_id}=>{let policy=host.saved_ownership_policy(generation,&group_id).map_err(|e|e.0)?;save_public(&window,&state,&host,generation,ru,"AnyNote-ownership-retained.json",&policy)},
+  FileCommand::SavePairingPng{png_base64}=>{
+    if png_base64.len()>5592408{return Err("RESOURCE_LIMIT".into());}
+    let bytes=anynote_crypto_core::crypto::un64(&png_base64).map_err(|_|"PAIRING_PNG_REQUIRED")?;
+    if bytes.len()<33 || bytes.len()>4194304 || &bytes[..8]!=b"\x89PNG\r\n\x1a\n" || &bytes[12..16]!=b"IHDR"{return Err("PAIRING_PNG_REQUIRED".into());}
+    let width=u32::from_be_bytes(bytes[16..20].try_into().unwrap());let height=u32::from_be_bytes(bytes[20..24].try_into().unwrap());
+    if width==0||height==0||width>2048||height>2048{return Err("PAIRING_PNG_REQUIRED".into());}
+    let selected={let _modal=state.modal();rfd::FileDialog::new().set_parent(&window).set_file_name("AnyNote-private-pairing.png").add_filter("PNG",&["png"]).save_file().ok_or("CANCELLED")?};
+    host.capability(generation).map_err(|e|e.0)?;
+    let mut output=anynote_windows_native::selection::Destination::create(&selected).map_err(|e|e.0)?;
+    std::io::Write::write_all(&mut output,&bytes).map_err(|_|"STORAGE_UNAVAILABLE")?;
+    host.capability(generation).map_err(|e|e.0)?;output.finish().map_err(|e|e.0)?;
+    Ok(json!({"state":"SAVED","scope":"one-time-private-pairing-QR"}))
+  },
   FileCommand::PairingPng{}=>{let selected={let _modal=state.modal();rfd::FileDialog::new().set_parent(&window).add_filter("Pairing PNG",&["png"]).pick_file().ok_or("CANCELLED")?};let mut source=Source::open(&selected,4194304).map_err(|e|e.0)?;let bytes=source.small(4194304).map_err(|e|e.0)?;if bytes.len()<33 || &bytes[..8]!=b"\x89PNG\r\n\x1a\n" || &bytes[12..16]!=b"IHDR" {return Err("PAIRING_PNG_REQUIRED".into());}let width=u32::from_be_bytes(bytes[16..20].try_into().unwrap());let height=u32::from_be_bytes(bytes[20..24].try_into().unwrap());if width==0||height==0||width>2048||height>2048{return Err("PAIRING_PNG_REQUIRED".into());}host.capability(generation).map_err(|e|e.0)?;Ok(json!({"png_base64":anynote_crypto_core::crypto::b64(&bytes)}))},
+  FileCommand::CopySavedText{group_id,object_id,revision_id}=>{
+    let opened=host.execute(&binding(&window)?,generation,Request::Open{group_id,object_id,revision_id}).map_err(|e|e.0)?;
+    public_consent(&window,&state,ru,if ru{"Передать сохранённый текст в системный буфер обмена? Другие приложения смогут его прочитать. Через 30 секунд и при блокировке AnyNote попытается очистить только свою неизменённую копию."}else{"Copy the saved text to the system clipboard? Other applications can read it. After 30 seconds and on lock, AnyNote attempts to clear only its own unchanged copy."})?;
+    host.capability(generation).map_err(|e|e.0)?;
+    let text=format!("{}\n\n{}",opened["payload"]["title"].as_str().unwrap_or(""),opened["payload"]["markdown"].as_str().unwrap_or(""));
+    clipboard::copy(binding(&window)?.hwnd,&text)?;Ok(json!({"state":"COPIED","best_effort_clear_seconds":30}))
+  },
+  FileCommand::CopyFile{draft_id,destination_group}=>{
+    let preview=host.selected_file_copy_preview(generation,&draft_id,&destination_group).map_err(|e|e.0)?;
+    public_consent(&window,&state,ru,&format!("{}\n{}",if ru{"Скопировать только выбранный исходный файл с новыми ключами для этих получателей? Исходные данные сохраняются."}else{"Copy only the selected original file with fresh keys for these recipients? Original data is retained."},serde_json::to_string_pretty(&preview["preview"]).map_err(|_|"INVALID_REQUEST")?))?;
+    let selected={let _modal=state.modal();rfd::FileDialog::new().set_parent(&window).pick_file().ok_or("CANCELLED")?};
+    let source=Source::open(&selected,1000000000).map_err(|e|e.0)?;
+    let job=host.start_selected_file_copy(generation,&draft_id,&destination_group,source,preview["digest"].as_str().ok_or("INVALID_REQUEST")?).map_err(|e|e.0)?;
+    Ok(json!({"job_id":job,"source_retained":true}))
+  },
   FileCommand::Upload{group_id,resume}=>{let selected={let _modal=state.modal();rfd::FileDialog::new().set_parent(&window).pick_file().ok_or("CANCELLED")?};let source=Source::open(&selected,1000000000).map_err(|e|e.0)?;let job=host.start_upload(generation,group_id,source,resume).map_err(|e|e.0)?;Ok(json!({"job_id":job}))},
   FileCommand::Download{group_id,file_version_id,offline}=>{let selected={let _modal=state.modal();rfd::FileDialog::new().set_parent(&window).set_file_name("AnyNote-file.bin").save_file().ok_or("CANCELLED")?};let job=host.start_download(generation,group_id,file_version_id,&selected,offline).map_err(|e|e.0)?;Ok(json!({"job_id":job}))},
   FileCommand::Export{group_ids,history,trash,kib_per_second}=>{let plan=host.prepare_export(generation,&group_ids,history,trash,kib_per_second).map_err(|e|e.0)?;let selected={let _modal=state.modal();rfd::FileDialog::new().set_parent(&window).set_file_name("AnyNote-export.age").save_file().ok_or("CANCELLED")?};let(node,script,manifest)=assets(&app)?;let job=host.jobs.start(generation).map_err(|e|e.0)?;let id=job.id.clone();std::thread::spawn(move||{let a=Assets{node:&node,script:&script,node_sha:manifest["node_sha256"].as_str().unwrap_or(""),script_sha:manifest["script_sha256"].as_str().unwrap_or("")};let r=host.export_archive(generation,plan,&selected,&a,job.clone());job.finish(r);});Ok(json!({"job_id":id}))},

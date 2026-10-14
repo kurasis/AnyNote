@@ -27,7 +27,7 @@ implied by this development branch.
 
 ## Current development verification
 
-The native HTTP development harness now passes 40 checks against the actual owned
+The native HTTP development harness now passes 49 checks against the actual owned
 HTTPS/Laravel/MariaDB stack: maintained PKCE loopback, signed notes, delta/offline
 projection, private preferences, exact receipt recovery, archive/trash/restore,
 verified device roster, shared history/epoch changes, and a small-file complete
@@ -75,3 +75,23 @@ FlushFileBuffers on its own volume, in addition to existing per-file fsync. This
 is an explicitly scoped CI storage adapter, not a production Windows backend or
 a claim that PHP directory fsync works on Windows. The next Windows run must
 prove the primitive and complete actual gigabyte and WebView2 workflows.
+
+The expanded native development round trip passes 49 checks: selected-file copy
+into a shared group with fresh IDs/keys, recovered metadata, a placeholder for a
+pruned/deleted source thread, remapped authenticated attachments, pause, lock,
+source reselect and same-job import resume. Import reconciles expired/cancelled
+or obsolete-epoch uploads before fresh preparation and retains superseded IDs.
+The selected source and original archive remain immutable recovery inputs.
+
+The Windows GUI acceptance now includes explicit clipboard handoff with a native
+confirmation and best-effort 30-second/lock cleanup, preserving another app's
+clipboard value. Only a verified saved note can enter that native clipboard
+route. QR PNG save uses a native exclusive destination. Actual clipboard, updater
+HTTPS/tamper/candidate installation and WebView2 tests remain pending execution.
+An ephemeral CI-only maintained CLI signer is deleted after producing public
+fixtures; its key is never included in artifacts or application resources.
+
+Windows bd9d7da failed to compile a pairing confirmation's Arc reference, before
+backend/gigabyte/WebView acceptance. The corrected reference and separately
+cacheable native release build are included in the next run. The failure is not
+platform acceptance, and cached/stale installer output is not a new candidate.

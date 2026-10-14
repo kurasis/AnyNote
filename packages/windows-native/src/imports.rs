@@ -301,11 +301,12 @@ impl Host {
                 14 => {
                     let mut event = strict(&data, 16777216)?;
                     let revision = string(&event, "revision")?.to_owned();
-                    if input.state["selected_notes"]
-                        .as_array()
-                        .unwrap()
-                        .iter()
-                        .any(|r| r == &revision)
+                    if event["payload"]["metadata_kind"] != "account-preferences"
+                        && input.state["selected_notes"]
+                            .as_array()
+                            .unwrap()
+                            .iter()
+                            .any(|r| r == &revision)
                         && !input.state["notes"]
                             .as_array()
                             .unwrap()
@@ -339,7 +340,7 @@ impl Host {
                             "application/octet-stream",
                         )?;
                         file = Some(string(&prepared, "draft_id")?.into());
-                        input.state["files"].as_array_mut().unwrap().push(json!({"source_version":version,"draft_id":file,"attached":false,"attachment_draft":null}));
+                        input.state["files"].as_array_mut().unwrap().push(json!({"source_version":version,"draft_id":file,"attached":false,"attachment_draft":null,"reference":null}));
                         self.save_native_job(cap, &iid, &input.state)?;
                     }
                     acknowledgements.clear();
@@ -364,6 +365,58 @@ impl Host {
                         check(status.status == 200, "API_DENIED")?;
                         let status = strict(&status.bytes, 1048576)?;
                         committed_file = status["state"] == "COMMITTED";
+                        if !committed_file {
+                            let old = file.as_ref().unwrap().clone();
+                            let preview = self.vault.file_copy_preview(cap, &old, &group)?;
+                            if matches!(status["state"].as_str(), Some("EXPIRED" | "CANCELLED"))
+                                || preview["preview"]["policy"] != request["context"]["policy"]
+                            {
+                                // Reconcile the old immutable operation before preparing new
+                                // IDs/DEKs. A committed operation is never burned or resent.
+                                let closed = if matches!(
+                                    status["state"].as_str(),
+                                    Some("EXPIRED" | "CANCELLED")
+                                ) {
+                                    status
+                                } else {
+                                    self.file_response(cap, FileOperation::Cancel { upload })?
+                                };
+                                self.vault.burn_file_attempt(cap, &old, &closed, true)?;
+                                let prepared = self.vault.prepare_recovered_file(
+                                    cap,
+                                    &group,
+                                    &event["source"],
+                                    string(&event["metadata"], "name")?,
+                                    "application/octet-stream",
+                                )?;
+                                let pos = input.state["files"]
+                                    .as_array()
+                                    .unwrap()
+                                    .iter()
+                                    .position(|f| f["source_version"] == version)
+                                    .ok_or(Error("INTEGRITY_FAILURE"))?;
+                                if !input.state["files"][pos]["superseded_drafts"].is_array() {
+                                    input.state["files"][pos]["superseded_drafts"] = json!([]);
+                                }
+                                input.state["files"][pos]["superseded_drafts"]
+                                    .as_array_mut()
+                                    .unwrap()
+                                    .push(json!(old));
+                                input.state["files"][pos]["draft_id"] =
+                                    prepared["draft_id"].clone();
+                                file = Some(string(&prepared, "draft_id")?.to_owned());
+                                self.save_native_job(cap, &iid, &input.state)?;
+                                let request =
+                                    self.vault.file_request(cap, file.as_deref().unwrap())?;
+                                self.file_response(
+                                    cap,
+                                    FileOperation::Reserve {
+                                        group: &group,
+                                        body: &request,
+                                    },
+                                )?;
+                            }
+                        }
                     }
                     input.bridge.ack()?;
                 }
@@ -397,7 +450,7 @@ impl Host {
                             },
                         )?);
                     }
-                    job.progress(index as u64 * 8388608, 0);
+                    job.progress((index as u64 + 1) * 8388608, 0);
                     input.bridge.ack()?;
                 }
                 17 => {
@@ -427,7 +480,23 @@ impl Host {
                         .iter()
                         .position(|f| f["source_version"] == version)
                         .ok_or(Error("INTEGRITY_FAILURE"))?;
-                    if input.state["files"][pos]["attached"] != true {
+                    input.state["files"][pos]["reference"] =
+                        self.file_reference(cap, &group, string(&receipt, "file_version_id")?)?;
+                    self.save_native_job(cap, &iid, &input.state)?;
+                    let referenced = input.report["notes"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .any(|note| {
+                            input.state["selected_notes"]
+                                .as_array()
+                                .unwrap()
+                                .contains(&note["context"]["revision_id"])
+                                && note["context"]["attachments"].as_array().is_some_and(|a| {
+                                    a.iter().any(|a| a["file_version_id"] == version)
+                                })
+                        });
+                    if !referenced && input.state["files"][pos]["attached"] != true {
                         self.attach_uploaded_file(
                             cap,
                             &group,
@@ -444,8 +513,29 @@ impl Host {
                 _ => return Err(Error("INVALID_BRIDGE_FRAME")),
             }
         }
-        // Files are attached immediately. Notes publish after the complete recovery pass,
-        // so source archive order cannot turn an entry into an orphan destination object.
+        // Pruned/deleted source threads must not strand retained entries. Persist one
+        // stable placeholder alias and payload before publishing anything from that branch.
+        let entries = input.state["notes"].as_array().unwrap().clone();
+        for entry in entries
+            .iter()
+            .filter(|n| n["source_context"]["object_kind"] == "entry")
+        {
+            let context = &entry["source_context"];
+            let exists = input.state["notes"].as_array().unwrap().iter().any(|n| {
+                n["source_context"]["object_kind"] == "thread"
+                    && n["source_context"]["object_id"] == context["thread_id"]
+                    && n["source_context"]["group_id"] == context["group_id"]
+            });
+            if !exists {
+                let revision = random_id();
+                let payload = json!({"title":"Recovered thread","markdown":"","metadata_kind":"content","tags":[],"checklist":[],"summary_entry_id":null,"preferences":[]});
+                let payload_id = self.store_import_payload(cap, &iid, &revision, &payload)?;
+                input.state["notes"].as_array_mut().unwrap().push(json!({"source_revision":revision,"source_context":{"object_kind":"thread","object_id":context["thread_id"],"group_id":context["group_id"],"attachments":[]},"payload_id":payload_id,"object_id":random_id(),"draft_id":null,"complete":false}));
+                self.save_native_job(cap, &iid, &input.state)?;
+            }
+        }
+        // Keep each source group's metadata as a named thread instead of replacing
+        // an existing destination's metadata or discarding multi-group provenance.
         for kind in ["group-metadata", "thread", "entry"] {
             let len = input.state["notes"].as_array().unwrap().len();
             for n in 0..len {
@@ -455,11 +545,11 @@ impl Host {
                 if c["object_kind"] != kind || note["complete"] == true {
                     continue;
                 }
-                if kind == "group-metadata" {
-                    input.state["notes"][n]["complete"] = json!(true);
-                    self.save_native_job(cap, &iid, &input.state)?;
-                    continue;
-                }
+                let destination_kind = if kind == "group-metadata" {
+                    "thread"
+                } else {
+                    kind
+                };
                 let thread = if kind == "entry" {
                     input.state["notes"]
                         .as_array()
@@ -492,15 +582,38 @@ impl Host {
                         let mut content = self.load_import_payload(cap, &iid, &note)?;
                         content["summary_entry_id"] = Value::Null;
                         content["preferences"] = json!([]);
-                        let edit = Self::edit(
+                        let mut edit = Self::edit(
                             &group,
-                            kind,
+                            destination_kind,
                             note["object_id"].as_str(),
                             if kind == "entry" { Some(&thread) } else { None },
                             &content,
                             json!([]),
                             "create",
                         );
+                        let mut attachments = Vec::new();
+                        for source in c["attachments"].as_array().into_iter().flatten() {
+                            let mapped = input.state["files"]
+                                .as_array()
+                                .unwrap()
+                                .iter()
+                                .find(|f| f["source_version"] == source["file_version_id"])
+                                .ok_or(Error("IMPORT_ATTACHMENT_UNAVAILABLE"))?;
+                            check(
+                                mapped["reference"].is_object(),
+                                "IMPORT_ATTACHMENT_UNAVAILABLE",
+                            )?;
+                            attachments.push(mapped["reference"].clone());
+                        }
+                        attachments.sort_by_key(|a| {
+                            format!(
+                                "{}/{}",
+                                a["file_id"].as_str().unwrap_or(""),
+                                a["file_version_id"].as_str().unwrap_or("")
+                            )
+                        });
+                        edit["attachments"] = json!(attachments);
+                        edit["archived"] = json!(c["archived"] == true);
                         let saved = self.notes(cap, json!({"action":"save","edit":edit}))?;
                         input.state["notes"][n]["draft_id"] = saved["draft_id"].clone();
                         self.save_native_job(cap, &iid, &input.state)?;

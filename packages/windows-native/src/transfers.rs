@@ -168,6 +168,49 @@ impl Host {
             serde_json::json!({"file_id":c["file_id"],"file_version_id":version,"envelope_digest":metadata["envelope_digest"]}),
         )
     }
+    pub fn selected_file_copy_preview(
+        &self,
+        g: u64,
+        draft: &str,
+        destination: &str,
+    ) -> Result<Value> {
+        let cap = self.capability(g)?;
+        id(draft)?;
+        id(destination)?;
+        self.prove(&cap)?;
+        self.group(&cap, destination)?;
+        self.vault.file_copy_preview(&cap, draft, destination)
+    }
+    /// The original selected handle is verified against its protected source digest.
+    /// A new protected transfer precedes HTTP; normal transfer resume retains it.
+    pub fn start_selected_file_copy(
+        self: &Arc<Self>,
+        g: u64,
+        draft: &str,
+        destination: &str,
+        mut source: Source,
+        preview_digest: &str,
+    ) -> Result<String> {
+        let cap = self.capability(g)?;
+        self.prove(&cap)?;
+        self.group(&cap, destination)?;
+        source.check()?;
+        let prepared = self.vault.copy_selected_file(
+            &cap,
+            draft,
+            destination,
+            &mut source.file,
+            preview_digest,
+            true,
+        )?;
+        source.check()?;
+        self.start_upload(
+            g,
+            destination.to_owned(),
+            source,
+            Some(string(&prepared, "draft_id")?.to_owned()),
+        )
+    }
     pub fn start_upload(
         self: &Arc<Self>,
         g: u64,
@@ -190,6 +233,8 @@ impl Host {
                 host.group(&cap, &group)?;
                 job.check(host.current())?;
                 source.check()?;
+                #[cfg(feature = "integration-harness")]
+                eprintln!("P14 native upload: transfer");
                 let uploaded = host.vault.upload_file_with_progress(
                     &cap,
                     Network {
@@ -211,6 +256,8 @@ impl Host {
                 )?;
                 job.check(host.current())?;
                 let receipt = &uploaded["receipt"];
+                #[cfg(feature = "integration-harness")]
+                eprintln!("P14 native upload: attachment");
                 let attachment = host.attach_uploaded_file(
                     &cap,
                     &group,
