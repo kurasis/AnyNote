@@ -56,6 +56,9 @@ pub enum NotesRequest {
     SharedProof {
         group_id: String,
     },
+    SharedAttempt {
+        group_id: String,
+    },
     Group {
         status: Value,
     },
@@ -1251,6 +1254,19 @@ impl Vault {
                 check(data["purpose"] == "p10-group-proof", "GROUP_PROOF_REQUIRED")?;
                 let (proof, _) = self.note_shared_proof(&mut i, &s, &c, &snapshot, &data)?;
                 Ok(proof)
+            }
+            NotesRequest::SharedAttempt { group_id } => {
+                let reference = find(&c, "groups", "group_id", group_id)?;
+                let data = self.note_read(
+                    &mut i,
+                    &s,
+                    &c,
+                    text(&reference["record_id"])?,
+                    "group-evidence",
+                )?;
+                check(data["purpose"] == "p10-group-proof", "GROUP_PROOF_REQUIRED")?;
+                self.note_shared_proof(&mut i, &s, &c, &snapshot, &data)?;
+                Ok(data["attempt"].clone())
             }
             NotesRequest::ObserveFile { .. }
             | NotesRequest::CopyPreview { .. }

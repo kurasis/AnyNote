@@ -18,7 +18,8 @@
         "minHeight": 550,
         "devtools": false,
         "dragDropEnabled": false,
-        "incognito": true
+        "incognito": true,
+        "create": false
       }
     ],
     "security": {

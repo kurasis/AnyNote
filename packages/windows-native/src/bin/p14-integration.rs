@@ -164,6 +164,70 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                     owned.cleanup = false;
                     Ok(json!({"state":"PERSISTED","physical_acceptance":false}))
                 }
+                Some("prepare-group-creation") => {
+                    let cap = host.capability(host.current())?;
+                    host.prepare_group_creation(
+                        &cap,
+                        command["title"]
+                            .as_str()
+                            .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?,
+                        command["shared"]
+                            .as_bool()
+                            .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?,
+                    )
+                }
+                Some("account-card") => host.account_card(host.current()),
+                Some("group-card") => host.group_card(
+                    host.current(),
+                    command["group_id"]
+                        .as_str()
+                        .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?,
+                ),
+                Some("adopt-card") => host.adopt_group_card(
+                    host.current(),
+                    command["proof"].clone(),
+                    command["accept"]
+                        .as_bool()
+                        .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?,
+                ),
+                Some("invite-card") => host.invite_account_card(
+                    host.current(),
+                    command["group_id"]
+                        .as_str()
+                        .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?,
+                    &command["card"],
+                    command["role"]
+                        .as_str()
+                        .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?,
+                ),
+                Some("ownership-proposal") => host.ownership_proposal(
+                    host.current(),
+                    command["group_id"]
+                        .as_str()
+                        .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?,
+                    command["account_id"]
+                        .as_str()
+                        .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?,
+                    command["device_id"]
+                        .as_str()
+                        .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?,
+                ),
+                Some("ownership-step") => host.ownership_step(
+                    host.current(),
+                    command["group_id"]
+                        .as_str()
+                        .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?,
+                    &command["policy"],
+                    command["cosign"]
+                        .as_bool()
+                        .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?,
+                ),
+                Some("saved-ownership") => host.saved_ownership_policy(
+                    host.current(),
+                    command["group_id"]
+                        .as_str()
+                        .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?,
+                ),
                 Some("product") => {
                     let request: Request = serde_json::from_value(command["request"].clone())
                         .map_err(|_| anynote_crypto_core::Error("INVALID_REQUEST"))?;

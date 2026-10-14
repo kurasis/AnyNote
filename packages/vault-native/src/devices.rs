@@ -278,6 +278,49 @@ impl Vault {
         self.authorize(&mut i, cap)?;
         result
     }
+    pub fn verify_device_pairing(
+        &self,
+        cap: &Capability,
+        transcript: &Value,
+        approval: Option<&Value>,
+    ) -> Result<()> {
+        let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
+        let s = self.authorize(&mut i, cap)?;
+        let (_, roster) = self.device_saved(&mut i, &s)?;
+        let roster = roster.ok_or(Error("ROSTER_PROOF_REQUIRED"))?;
+        if let Some(approval) = approval {
+            roster.approval(&self.codec, transcript, approval, Some(now()?))?;
+        } else {
+            roster.transcript(&self.codec, transcript, Some(now()?))?;
+        }
+        self.authorize(&mut i, cap)?;
+        Ok(())
+    }
+    pub fn device_pairing_state(&self, cap: &Capability) -> Result<Value> {
+        let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
+        let s = self.authorize(&mut i, cap)?;
+        let (control, _) = self.device_saved(&mut i, &s)?;
+        Ok(control["pending"].clone())
+    }
+    pub fn finish_device_pairing(&self, cap: &Capability, operation: &str) -> Result<()> {
+        let fence = self.lease(cap)?;
+        let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
+        let s = self.authorize(&mut i, cap)?;
+        let (mut control, _) = self.device_saved(&mut i, &s)?;
+        let snapshot = self.snapshot_for_groups(&mut i, &s)?;
+        check(
+            snapshot["events"].as_array().is_some_and(|events| {
+                events.iter().any(|e| {
+                    e["body"]["operation_id"] == operation
+                        && matches!(e["body"]["kind"].as_str(), Some("enroll" | "reset"))
+                })
+            }),
+            "ROSTER_CHANGED",
+        )?;
+        control["pending"] = Value::Null;
+        i.device_channels.clear();
+        self.store_device_control(&mut i, cap, &s, fence, &control, None)
+    }
     pub fn device_response(
         &self,
         cap: &Capability,
@@ -347,6 +390,7 @@ impl Vault {
                 == json!({"device_id":self.scope.device_id,"certificate_digest":actor.digest}),
             "ISSUER_CONTEXT_MISMATCH",
         )?;
+        roster.transcript(&self.codec, transcript, Some(now()?))?;
         let offer = &transcript["offer"]["body"];
         let tdigest = digest("p02-state-c1", "transcript", transcript)?;
         let secret = i.secrets.as_ref().unwrap();

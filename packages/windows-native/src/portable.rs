@@ -134,7 +134,7 @@ impl Host {
                 .content_read(&cap, id, kind)?
                 .data
                 .ok_or(Error("INTEGRITY_FAILURE"))?;
-            items.push(json!({"job_id":id,"kind":kind,"state":state["state"],"kit_saved_separately":state["kit_saved_separately"]==true,"destination_group":state["destination"]["group_id"]}));
+            items.push(json!({"job_id":id,"kind":kind,"state":state["state"],"kit_saved_separately":state["kit_saved_separately"]==true,"destination_group":state["destination"]["group_id"],"job_type":state["purpose"],"group_id":state["group_id"],"title":if state["purpose"]=="p14-native-group"{state["title"].clone()}else{Value::Null},"shared":state["shared"]}));
         }
         Ok(json!({"items":items}))
     }

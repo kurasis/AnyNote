@@ -56,6 +56,7 @@ pub enum Request {
     CreateGroup {
         title: String,
         shared: bool,
+        resume: Option<String>,
     },
     Threads {
         group_id: String,
@@ -96,6 +97,25 @@ pub enum Request {
         key: Option<String>,
         target_id: Option<String>,
         value: Option<String>,
+    },
+    CopyPreview {
+        source_group: String,
+        destination_group: String,
+        revision_id: String,
+    },
+    CopyNote {
+        source_group: String,
+        destination_group: String,
+        destination_thread: String,
+        revision_id: String,
+        preview_digest: String,
+        confirmed: bool,
+    },
+    RecoverDraft {
+        draft_id: String,
+        destination_group: String,
+        destination_thread: String,
+        confirmed: bool,
     },
     Versions {
         group_id: String,
@@ -143,6 +163,11 @@ pub enum Request {
         pinned: bool,
     },
     Devices {},
+    DeliverKeys {
+        group_id: String,
+        device_id: String,
+        confirmed: bool,
+    },
     Sessions {},
     RevokeSession {
         session_id: String,
@@ -173,6 +198,9 @@ pub enum Request {
         after: Option<String>,
     },
     Diagnostics {},
+    Pairing {
+        request: crate::pairing::Command,
+    },
 }
 impl Drop for Request {
     fn drop(&mut self) {
@@ -207,6 +235,8 @@ pub struct Host {
     pub jobs: crate::jobs::Jobs,
     pub selections: crate::selection::Selections,
     pub imports: Mutex<std::collections::BTreeMap<String, crate::imports::ValidatedImport>>,
+    pub pairing: Mutex<Option<Value>>,
+    pub group_creation: Mutex<()>,
     pending_login: Mutex<Option<(Instant, Credentials)>>,
     pub root: PathBuf,
 }
@@ -265,6 +295,8 @@ impl Host {
             jobs: Default::default(),
             selections: Default::default(),
             imports: Default::default(),
+            pairing: Default::default(),
+            group_creation: Default::default(),
             pending_login: Mutex::new(None),
             root: root.into(),
         }
@@ -423,6 +455,12 @@ impl Host {
         if let Ok(mut imports) = self.imports.try_lock() {
             imports.clear();
         }
+        if let Ok(mut pairing) = self.pairing.try_lock() {
+            if let Some(value) = pairing.as_mut() {
+                wipe(value);
+            }
+            *pairing = None;
+        }
         if let Ok(mut c) = self.cap.try_lock() {
             *c = None;
         }
@@ -462,6 +500,13 @@ impl Host {
         )?;
         let v = strict(&response.bytes, 33558528)?;
         if !(200..300).contains(&response.status) {
+            if matches!(
+                v["error"]["code"].as_str(),
+                Some("DEVICE_REVOKED" | "DEVICE_NOT_TRUSTED" | "SESSION_EXPIRED" | "AUTH_REQUIRED")
+            ) {
+                self.lock();
+                return Err(Error("STALE_CAPABILITY"));
+            }
             return Err(Error(match v["error"]["code"].as_str() {
                 Some("NOT_FOUND") => "NOT_FOUND",
                 Some("DEVICE_REVOKED") => "DEVICE_REVOKED",
@@ -557,7 +602,8 @@ impl Host {
         }
         self.notes(cap, json!({"action":"group","status":status}))?;
         if status["kind"] == "private" && status["key_epoch"] == "0" {
-            if let Ok(envelopes) = self.api(cap, Route::DeviceEnvelopes, None, None, &[], None) {
+            {
+                let envelopes = self.api(cap, Route::DeviceEnvelopes, None, None, &[], None)?;
                 let records = envelopes["records"]
                     .as_array()
                     .unwrap_or(&Vec::new())
@@ -571,10 +617,36 @@ impl Host {
                 }
             }
         } else {
-            self.notes(
+            // The captured signed epoch journal is authoritative. The mailbox may also
+            // retain older equivalent resealings, which must not become duplicate epochs.
+            match self.notes(
                 cap,
                 json!({"action":"shared","request":{"action":"keys","group_id":group}}),
-            )?;
+            ) {
+                Ok(_) => (),
+                Err(Error("KEYS_PENDING" | "KEY_REPAIR_REQUIRED")) => {
+                    let envelopes = self.api(cap, Route::DeviceEnvelopes, None, None, &[], None)?;
+                    let records = envelopes["records"]
+                        .as_array()
+                        .ok_or(Error("INVALID_PAGE"))?
+                        .iter()
+                        .filter(|r| {
+                            r["body"]["context"]["group_id"] == group
+                                && r["body"]["context"]["recipient"]["device_id"]
+                                    == self.profile.scope.device_id
+                                && r["body"]["context"]["issuer"]["account_id"]
+                                    == self.profile.scope.account_id
+                                && r["body"]["context"]["membership_head"] == status["membership"]
+                        })
+                        .cloned()
+                        .collect::<Vec<_>>();
+                    check(!records.is_empty(), "KEYS_PENDING")?;
+                    for record in records {
+                        self.notes(cap,json!({"action":"shared","request":{"action":"own-keys","group_id":group,"records":[record]}}))?;
+                    }
+                }
+                Err(e) => return Err(e),
+            }
         }
         Ok(status)
     }
@@ -705,7 +777,7 @@ impl Host {
         match &mut request {
             Request::Status {} => {
                 return Ok(
-                    json!({"state":self.vault.status()?,"generation":self.current(),"login_pending":self.pending_login.lock().unwrap().is_some(),"version":"0.14.0"}),
+                    json!({"state":self.vault.status()?,"generation":self.current(),"login_pending":self.pending_login.lock().unwrap().is_some(),"device_id":self.profile.scope.device_id,"version":"0.14.0"}),
                 );
             }
             Request::Lock {} => {
@@ -880,26 +952,41 @@ impl Host {
                 target_id,
                 value,
             } => self.preferences(&cap, key.as_deref(), target_id.as_deref(), value.as_deref()),
-            Request::CreateGroup { title, shared } => {
-                check(title.len() <= 4096, "RESOURCE_LIMIT")?;
-                self.prove(&cap)?;
-                let made = self.notes(
-                    &cap,
-                    json!({"action":if *shared{"prepare-shared"}else{"prepare-group"}}),
-                )?;
-                let status = self.api(
-                    &cap,
-                    Route::CreateGroup,
-                    None,
-                    None,
-                    &[],
-                    Some(&made["request"]),
-                )?;
-                self.notes(&cap, json!({"action":"group","status":status}))?;
-                let saved=self.notes(&cap,json!({"action":"save","edit":Self::edit(string(&status,"group_id")?,"group-metadata",Some(string(&status,"group_id")?),None,&json!({"title":title,"markdown":"","metadata_kind":"content","tags":[],"checklist":[],"summary_entry_id":null,"preferences":[]}),json!([]),"create")}))?;
-                self.publish(&cap, string(&saved, "draft_id")?)?;
-                Ok(status)
+            Request::CopyPreview {
+                source_group,
+                destination_group,
+                revision_id,
+            } => {
+                self.group(&cap, source_group)?;
+                self.group(&cap, destination_group)?;
+                self.notes(&cap,json!({"action":"copy-preview","source_group":source_group,"destination_group":destination_group,"revision_id":revision_id}))
             }
+            Request::CopyNote {
+                source_group,
+                destination_group,
+                destination_thread,
+                revision_id,
+                preview_digest,
+                confirmed,
+            } => {
+                self.group(&cap, source_group)?;
+                self.group(&cap, destination_group)?;
+                self.notes(&cap,json!({"action":"copy","source_group":source_group,"destination_group":destination_group,"destination_thread":destination_thread,"revision_id":revision_id,"preview_digest":preview_digest,"confirmed":confirmed}))
+            }
+            Request::RecoverDraft {
+                draft_id,
+                destination_group,
+                destination_thread,
+                confirmed,
+            } => {
+                self.group(&cap, destination_group)?;
+                self.notes(&cap,json!({"action":"recover-draft","draft_id":draft_id,"destination_group":destination_group,"destination_thread":destination_thread,"confirmed":confirmed}))
+            }
+            Request::CreateGroup {
+                title,
+                shared,
+                resume,
+            } => self.create_group(&cap, title, *shared, resume.as_deref()),
             Request::Search { query, group_id } => {
                 anynote_content_native::Search::new(&self.vault, &cap, &self.profile.scope)?
                     .search(query, group_id.as_deref())
@@ -954,6 +1041,35 @@ impl Host {
                 self.list_files(&cap, group_id, after.as_deref())
             }
             Request::Devices {} => self.sync_devices(&cap),
+            Request::DeliverKeys {
+                group_id,
+                device_id,
+                confirmed,
+            } => {
+                check(*confirmed, "USER_CONFIRMATION_REQUIRED")?;
+                id(device_id)?;
+                self.prove(&cap)?;
+                let status = self.group(&cap, group_id)?;
+                let body = if status["kind"] == "private" && status["key_epoch"] == "0" {
+                    self.vault.device_group_keys(
+                        &cap,
+                        &status["genesis"],
+                        &[],
+                        None,
+                        Some(device_id),
+                    )?
+                } else {
+                    self.notes(&cap,json!({"action":"shared","request":{"action":"own-grants","group_id":group_id,"device_id":device_id}}))?
+                };
+                self.api(
+                    &cap,
+                    Route::DeliverDeviceEnvelopes,
+                    None,
+                    None,
+                    &[],
+                    Some(&body),
+                )
+            }
             Request::Sessions {} => self.api(&cap, Route::Sessions, None, None, &[], None),
             Request::RevokeSession {
                 session_id,
@@ -970,6 +1086,19 @@ impl Host {
                 )
             }
             Request::AccessPoll { group_id } => {
+                let roster = self.sync_devices(&cap)?;
+                let own = roster["devices"]
+                    .as_array()
+                    .ok_or(Error("INTEGRITY_FAILURE"))?
+                    .iter()
+                    .find(|d| d["device_id"] == self.profile.scope.device_id);
+                if own.is_none() {
+                    return Ok(json!({"state":"ENROLLMENT_REQUIRED"}));
+                }
+                if own.is_some_and(|d| d["status"] == "REVOKED") {
+                    self.lock();
+                    return Err(Error("STALE_CAPABILITY"));
+                }
                 let checked = self.prove(&cap).and_then(|_| {
                     if let Some(group) = group_id {
                         self.group(&cap, group)
@@ -1068,6 +1197,7 @@ impl Host {
             Request::Diagnostics {} => Ok(
                 json!({"version":"0.14.0","platform":std::env::consts::OS,"state":self.vault.status()?,"physical_acceptance":false,"logging":"content-free","memory":crate::memory::report(),"custody":"native SQLite and current-user DPAPI","production_signing":"NOT_CONFIGURED"}),
             ),
+            Request::Pairing { request } => self.pairing_command(&cap, request),
             _ => Err(Error("INVALID_REQUEST")),
         };
         if g != self.current() {
@@ -1115,7 +1245,19 @@ impl Host {
         Ok(json!({"items":items,"next":page["next"]}))
     }
     fn refresh(&self, cap: &Capability) -> Result<Value> {
-        self.catch_up(cap)?;
+        let synchronization = match self.catch_up(cap) {
+            Ok(state) => json!({"state":state["state"],"complete":true}),
+            Err(Error(
+                code @ ("KEYS_PENDING"
+                | "EPOCH_KEY_REQUIRED"
+                | "GROUP_PROOF_REQUIRED"
+                | "RECORD_NOT_FOUND"
+                | "UNANCHORED_HISTORY"
+                | "INDEPENDENT_HISTORY_REQUIRED"
+                | "KEY_REPAIR_REQUIRED"),
+            )) => json!({"state":"INCOMPLETE","complete":false,"reason":code}),
+            Err(e) => return Err(e),
+        };
         let mut items = Vec::new();
         let mut after = None::<String>;
         loop {
@@ -1126,7 +1268,23 @@ impl Host {
             let page = self.api(cap, Route::GroupList, None, None, &query, None)?;
             for g in page["groups"].as_array().ok_or(Error("INVALID_PAGE"))? {
                 let group = string(g, "group_id")?;
-                self.group(cap, group)?;
+                if let Err(error) = self.group(cap, group) {
+                    match error {
+                        Error(
+                            code @ ("KEYS_PENDING"
+                            | "EPOCH_KEY_REQUIRED"
+                            | "GROUP_PROOF_REQUIRED"
+                            | "RECORD_NOT_FOUND"
+                            | "UNANCHORED_HISTORY"
+                            | "INDEPENDENT_HISTORY_REQUIRED"
+                            | "KEY_REPAIR_REQUIRED"),
+                        ) => {
+                            items.push(json!({"group":g,"title":"Encrypted group","attention":code,"decrypted":false}));
+                            continue;
+                        }
+                        e => return Err(e),
+                    }
+                }
                 let metadata = match self.api(cap, Route::Object, Some(group), None, &[], None) {
                     Ok(v) => v,
                     Err(Error("NOT_FOUND")) => Value::Null,
@@ -1136,13 +1294,24 @@ impl Host {
                     .as_array()
                     .is_some_and(|a| !a.is_empty())
                 {
-                    self.open_revision(
+                    match self.open_revision(
                         cap,
                         group,
                         group,
                         string(&metadata["object"]["heads"][0], "revision_id")?,
-                    )?["payload"]["title"]
-                        .clone()
+                    ) {
+                        Ok(opened) => opened["payload"]["title"].clone(),
+                        Err(Error(
+                            code @ ("KEYS_PENDING"
+                            | "EPOCH_KEY_REQUIRED"
+                            | "UNANCHORED_HISTORY"
+                            | "KEY_REPAIR_REQUIRED"),
+                        )) => {
+                            items.push(json!({"group":g,"title":"Encrypted group","attention":code,"decrypted":false}));
+                            continue;
+                        }
+                        Err(e) => return Err(e),
+                    }
                 } else {
                     json!("Untitled")
                 };
@@ -1156,7 +1325,9 @@ impl Host {
             check(after.as_ref() != Some(&next), "INVALID_PAGE_ORDER")?;
             after = Some(next);
         }
-        Ok(json!({"items":items,"next":null,"local":self.notes(cap,json!({"action":"summary"}))?}))
+        Ok(
+            json!({"items":items,"next":null,"synchronization":synchronization,"local":self.notes(cap,json!({"action":"summary"}))?}),
+        )
     }
     fn preferences(
         &self,
@@ -1392,25 +1563,6 @@ impl Host {
         }
         match action {
             "public" => self.vault.device_public(cap),
-            "invitation" => self.vault.device_invitation(cap),
-            "offer" => {
-                let me = self.api(cap, Route::Me, None, None, &[], None)?;
-                self.vault
-                    .device_offer(cap, string(&me["session"], "id")?, value)
-            }
-            "response" => self.vault.device_response(cap, v, None),
-            "approval" => self.vault.device_approval(cap, v, confirmed),
-            "confirmation" => {
-                check(confirmed, "CONFIRMATION_REQUIRED")?;
-                let me = self.api(cap, Route::Me, None, None, &[], None)?;
-                self.vault.device_confirmation(
-                    cap,
-                    &v["transcript"],
-                    &v["approval"],
-                    string(&me["session"], "id")?,
-                    true,
-                )
-            }
             "revoke" => {
                 check(confirmed, "CONFIRMATION_REQUIRED")?;
                 let targets = v["targets"]

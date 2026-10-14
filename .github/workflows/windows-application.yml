@@ -36,7 +36,8 @@ jobs:
           path: |
             packages/windows-native/target
             apps/desktop/src-tauri/target
-          key: windows-p14-rust199-${{ hashFiles('packages/windows-native/Cargo.lock', 'apps/desktop/src-tauri/Cargo.lock') }}
+          key: windows-p14-rust199-${{ hashFiles('packages/windows-native/Cargo.lock', 'apps/desktop/src-tauri/Cargo.lock') }}-release2
+          restore-keys: windows-p14-rust199-${{ hashFiles('packages/windows-native/Cargo.lock', 'apps/desktop/src-tauri/Cargo.lock') }}
       - name: Frozen maintained dependencies and one-installer runtime
         run: |
           rustup toolchain install 1.99.0 --profile minimal --component clippy,rustfmt
@@ -58,6 +59,8 @@ jobs:
         run: |
           cargo test --manifest-path packages/windows-native/Cargo.toml --locked -j 4 -- --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo build --manifest-path packages/windows-native/Cargo.toml --release --features integration-harness --locked -j 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/p14-dependencies.py --stage
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           npm --prefix apps/desktop run tauri -- build --ci -- --locked -j 4
@@ -78,12 +81,23 @@ jobs:
           New-Item -ItemType Directory -Force .local/p14-tools | Out-Null
           rustc scripts/p14-python3-shim.rs -o .local/p14-tools/python3.exe
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          rustc scripts/p14-windows-flush.rs -o .local/p14-tools/flush-volume.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          (Get-FileHash .local/p14-tools/flush-volume.exe -Algorithm SHA256).Hash.ToLowerInvariant() | Set-Content -Encoding ascii .local/p14-tools/flush-volume.sha256
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           (Resolve-Path .local/p14-tools).Path | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           python scripts/p14-windows-services.py up
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/p14-windows-services.py diagnose
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Actual native Windows 1 GB upload download export independent recovery and fresh import
         run: |
           cargo build --manifest-path packages/windows-native/Cargo.toml --release --features integration-harness --locked -j 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:ANYNOTE_P14_PAIRING_RELEASE = '1'
+          node scripts/p14-pairing.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node scripts/p14-sharing.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node scripts/p14-http.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

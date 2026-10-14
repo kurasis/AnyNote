@@ -5,6 +5,7 @@ use serde_json::Value;
 pub enum Route {
     Capabilities,
     DeviceEnvelopes,
+    DeliverDeviceEnvelopes,
     Me,
     Challenge,
     Proof,
@@ -69,6 +70,8 @@ pub enum Route {
     EpochCommit,
     Enrollment,
     Relay,
+    PollRelay,
+    CancelEnrollment,
     EnrollmentApprove,
     EnrollmentConfirm,
     RevokeDevice,
@@ -93,6 +96,7 @@ impl Route {
         Ok(match self {
             Capabilities => (get, "capabilities".into()),
             DeviceEnvelopes => (get, "me/device-envelopes".into()),
+            DeliverDeviceEnvelopes => (post, "me/device-envelopes".into()),
             Me => (get, "me".into()),
             Challenge => (post, "auth/device-challenge".into()),
             Proof => (post, "auth/device-proof".into()),
@@ -157,6 +161,11 @@ impl Route {
             EpochCommit => (post, format!("groups/{}/epoch/commit", id(a)?)),
             Enrollment => (post, "me/enrollments".into()),
             Relay => (post, format!("me/enrollments/{}/relay", id(a)?)),
+            PollRelay => (get, format!("me/enrollments/{}/relay", id(a)?)),
+            CancelEnrollment => (
+                reqwest::Method::DELETE,
+                format!("me/enrollments/{}", id(a)?),
+            ),
             EnrollmentApprove => (post, format!("me/enrollments/{}/approve", id(a)?)),
             EnrollmentConfirm => (post, format!("me/enrollments/{}/confirm", id(a)?)),
             RevokeDevice => (post, format!("me/devices/{}/revoke", id(a)?)),

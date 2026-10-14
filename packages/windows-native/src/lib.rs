@@ -1,11 +1,14 @@
 //! Trusted native Windows application coordinator, usable without a WebView in tests.
 pub mod bridge;
+pub mod groups;
 pub mod host;
 pub mod imports;
 pub mod jobs;
 pub mod memory;
+pub mod pairing;
 pub mod portable;
 pub mod selection;
+pub mod sharing;
 pub mod sync;
 pub mod transfers;
 pub mod updates;

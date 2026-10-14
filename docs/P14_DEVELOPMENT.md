@@ -27,7 +27,7 @@ implied by this development branch.
 
 ## Current development verification
 
-The native HTTP development harness now passes 36 checks against the actual owned
+The native HTTP development harness now passes 40 checks against the actual owned
 HTTPS/Laravel/MariaDB stack: maintained PKCE loopback, signed notes, delta/offline
 projection, private preferences, exact receipt recovery, archive/trash/restore,
 verified device roster, shared history/epoch changes, and a small-file complete
@@ -55,3 +55,23 @@ Only the separate integration-harness executable permits local CI CDP observatio
 its report identifies that distinction and both executable hashes. Authentication,
 TLS validation, native custody and per-window permissions remain active in the
 instrumented software test. No sandbox or signature bypass is introduced.
+
+## Native device, sharing and recovery development
+
+Actual owned-API development runs pass 33 native pairing checks and 17 native
+sharing checks. These exercise both pairing directions, independent custodians,
+verified transcripts, replay and substitution denial, recipient-only key delivery,
+revocation fencing, independent public cards, admission/history, role-loss draft
+preservation and jointly consented ownership. Native group creation now retains
+one protected genesis request and metadata draft across a lost server receipt.
+These results are development observations, not final exact-source acceptance.
+
+The Windows backend runner exposed two real integration faults: a selected file
+was still held by its synthetic writer, and Windows PHP cannot open/fsync a
+directory through its streams API. Synthetic writers now await close. Production
+Linux file and directory fsync remain required. Only the marked disposable
+Windows Actions backend binds a separately pinned helper performing real Windows
+FlushFileBuffers on its own volume, in addition to existing per-file fsync. This
+is an explicitly scoped CI storage adapter, not a production Windows backend or
+a claim that PHP directory fsync works on Windows. The next Windows run must
+prove the primitive and complete actual gigabyte and WebView2 workflows.

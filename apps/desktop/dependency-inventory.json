@@ -4,7 +4,7 @@
   "lockfiles": {
     "apps/desktop/src-tauri/Cargo.lock": "cc538c64fa57a31800d226a9f471b6122877035cdd9e441372bc87d97b2d4771",
     "packages/windows-native/Cargo.lock": "bfe3095c9de4c82dd825e3fbe823567c46cb0a933c3d53780b36306060f28473",
-    "apps/desktop/package-lock.json": "141d5718f89327815a8343e2fa0e489ac681e119b9f5228282cd91355fc0c24a",
+    "apps/desktop/package-lock.json": "63d38eb8214652f00832b2819da5040a14505dea90d00254ce1b095e6cfd6a70",
     "packages/protocol/package-lock.json": "6e7286286b0fe2797310c57a8fb4d768c4dae2bec53f58f788b8d0c830fafb7f",
     "packages/content-browser/package-lock.json": "362c13896996f5272648ae098f3f8381688ec1fda8f6b35e791c3612d5437293"
   },
@@ -5770,6 +5770,36 @@
       "scope": "Conservative frozen app/helper/preview dependency set including build and optional platform packages"
     },
     {
+      "purl": "pkg:npm/@zxing/browser@0.2.1",
+      "ecosystem": "npm",
+      "name": "@zxing/browser",
+      "version": "0.2.1",
+      "source": "https://registry.npmjs.org/@zxing/browser/-/browser-0.2.1.tgz",
+      "integrity": "sha512-92pVfVDUXbc15xu9vIEmhNyqIEASMEkDF92CwT6T+7sg2EHXJRktH9CQKoQSXe51UtbNsj+Fm09H/JBWHMs/Sw==",
+      "license": "MIT",
+      "scope": "Conservative frozen app/helper/preview dependency set including build and optional platform packages"
+    },
+    {
+      "purl": "pkg:npm/@zxing/library@0.23.0",
+      "ecosystem": "npm",
+      "name": "@zxing/library",
+      "version": "0.23.0",
+      "source": "https://registry.npmjs.org/@zxing/library/-/library-0.23.0.tgz",
+      "integrity": "sha512-6fkkoFwP8CHxl6ugnPsj74PLJgX2iRv5zczGAyt5OBzQgxFhuhF0NCEc4t4OvSr8xAv2MRLlI0Iu9ZGDZQ2urA==",
+      "license": "Apache-2.0",
+      "scope": "Conservative frozen app/helper/preview dependency set including build and optional platform packages"
+    },
+    {
+      "purl": "pkg:npm/@zxing/text-encoding@0.9.0",
+      "ecosystem": "npm",
+      "name": "@zxing/text-encoding",
+      "version": "0.9.0",
+      "source": "https://registry.npmjs.org/@zxing/text-encoding/-/text-encoding-0.9.0.tgz",
+      "integrity": "sha512-U/4aVJ2mxI0aDNI8Uq0wEhMgY+u4CNtEb0om3+y3+niDAsoTCOB33UF0sxpzqzdqXLqmvc+vZyAt4O8pPdfkwA==",
+      "license": "(Unlicense OR Apache-2.0)",
+      "scope": "Conservative frozen app/helper/preview dependency set including build and optional platform packages"
+    },
+    {
       "purl": "pkg:npm/age-encryption@0.3.1",
       "ecosystem": "npm",
       "name": "age-encryption",
@@ -6976,6 +7006,16 @@
       "version": "2.2.0",
       "source": "https://registry.npmjs.org/trough/-/trough-2.2.0.tgz",
       "integrity": "sha512-tmMpK00BjZiUyVyvrBK7knerNgmgvcV/KLVyuma/SC+TQN167GrMRciANTz09+k3zW8L8t60jWO1GpfkZdjTaw==",
+      "license": "MIT",
+      "scope": "Conservative frozen app/helper/preview dependency set including build and optional platform packages"
+    },
+    {
+      "purl": "pkg:npm/ts-custom-error@3.3.1",
+      "ecosystem": "npm",
+      "name": "ts-custom-error",
+      "version": "3.3.1",
+      "source": "https://registry.npmjs.org/ts-custom-error/-/ts-custom-error-3.3.1.tgz",
+      "integrity": "sha512-5OX1tzOjxWEgsr/YEUWSuPrQ00deKLh6D7OTWcvNHm12/7QPyRh8SYpyWvA4IZv8H/+GQWQEh/kwo95Q9OVW1A==",
       "license": "MIT",
       "scope": "Conservative frozen app/helper/preview dependency set including build and optional platform packages"
     },

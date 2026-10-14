@@ -116,6 +116,7 @@ async fn product(
         let revoke=if let Request::Device{action,value:Some(value),confirmed:true}=&request {
             if action=="revoke" {Some(host.revoke_preview(generation,value).map_err(|e|e.0.to_owned())?)}else{None}
         }else{None};
+        let pairing_preview=if matches!(&request,Request::Pairing{request:anynote_windows_native::pairing::Command::Approve{confirmed:true}|anynote_windows_native::pairing::Command::Confirm{confirmed:true}|anynote_windows_native::pairing::Command::Cancel{confirmed:true}}){Some(host.pairing_command(&host.capability(generation).map_err(|e|e.0.to_owned())?,&anynote_windows_native::pairing::Command::Status{}).map_err(|e|e.0.to_owned())?)}else{None};
         let consent = match &request {
             Request::ResolveDraft {draft_id,confirmed:true}=>Some(format!("{}\n{}",if ru{"Опубликовать проверенный результат объединения всех выбранных конфликтующих веток?"}else{"Publish the reviewed resolution of all selected conflict branches?"},draft_id)),
             Request::Shared {group_id,action,target_account_id,role,confirmed:true}=>Some(format!("{}\nGroup: {}\nAction: {}\nAccount: {}\nRole: {}",if ru{"Применить изменение доступа к общей группе?"}else{"Apply this shared-group access change?"},group_id,action,target_account_id.as_deref().unwrap_or("—"),role.as_deref().unwrap_or("—"))),
@@ -123,6 +124,7 @@ async fn product(
             Request::RevokeSession {session_id,confirmed:true}=>Some(format!("{}\n{}",if ru{"Завершить эту сессию?"}else{"Revoke this session?"},session_id)),
             Request::Retention {group_id,apply:true,confirmed:true}=>Some(format!("{}\n{}",if ru{"Применить проверенную политику хранения этой группы?"}else{"Apply the reviewed retention policy to this group?"},group_id)),
             Request::ObjectAction {object_id,action,confirmed:true,..}=>Some(format!("{}\n{}: {}",if ru{"Применить действие к этой записи?"}else{"Apply this action to this object?"},action,object_id)),
+            Request::Pairing{..} if pairing_preview.is_some()=>Some(format!("{}\n{}",if ru{"Сравните аккаунт, отпечаток нового устройства и срок действия на обоих устройствах. Подтвердить выбранный шаг подключения?"}else{"Compare the account, new-device fingerprint and expiry on both devices. Confirm this pairing step?"},serde_json::to_string_pretty(&pairing_preview.as_ref().unwrap()["ceremony"]).map_err(|_|"INVALID_REQUEST")?)),
             _=>None,
         };
         if let Some(description) = consent {
@@ -232,6 +234,32 @@ fn profile_id_check(id: &str) -> Result<(), String> {
 #[derive(Deserialize)]
 #[serde(tag = "operation", rename_all = "kebab-case", deny_unknown_fields)]
 enum FileCommand {
+    PairingPng {},
+    ExportAccountCard {},
+    ExportGroupCard {
+        group_id: String,
+    },
+    ImportGroupCard {
+        accept: bool,
+    },
+    InviteAccount {
+        group_id: String,
+        role: String,
+    },
+    OwnershipProposal {
+        group_id: String,
+        account_id: String,
+        device_id: String,
+    },
+    OwnershipConsent {
+        group_id: String,
+    },
+    OwnershipCommit {
+        group_id: String,
+    },
+    SaveOwnership {
+        group_id: String,
+    },
     Upload {
         group_id: String,
         resume: Option<String>,
@@ -266,6 +294,90 @@ enum FileCommand {
         file_version_id: String,
     },
 }
+fn pick_public(
+    window: &tauri::WebviewWindow,
+    state: &Arc<State>,
+    ru: bool,
+) -> Result<Value, String> {
+    let selected = {
+        let _modal = state.modal();
+        rfd::FileDialog::new()
+            .set_parent(window)
+            .add_filter(
+                if ru {
+                    "Независимо проверенный публичный документ"
+                } else {
+                    "Independently trusted public document"
+                },
+                &["json"],
+            )
+            .pick_file()
+            .ok_or("CANCELLED")?
+    };
+    let mut source = Source::open(&selected, 4194304).map_err(|e| e.0)?;
+    anynote_crypto_core::codec::strict(&source.small(4194304).map_err(|e| e.0)?, 4194304)
+        .map_err(|e| e.0.into())
+}
+fn save_public(
+    window: &tauri::WebviewWindow,
+    state: &Arc<State>,
+    host: &Arc<Host>,
+    generation: u64,
+    ru: bool,
+    name: &str,
+    value: &Value,
+) -> Result<Value, String> {
+    let selected = {
+        let _modal = state.modal();
+        rfd::FileDialog::new()
+            .set_parent(window)
+            .set_file_name(name)
+            .add_filter(
+                if ru {
+                    "Публичный документ"
+                } else {
+                    "Public document"
+                },
+                &["json"],
+            )
+            .save_file()
+            .ok_or("CANCELLED")?
+    };
+    host.capability(generation).map_err(|e| e.0)?;
+    let bytes = anynote_crypto_core::codec::canonical(value).map_err(|e| e.0)?;
+    if bytes.len() > 4194304 {
+        return Err("RESOURCE_LIMIT".into());
+    }
+    let mut output =
+        anynote_windows_native::selection::Destination::create(&selected).map_err(|e| e.0)?;
+    std::io::Write::write_all(&mut output, &bytes).map_err(|_| "STORAGE_UNAVAILABLE")?;
+    host.capability(generation).map_err(|e| e.0)?;
+    output.finish().map_err(|e| e.0)?;
+    Ok(json!({"state":"SAVED","scope":"public-proof-only"}))
+}
+fn public_consent(
+    window: &tauri::WebviewWindow,
+    state: &Arc<State>,
+    ru: bool,
+    description: &str,
+) -> Result<(), String> {
+    let _modal = state.modal();
+    if rfd::MessageDialog::new()
+        .set_parent(window)
+        .set_title(if ru {
+            "AnyNote — независимая проверка"
+        } else {
+            "AnyNote independent verification"
+        })
+        .set_description(description)
+        .set_buttons(rfd::MessageButtons::YesNo)
+        .show()
+        != rfd::MessageDialogResult::Yes
+    {
+        return Err("CANCELLED".into());
+    }
+    Ok(())
+}
 fn assets(app: &tauri::AppHandle) -> Result<(PathBuf, PathBuf, Value), String> {
     let root = app
         .path()
@@ -285,13 +397,24 @@ async fn file_job(
     state: tauri::State<'_, Arc<State>>,
     generation: u64,
     request: Value,
+    language: Option<String>,
 ) -> Result<Value, String> {
     binding(&window)?;
+    let ru = language.as_deref() == Some("ru");
     let state = state.inner().clone();
     let host = state.host()?;
     let app = window.app_handle().clone();
     let request: FileCommand = serde_json::from_value(request).map_err(|_| "INVALID_REQUEST")?;
     tauri::async_runtime::spawn_blocking(move||{host.capability(generation).map_err(|e|e.0)?;match request{
+  FileCommand::ExportAccountCard{}=>{let card=host.account_card(generation).map_err(|e|e.0)?;save_public(&window,&state,&host,generation,ru,"AnyNote-public-account.json",&card)},
+  FileCommand::ExportGroupCard{group_id}=>{let card=host.group_card(generation,&group_id).map_err(|e|e.0)?;save_public(&window,&state,&host,generation,ru,"AnyNote-independent-group.json",&card)},
+  FileCommand::ImportGroupCard{accept}=>{let card=pick_public(&window,&state,ru)?;public_consent(&window,&state,ru,&format!("{} {}\n{}",if ru{"Проверьте карточку группы и исходный отпечаток её владельца по независимому доверенному каналу."}else{"Verify this independently obtained group card and its genesis owner root through a trusted private channel."},if accept{if ru{"Принять ожидающее приглашение в группу?"}else{"Accept its pending membership invitation?"}}else{if ru{"Импортировать это независимое подтверждение доверия?"}else{"Import this independent trust anchor?"}},serde_json::to_string_pretty(&card["pin"]).map_err(|_|"INVALID_REQUEST")?))?;host.adopt_group_card(generation,card,accept).map_err(|e|e.0.into())},
+  FileCommand::InviteAccount{group_id,role}=>{let card=pick_public(&window,&state,ru)?;public_consent(&window,&state,ru,&format!("{}\nGroup: {}\nRole: {}\n{}",if ru{"Пригласить этот независимо проверенный аккаунт с полной сохранённой историей?"}else{"Invite this independently verified account with full retained history?"},group_id,role,serde_json::to_string_pretty(&card["pins"]).map_err(|_|"INVALID_REQUEST")?))?;host.invite_account_card(generation,&group_id,&card,&role).map_err(|e|e.0.into())},
+  FileCommand::OwnershipProposal{group_id,account_id,device_id}=>{public_consent(&window,&state,ru,&format!("{}\nGroup: {}\nAccount: {}\nDevice: {}",if ru{"Предложить передачу владения? Новый владелец должен независимо подтвердить согласие."}else{"Propose ownership transfer? The incoming owner must independently consent."},group_id,account_id,device_id))?;let policy=host.ownership_proposal(generation,&group_id,&account_id,&device_id).map_err(|e|e.0)?;save_public(&window,&state,&host,generation,ru,"AnyNote-ownership-proposal.json",&policy)},
+  FileCommand::OwnershipConsent{group_id}=>{let cosign=true;let policy=pick_public(&window,&state,ru)?;public_consent(&window,&state,ru,&format!("{}\n{}",if cosign{if ru{"Согласиться стать владельцем группы? Проверьте личности прежнего и нового владельца."}else{"Consent to becoming this group's owner? Verify both current and incoming owner identities."}}else{if ru{"Завершить передачу владения с независимым согласием нового владельца?"}else{"Complete the independently consented ownership transfer?"}},serde_json::to_string_pretty(&policy["body"]).map_err(|_|"INVALID_REQUEST")?))?;let result=host.ownership_step(generation,&group_id,&policy,cosign).map_err(|e|e.0)?;if cosign{save_public(&window,&state,&host,generation,ru,"AnyNote-ownership-consented.json",&result["policy"])}else{Ok(result["result"].clone())}},
+  FileCommand::OwnershipCommit{group_id}=>{let cosign=false;let policy=pick_public(&window,&state,ru)?;public_consent(&window,&state,ru,&format!("{}\n{}",if cosign{if ru{"Согласиться стать владельцем группы? Проверьте личности прежнего и нового владельца."}else{"Consent to becoming this group's owner? Verify both current and incoming owner identities."}}else{if ru{"Завершить передачу владения с независимым согласием нового владельца?"}else{"Complete the independently consented ownership transfer?"}},serde_json::to_string_pretty(&policy["body"]).map_err(|_|"INVALID_REQUEST")?))?;let result=host.ownership_step(generation,&group_id,&policy,cosign).map_err(|e|e.0)?;if cosign{save_public(&window,&state,&host,generation,ru,"AnyNote-ownership-consented.json",&result["policy"])}else{Ok(result["result"].clone())}},
+  FileCommand::SaveOwnership{group_id}=>{let policy=host.saved_ownership_policy(generation,&group_id).map_err(|e|e.0)?;save_public(&window,&state,&host,generation,ru,"AnyNote-ownership-retained.json",&policy)},
+  FileCommand::PairingPng{}=>{let selected={let _modal=state.modal();rfd::FileDialog::new().set_parent(&window).add_filter("Pairing PNG",&["png"]).pick_file().ok_or("CANCELLED")?};let mut source=Source::open(&selected,4194304).map_err(|e|e.0)?;let bytes=source.small(4194304).map_err(|e|e.0)?;if bytes.len()<33 || &bytes[..8]!=b"\x89PNG\r\n\x1a\n" || &bytes[12..16]!=b"IHDR" {return Err("PAIRING_PNG_REQUIRED".into());}let width=u32::from_be_bytes(bytes[16..20].try_into().unwrap());let height=u32::from_be_bytes(bytes[20..24].try_into().unwrap());if width==0||height==0||width>2048||height>2048{return Err("PAIRING_PNG_REQUIRED".into());}host.capability(generation).map_err(|e|e.0)?;Ok(json!({"png_base64":anynote_crypto_core::crypto::b64(&bytes)}))},
   FileCommand::Upload{group_id,resume}=>{let selected={let _modal=state.modal();rfd::FileDialog::new().set_parent(&window).pick_file().ok_or("CANCELLED")?};let source=Source::open(&selected,1000000000).map_err(|e|e.0)?;let job=host.start_upload(generation,group_id,source,resume).map_err(|e|e.0)?;Ok(json!({"job_id":job}))},
   FileCommand::Download{group_id,file_version_id,offline}=>{let selected={let _modal=state.modal();rfd::FileDialog::new().set_parent(&window).set_file_name("AnyNote-file.bin").save_file().ok_or("CANCELLED")?};let job=host.start_download(generation,group_id,file_version_id,&selected,offline).map_err(|e|e.0)?;Ok(json!({"job_id":job}))},
   FileCommand::Export{group_ids,history,trash,kib_per_second}=>{let plan=host.prepare_export(generation,&group_ids,history,trash,kib_per_second).map_err(|e|e.0)?;let selected={let _modal=state.modal();rfd::FileDialog::new().set_parent(&window).set_file_name("AnyNote-export.age").save_file().ok_or("CANCELLED")?};let(node,script,manifest)=assets(&app)?;let job=host.jobs.start(generation).map_err(|e|e.0)?;let id=job.id.clone();std::thread::spawn(move||{let a=Assets{node:&node,script:&script,node_sha:manifest["node_sha256"].as_str().unwrap_or(""),script_sha:manifest["script_sha256"].as_str().unwrap_or("")};let r=host.export_archive(generation,plan,&selected,&a,job.clone());job.finish(r);});Ok(json!({"job_id":id}))},
@@ -307,6 +430,7 @@ async fn file_job(
    let preview=tauri::WebviewWindowBuilder::new(&app,&label,tauri::WebviewUrl::App("auth/preview.html".into())).title("AnyNote file preview").parent(&window).map_err(|_|"PREVIEW_UNAVAILABLE")?.devtools(false).incognito(true)
     .on_navigation(|url|url.path()=="/auth/preview.html"&&url.query().is_none()&&url.fragment().is_none())
     .on_new_window(|_,_|tauri::webview::NewWindowResponse::Deny)
+    .on_download(|_,_|false)
     .on_page_load(move|view,page|{if page.event()==tauri::webview::PageLoadEvent::Finished{if preview_host.current()!=generation{let _=view.close();return;}if let Ok(mut data)=data.lock()&&let Some(payload)=data.take(){let _=view.eval(format!("window.dispatchEvent(new CustomEvent('anynote-preview',{{detail:{payload}}}))"));}}})
     .build().map_err(|_|"PREVIEW_UNAVAILABLE")?;
    preview.on_window_event(move|event|{if matches!(event,tauri::WindowEvent::Focused(false))&&!window_state.owns_foreground(){window_state.lock();if let Some(app)=window_state.app.get(){let _=app.emit("vault-locked",json!({"reason":"background"}));}}});
@@ -355,9 +479,11 @@ fn main() {
             });
             let _ = state.app.set(app.handle().clone());
             app.manage(state.clone());
-            let window = app
-                .get_webview_window("main")
-                .ok_or("main window missing")?;
+            let window =
+                tauri::WebviewWindowBuilder::from_config(app, &app.config().app.windows[0])?
+                    .on_new_window(|_, _| tauri::webview::NewWindowResponse::Deny)
+                    .on_download(|_, _| false)
+                    .build()?;
             #[cfg(windows)]
             windows::attach(&window, state.clone())?;
             let handle = app.handle().clone();

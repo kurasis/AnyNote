@@ -6,6 +6,26 @@ use anynote_local_vault::Capability;
 use serde_json::json;
 impl Host {
     pub fn catch_up(&self, cap: &Capability) -> Result<Value> {
+        let result = self.catch_up_inner(cap);
+        if let Err(Error(
+            code @ ("RESTORE_QUARANTINE"
+            | "CIPHERTEXT_MISMATCH"
+            | "INVALID_SIGNATURE"
+            | "CONTEXT_MISMATCH"
+            | "ROOT_PIN_MISMATCH"
+            | "SYNC_GAP"
+            | "INVALID_SYNC_DTO"
+            | "INTEGRITY_FAILURE"),
+        )) = &result
+        {
+            let digest = anynote_crypto_core::crypto::hash(&anynote_crypto_core::codec::canonical(
+                &json!({"code":code}),
+            )?);
+            let _=self.notes(cap,json!({"action":"sync","request":{"action":"quarantine","state":if *code=="RESTORE_QUARANTINE"{"RESTORE_QUARANTINE"}else{"QUARANTINED"},"digest":digest}}));
+        }
+        result
+    }
+    fn catch_up_inner(&self, cap: &Capability) -> Result<Value> {
         let mut state = self.notes(cap, json!({"action":"sync","request":{"action":"status"}}))?;
         check(state["state"] != "RESTORE_QUARANTINE", "RESTORE_QUARANTINE")?;
         check(state["state"] != "QUARANTINED", "SYNC_QUARANTINE")?;
