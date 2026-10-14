@@ -1,0 +1,11 @@
+{
+  "name": "@anynote/content-browser",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "GPL-3.0-only",
+  "dependencies": {
+    "age-encryption": "0.3.1",
+    "pdfjs-dist": "6.4.299"
+  }
+}

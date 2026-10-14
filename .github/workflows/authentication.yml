@@ -6,6 +6,10 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
+      p13_preview_only:
+        description: Diagnose the actual maintained isolated viewer; full P13 acceptance remains mandatory
+        type: boolean
+        default: false
       files_stream_only:
         description: Diagnose the actual bounded service-worker export sink; full acceptance remains mandatory
         type: boolean
@@ -33,7 +37,7 @@ concurrency:
 
 jobs:
   auth-linux-http-browser:
-    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only && !inputs.shared_browser_only && !inputs.files_stream_only }}
+    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only && !inputs.shared_browser_only && !inputs.files_stream_only && !inputs.p13_preview_only }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
@@ -55,6 +59,7 @@ jobs:
           npm --prefix packages/api-client ci --ignore-scripts --no-audit --no-fund
           npm --prefix apps/devices-web ci --ignore-scripts --no-audit --no-fund
           npm --prefix apps/notes-web ci --ignore-scripts --no-audit --no-fund
+          npm --prefix packages/content-browser ci --ignore-scripts --no-audit --no-fund
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends libnss3-tools
           python3 scripts/dev-stack.py install
@@ -100,7 +105,7 @@ jobs:
           python3 scripts/dev-stack.py stop
 
   auth-windows-native:
-    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only && !inputs.shared_browser_only && !inputs.files_stream_only }}
+    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only && !inputs.shared_browser_only && !inputs.files_stream_only && !inputs.p13_preview_only }}
     runs-on: windows-2025
     timeout-minutes: 20
     defaults:
@@ -138,7 +143,7 @@ jobs:
           retention-days: 14
 
   browser-fault-diagnosis:
-    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.device_browser_only || inputs.notes_browser_only || inputs.shared_browser_only || inputs.files_stream_only) }}
+    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.device_browser_only || inputs.notes_browser_only || inputs.shared_browser_only || inputs.files_stream_only || inputs.p13_preview_only) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -161,6 +166,7 @@ jobs:
           npm --prefix packages/api-client ci --ignore-scripts --no-audit --no-fund
           npm --prefix apps/devices-web ci --ignore-scripts --no-audit --no-fund
           npm --prefix apps/notes-web ci --ignore-scripts --no-audit --no-fund
+          npm --prefix packages/content-browser ci --ignore-scripts --no-audit --no-fund
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends libnss3-tools
           python3 scripts/dev-stack.py install
@@ -168,7 +174,9 @@ jobs:
       - name: Actual sandboxed CSP and verified-TLS UI
         run: |
           source scripts/runtime-env.sh
-          if [ "${{ inputs.files_stream_only }}" = "true" ]; then
+          if [ "${{ inputs.p13_preview_only }}" = "true" ]; then
+            node experiments/p01/p13-preview-probe.mjs
+          elif [ "${{ inputs.files_stream_only }}" = "true" ]; then
             node experiments/p01/p12-stream-probe.mjs
           elif [ "${{ inputs.shared_browser_only }}" = "true" ]; then
             node experiments/p01/p10-browser.mjs
@@ -183,6 +191,7 @@ jobs:
         with:
           name: browser-fault-public-report
           path: |
+            artifacts/p13/preview-probe.json
             artifacts/p12/stream-report.json
             artifacts/p08/browser-report.json
             artifacts/p09/browser-report.json

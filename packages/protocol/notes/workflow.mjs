@@ -15,15 +15,16 @@ import {certificateDetails} from '../devices/proofs.mjs';
 import {stateDigest} from '../adapters/codecs/state-codec.mjs';
 import {noteValue} from './client.mjs';
 import {FileWorkflow} from '../files/workflow.mjs';
+import {ContentWorkflow} from '../content/workflow.mjs';
 import {ensure,id} from '../vault/store.mjs';
 const random=()=>b64(sodium.randombytes_buf(16));
 const valueHash=v=>hash(canonicalBytes(wire(v)));
 const requestFor=b=>{const c=b.envelope.header.context;return noteValue('commit-request',{group_id:c.group_id,object_id:c.object_id,object_kind:c.object_kind,action:c.action,thread_id:c.thread_id,bundle:b});};
 function wipe(v){if(v instanceof Uint8Array)sodium.memzero(v);else if(v&&typeof v==='object')for(const k of Object.keys(v)){wipe(v[k]);if(typeof v[k]==='string')v[k]='';}}
 export class NotesWorkflow {
- #defer;#state;#proof;#snapshot;#keys;#copyAudience;#files;
- constructor({scope,pins,keys,load,read,persist,devices,secrets,files}){this.scope=scope;this.pins=pins;this.#keys=keys;this.load=load;this.read=read;this.persist=persist;this.devices=devices;this.secrets=secrets;this.files=files;}
- close(){this.#files?.close();this.#files=undefined;this.#state=this.#proof=this.#snapshot=undefined;}
+ #defer;#state;#proof;#snapshot;#keys;#copyAudience;#files;#contents;
+ constructor({scope,pins,keys,load,read,persist,devices,secrets,files,content}){this.scope=scope;this.pins=pins;this.#keys=keys;this.load=load;this.read=read;this.persist=persist;this.devices=devices;this.secrets=secrets;this.files=files;this.content=content;}
+ close(){this.#contents?.close();this.#contents=undefined;this.#files?.close();this.#files=undefined;this.#state=this.#proof=this.#snapshot=undefined;}
  async #ready(){
   if(!this.#state)this.#state=(await this.load())??{purpose:'p09-private-control',version:1,groups:[],drafts:[],attempts:[],witnesses:[]};
   noteValue('local-control',this.#state);
@@ -80,6 +81,11 @@ export class NotesWorkflow {
  async #commit(extra={}){noteValue('local-control',this.#state);if(this.#defer){this.#defer.push(extra);return;}await this.persist(this.#state,extra);}
  async command(op,args=[]){
   await this.#ready();
+  if(op==='content'){
+   ensure(args.length===2&&this.content,'INVALID_CONTENT_COMMAND');
+   this.#contents??=new ContentWorkflow({...this.content,accessible:()=>this.#contentAccessible(),catalog:()=>this.#contentCatalog(),open:revision=>this.#readVerifiedCached(revision)});
+   return this.#contents.command(args[0],args[1]);
+  }
   if(op==='files'){
    ensure(args.length===2&&this.files,'INVALID_FILE_COMMAND');
    this.#files??=new FileWorkflow({scope:this.scope,...this.files,authority:(g,w,e)=>this.#fileAuthority(g,w,e)});
@@ -188,6 +194,9 @@ export class NotesWorkflow {
   }
   ensure(false,'INVALID_NOTE_COMMAND');
  }
+ async #contentAccessible(){this.#own();const result=new Set();for(const group of this.#state.groups){const {info}=await this.#info(group.group_id);if(!info.policy||info.members.some(m=>m.account_id===this.scope.account_id&&m.status!=='removed'))result.add(group.group_id);}return result;}
+ #contentCatalog(){const heads=new Map((this.#state.sync?.projection??[]).map(p=>[p.reference.object_id,new Set(p.reference.heads.map(h=>h.revision_id))]));return this.#state.witnesses.map(w=>({...w,payload_status:'retained',current:heads.has(w.object_id)?heads.get(w.object_id).has(w.revision_id):null}));}
+ async #readVerifiedCached(revision){ensure(!this.#defer,'PUBLICATION_PENDING');const original=this.#state;this.#state=structuredClone(original);this.#defer=[];try{const opened=await this.command('cached',[revision]);return {...opened,state:'verified'};}finally{this.#state=original;this.#defer=undefined;}}
  async #historyRecords(group){const out=[];for(const w of this.#state.witnesses.filter(w=>w.group_id===group)){const data=await this.read(w.cache_id,'cache'),envelope=data.purpose==='p11-header-evidence'?syncValue('header-evidence',data).envelope:decode('bundle',un64(decode('cache',wire(data)).record_bytes)).envelope,b=envelope.header.context;ensure(digest('envelope',wire(envelope))===w.envelope_digest,'INTEGRITY_FAILURE');out.push({object_kind:b.object_kind,object_id:b.object_id,revision_id:b.revision_id,envelope_digest:w.envelope_digest,parents:b.parents,payload_status:'retained'});}if(this.files){const files=await this.files.readControl(),ids=(files?.witnesses??[]).filter(w=>w.group_id===group);for(const w of ids){const evidence=await this.files.readRecord(w.record_id,'file-evidence'),c=evidence.envelope.header.context;ensure(fileDecode('envelope',wire(evidence.envelope))&&w.envelope_digest===fileSigningDigest(wire(evidence.envelope)),'INTEGRITY_FAILURE');out.push({object_kind:'file-manifest',object_id:c.file_id,revision_id:c.file_version_id,envelope_digest:w.envelope_digest,parents:c.parents,payload_status:'retained'});}}return out.sort((a,b)=>a.revision_id<b.revision_id?-1:1);}
  async #syncVerify(item,bundle,reference,previous=[]){
   checkedBundle(item,bundle);noteValue('object-ref',reference);const c=bundle.envelope.header.context;

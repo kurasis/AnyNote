@@ -37,6 +37,7 @@ jobs:
           npm --prefix packages/api-client ci --ignore-scripts --no-audit --no-fund
           npm --prefix apps/devices-web ci --ignore-scripts --no-audit --no-fund
           npm --prefix apps/notes-web ci --ignore-scripts --no-audit --no-fund
+          npm --prefix packages/content-browser ci --ignore-scripts --no-audit --no-fund
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends libnss3-tools
           python3 scripts/dev-stack.py install
