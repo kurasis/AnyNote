@@ -24,7 +24,7 @@ const vault=new LocalVault('/auth/vault-worker.js',mask);
 function erase(v){if(v&&typeof v==='object')for(const k of Object.keys(v)){if(typeof v[k]==='string')v[k]='';else erase(v[k]);}}
 let transfers,contentTools,portableTools;
 function mask(){
- contentTools?.close();portableTools?.close();
+ contentTools?.close();portableTools?.close({locked:true});
  transfers?.pause();if($('file-delete-confirm'))$('file-delete-confirm').checked=false;if($('file-restart-confirm'))$('file-restart-confirm').checked=false;if($('file-copy-confirm'))$('file-copy-confirm').checked=false;if($('file-copy-audience'))$('file-copy-audience').textContent='';if($('file-source'))$('file-source').value='';if($('file-items'))$('file-items').replaceChildren();if($('file-state'))$('file-state').textContent='';
  poller?.stop();synchronizer=undefined;
  generation++;clearTimeout(timer);editor&&erase(editor);editor=undefined;pendingConflict&&erase(pendingConflict);pendingConflict=undefined;

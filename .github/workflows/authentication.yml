@@ -6,6 +6,10 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
+      files_browser_only:
+        description: Diagnose the complete P12 lock/resume/1 GB UI; all mandatory gates remain required
+        type: boolean
+        default: false
       p13_browser_only:
         description: Diagnose shipped P13 whole-account UI; all mandatory gates remain required
         type: boolean
@@ -41,7 +45,7 @@ concurrency:
 
 jobs:
   auth-linux-http-browser:
-    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only && !inputs.shared_browser_only && !inputs.files_stream_only && !inputs.p13_preview_only && !inputs.p13_browser_only }}
+    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only && !inputs.shared_browser_only && !inputs.files_stream_only && !inputs.p13_preview_only && !inputs.p13_browser_only && !inputs.files_browser_only }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
@@ -109,7 +113,7 @@ jobs:
           python3 scripts/dev-stack.py stop
 
   auth-windows-native:
-    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only && !inputs.shared_browser_only && !inputs.files_stream_only && !inputs.p13_preview_only && !inputs.p13_browser_only }}
+    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only && !inputs.shared_browser_only && !inputs.files_stream_only && !inputs.p13_preview_only && !inputs.p13_browser_only && !inputs.files_browser_only }}
     runs-on: windows-2025
     timeout-minutes: 20
     defaults:
@@ -147,7 +151,7 @@ jobs:
           retention-days: 14
 
   browser-fault-diagnosis:
-    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.device_browser_only || inputs.notes_browser_only || inputs.shared_browser_only || inputs.files_stream_only || inputs.p13_preview_only || inputs.p13_browser_only) }}
+    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.device_browser_only || inputs.notes_browser_only || inputs.shared_browser_only || inputs.files_stream_only || inputs.p13_preview_only || inputs.p13_browser_only || inputs.files_browser_only) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -178,7 +182,9 @@ jobs:
       - name: Actual sandboxed CSP and verified-TLS UI
         run: |
           source scripts/runtime-env.sh
-          if [ "${{ inputs.p13_browser_only }}" = "true" ]; then
+          if [ "${{ inputs.files_browser_only }}" = "true" ]; then
+            node experiments/p01/p10-browser.mjs --p11-sync --p12-files
+          elif [ "${{ inputs.p13_browser_only }}" = "true" ]; then
             node experiments/p01/p10-browser.mjs --p11-sync --p13-content
           elif [ "${{ inputs.p13_preview_only }}" = "true" ]; then
             node experiments/p01/p13-preview-probe.mjs
