@@ -303,3 +303,57 @@ fn actual_filesystem_space_estimate_fails_closed_before_creating_output() {
     assert!(!output.exists());
     assert_eq!(std::fs::read_dir(d.path()).unwrap().count(), 0);
 }
+
+#[test]
+fn interrupted_profile_publication_resumes_same_encrypted_vault_and_fixed_service() {
+    let f = Fixture::new();
+    let dir = tempfile::tempdir().unwrap();
+    let service = Service {
+        issuer: "https://synthetic.example".into(),
+        app: "https://synthetic-app.example".into(),
+        pins: f.pins.clone(),
+    };
+    let created = Host::create(dir.path(), service.clone(), PHRASE, false, 0).unwrap();
+    let scope = created.profile.scope.clone();
+    let credential = created.profile.credential_id.clone();
+    drop(created);
+    std::fs::rename(
+        dir.path().join("profile.json"),
+        dir.path().join("profile-pending.json"),
+    )
+    .unwrap();
+    let mut pending: Value =
+        serde_json::from_slice(&std::fs::read(dir.path().join("profile-pending.json")).unwrap())
+            .unwrap();
+    pending["credential_id"] = json!(id());
+    std::fs::write(
+        dir.path().join("profile-pending.json"),
+        canonical(&pending).unwrap(),
+    )
+    .unwrap();
+    let mut wrong = service.clone();
+    wrong.issuer = "https://attacker.example".into();
+    assert_eq!(
+        Host::resume_setup(dir.path(), wrong, PHRASE, false, 0)
+            .err()
+            .unwrap()
+            .0,
+        "SERVICE_CONFIGURATION_CHANGED"
+    );
+    assert!(dir.path().join("profile-pending.json").exists());
+    let recovered = Host::resume_setup(dir.path(), service, PHRASE, false, 0).unwrap();
+    assert_eq!(recovered.profile.scope.device_id, scope.device_id);
+    assert_eq!(recovered.profile.credential_id, credential);
+    assert!(dir.path().join("profile.json").exists());
+    assert!(!dir.path().join("profile-pending.json").exists());
+    recovered
+        .execute(
+            &binding(),
+            0,
+            Request::Unlock {
+                phrase: PHRASE.into(),
+            },
+        )
+        .unwrap();
+    recovered.capability(0).unwrap();
+}

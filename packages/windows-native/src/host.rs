@@ -178,6 +178,10 @@ impl Host {
     }
     /// Called only by trusted native first-time creation after independent configuration selection.
     pub fn bind_new_service(&self, cap: &Capability) -> Result<()> {
+        check(
+            self.vault.native_profile_pins(cap)? == self.profile.service.pins,
+            "ROOT_PIN_MISMATCH",
+        )?;
         let id = self.service_binding_id();
         let existing = self.vault.content_read(cap, &id, "content-control")?;
         check(existing.data.is_none(), "SERVICE_ALREADY_BOUND")?;
@@ -230,6 +234,10 @@ impl Host {
         hwnd: usize,
     ) -> Result<Self> {
         check(!root.join("profile.json").exists(), "PROFILE_EXISTS")?;
+        check(
+            !root.join("profile-pending.json").exists() && !root.join("vault.sqlite").exists(),
+            "SETUP_RECOVERY_REQUIRED",
+        )?;
         id(string(&service.pins, "service_id")?)?;
         id(string(&service.pins, "account_id")?)?;
         check(
@@ -245,37 +253,115 @@ impl Host {
             profile_id: random_id(),
         };
         std::fs::create_dir_all(root).map_err(|_| Error("STORAGE_UNAVAILABLE"))?;
-        let vault = Arc::new(Vault::open(&root.join("vault.sqlite"), scope.clone())?);
-        if hello {
-            vault.initialize_device_hello(hwnd, service.pins.clone())?;
-        } else {
-            vault.initialize_device_phrase(phrase, service.pins.clone(), true)?;
-        }
         let profile = Profile {
             version: 1,
             scope,
             service,
             credential_id: random_id(),
         };
-        let host = Self::from_parts(root, profile, vault, adapter);
+        let mut pending =
+            crate::selection::Destination::create(&root.join("profile-pending.json"))?;
+        std::io::Write::write_all(
+            &mut pending,
+            &canonical(
+                &serde_json::to_value(&profile)
+                    .map_err(|_| Error("INVALID_SERVICE_CONFIGURATION"))?,
+            )?,
+        )
+        .map_err(|_| Error("STORAGE_UNAVAILABLE"))?;
+        pending.finish()?;
+        let vault = Arc::new(Vault::open(
+            &root.join("vault.sqlite"),
+            profile.scope.clone(),
+        )?);
+        let mut host = Self::from_parts(root, profile, vault, adapter);
+        let service = host.profile.service.clone();
+        host.finish_setup(service, phrase, hello, hwnd)?;
+        Ok(host)
+    }
+    /// Resume only the exact native pending profile, with independently reselected public trust.
+    pub fn resume_setup(
+        root: &Path,
+        service: Service,
+        phrase: &str,
+        hello: bool,
+        hwnd: usize,
+    ) -> Result<Self> {
+        check(!root.join("profile.json").exists(), "PROFILE_EXISTS")?;
+        let bytes = std::fs::read(root.join("profile-pending.json"))
+            .map_err(|_| Error("SETUP_RECOVERY_REQUIRED"))?;
+        let mut profile: Profile = serde_json::from_value(strict(&bytes, 65536)?)
+            .map_err(|_| Error("INVALID_SERVICE_CONFIGURATION"))?;
+        check(
+            profile.version == 1
+                && service.pins["service_id"] == profile.scope.service_id
+                && service.pins["account_id"] == profile.scope.account_id,
+            "LOCAL_CONTEXT_MISMATCH",
+        )?;
+        let adapter = Adapter::new(&service.issuer, &service.app)
+            .map_err(|_| Error("INVALID_SERVICE_CONFIGURATION"))?;
+        profile.service = service.clone();
+        let vault = Arc::new(Vault::open(
+            &root.join("vault.sqlite"),
+            profile.scope.clone(),
+        )?);
+        let mut host = Self::from_parts(root, profile, vault, adapter);
+        host.finish_setup(service, phrase, hello, hwnd)?;
+        Ok(host)
+    }
+    fn finish_setup(
+        &mut self,
+        service: Service,
+        phrase: &str,
+        hello: bool,
+        hwnd: usize,
+    ) -> Result<()> {
+        check(
+            service.issuer == self.profile.service.issuer
+                && service.app == self.profile.service.app
+                && service.pins == self.profile.service.pins,
+            "SERVICE_CONFIGURATION_CHANGED",
+        )?;
+        if self.vault.status()? == "enrollment-required" {
+            if hello {
+                self.vault
+                    .initialize_device_hello(hwnd, service.pins.clone())?;
+            } else {
+                self.vault
+                    .initialize_device_phrase(phrase, service.pins.clone(), true)?;
+            }
+        }
         let cap = if hello {
-            host.vault.unlock_hello(hwnd)?
+            self.vault.unlock_hello(hwnd)?
         } else {
-            host.vault.unlock_phrase(phrase)?
+            self.vault.unlock_phrase(phrase)?
         };
-        host.bind_new_service(&cap)?;
-        host.vault.lock();
-        let mut out = crate::selection::Destination::create(&root.join("profile.json"))?;
+        let result = match self
+            .vault
+            .content_read(&cap, &self.service_binding_id(), "content-control")?
+            .data
+        {
+            Some(binding) => {
+                self.profile.credential_id = string(&binding, "credential_id")?.to_owned();
+                self.verify_service(&cap)
+            }
+            None => self.bind_new_service(&cap),
+        };
+        self.vault.lock_all()?;
+        result?;
+        let mut out = crate::selection::Destination::create(&self.root.join("profile.json"))?;
         std::io::Write::write_all(
             &mut out,
             &canonical(
-                &serde_json::to_value(&host.profile)
+                &serde_json::to_value(&self.profile)
                     .map_err(|_| Error("INVALID_SERVICE_CONFIGURATION"))?,
             )?,
         )
         .map_err(|_| Error("STORAGE_UNAVAILABLE"))?;
         out.finish()?;
-        Ok(host)
+        std::fs::remove_file(self.root.join("profile-pending.json"))
+            .map_err(|_| Error("SETUP_CLEANUP_PENDING"))?;
+        Ok(())
     }
     pub fn current(&self) -> u64 {
         self.generation.load(Ordering::SeqCst)
@@ -297,7 +383,7 @@ impl Host {
         if let Ok(mut c) = self.cap.try_lock() {
             *c = None;
         }
-        self.vault.lock();
+        let _ = self.vault.lock_all();
     }
     pub fn capability(&self, g: u64) -> Result<Arc<Capability>> {
         check(g == self.current(), "STALE_CAPABILITY")?;

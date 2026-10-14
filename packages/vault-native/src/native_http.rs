@@ -1,6 +1,11 @@
 //! Native-only fixed product transport with credentials opened only under L.
 use super::*;
 impl Vault {
+    /// Public profile pins, returned only after the encrypted native vault is authorized.
+    pub fn native_profile_pins(&self, cap: &Capability) -> Result<Value> {
+        let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
+        Ok(self.authorize(&mut i, cap)?.pins)
+    }
     pub fn export_chunk_http(
         &self,
         cap: &Capability,

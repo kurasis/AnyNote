@@ -14,7 +14,7 @@ use std::{
     },
 };
 use tauri::{Emitter, Manager};
-use zeroize::Zeroize;
+
 struct State {
     host: Mutex<Option<Arc<Host>>>,
     root: PathBuf,
@@ -87,8 +87,18 @@ async fn product(
 #[serde(tag = "operation", rename_all = "kebab-case", deny_unknown_fields)]
 enum ProfileCommand {
     List {},
-    Open { profile_id: String },
-    Create { phrase: String, hello: bool },
+    Open {
+        profile_id: String,
+    },
+    Create {
+        phrase: String,
+        hello: bool,
+    },
+    Resume {
+        profile_id: String,
+        phrase: String,
+        hello: bool,
+    },
 }
 #[tauri::command]
 async fn profile(
@@ -99,12 +109,57 @@ async fn profile(
     let b = binding(&window)?;
     let state = state.inner().clone();
     let request: ProfileCommand = serde_json::from_value(request).map_err(|_| "INVALID_REQUEST")?;
-    tauri::async_runtime::spawn_blocking(move||{match request{
-  ProfileCommand::List{}=>{let mut rows=Vec::new();for entry in std::fs::read_dir(&state.root).map_err(|_|"STORAGE_UNAVAILABLE")?{let entry=entry.map_err(|_|"STORAGE_UNAVAILABLE")?;let p=entry.path().join("profile.json");if entry.file_type().map_err(|_|"STORAGE_UNAVAILABLE")?.is_dir()&&p.exists(){let bytes=std::fs::read(p).map_err(|_|"STORAGE_UNAVAILABLE")?;let value=anynote_crypto_core::codec::strict(&bytes,65536).map_err(|_|"INVALID_PROFILE")?;rows.push(json!({"profile_id":entry.file_name().to_string_lossy(),"account_id":value["scope"]["account_id"],"issuer":value["service"]["issuer"]}));}}Ok(json!({"items":rows}))},
-  ProfileCommand::Open{profile_id}=>{if profile_id.len()!=22||!profile_id.bytes().all(|c|c.is_ascii_alphanumeric()||b"_-".contains(&c)){return Err("INVALID_PROFILE".into());}state.lock();let mut host=Host::open(&state.root.join(profile_id)).map_err(|e|e.0)?;host.generation=state.generation.clone();state.generation.fetch_add(1,Ordering::SeqCst);let host=Arc::new(host);*state.host.lock().map_err(|_|"HOST_BUSY")?=Some(host);Ok(json!({"state":"locked"}))},
-  ProfileCommand::Create{mut phrase,hello}=>{let _modal=state.modal();let selected=rfd::FileDialog::new().set_parent(&window).add_filter("Trusted public service configuration",&["json"]).pick_file().ok_or("CANCELLED")?;let mut source=Source::open(&selected,65536).map_err(|e|e.0)?;let bytes=source.small(65536).map_err(|e|e.0)?;let service:Service=serde_json::from_value(anynote_crypto_core::codec::strict(&bytes,65536).map_err(|e|e.0)?).map_err(|_|"INVALID_SERVICE_CONFIGURATION")?;
-    let profile_id=anynote_crypto_core::crypto::b64(&anynote_crypto_core::crypto::random_key().map_err(|e|e.0)?[..16]);let result=Host::create(&state.root.join(&profile_id),service,&phrase,hello,b.hwnd);phrase.zeroize();let mut host=result.map_err(|e|e.0)?;state.lock();host.generation=state.generation.clone();state.generation.fetch_add(1,Ordering::SeqCst);let host=Arc::new(host);*state.host.lock().map_err(|_|"HOST_BUSY")?=Some(host);Ok(json!({"profile_id":profile_id,"state":"locked"}))}
- }}).await.map_err(|_|"HOST_UNAVAILABLE")?
+    tauri::async_runtime::spawn_blocking(move||->Result<Value,String>{
+  match request {
+   ProfileCommand::List{}=>{
+    let mut rows=Vec::new();
+    for entry in std::fs::read_dir(&state.root).map_err(|_|"STORAGE_UNAVAILABLE")?{
+     let entry=entry.map_err(|_|"STORAGE_UNAVAILABLE")?;
+     if !entry.file_type().map_err(|_|"STORAGE_UNAVAILABLE")?.is_dir(){continue;}
+     let complete=entry.path().join("profile.json").exists();
+     let path=entry.path().join(if complete{"profile.json"}else{"profile-pending.json"});
+     if !path.exists(){continue;}
+     let bytes=std::fs::read(path).map_err(|_|"STORAGE_UNAVAILABLE")?;
+     let value=anynote_crypto_core::codec::strict(&bytes,65536).map_err(|_|"INVALID_PROFILE")?;
+     rows.push(json!({"profile_id":entry.file_name().to_string_lossy(),"setup_pending":!complete,"account_id":value["scope"]["account_id"],"issuer":value["service"]["issuer"]}));
+    }Ok(json!({"items":rows}))
+   },
+   ProfileCommand::Open{profile_id}=>{
+    profile_id_check(&profile_id)?;state.lock();
+    let mut host=Host::open(&state.root.join(profile_id)).map_err(|e|e.0)?;
+    host.generation=state.generation.clone();state.generation.fetch_add(1,Ordering::SeqCst);
+    *state.host.lock().map_err(|_|"HOST_BUSY")?=Some(Arc::new(host));Ok(json!({"state":"locked"}))
+   },
+   command @ (ProfileCommand::Create{..}|ProfileCommand::Resume{..})=>{
+    let(resume,phrase,hello)=match command {
+     ProfileCommand::Create{phrase,hello}=>(None,phrase,hello),
+     ProfileCommand::Resume{profile_id,phrase,hello}=>(Some(profile_id),phrase,hello),
+     _=>unreachable!()
+    };
+    let phrase=zeroize::Zeroizing::new(phrase);let _modal=state.modal();
+    let selected=rfd::FileDialog::new().set_parent(&window).add_filter("Independently trusted public service configuration",&["json"]).pick_file().ok_or("CANCELLED")?;
+    let mut source=Source::open(&selected,65536).map_err(|e|e.0)?;
+    let bytes=source.small(65536).map_err(|e|e.0)?;
+    let service:Service=serde_json::from_value(anynote_crypto_core::codec::strict(&bytes,65536).map_err(|e|e.0)?).map_err(|_|"INVALID_SERVICE_CONFIGURATION")?;
+    let profile_id=if let Some(id)=&resume{id.clone()}else{anynote_crypto_core::crypto::b64(&anynote_crypto_core::crypto::random_key().map_err(|e|e.0)?[..16])};
+    profile_id_check(&profile_id)?;
+    let result=if resume.is_some(){Host::resume_setup(&state.root.join(&profile_id),service,&phrase,hello,b.hwnd)}else{Host::create(&state.root.join(&profile_id),service,&phrase,hello,b.hwnd)};
+    let mut host=result.map_err(|e|e.0)?;state.lock();host.generation=state.generation.clone();state.generation.fetch_add(1,Ordering::SeqCst);
+    *state.host.lock().map_err(|_|"HOST_BUSY")?=Some(Arc::new(host));Ok(json!({"profile_id":profile_id,"state":"locked"}))
+   }
+  }
+ }).await.map_err(|_|"HOST_UNAVAILABLE")?
+}
+fn profile_id_check(id: &str) -> Result<(), String> {
+    if id.len() == 22
+        && id
+            .bytes()
+            .all(|c| c.is_ascii_alphanumeric() || b"_-".contains(&c))
+    {
+        Ok(())
+    } else {
+        Err("INVALID_PROFILE".into())
+    }
 }
 #[derive(Deserialize)]
 #[serde(tag = "operation", rename_all = "kebab-case", deny_unknown_fields)]
