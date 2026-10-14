@@ -10,7 +10,9 @@ PINS=json.loads((ROOT/'scripts/p14-windows-dependencies.json').read_text())
 def require_ci():
     if os.name!='nt' or os.getenv('GITHUB_ACTIONS')!='true':raise RuntimeError('Windows GitHub synthetic runner required')
 def checked(args,**kw):
+    expected=kw.pop('expected_failure',False)
     result=subprocess.run([str(a) for a in args],cwd=kw.pop('cwd',ROOT),capture_output=True,**kw)
+    if result.returncode and expected:raise RuntimeError('Expected owned readiness probe not yet ready')
     if result.returncode:
         detail=(result.stdout+result.stderr).decode(errors='replace')
         if (STATE/'private.json').exists():
@@ -65,10 +67,10 @@ def environment():
     return env
 def php(*args,capture=True,input=None):
     return checked([runtime('php'),'-c',STATE/'php.ini',*args],cwd=API,env=environment(),input=input)
-def sql(text,password=True):
+def sql(text,password=True,quiet=False):
     env=os.environ.copy()
     if password:env['MYSQL_PWD']=settings()['root_password']
-    return checked([runtime('db'),'--protocol=tcp','--host=127.0.0.1','--port=13306','--user='+('anynote_admin' if password else 'root'),'--batch','--skip-column-names'],env=env,input=text.encode()).decode().strip()
+    return checked([runtime('db'),'--protocol=tcp','--host=127.0.0.1','--port=13306','--user='+('anynote_admin' if password else 'root'),'--batch','--skip-column-names'],env=env,input=text.encode(),expected_failure=quiet).decode().strip()
 def openssl(*args):
     exe=shutil.which('openssl') or r'C:\Program Files\Git\usr\bin\openssl.exe'
     return checked([exe,*args])
@@ -109,9 +111,9 @@ def up():
     ready=False
     new=False
     for _ in range(120):
-        try:sql('SELECT 1;');ready=True;break
+        try:sql('SELECT 1;',quiet=True);ready=True;break
         except RuntimeError:pass
-        try:sql('SELECT 1;',password=False);ready=True;new=True;break
+        try:sql('SELECT 1;',password=False,quiet=True);ready=True;new=True;break
         except RuntimeError:time.sleep(.5)
     if not ready:raise RuntimeError('Owned MariaDB did not become ready')
     private=settings()

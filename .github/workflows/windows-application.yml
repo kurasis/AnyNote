@@ -13,6 +13,8 @@ jobs:
   host-windows-build:
     runs-on: windows-2025
     timeout-minutes: 90
+    env:
+      PYTHONUTF8: '1'
     defaults:
       run:
         shell: pwsh
@@ -55,6 +57,8 @@ jobs:
         id: desktop-build
         run: |
           cargo test --manifest-path packages/windows-native/Cargo.toml --locked -j 4 -- --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/p14-dependencies.py --stage
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           npm --prefix apps/desktop run tauri -- build --ci -- --locked -j 4
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
