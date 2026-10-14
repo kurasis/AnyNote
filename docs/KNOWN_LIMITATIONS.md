@@ -481,7 +481,7 @@ No new owner trial, production operation, release or reviewer outreach occurred.
 Qualified G2/G3 remain OPEN/NOT_RUN. A tested current environment, saved draft,
 Publish and independently observed fresh restoration remain separate facts.
 
-P12 hosted Chromium memory observation: aggregate process RSS grew by
+Initial P12 hosted Chromium observation (4d6f3c9): aggregate process RSS grew by
 1219571712 bytes above a
 4518518784-byte multi-window baseline.
 This sums shared pages and the other fixture windows and cannot establish a

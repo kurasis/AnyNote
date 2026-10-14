@@ -1,9 +1,9 @@
 # P12 encrypted files and quota lifecycle
 
-Initial P12 code passed all twenty-two mandatory hosted gates; a subsequent
-final-head run exposed a protected snapshot publication race now under revalidation. This guide
-describes the product path; PROGRESS and TEST_EVIDENCE own exact execution evidence. Physical iPhone/Hello,
-memory/network lifecycle and qualified external review remain separate open gates.
+The corrected P12 software slice passed all twenty-two mandatory hosted gates.
+This guide describes the product path; PROGRESS and TEST_EVIDENCE own exact
+execution evidence. Physical iPhone/Hello, memory/network lifecycle and qualified
+external review remain separate open gates.
 
 Files use the frozen P02 file context, independently authenticated manifest key
 wrap, signed ordered ciphertext inventory and XChaCha20-Poly1305 chunks. The
@@ -110,19 +110,18 @@ software outcomes do not close physical or qualified review.
 | U16 | Actual SQL/log, protected SQLite/WAL and shipped IndexedDB/OPFS inspection; server/caches contain ciphertext and public framing only |
 | U17 | Actual content-quota-full revoke/rekey/reader maintenance, ordinary file reservation denial and exact security-byte journal reconciliation |
 
-[File HTTP](evidence/p12/initial/http-report.json), [authority races](evidence/p12/initial/membership-report.json),
-[shipped PWA](evidence/p12/initial/browser-report.json), [Linux source](evidence/p12/initial/linux-source-report.json),
-[Windows source](evidence/p12/initial/windows-source-report.json) and [all gates](evidence/p12/initial/acceptance.json)
+[File HTTP](evidence/p12/http-report.json), [authority races](evidence/p12/membership-report.json),
+[shipped PWA](evidence/p12/browser-report.json), [Linux source](evidence/p12/linux-source-report.json),
+[Windows source](evidence/p12/windows-source-report.json) and [all gates](evidence/p12/acceptance.json)
 contain public metadata only. Complete phase scope and open release gates remain
 separate from a successful software pipeline.
 
-Browser export uses an ordinary navigation to the worker's attachment response;
-setting an anchor download attribute bypassed interception in the observed Chromium
-flow. A separate real 64 MiB hosted diagnostic proved the transport correction;
-the full 1 GB acceptance then verified both online and offline saved hashes.
-The channel waits for authenticated complete-stream acknowledgement; browser/OS
-persistence after delivery remains the explicitly documented physical boundary.
-The inherited static-cache check now waits for all nine exact permitted resources,
-including the three note assets; partial/empty caches do not satisfy the check.
-No API/auth/recovery/export responses enter Cache Storage. Platform job budgets
-allow the retained repeated 1 GB native evidence runs without skipping assertions.
+Foreground reads and snapshot staging can independently verify the same
+immutable revision. Publication compares every immutable witness field exactly;
+a local cache location is replaceable and can be atomically switched to the
+already verified staged payload. Portable and native interleave/reopen
+regressions retain rollback, ancestry, digest and cursor guards. Browser export
+navigates to a window-bound worker attachment response; a download attribute
+bypassed interception in the observed Chromium flow. Complete-stream
+acknowledgement precedes completion. Only nine exact static assets enter Cache
+Storage; no API/auth/recovery/export response is cached.
