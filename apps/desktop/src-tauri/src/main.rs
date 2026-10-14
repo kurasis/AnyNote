@@ -178,7 +178,7 @@ async fn file_job(
 fn main() {
     tauri::Builder::default()
         .plugin(
-            tauri::plugin::Builder::new("navigation-boundary")
+            tauri::plugin::Builder::<tauri::Wry, ()>::new("navigation-boundary")
                 .on_navigation(|_, url| {
                     ["http://tauri.localhost", "tauri://localhost"]
                         .contains(&url.origin().ascii_serialization().as_str())

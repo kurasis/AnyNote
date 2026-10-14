@@ -564,6 +564,16 @@ impl Host {
         b64(&un64(&hash(&b)).unwrap()[..16])
     }
     pub fn save_native_job(&self, cap: &Capability, id: &str, data: &Value) -> Result<()> {
+        let mut result = Err(Error("STALE_WRITER"));
+        for _ in 0..16 {
+            result = self.save_native_job_once(cap, id, data);
+            if !matches!(result, Err(Error("STALE_WRITER"))) {
+                break;
+            }
+        }
+        result
+    }
+    fn save_native_job_once(&self, cap: &Capability, id: &str, data: &Value) -> Result<()> {
         crate::id(id)?;
         let root = self.native_job_id();
         let snapshot = self.vault.content_read(cap, &root, "content-control")?;

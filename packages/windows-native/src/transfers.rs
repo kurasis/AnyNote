@@ -10,7 +10,36 @@ use anynote_local_vault::notes::{
 };
 use std::{path::Path, sync::Arc};
 impl Host {
-    /// Stable encrypted publication state makes file attachment retry safe across ACK crashes.
+    pub fn list_files(
+        &self,
+        cap: &anynote_local_vault::Capability,
+        group: &str,
+        after: Option<&str>,
+    ) -> Result<Value> {
+        use anynote_auth_native::{FileOperation, control::Route};
+        if let Some(after) = after {
+            id(after)?;
+        }
+        let query = after.map(|v| vec![("after", v)]).unwrap_or_default();
+        let page = self.api(cap, Route::FileList, Some(group), None, &query, None)?;
+        let mut files = Vec::new();
+        for item in page["items"].as_array().ok_or(Error("INVALID_PAGE"))? {
+            let version = string(item, "file_version_id")?;
+            let response = self.vault.file_http(
+                cap,
+                &self.profile.credential_id,
+                &self.adapter,
+                FileOperation::Manifest { version },
+            )?;
+            check(response.status == 200, "API_DENIED")?;
+            let record = anynote_crypto_core::codec::strict(&response.bytes, 1048576)?;
+            self.vault.observe_file(cap, group, version, &record)?;
+            let metadata = self.vault.file_metadata(cap, &record)?;
+            files.push(serde_json::json!({"file_id":item["file_id"],"file_version_id":version,"metadata":metadata,"integrity":"METADATA_AUTHENTICATED","complete_file_verified":false,"unattached":item["unattached"]}));
+        }
+        Ok(serde_json::json!({"files":files,"next_after":page["next_after"]}))
+    }
+    /// Stable encrypted intent precedes draft creation; ACK retries use the original native attempt.
     pub fn attach_uploaded_file(
         &self,
         cap: &anynote_local_vault::Capability,
@@ -28,8 +57,9 @@ impl Host {
                 )?,
             ))?[..16],
         );
-        let mut snapshot = self.vault.content_read(cap, &id, "import-state")?;
-        let mut state=snapshot.data.take().unwrap_or(json!({"purpose":"p14-file-publication","version":1,"group_id":group,"file_version_id":version,"thread_id":null,"thread_draft":null,"entry_id":null,"entry_draft":null,"state":"READY"}));
+        let snapshot = self.vault.content_read(cap, &id, "import-state")?;
+        let fresh = snapshot.data.is_none();
+        let mut state=snapshot.data.unwrap_or(json!({"purpose":"p14-file-publication","version":1,"group_id":group,"file_version_id":version,"thread_id":random_id(),"thread_draft":null,"entry_id":random_id(),"entry_draft":null,"state":"READY","title":name}));
         check(
             state["purpose"] == "p14-file-publication"
                 && state["version"] == 1
@@ -40,53 +70,80 @@ impl Host {
         if state["state"] == "COMPLETE" {
             return Ok(json!({"state":"COMPLETE","entry_id":state["entry_id"]}));
         }
-        let save = |value: &Value, revision: u64| {
-            self.vault.content_commit(
-                cap,
-                revision,
-                &[Record {
-                    id: id.clone(),
-                    kind: "import-state".into(),
-                    data: value.clone(),
-                }],
-                &[],
-            )
+        let save = |value: &Value| {
+            let mut result = Err(Error("STALE_WRITER"));
+            for _ in 0..8 {
+                let revision = self.vault.content_read(cap, &id, "import-state")?.revision;
+                result = self.vault.content_commit(
+                    cap,
+                    revision,
+                    &[Record {
+                        id: id.clone(),
+                        kind: "import-state".into(),
+                        data: value.clone(),
+                    }],
+                    &[],
+                );
+                if !matches!(result, Err(Error("STALE_WRITER"))) {
+                    break;
+                }
+            }
+            result
         };
-        let content = json!({"title":name,"markdown":"","metadata_kind":"content","tags":[],"checklist":[],"summary_entry_id":null,"preferences":[]});
-        if state["thread_draft"].is_null() {
-            let edit = Self::edit(group, "thread", None, None, &content, json!([]), "create");
-            let saved = self.vault.notes_command(cap, NotesRequest::Save { edit })?;
-            state["thread_draft"] = saved["draft_id"].clone();
-            state["thread_id"] = saved["object_id"].clone();
-            save(&state, snapshot.revision)?;
+        if fresh {
+            save(&state)?;
         }
-        self.publish(cap, string(&state, "thread_draft")?)?;
-        if state["entry_draft"].is_null() {
-            let reference = self.file_reference(cap, group, version)?;
-            let mut edit = Self::edit(
-                group,
-                "entry",
-                None,
-                Some(string(&state, "thread_id")?),
-                &content,
-                json!([]),
-                "create",
-            );
-            edit["attachments"] = json!([reference]);
-            let saved = self.vault.notes_command(cap, NotesRequest::Save { edit })?;
-            state["entry_draft"] = saved["draft_id"].clone();
-            state["entry_id"] = saved["object_id"].clone();
-            save(
-                &state,
-                self.vault.content_read(cap, &id, "import-state")?.revision,
-            )?;
+        let content = json!({"title":state["title"],"markdown":"","metadata_kind":"content","tags":[],"checklist":[],"summary_entry_id":null,"preferences":[]});
+        for kind in ["thread", "entry"] {
+            let object_field = if kind == "thread" {
+                "thread_id"
+            } else {
+                "entry_id"
+            };
+            let draft_field = if kind == "thread" {
+                "thread_draft"
+            } else {
+                "entry_draft"
+            };
+            if state[draft_field].is_null() {
+                let summary = self.vault.notes_command(cap, NotesRequest::Summary {})?;
+                let existing = summary["drafts"]
+                    .as_array()
+                    .ok_or(Error("INTEGRITY_FAILURE"))?
+                    .iter()
+                    .find(|d| {
+                        d["object_id"] == state[object_field]
+                            && d["group_id"] == group
+                            && d["object_kind"] == kind
+                    });
+                let saved = if let Some(existing) = existing {
+                    json!({"draft_id":existing["draft_id"]})
+                } else {
+                    let mut edit = Self::edit(
+                        group,
+                        kind,
+                        Some(string(&state, object_field)?),
+                        if kind == "entry" {
+                            Some(string(&state, "thread_id")?)
+                        } else {
+                            None
+                        },
+                        &content,
+                        json!([]),
+                        "create",
+                    );
+                    if kind == "entry" {
+                        edit["attachments"] = json!([self.file_reference(cap, group, version)?]);
+                    }
+                    self.vault.notes_command(cap, NotesRequest::Save { edit })?
+                };
+                state[draft_field] = saved["draft_id"].clone();
+                save(&state)?;
+            }
+            self.publish(cap, string(&state, draft_field)?)?;
         }
-        self.publish(cap, string(&state, "entry_draft")?)?;
         state["state"] = json!("COMPLETE");
-        save(
-            &state,
-            self.vault.content_read(cap, &id, "import-state")?.revision,
-        )?;
+        save(&state)?;
         Ok(json!({"state":"COMPLETE","entry_id":state["entry_id"]}))
     }
     pub fn file_reference(

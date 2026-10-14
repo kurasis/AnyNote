@@ -100,6 +100,7 @@ pub enum Request {
     },
     Files {
         group_id: String,
+        after: Option<String>,
     },
     Retention {
         group_id: String,
@@ -720,9 +721,9 @@ impl Host {
                 self.jobs.cancel(job_id)?;
                 Ok(json!({"state":"PAUSED"}))
             }
-            Request::Files { group_id } => {
+            Request::Files { group_id, after } => {
                 self.group(&cap, group_id)?;
-                self.api(&cap, Route::FileList, Some(group_id), None, &[], None)
+                self.list_files(&cap, group_id, after.as_deref())
             }
             Request::Devices {} => self.api(&cap, Route::Devices, None, None, &[], None),
             Request::Sessions {} => self.api(&cap, Route::Sessions, None, None, &[], None),

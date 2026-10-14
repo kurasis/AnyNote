@@ -239,7 +239,7 @@ impl Host {
                             .iter()
                             .any(|n| n["source_revision"] == revision)
                     {
-                        input.state["notes"].as_array_mut().unwrap().push(json!({"source_revision":revision,"payload":event["payload"],"object_id":random_id(),"draft_id":null,"complete":false}));
+                        input.state["notes"].as_array_mut().unwrap().push(json!({"source_revision":revision,"source_context":event["payload"]["context"],"payload":event["payload"],"object_id":random_id(),"draft_id":null,"complete":false}));
                         self.save_native_job(cap, &iid, &input.state)?;
                     }
                     wipe(&mut event);
@@ -371,7 +371,7 @@ impl Host {
             for n in 0..len {
                 job.check(self.current())?;
                 let note = input.state["notes"][n].clone();
-                let c = &note["payload"]["context"];
+                let c = &note["source_context"];
                 if c["object_kind"] != kind || note["complete"] == true {
                     continue;
                 }
@@ -386,8 +386,9 @@ impl Host {
                         .unwrap()
                         .iter()
                         .find(|t| {
-                            t["payload"]["context"]["object_kind"] == "thread"
-                                && t["payload"]["context"]["object_id"] == c["thread_id"]
+                            t["source_context"]["object_kind"] == "thread"
+                                && t["source_context"]["object_id"] == c["thread_id"]
+                                && t["source_context"]["group_id"] == c["group_id"]
                         })
                         .and_then(|t| t["object_id"].as_str())
                         .map(str::to_owned)
