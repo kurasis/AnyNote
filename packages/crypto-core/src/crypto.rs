@@ -36,7 +36,8 @@ pub(crate) fn encrypt(plain: &[u8], aad: &[u8], nonce: &[u8], key: &[u8]) -> Res
     let nonce = aead::Nonce::try_from(nonce).map_err(|_| Error("INVALID_NONCE"))?;
     aead::encrypt(plain, Some(aad), &nonce, &key).map_err(|_| Error("CRYPTO_FAILURE"))
 }
-pub(crate) fn decrypt(
+/// Trusted native AEAD primitive; no renderer/IPC route exposes this function.
+pub fn decrypt(
     cipher: &[u8],
     aad: &[u8],
     nonce: &[u8],

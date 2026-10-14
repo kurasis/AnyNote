@@ -1,5 +1,6 @@
 //! Fixed HTTPS issuer, maintained OAuth2 PKCE, system browser and ephemeral literal loopback.
 //! Credentials remain in memory. P07 supplies persistent custody. Debug never exposes secrets.
+pub mod control;
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD as B64};
 use oauth2::{
     AuthUrl, AuthorizationCode, ClientId, CsrfToken, EndpointNotSet, EndpointSet, HttpRequest,

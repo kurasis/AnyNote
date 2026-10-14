@@ -1,0 +1,25 @@
+[package]
+name = "anynote-desktop"
+version = "0.14.0"
+edition = "2024"
+rust-version = "1.99"
+license = "GPL-3.0-only"
+publish = false
+[build-dependencies]
+tauri-build = { version = "=2.7.2", features = [] }
+[dependencies]
+tauri = { version = "=2.12.3", features = [] }
+tauri-plugin-opener = "=2.7.1"
+tauri-plugin-updater = "=2.13.3"
+rfd = "=0.17.2"
+anynote-windows-native = { path = "../../../packages/windows-native" }
+anynote-local-vault = { path = "../../../packages/vault-native" }
+anynote-crypto-core = { path = "../../../packages/crypto-core" }
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = { version = "=1.0.151", features = ["float_roundtrip"] }
+zeroize = "=1.9.1"
+raw-window-handle = "=0.6.2"
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "=0.61.2", features = ["Win32_Foundation", "Win32_UI_WindowsAndMessaging", "Win32_UI_Controls", "Win32_UI_Input_KeyboardAndMouse", "Win32_System_SystemInformation", "Win32_System_RemoteDesktop"] }
+[features]
+integration-harness = ["anynote-windows-native/integration-harness"]

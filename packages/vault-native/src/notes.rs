@@ -1,6 +1,7 @@
 //! Current account-private content authority, encrypted SQLite journal and closed native commands.
 pub mod file_cache;
 pub mod files;
+pub mod portable;
 pub mod sync;
 use super::*;
 use crate::device_groups::{create_private_genesis, historical, verify_genesis};

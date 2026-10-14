@@ -29,6 +29,7 @@ mod dpapi;
 pub mod ipc;
 pub mod lifecycle;
 pub mod native_hello;
+mod native_http;
 mod note_local;
 pub mod notes;
 mod paged_local;

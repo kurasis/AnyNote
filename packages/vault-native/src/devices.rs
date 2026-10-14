@@ -118,6 +118,18 @@ impl Vault {
             json!({"device_id":self.scope.device_id,"signing_key":b64(signing.public_key.as_ref()),"encryption_key":b64(encryption.public_key.as_ref()),"capabilities":["delegate-device","distribute-group-key","receive-group-key","sign-content"]}),
         )
     }
+    pub fn initialize_device_hello(&self, hwnd: usize, pins: Value) -> Result<Value> {
+        let signing = libsodium_rs::crypto_sign::KeyPair::generate()
+            .map_err(|_| Error("CRYPTO_UNAVAILABLE"))?;
+        let encryption = libsodium_rs::crypto_box::KeyPair::generate();
+        let mut data = json!({"device_signing_secret":b64(signing.secret_key.as_ref()),"device_encryption_secret":b64(encryption.secret_key.as_ref()),"group_keys":[]});
+        let result = self.initialize_hello(hwnd, &Zeroizing::new(canonical(&data)?), pins);
+        wipe_value(&mut data);
+        result?;
+        Ok(
+            json!({"device_id":self.scope.device_id,"signing_key":b64(signing.public_key.as_ref()),"encryption_key":b64(encryption.public_key.as_ref())}),
+        )
+    }
     pub fn native_pairing_qr(&self, cap: &Capability, record: &Value, mode: &str) -> Result<Value> {
         let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
         let s = self.authorize(&mut i, cap)?;

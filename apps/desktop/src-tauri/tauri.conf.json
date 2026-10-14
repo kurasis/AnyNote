@@ -1,0 +1,17 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "AnyNote", "version": "0.14.0", "identifier": "org.anynote.desktop",
+  "build": {"beforeBuildCommand": "npm run build", "frontendDist": "../dist"},
+  "app": {
+    "windows": [{"label":"main","title":"AnyNote","width":1200,"height":800,"minWidth":800,"minHeight":550,"devtools":false,"dragDropEnabled":false}],
+    "security": {
+      "csp":"default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src ipc: http://ipc.localhost; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'",
+      "capabilities": ["main"]
+    }
+  },
+  "bundle": {
+    "active":true,"targets":["nsis"],"resources":["resources/*"],
+    "license":"GPL-3.0-only","licenseFile":"../../../packages/vault-native/LICENSE",
+    "windows":{"webviewInstallMode":{"type":"downloadBootstrapper","silent":true},"nsis":{"installMode":"currentUser","languages":["English","Russian"],"displayLanguageSelector":true}}
+  }
+}
