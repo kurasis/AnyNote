@@ -22,3 +22,4 @@ artifacts/
 /apps/api/.phpunit.result.cache
 /apps/api/.phpunit.cache/
 /apps/desktop/src-tauri/resources/
+/apps/desktop/src-tauri/gen/

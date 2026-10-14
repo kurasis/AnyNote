@@ -10,6 +10,107 @@ use anynote_local_vault::notes::{
 };
 use std::{path::Path, sync::Arc};
 impl Host {
+    /// Stable encrypted publication state makes file attachment retry safe across ACK crashes.
+    pub fn attach_uploaded_file(
+        &self,
+        cap: &anynote_local_vault::Capability,
+        group: &str,
+        version: &str,
+        draft: &str,
+        name: &str,
+    ) -> Result<Value> {
+        use anynote_local_vault::{Record, notes::NotesRequest};
+        use serde_json::json;
+        let id = anynote_crypto_core::crypto::b64(
+            &anynote_crypto_core::crypto::un64(&anynote_crypto_core::crypto::hash(
+                &anynote_crypto_core::codec::canonical(
+                    &json!({"purpose":"AnyNote/P14/file-publication","scope":self.profile.scope,"draft_id":draft}),
+                )?,
+            ))?[..16],
+        );
+        let mut snapshot = self.vault.content_read(cap, &id, "import-state")?;
+        let mut state=snapshot.data.take().unwrap_or(json!({"purpose":"p14-file-publication","version":1,"group_id":group,"file_version_id":version,"thread_id":null,"thread_draft":null,"entry_id":null,"entry_draft":null,"state":"READY"}));
+        check(
+            state["purpose"] == "p14-file-publication"
+                && state["version"] == 1
+                && state["group_id"] == group
+                && state["file_version_id"] == version,
+            "LOCAL_CONTEXT_MISMATCH",
+        )?;
+        if state["state"] == "COMPLETE" {
+            return Ok(json!({"state":"COMPLETE","entry_id":state["entry_id"]}));
+        }
+        let save = |value: &Value, revision: u64| {
+            self.vault.content_commit(
+                cap,
+                revision,
+                &[Record {
+                    id: id.clone(),
+                    kind: "import-state".into(),
+                    data: value.clone(),
+                }],
+                &[],
+            )
+        };
+        let content = json!({"title":name,"markdown":"","metadata_kind":"content","tags":[],"checklist":[],"summary_entry_id":null,"preferences":[]});
+        if state["thread_draft"].is_null() {
+            let edit = Self::edit(group, "thread", None, None, &content, json!([]), "create");
+            let saved = self.vault.notes_command(cap, NotesRequest::Save { edit })?;
+            state["thread_draft"] = saved["draft_id"].clone();
+            state["thread_id"] = saved["object_id"].clone();
+            save(&state, snapshot.revision)?;
+        }
+        self.publish(cap, string(&state, "thread_draft")?)?;
+        if state["entry_draft"].is_null() {
+            let reference = self.file_reference(cap, group, version)?;
+            let mut edit = Self::edit(
+                group,
+                "entry",
+                None,
+                Some(string(&state, "thread_id")?),
+                &content,
+                json!([]),
+                "create",
+            );
+            edit["attachments"] = json!([reference]);
+            let saved = self.vault.notes_command(cap, NotesRequest::Save { edit })?;
+            state["entry_draft"] = saved["draft_id"].clone();
+            state["entry_id"] = saved["object_id"].clone();
+            save(
+                &state,
+                self.vault.content_read(cap, &id, "import-state")?.revision,
+            )?;
+        }
+        self.publish(cap, string(&state, "entry_draft")?)?;
+        state["state"] = json!("COMPLETE");
+        save(
+            &state,
+            self.vault.content_read(cap, &id, "import-state")?.revision,
+        )?;
+        Ok(json!({"state":"COMPLETE","entry_id":state["entry_id"]}))
+    }
+    pub fn file_reference(
+        &self,
+        cap: &anynote_local_vault::Capability,
+        group: &str,
+        version: &str,
+    ) -> Result<Value> {
+        use anynote_auth_native::FileOperation;
+        let response = self.vault.file_http(
+            cap,
+            &self.profile.credential_id,
+            &self.adapter,
+            FileOperation::Manifest { version },
+        )?;
+        check(response.status == 200, "API_DENIED")?;
+        let record = anynote_crypto_core::codec::strict(&response.bytes, 1048576)?;
+        self.vault.observe_file(cap, group, version, &record)?;
+        let metadata = self.vault.file_metadata(cap, &record)?;
+        let c = &record["envelope"]["header"]["context"];
+        Ok(
+            serde_json::json!({"file_id":c["file_id"],"file_version_id":version,"envelope_digest":metadata["envelope_digest"]}),
+        )
+    }
     pub fn start_upload(
         self: &Arc<Self>,
         g: u64,
@@ -32,7 +133,7 @@ impl Host {
                 host.group(&cap, &group)?;
                 job.check(host.current())?;
                 source.check()?;
-                host.vault.upload_file_with_progress(
+                let uploaded = host.vault.upload_file_with_progress(
                     &cap,
                     Network {
                         credential_id: &host.profile.credential_id,
@@ -50,6 +151,18 @@ impl Host {
                         job.progress(bytes, total);
                         Ok(())
                     },
+                )?;
+                job.check(host.current())?;
+                let receipt = &uploaded["receipt"];
+                let attachment = host.attach_uploaded_file(
+                    &cap,
+                    &group,
+                    string(receipt, "file_version_id")?,
+                    string(&uploaded, "draft_id")?,
+                    &source.name,
+                )?;
+                Ok(
+                    serde_json::json!({"draft_id":uploaded["draft_id"],"receipt":receipt,"attachment_object_id":attachment["entry_id"]}),
                 )
             })();
             job.finish(result);
@@ -67,6 +180,7 @@ impl Host {
         id(&group)?;
         id(&version)?;
         let cap = self.capability(g)?;
+        crate::selection::ensure_space(path, 1000000000)?;
         let mut destination = Destination::create(path)?;
         let job = self.jobs.start(g)?;
         let jid = job.id.clone();

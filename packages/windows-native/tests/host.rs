@@ -6,7 +6,7 @@ use anynote_windows_native::{
 };
 use std::io::Write;
 fn host(f: &Fixture) -> Host {
-    Host::from_parts(
+    let h = Host::from_parts(
         f.vault.path().parent().unwrap(),
         Profile {
             version: 1,
@@ -24,7 +24,10 @@ fn host(f: &Fixture) -> Host {
             "https://synthetic-app.example",
         )
         .unwrap(),
-    )
+    );
+    let cap = f.vault.unlock_phrase(PHRASE).unwrap();
+    h.bind_new_service(&cap).unwrap();
+    h
 }
 fn binding() -> Binding {
     Binding {
@@ -261,4 +264,42 @@ fn native_private_portable_proof_and_selected_keys_match_authenticated_source() 
             .0,
         "EXPORT_SOURCE_MISMATCH"
     );
+}
+
+#[test]
+fn tampered_public_profile_cannot_retarget_native_credentials() {
+    let f = Fixture::new();
+    let mut h = host(&f);
+    h.execute(
+        &binding(),
+        0,
+        Request::Unlock {
+            phrase: PHRASE.into(),
+        },
+    )
+    .unwrap();
+    h.profile.service.issuer = "https://attacker.example".into();
+    assert_eq!(
+        h.capability(0).err().unwrap().0,
+        "SERVICE_CONFIGURATION_CHANGED"
+    );
+    assert_eq!(
+        h.execute(&binding(), 0, Request::Login {}).unwrap_err().0,
+        "SERVICE_CONFIGURATION_CHANGED"
+    );
+}
+
+#[test]
+fn actual_filesystem_space_estimate_fails_closed_before_creating_output() {
+    let d = tempfile::tempdir().unwrap();
+    let output = d.path().join("explicit.age");
+    anynote_windows_native::selection::ensure_space(&output, 1).unwrap();
+    assert_eq!(
+        anynote_windows_native::selection::ensure_space(&output, u64::MAX)
+            .unwrap_err()
+            .0,
+        "INSUFFICIENT_STORAGE"
+    );
+    assert!(!output.exists());
+    assert_eq!(std::fs::read_dir(d.path()).unwrap().count(), 0);
 }

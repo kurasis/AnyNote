@@ -1,1 +1,1 @@
-{"identifier":"main","description":"Only the compiled main window may use product commands. No plugin filesystem, shell, HTTP, dialog or opener IPC.","windows":["main"],"permissions":[]}
+{"identifier":"main","description":"Only the compiled main window may use product commands. No plugin filesystem, shell, HTTP, dialog or opener IPC.","windows":["main"],"permissions":["allow-product","allow-profile","allow-file-job","allow-open-link","allow-update","core:event:allow-listen","core:event:allow-unlisten"]}

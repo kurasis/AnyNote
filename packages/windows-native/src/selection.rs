@@ -8,6 +8,49 @@ use std::{
     sync::Mutex,
 };
 use zeroize::Zeroizing;
+/// Query the actual destination filesystem; reserve space before opening any output.
+pub fn ensure_space(path: &Path, bytes: u64) -> Result<()> {
+    let parent = path.parent().ok_or(Error("INVALID_DESTINATION"))?;
+    #[cfg(windows)]
+    let available = {
+        use std::os::windows::ffi::OsStrExt;
+        let p = parent
+            .as_os_str()
+            .encode_wide()
+            .chain(Some(0))
+            .collect::<Vec<_>>();
+        let mut free = 0;
+        check(
+            unsafe {
+                windows_sys::Win32::Storage::FileSystem::GetDiskFreeSpaceExW(
+                    p.as_ptr(),
+                    &mut free,
+                    std::ptr::null_mut(),
+                    std::ptr::null_mut(),
+                )
+            } != 0,
+            "STORAGE_UNAVAILABLE",
+        )?;
+        free
+    };
+    #[cfg(unix)]
+    let available = {
+        use std::os::unix::ffi::OsStrExt;
+        let p = std::ffi::CString::new(parent.as_os_str().as_bytes())
+            .map_err(|_| Error("INVALID_DESTINATION"))?;
+        let mut info = std::mem::MaybeUninit::<libc::statvfs>::uninit();
+        check(
+            unsafe { libc::statvfs(p.as_ptr(), info.as_mut_ptr()) } == 0,
+            "STORAGE_UNAVAILABLE",
+        )?;
+        let info = unsafe { info.assume_init() };
+        info.f_bavail.saturating_mul(info.f_frsize)
+    };
+    check(
+        available >= bytes.saturating_add(67108864),
+        "INSUFFICIENT_STORAGE",
+    )
+}
 pub struct Source {
     pub file: File,
     pub name: String,
@@ -29,11 +72,17 @@ impl Source {
         {
             use std::os::windows::fs::OpenOptionsExt;
             options.share_mode(1);
+            options.custom_flags(0x00200000); // FILE_FLAG_OPEN_REPARSE_POINT
         }
         let file = options
             .open(path)
             .map_err(|_| Error("SOURCE_UNAVAILABLE"))?;
         let m = file.metadata().map_err(|_| Error("SOURCE_UNAVAILABLE"))?;
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::MetadataExt;
+            check(m.file_attributes() & 0x400 == 0, "SOURCE_UNAVAILABLE")?;
+        }
         check(m.is_file() && m.len() <= limit, "FILE_LIMIT_EXCEEDED")?;
         let name = path
             .file_name()

@@ -340,6 +340,7 @@ impl Host {
                         )?
                     };
                     self.vault.file_committed(cap, &draft, &receipt)?;
+                    self.file_reference(cap, &group, string(&receipt, "file_version_id")?)?;
                     let pos = input.state["files"]
                         .as_array()
                         .unwrap()
@@ -347,24 +348,13 @@ impl Host {
                         .position(|f| f["source_version"] == version)
                         .ok_or(Error("INTEGRITY_FAILURE"))?;
                     if input.state["files"][pos]["attached"] != true {
-                        if input.state["files"][pos]["attachment_draft"].is_null() {
-                            let content = json!({"title":"Imported file","markdown":"","metadata_kind":"content","tags":[],"checklist":[],"summary_entry_id":null,"preferences":[]});
-                            let mut edit = Self::edit(
-                                &group,
-                                "thread",
-                                None,
-                                None,
-                                &content,
-                                json!([]),
-                                "create",
-                            );
-                            edit["attachments"] = json!([{"file_id":receipt["file_id"],"file_version_id":receipt["file_version_id"],"envelope_digest":receipt["envelope_digest"]}]);
-                            let saved = self.notes(cap, json!({"action":"save","edit":edit}))?;
-                            input.state["files"][pos]["attachment_draft"] =
-                                saved["draft_id"].clone();
-                            self.save_native_job(cap, &iid, &input.state)?;
-                        }
-                        self.publish(cap, string(&input.state["files"][pos], "attachment_draft")?)?;
+                        self.attach_uploaded_file(
+                            cap,
+                            &group,
+                            string(&receipt, "file_version_id")?,
+                            &draft,
+                            "Recovered file",
+                        )?;
                         input.state["files"][pos]["attached"] = json!(true);
                         self.save_native_job(cap, &iid, &input.state)?;
                     }

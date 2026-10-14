@@ -61,6 +61,11 @@ impl Bridge {
         if let Some(root) = std::env::var_os("SystemRoot") {
             cmd.env("SystemRoot", root);
         }
+        #[cfg(windows)]
+        {
+            use std::os::windows::process::CommandExt;
+            cmd.creation_flags(0x08000000); // CREATE_NO_WINDOW: a helper must not steal main-window focus.
+        }
         let mut child = cmd.spawn().map_err(|_| Error("RUNTIME_UNAVAILABLE"))?;
         let input = child.stdin.take().ok_or(Error("RUNTIME_UNAVAILABLE"))?;
         let output = child.stdout.take().ok_or(Error("RUNTIME_UNAVAILABLE"))?;

@@ -203,6 +203,14 @@ impl Host {
         job: Arc<Job>,
     ) -> Result<Value> {
         let cap = self.capability(g)?;
+        crate::selection::ensure_space(
+            target,
+            string(&plan.lease, "estimated_archive_bytes")?
+                .parse::<u64>()
+                .map_err(|_| Error("INVALID_EXPORT_LEASE"))?
+                .saturating_mul(11)
+                / 10,
+        )?;
         let mut destination = Some(Destination::create(target)?);
         let mut lease = plan.lease;
         let snapshot = string(&lease["descriptor"], "snapshot_id")?.to_owned();
@@ -507,7 +515,7 @@ impl Host {
                         bridge.ack()?;
                     }
                     5 => {
-                        let prefix = domain("p02-v1", "sign", "export-footer-body", &[]);
+                        let prefix = domain("p02-v1", "sign", "export-footer", &[]);
                         check(data.starts_with(&prefix), "EXPORT_SOURCE_MISMATCH")?;
                         let body = strict(&data[prefix.len()..], 1048576)?;
                         let expected = inventory.footer(&codec, &header, &public["signer"])?;

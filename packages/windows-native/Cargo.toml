@@ -7,6 +7,10 @@ license = "GPL-3.0-only"
 publish = false
 [features]
 integration-harness = ["anynote-auth-native/integration-harness"]
+[[bin]]
+name = "p14-integration"
+path = "src/bin/p14-integration.rs"
+required-features = ["integration-harness"]
 [dependencies]
 anynote-local-vault = { path = "../vault-native" }
 anynote-crypto-core = { path = "../crypto-core" }
@@ -19,6 +23,8 @@ libsodium-rs = "=0.2.5"
 url = "=2.5.8"
 sha2 = "=0.10.9"
 base64 = "=0.22.1"
+[target.'cfg(unix)'.dependencies]
+libc = "=0.2.190"
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "=0.61.2", features = ["Win32_Foundation", "Win32_Storage_FileSystem"] }
 [dev-dependencies]

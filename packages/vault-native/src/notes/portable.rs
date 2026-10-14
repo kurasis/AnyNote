@@ -1,6 +1,34 @@
 //! Trusted native portable operations; there are no renderer key/signature commands.
 use super::*;
 impl Vault {
+    /// Native custody lookup for the crash gap between a durable ACK and an import journal update.
+    /// It returns only an authenticated opaque attempt ID; the coordinator still checks its receipt.
+    pub fn committed_note_attempt(&self, cap: &Capability, draft: &str) -> Result<Option<String>> {
+        check(valid_id(draft), "INVALID_REQUEST")?;
+        let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
+        let s = self.authorize(&mut i, cap)?;
+        let control = self.note_control(
+            &i.conn,
+            &s,
+            &i.secrets.as_ref().ok_or(Error("VAULT_LOCKED"))?.key,
+        )?;
+        let found = values(&control, "attempts")?
+            .iter()
+            .rev()
+            .find(|a| a["draft_id"] == draft && a["state"] == "COMMITTED");
+        if let Some(a) = found {
+            let (_, mut data) = self.note_attempt(&mut i, &s, &control, text(&a["attempt_id"])?)?;
+            let result = check(
+                data["state"] == "COMMITTED" && data["draft_id"] == draft,
+                "INTEGRITY_FAILURE",
+            )
+            .map(|_| Some(a["attempt_id"].as_str().unwrap().to_owned()));
+            wipe_value(&mut data);
+            result
+        } else {
+            Ok(None)
+        }
+    }
     pub fn portable_public(&self, cap: &Capability, groups: &[String]) -> Result<Value> {
         self.lease(cap)?;
         let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;

@@ -14,6 +14,16 @@ use std::{
     time::{Duration, Instant},
 };
 use zeroize::Zeroize;
+/// Frozen P06 commitment. This binds the OAuth grant to both native public keys.
+pub fn native_commitment(device: &Value) -> Result<String> {
+    let mut bytes = b"AnyNote/P06/device-key-commitment\0".to_vec();
+    for k in ["signing_key", "encryption_key"] {
+        let key = anynote_crypto_core::crypto::un64(string(device, k)?)?;
+        check(key.len() == 32, "INVALID_DEVICE_KEY")?;
+        bytes.extend(key);
+    }
+    Ok(anynote_crypto_core::crypto::hash(&bytes))
+}
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Service {
@@ -157,6 +167,33 @@ pub struct Host {
     pub root: PathBuf,
 }
 impl Host {
+    fn service_binding_id(&self) -> String {
+        let mut bytes = b"AnyNote/P14/native-service-binding\0".to_vec();
+        bytes.extend(canonical(&json!(self.profile.scope)).unwrap());
+        anynote_crypto_core::crypto::b64(
+            &anynote_crypto_core::crypto::un64(&anynote_crypto_core::crypto::hash(&bytes)).unwrap()
+                [..16],
+        )
+    }
+    /// Called only by trusted native first-time creation after independent configuration selection.
+    pub fn bind_new_service(&self, cap: &Capability) -> Result<()> {
+        let id = self.service_binding_id();
+        let existing = self.vault.content_read(cap, &id, "content-control")?;
+        check(existing.data.is_none(), "SERVICE_ALREADY_BOUND")?;
+        self.vault.content_commit(cap,existing.revision,&[anynote_local_vault::Record{id,kind:"content-control".into(),data:json!({"purpose":"p14-service-binding","version":1,"scope":self.profile.scope,"service":self.profile.service,"credential_id":self.profile.credential_id})}],&[])
+    }
+    fn verify_service(&self, cap: &Capability) -> Result<()> {
+        let record = self
+            .vault
+            .content_read(cap, &self.service_binding_id(), "content-control")?
+            .data
+            .ok_or(Error("SERVICE_BINDING_REQUIRED"))?;
+        check(
+            record
+                == json!({"purpose":"p14-service-binding","version":1,"scope":self.profile.scope,"service":self.profile.service,"credential_id":self.profile.credential_id}),
+            "SERVICE_CONFIGURATION_CHANGED",
+        )
+    }
     pub fn open(root: &Path) -> Result<Self> {
         let b = std::fs::read(root.join("profile.json")).map_err(|_| Error("PROFILE_REQUIRED"))?;
         let profile: Profile = serde_json::from_value(strict(&b, 65536)?)
@@ -219,17 +256,25 @@ impl Host {
             service,
             credential_id: random_id(),
         };
+        let host = Self::from_parts(root, profile, vault, adapter);
+        let cap = if hello {
+            host.vault.unlock_hello(hwnd)?
+        } else {
+            host.vault.unlock_phrase(phrase)?
+        };
+        host.bind_new_service(&cap)?;
+        host.vault.lock();
         let mut out = crate::selection::Destination::create(&root.join("profile.json"))?;
         std::io::Write::write_all(
             &mut out,
             &canonical(
-                &serde_json::to_value(&profile)
+                &serde_json::to_value(&host.profile)
                     .map_err(|_| Error("INVALID_SERVICE_CONFIGURATION"))?,
             )?,
         )
         .map_err(|_| Error("STORAGE_UNAVAILABLE"))?;
         out.finish()?;
-        Ok(Self::from_parts(root, profile, vault, adapter))
+        Ok(host)
     }
     pub fn current(&self) -> u64 {
         self.generation.load(Ordering::SeqCst)
@@ -262,6 +307,7 @@ impl Host {
             .clone()
             .ok_or(Error("VAULT_LOCKED"))?;
         self.vault.lease(&cap)?;
+        self.verify_service(&cap)?;
         Ok(cap)
     }
     pub fn api(
@@ -273,6 +319,7 @@ impl Host {
         query: &[(&str, &str)],
         body: Option<&Value>,
     ) -> Result<Value> {
+        self.verify_service(cap)?;
         let response = self.vault.control_http(
             cap,
             &self.profile.credential_id,
@@ -448,7 +495,21 @@ impl Host {
     }
     pub fn publish(&self, cap: &Capability, draft: &str) -> Result<Value> {
         id(draft)?;
-        let d = self.notes(cap, json!({"action":"draft","draft_id":draft}))?;
+        let d = match self.notes(cap, json!({"action":"draft","draft_id":draft})) {
+            Ok(v) => v,
+            Err(Error("RECORD_NOT_FOUND")) => {
+                let attempt = self
+                    .vault
+                    .committed_note_attempt(cap, draft)?
+                    .ok_or(Error("RECORD_NOT_FOUND"))?;
+                let result = self.api(cap, Route::Receipt, Some(&attempt), None, &[], None)?;
+                return self.notes(
+                    cap,
+                    json!({"action":"ack","attempt_id":attempt,"result":result}),
+                );
+            }
+            Err(e) => return Err(e),
+        };
         let group = string(&d["payload"]["context"], "group_id")?;
         self.group(cap, group)?;
         let queued = self.notes(cap, json!({"action":"queue","draft_id":draft}))?;
@@ -503,19 +564,30 @@ impl Host {
                 return Ok(json!({"state":"locked","generation":self.current()}));
             }
             Request::Unlock { phrase } => {
+                check(g == self.current(), "STALE_CAPABILITY")?;
                 let result = self.vault.unlock_phrase(phrase);
                 phrase.zeroize();
+                if g != self.current() {
+                    self.vault.lock();
+                    return Err(Error("STALE_CAPABILITY"));
+                }
                 *self.cap.lock().map_err(|_| Error("HOST_BUSY"))? = Some(Arc::new(result?));
                 return Ok(json!({"state":"unlocked","generation":self.current()}));
             }
             Request::UnlockHello {} => {
+                check(g == self.current(), "STALE_CAPABILITY")?;
                 let c = self.vault.unlock_hello(binding.hwnd)?;
+                if g != self.current() {
+                    self.vault.lock();
+                    return Err(Error("STALE_CAPABILITY"));
+                }
                 *self.cap.lock().map_err(|_| Error("HOST_BUSY"))? = Some(Arc::new(c));
                 return Ok(json!({"state":"unlocked","generation":self.current()}));
             }
             _ => {}
         }
         let cap = self.capability(g)?;
+        self.verify_service(&cap)?;
         let mut result = match &mut request {
             Request::Summary {} => self.notes(&cap, json!({"action":"summary"})),
             Request::FinishLogin {} => {
@@ -544,7 +616,7 @@ impl Host {
             }
             Request::Login {} => {
                 let public = self.vault.device_public(&cap)?;
-                let commitment = anynote_crypto_core::crypto::hash(&canonical(&public)?);
+                let commitment = native_commitment(&public)?;
                 let credentials = self
                     .adapter
                     .login(&commitment, false)
@@ -565,7 +637,7 @@ impl Host {
                 self.vault
                     .clear_session(&cap, &self.profile.credential_id)?;
                 self.lock();
-                Ok(json!({"state":"locked"}))
+                return Ok(json!({"state":"locked","generation":self.current()}));
             }
             Request::Refresh {} => {
                 self.prove(&cap)?;
@@ -780,7 +852,11 @@ impl Host {
         for g in page["groups"].as_array().ok_or(Error("INVALID_PAGE"))? {
             let group = string(g, "group_id")?;
             self.group(cap, group)?;
-            let metadata = self.api(cap, Route::Object, Some(group), None, &[], None)?;
+            let metadata = match self.api(cap, Route::Object, Some(group), None, &[], None) {
+                Ok(v) => v,
+                Err(Error("NOT_FOUND")) => Value::Null,
+                Err(e) => return Err(e),
+            };
             let title = if metadata["object"]["heads"]
                 .as_array()
                 .is_some_and(|a| !a.is_empty())

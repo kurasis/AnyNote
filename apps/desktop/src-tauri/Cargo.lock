@@ -290,6 +290,7 @@ dependencies = [
  "anynote-crypto-core",
  "anynote-local-vault",
  "base64 0.22.1",
+ "libc",
  "libsodium-rs",
  "serde",
  "serde_json",
