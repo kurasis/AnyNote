@@ -418,3 +418,48 @@ fn downloaded_cache_controls_preserve_original_sources_and_encrypted_drafts() {
         saved["draft_id"]
     );
 }
+
+#[test]
+fn completed_cipher_stage_recovers_offline_and_kit_is_separate_and_durable() {
+    let f = Fixture::new();
+    let h = host(&f);
+    h.execute(
+        &binding(),
+        0,
+        Request::Unlock {
+            phrase: PHRASE.into(),
+        },
+    )
+    .unwrap();
+    let cap = h.capability(0).unwrap();
+    let dir = tempfile::tempdir().unwrap();
+    let partial = dir.path().join(".anynote-synthetic.partial");
+    let original = dir.path().join("original.age");
+    let recovered = dir.path().join("recovered.age");
+    let kit_path = dir.path().join("kit.json");
+    let bytes = b"PUBLIC synthetic authenticated ciphertext stage";
+    std::fs::write(&partial, bytes).unwrap();
+    let export = id();
+    h.save_native_job(&cap,&export,&json!({"purpose":"p14-native-export","version":1,"state":"OUTPUT_PENDING","kit":{"archive_sha256":hash(bytes),"export_identity":"PUBLIC synthetic test identity"},"partial":partial,"target":original})).unwrap();
+    assert_eq!(
+        h.native_job_summaries(0).unwrap()["items"][0]["state"],
+        "OUTPUT_PENDING"
+    );
+    h.recover_export(0, &export, &recovered).unwrap();
+    assert_eq!(std::fs::read(&recovered).unwrap(), bytes);
+    assert!(partial.exists());
+    assert!(!kit_path.exists());
+    h.save_kit(0, &export, &kit_path).unwrap();
+    assert_eq!(
+        h.native_job_summaries(0).unwrap()["items"][0]["kit_saved_separately"],
+        true
+    );
+    let kit: Value = serde_json::from_slice(&std::fs::read(kit_path).unwrap()).unwrap();
+    assert_eq!(kit["archive_sha256"], hash(bytes));
+    let report = canonical(&h.native_job_summaries(0).unwrap()).unwrap();
+    assert!(
+        !String::from_utf8(report)
+            .unwrap()
+            .contains("PUBLIC synthetic test identity")
+    );
+}

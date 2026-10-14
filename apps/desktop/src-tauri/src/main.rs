@@ -9,7 +9,7 @@ use serde_json::{Value, json};
 use std::{
     path::PathBuf,
     sync::{
-        Arc, Mutex,
+        Arc, Mutex, OnceLock,
         atomic::{AtomicU64, AtomicUsize, Ordering},
     },
 };
@@ -20,6 +20,7 @@ struct State {
     root: PathBuf,
     modal: AtomicUsize,
     generation: Arc<AtomicU64>,
+    app: OnceLock<tauri::AppHandle>,
 }
 struct Modal(Arc<State>);
 impl Drop for Modal {
@@ -39,7 +40,31 @@ impl State {
             .clone()
             .ok_or("PROFILE_REQUIRED".into())
     }
+    fn mask(&self) {
+        if let Some(app) = self.app.get() {
+            for (label, window) in app.webview_windows() {
+                if label.starts_with("preview-") {
+                    let _ = window.close();
+                }
+            }
+        }
+    }
+    fn owns_foreground(&self) -> bool {
+        #[cfg(windows)]
+        {
+            windows::owns_foreground()
+        }
+        #[cfg(not(windows))]
+        {
+            self.app.get().is_some_and(|app| {
+                app.webview_windows()
+                    .values()
+                    .any(|w| w.is_focused().unwrap_or(false))
+            })
+        }
+    }
     fn lock(&self) {
+        self.mask();
         if let Ok(h) = self.host() {
             h.lock();
         }
@@ -74,11 +99,50 @@ async fn product(
     let host = state.host()?;
     let request: Request = serde_json::from_value(request).map_err(|_| "INVALID_REQUEST")?;
     let hello = matches!(&request, Request::UnlockHello {});
+    let closing = matches!(&request, Request::Lock {} | Request::Logout {});
     let state = state.inner().clone();
     tauri::async_runtime::spawn_blocking(move || {
         let _modal = hello.then(|| state.modal());
-        host.execute(&b, generation, request)
-            .map_err(|e| e.0.into())
+        let consent = match &request {
+            Request::ResolveDraft {
+                confirmed: true, ..
+            } => Some(
+                "Publish the reviewed content as a resolution of all selected conflict branches?",
+            ),
+            Request::Shared {
+                confirmed: true, ..
+            } => {
+                Some("Apply the selected membership, ownership or key-policy change to this group?")
+            }
+            Request::Device {
+                confirmed: true, ..
+            } => Some("Apply the selected trusted-device security change?"),
+            Request::Retention {
+                apply: true,
+                confirmed: true,
+                ..
+            } => Some("Apply the previewed retention operation?"),
+            _ => None,
+        };
+        if let Some(description) = consent {
+            let _modal = state.modal();
+            let approved = rfd::MessageDialog::new()
+                .set_parent(&window)
+                .set_title("AnyNote confirmation")
+                .set_description(description)
+                .set_buttons(rfd::MessageButtons::YesNo)
+                .show()
+                == rfd::MessageDialogResult::Yes;
+            if !approved {
+                return Err("CANCELLED".into());
+            }
+        }
+
+        let result = host.execute(&b, generation, request);
+        if closing {
+            state.mask();
+        }
+        result.map_err(|e| e.0.into())
     })
     .await
     .map_err(|_| "HOST_UNAVAILABLE")?
@@ -182,6 +246,9 @@ enum FileCommand {
     SaveKit {
         export_id: String,
     },
+    RecoverExport {
+        export_id: String,
+    },
     InspectImport {
         destination: Option<String>,
         resume: Option<String>,
@@ -224,10 +291,23 @@ async fn file_job(
   FileCommand::Upload{group_id,resume}=>{let _modal=state.modal();let selected=rfd::FileDialog::new().set_parent(&window).pick_file().ok_or("CANCELLED")?;let source=Source::open(&selected,1000000000).map_err(|e|e.0)?;let job=host.start_upload(generation,group_id,source,resume).map_err(|e|e.0)?;Ok(json!({"job_id":job}))},
   FileCommand::Download{group_id,file_version_id,offline}=>{let _modal=state.modal();let selected=rfd::FileDialog::new().set_parent(&window).set_file_name("AnyNote-file.bin").save_file().ok_or("CANCELLED")?;let job=host.start_download(generation,group_id,file_version_id,&selected,offline).map_err(|e|e.0)?;Ok(json!({"job_id":job}))},
   FileCommand::Export{group_ids,history,trash,kib_per_second}=>{let plan=host.prepare_export(generation,&group_ids,history,trash,kib_per_second).map_err(|e|e.0)?;let _modal=state.modal();let selected=rfd::FileDialog::new().set_parent(&window).set_file_name("AnyNote-export.age").save_file().ok_or("CANCELLED")?;let(node,script,manifest)=assets(&app)?;let job=host.jobs.start(generation).map_err(|e|e.0)?;let id=job.id.clone();std::thread::spawn(move||{let a=Assets{node:&node,script:&script,node_sha:manifest["node_sha256"].as_str().unwrap_or(""),script_sha:manifest["script_sha256"].as_str().unwrap_or("")};let r=host.export_archive(generation,plan,&selected,&a,job.clone());job.finish(r);});Ok(json!({"job_id":id}))},
+  FileCommand::RecoverExport{export_id}=>{let _modal=state.modal();let selected=rfd::FileDialog::new().set_parent(&window).set_file_name("AnyNote-recovered-export.age").save_file().ok_or("CANCELLED")?;host.recover_export(generation,&export_id,&selected).map_err(|e|e.0.into())},
   FileCommand::SaveKit{export_id}=>{let _modal=state.modal();let selected=rfd::FileDialog::new().set_parent(&window).set_file_name("AnyNote-recovery-kit.json").save_file().ok_or("CANCELLED")?;host.save_kit(generation,&export_id,&selected).map_err(|e|e.0.into())},
   FileCommand::InspectImport{destination,resume}=>{let _modal=state.modal();let selected=rfd::FileDialog::new().set_parent(&window).add_filter("Encrypted archive",&["age"]).pick_file().ok_or("CANCELLED")?;let source=Source::open(&selected,116010000000).map_err(|e|e.0)?;let selected=rfd::FileDialog::new().set_parent(&window).add_filter("Separate recovery kit",&["json"]).pick_file().ok_or("CANCELLED")?;let mut selected=Source::open(&selected,65536).map_err(|e|e.0)?;let mut kit=anynote_crypto_core::codec::strict(&selected.small(65536).map_err(|e|e.0)?,65536).map_err(|e|e.0)?;let(node,script,manifest)=assets(&app)?;let a=Assets{node:&node,script:&script,node_sha:manifest["node_sha256"].as_str().unwrap_or(""),script_sha:manifest["script_sha256"].as_str().unwrap_or("")};let result=host.inspect_import(generation,source,kit.take(),destination.as_deref(),resume.as_deref(),&a);result.map_err(|e|e.0.into())},
   FileCommand::ConfirmImport{import_id,audience_digest}=>Ok(json!({"job_id":host.start_import(generation,&import_id,&audience_digest).map_err(|e|e.0)?})),
-  FileCommand::Preview{group_id,file_version_id}=>{let _=host.read_preview(generation,&group_id,&file_version_id).map_err(|e|e.0)?;Err("SAFE_DOWNLOAD_REQUIRED".into())}
+  FileCommand::Preview{group_id,file_version_id}=>{
+   let bytes=zeroize::Zeroizing::new(host.read_preview(generation,&group_id,&file_version_id).map_err(|e|e.0)?);host.capability(generation).map_err(|e|e.0)?;
+   let payload=serde_json::to_string(&json!({"bytes":anynote_crypto_core::crypto::b64(&bytes)})).map_err(|_|"PREVIEW_UNAVAILABLE")?;
+   let data=Arc::new(Mutex::new(Some(payload)));let label=format!("preview-{}",anynote_crypto_core::crypto::b64(&anynote_crypto_core::crypto::random_key().map_err(|e|e.0)?[..16]));
+   let preview_host=host.clone();let window_state=state.clone();
+   let preview=tauri::WebviewWindowBuilder::new(&app,&label,tauri::WebviewUrl::App("auth/preview.html".into())).title("AnyNote file preview").parent(&window).map_err(|_|"PREVIEW_UNAVAILABLE")?.devtools(false)
+    .on_navigation(|url|url.path()=="/auth/preview.html"&&url.query().is_none()&&url.fragment().is_none())
+    .on_new_window(|_,_|tauri::webview::NewWindowResponse::Deny)
+    .on_page_load(move|view,page|{if page.event()==tauri::webview::PageLoadEvent::Finished{if preview_host.current()!=generation{let _=view.close();return;}if let Ok(mut data)=data.lock()&&let Some(payload)=data.take(){let _=view.eval(format!("window.dispatchEvent(new CustomEvent('anynote-preview',{{detail:{payload}}}))"));}}})
+    .build().map_err(|_|"PREVIEW_UNAVAILABLE")?;
+   preview.on_window_event(move|event|{if matches!(event,tauri::WindowEvent::Focused(false))&&!window_state.owns_foreground(){window_state.lock();if let Some(app)=window_state.app.get(){let _=app.emit("vault-locked",json!({"reason":"background"}));}}});
+   Ok(json!({"state":"OPENED","isolation":"separate window, no native IPC permissions, bounded P13 workers"}))
+  }
  }}).await.map_err(|_|"HOST_UNAVAILABLE")?
 }
 fn main() {
@@ -255,7 +335,9 @@ fn main() {
                 root,
                 modal: AtomicUsize::new(0),
                 generation: Arc::new(AtomicU64::new(0)),
+                app: OnceLock::new(),
             });
+            let _ = state.app.set(app.handle().clone());
             app.manage(state.clone());
             let window = app
                 .get_webview_window("main")
@@ -264,7 +346,9 @@ fn main() {
             windows::attach(&window, state.clone())?;
             let handle = app.handle().clone();
             window.on_window_event(move |event| match event {
-                tauri::WindowEvent::Focused(false) if state.modal.load(Ordering::SeqCst) == 0 => {
+                tauri::WindowEvent::Focused(false)
+                    if state.modal.load(Ordering::SeqCst) == 0 && !state.owns_foreground() =>
+                {
                     state.lock();
                     let _ = handle.emit("vault-locked", json!({"reason":"background"}));
                 }
@@ -340,8 +424,16 @@ async fn update(
     let Some(next) = updater.check().await.map_err(|_| "UPDATE_UNAVAILABLE")? else {
         return Ok(json!({"state":"CURRENT"}));
     };
-    policy
-        .version("0.14.0", &next.version, "windows-x86_64", &policy.channel)
+    let claims = policy
+        .signed_claims(
+            env!("CARGO_PKG_VERSION"),
+            &next.version,
+            next.download_url.as_str(),
+            &next.raw_json["anynote_claims"],
+            next.raw_json["anynote_claims_signature"]
+                .as_str()
+                .ok_or("UPDATE_INTEGRITY_FAILURE")?,
+        )
         .map_err(|e| e.0)?;
     if !install {
         return Ok(
@@ -351,10 +443,32 @@ async fn update(
     if !confirmed {
         return Err("CONFIRMATION_REQUIRED".into());
     }
-    let bytes = next
-        .download(|_, _| {}, || {})
-        .await
+    let (abort, registration) = futures_util::future::AbortHandle::new_pair();
+    let cancel = abort.clone();
+    let owned = host.clone();
+    let mut downloaded = 0u64;
+    let result = futures_util::future::Abortable::new(
+        next.download(
+            move |bytes, total| {
+                downloaded = downloaded.saturating_add(bytes as u64);
+                if downloaded > 536870912
+                    || total.is_some_and(|n| n > 536870912)
+                    || owned.current() != generation
+                {
+                    cancel.abort();
+                }
+            },
+            || {},
+        ),
+        registration,
+    )
+    .await;
+    let bytes = result
+        .map_err(|_| "UPDATE_CANCELLED_OR_TOO_LARGE")?
         .map_err(|_| "UPDATE_INTEGRITY_FAILURE")?;
+    if anynote_crypto_core::crypto::hash(&bytes) != claims.artifact_sha256 {
+        return Err("UPDATE_INTEGRITY_FAILURE".into());
+    }
     host.capability(generation).map_err(|e| e.0)?;
     state.lock();
     next.install(bytes).map_err(|_| "UPDATE_INSTALL_FAILED")?;

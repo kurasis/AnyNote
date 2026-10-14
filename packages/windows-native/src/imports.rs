@@ -84,6 +84,24 @@ impl Host {
             report["status"] == "VERIFIED_OFFLINE" && report["live_destination_mutations"] == 0,
             "OFFLINE_INTEGRITY_FAILURE",
         )?;
+        let import_id = resume.map(str::to_owned).unwrap_or_else(random_id);
+        let previous = if resume.is_some() {
+            Some(
+                self.vault
+                    .content_read(&cap, id(&import_id)?, "import-state")?
+                    .data
+                    .ok_or(Error("NOT_FOUND"))?,
+            )
+        } else {
+            None
+        };
+        let prior_group = previous
+            .as_ref()
+            .and_then(|s| s["destination"]["group_id"].as_str());
+        if let (Some(requested), Some(prior)) = (destination, prior_group) {
+            check(requested == prior, "IDEMPOTENCY_MISMATCH")?;
+        }
+        let destination = destination.or(prior_group);
         let context = if let Some(d) = destination {
             self.prove(&cap)?;
             let status = self.group(&cap, d)?;
@@ -92,27 +110,13 @@ impl Host {
             json!({"group_id":null,"kind":"new-private-group","account_id":self.profile.scope.account_id})
         };
         let audience = hash(&canonical(&context)?);
-        let import_id = resume.map(str::to_owned).unwrap_or_else(random_id);
-        let mut state = if resume.is_some() {
-            self.vault
-                .content_read(&cap, id(&import_id)?, "import-state")?
-                .data
-                .ok_or(Error("NOT_FOUND"))?
-        } else {
-            json!({"purpose":"p14-native-import","version":1,"import_id":import_id,"archive_sha256":kit["archive_sha256"],"export_id":kit["export_id"],"destination":context,"notes":[],"files":[],"state":"READY","group_request":null,"selected_notes":[]})
-        };
+        let mut state=previous.unwrap_or(json!({"purpose":"p14-native-import","version":1,"import_id":import_id,"archive_sha256":kit["archive_sha256"],"export_id":kit["export_id"],"destination":context,"notes":[],"files":[],"state":"READY","group_request":null,"selected_notes":[]}));
         check(
             state["archive_sha256"] == kit["archive_sha256"]
                 && state["export_id"] == kit["export_id"]
                 && !matches!(state["state"].as_str(), Some("COMPLETE" | "CANCELLED")),
             "IDEMPOTENCY_MISMATCH",
         )?;
-        if resume.is_some() {
-            check(
-                destination.is_none_or(|d| state["destination"]["group_id"] == d),
-                "IDEMPOTENCY_MISMATCH",
-            )?;
-        }
         let notes = report["notes"]
             .as_array()
             .ok_or(Error("INVALID_BRIDGE_FRAME"))?;
@@ -220,6 +224,7 @@ impl Host {
         input.bridge.ack()?;
         let mut file = None::<String>;
         let mut acknowledgements = Vec::new();
+        let mut committed_file = false;
         loop {
             job.check(self.current())?;
             let (kind, data) = input.bridge.receive()?;
@@ -268,6 +273,7 @@ impl Host {
                         self.save_native_job(cap, &iid, &input.state)?;
                     }
                     acknowledgements.clear();
+                    committed_file = false;
                     let request = self.vault.file_request(cap, file.as_deref().unwrap())?;
                     let upload = string(&request, "upload_id")?;
                     let status = self.vault.file_http(
@@ -286,6 +292,8 @@ impl Host {
                         )?;
                     } else {
                         check(status.status == 200, "API_DENIED")?;
+                        let status = strict(&status.bytes, 1048576)?;
+                        committed_file = status["state"] == "COMMITTED";
                     }
                     input.bridge.ack()?;
                 }
@@ -307,16 +315,18 @@ impl Host {
                     )?;
                     job.check(self.current())?;
                     let draft = file.as_deref().ok_or(Error("INCOMPLETE_FILE"))?;
-                    let cipher = self.vault.recovered_file_part(cap, draft, index, &plain)?;
-                    let request = self.vault.file_request(cap, draft)?;
-                    acknowledgements.push(self.file_response(
-                        cap,
-                        FileOperation::Part {
-                            upload: string(&request, "upload_id")?,
-                            index: index as u8,
-                            ciphertext: &cipher,
-                        },
-                    )?);
+                    if !committed_file {
+                        let cipher = self.vault.recovered_file_part(cap, draft, index, &plain)?;
+                        let request = self.vault.file_request(cap, draft)?;
+                        acknowledgements.push(self.file_response(
+                            cap,
+                            FileOperation::Part {
+                                upload: string(&request, "upload_id")?,
+                                index: index as u8,
+                                ciphertext: &cipher,
+                            },
+                        )?);
+                    }
                     job.progress(index as u64 * 8388608, 0);
                     input.bridge.ack()?;
                 }

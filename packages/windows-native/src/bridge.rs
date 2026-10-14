@@ -81,6 +81,11 @@ impl Bridge {
         std::thread::spawn(move || {
             let start = std::time::Instant::now();
             while !ended.load(Ordering::SeqCst) {
+                if let Some(c) = weak.upgrade()
+                    && let Ok(c) = c.lock()
+                {
+                    crate::memory::observe_helper(c.id());
+                }
                 if interrupted() || start.elapsed() > Duration::from_secs(86400) {
                     if let Some(c) = weak.upgrade()
                         && let Ok(mut c) = c.lock()

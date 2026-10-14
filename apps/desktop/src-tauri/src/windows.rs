@@ -39,6 +39,7 @@ unsafe extern "system" fn subclass(
             host.invalidate();
             std::thread::spawn(move || host.finish_lock());
         }
+        hook.state.mask();
         let _ = hook
             .app
             .emit("vault-locked", json!({"reason":"session-or-power"}));
@@ -87,10 +88,26 @@ pub fn attach(
                     && host.vault.status().ok() == Some("unlocked")
                 {
                     host.lock();
+                    state.mask();
                     let _ = app.emit("vault-locked", json!({"reason":"idle"}));
                 }
             }
         }
     });
     Ok(())
+}
+
+pub fn owns_foreground() -> bool {
+    use windows_sys::Win32::UI::WindowsAndMessaging::{
+        GetForegroundWindow, GetWindowThreadProcessId,
+    };
+    let foreground = unsafe { GetForegroundWindow() };
+    if foreground.is_null() {
+        return false;
+    }
+    let mut pid = 0;
+    unsafe {
+        GetWindowThreadProcessId(foreground, &mut pid);
+    };
+    pid == std::process::id()
 }

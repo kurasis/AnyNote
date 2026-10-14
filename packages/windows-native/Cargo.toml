@@ -23,9 +23,10 @@ libsodium-rs = "=0.2.5"
 url = "=2.5.8"
 sha2 = "=0.10.9"
 base64 = "=0.22.1"
+minisign-verify = "=0.3.0"
 [target.'cfg(unix)'.dependencies]
 libc = "=0.2.190"
 [target.'cfg(windows)'.dependencies]
-windows-sys = { version = "=0.61.2", features = ["Win32_Foundation", "Win32_Storage_FileSystem"] }
+windows-sys = { version = "=0.61.2", features = ["Win32_Foundation", "Win32_Storage_FileSystem", "Win32_System_ProcessStatus", "Win32_System_Threading"] }
 [dev-dependencies]
 tempfile = "=3.27.0"

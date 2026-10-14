@@ -27,6 +27,13 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '24.21.0'
+      - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
+        id: native-cache
+        with:
+          path: |
+            packages/windows-native/target
+            apps/desktop/src-tauri/target
+          key: windows-p14-rust199-${{ hashFiles('packages/windows-native/Cargo.lock', 'apps/desktop/src-tauri/Cargo.lock') }}
       - name: Frozen maintained dependencies and one-installer runtime
         run: |
           rustup toolchain install 1.99.0 --profile minimal --component clippy,rustfmt
@@ -42,6 +49,7 @@ jobs:
           python apps/desktop/prepare-runtime.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Native host and maintained WebView2 single installer
+        id: desktop-build
         run: |
           cargo test --manifest-path packages/windows-native/Cargo.toml --locked -j 4 -- --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -49,6 +57,13 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           git diff --exit-code
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830
+        if: steps.native-cache.outputs.cache-hit != 'true'
+        with:
+          path: |
+            packages/windows-native/target
+            apps/desktop/src-tauri/target
+          key: ${{ steps.native-cache.outputs.cache-primary-key }}
       - name: Actual owned Windows TLS, PHP and MariaDB
         run: |
           $env:ANYNOTE_TEST_PYTHON = (Get-Command python).Source

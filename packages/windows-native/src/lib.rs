@@ -3,6 +3,7 @@ pub mod bridge;
 pub mod host;
 pub mod imports;
 pub mod jobs;
+pub mod memory;
 pub mod portable;
 pub mod selection;
 pub mod sync;

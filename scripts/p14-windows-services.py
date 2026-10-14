@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Real owned Windows CI PHP/MariaDB/TLS services. No Docker substitute or token issuer."""
-import argparse,base64,hashlib,json,os,secrets,shutil,subprocess,sys,time,urllib.request,zipfile
+import argparse,base64,hashlib,json,os,re,secrets,shutil,subprocess,sys,time,urllib.request,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 STATE=ROOT/'.local/p14-windows-services';P06=ROOT/'.local/p06';API=ROOT/'apps/api'
@@ -11,7 +11,16 @@ def require_ci():
     if os.name!='nt' or os.getenv('GITHUB_ACTIONS')!='true':raise RuntimeError('Windows GitHub synthetic runner required')
 def checked(args,**kw):
     result=subprocess.run([str(a) for a in args],cwd=kw.pop('cwd',ROOT),capture_output=True,**kw)
-    if result.returncode:raise RuntimeError('Owned Windows dependency/service command failed; private arguments and output withheld')
+    if result.returncode:
+        detail=(result.stdout+result.stderr).decode(errors='replace')
+        if (STATE/'private.json').exists():
+            for private in settings().values():detail=detail.replace(private,'[REDACTED]')
+        detail=re.sub(r'-----BEGIN[^\n]*PRIVATE KEY-----.*?-----END[^\n]*PRIVATE KEY-----','[REDACTED PRIVATE KEY]',detail,flags=re.S)
+        detail=re.sub(r'(?i)Bearer\s+[A-Za-z0-9._~+/-]+=*','Bearer [REDACTED]',detail)
+        report={'program':Path(args[0]).name,'exit_code':result.returncode,'sanitized_diagnostic':detail[-2500:]}
+        destination=ROOT/'artifacts/p14';destination.mkdir(parents=True,exist_ok=True);(destination/'windows-service-error.json').write_text(json.dumps(report,indent=2))
+        print(json.dumps(report),file=sys.stderr)
+        raise RuntimeError('Owned Windows dependency/service command failed; private arguments withheld')
     return result.stdout
 def marker():
     expected={'purpose':PURPOSE,'root':str(ROOT),'owner':OWNER}

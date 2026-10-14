@@ -114,6 +114,77 @@ fn millis() -> Result<u64> {
         .as_millis() as u64)
 }
 impl Host {
+    pub fn native_job_summaries(&self, g: u64) -> Result<Value> {
+        let cap = self.capability(g)?;
+        let root = self
+            .vault
+            .content_read(&cap, &self.native_job_id(), "content-control")?
+            .data
+            .unwrap_or(json!({"items":[]}));
+        let mut items = Vec::new();
+        for reference in root["items"].as_array().ok_or(Error("INTEGRITY_FAILURE"))? {
+            let id = string(reference, "job_id")?;
+            let kind = string(reference, "kind")?;
+            check(
+                ["export-state", "import-state"].contains(&kind),
+                "INTEGRITY_FAILURE",
+            )?;
+            let state = self
+                .vault
+                .content_read(&cap, id, kind)?
+                .data
+                .ok_or(Error("INTEGRITY_FAILURE"))?;
+            items.push(json!({"job_id":id,"kind":kind,"state":state["state"],"kit_saved_separately":state["kit_saved_separately"]==true,"destination_group":state["destination"]["group_id"]}));
+        }
+        Ok(json!({"items":items}))
+    }
+    /// Resume a completed encrypted stage without the original API or any plaintext staging.
+    pub fn recover_export(&self, g: u64, export: &str, target: &Path) -> Result<Value> {
+        use std::io::Read;
+        let cap = self.capability(g)?;
+        let mut state = self
+            .vault
+            .content_read(&cap, id(export)?, "export-state")?
+            .data
+            .ok_or(Error("NOT_FOUND"))?;
+        check(
+            state["purpose"] == "p14-native-export" && state["state"] == "OUTPUT_PENDING",
+            "EXPORT_NOT_PENDING",
+        )?;
+        let partial = std::path::PathBuf::from(string(&state, "partial")?);
+        let prior = std::path::PathBuf::from(string(&state, "target")?);
+        let source_path = if partial.is_file() { partial } else { prior };
+        let mut source = crate::selection::Source::open(&source_path, 116010000000)?;
+        crate::selection::ensure_space(target, source.size)?;
+        let mut output = Destination::create(target)?;
+        let mut digest = Sha256::new();
+        let mut buffer = vec![0u8; 65536];
+        loop {
+            check(g == self.current(), "STALE_CAPABILITY")?;
+            source.check()?;
+            let n = source
+                .file
+                .read(&mut buffer)
+                .map_err(|_| Error("SOURCE_UNAVAILABLE"))?;
+            if n == 0 {
+                break;
+            }
+            digest.update(&buffer[..n]);
+            output
+                .write_all(&buffer[..n])
+                .map_err(|_| Error("INSUFFICIENT_STORAGE"))?;
+        }
+        check(
+            state["kit"]["archive_sha256"] == b64(&digest.finalize()),
+            "EXPORT_SOURCE_MISMATCH",
+        )?;
+        output.finish()?;
+        state["state"] = json!("COMPLETE");
+        state["target"] = json!(target);
+        state["cipher_cleanup_pending"] = json!(source_path);
+        self.save_native_job(&cap, export, &state)?;
+        Ok(json!({"state":"COMPLETE","export_id":export,"kit_saved_separately":false}))
+    }
     pub fn prepare_export(
         &self,
         g: u64,
@@ -612,7 +683,7 @@ impl Host {
     }
     pub fn save_kit(&self, g: u64, export: &str, path: &Path) -> Result<Value> {
         let cap = self.capability(g)?;
-        let state = self
+        let mut state = self
             .vault
             .content_read(&cap, id(export)?, "export-state")?
             .data
@@ -623,6 +694,8 @@ impl Host {
             .map_err(|_| Error("STORAGE_UNAVAILABLE"))?;
         check(g == self.current(), "STALE_CAPABILITY")?;
         out.finish()?;
+        state["kit_saved_separately"] = json!(true);
+        self.save_native_job(&cap, export, &state)?;
         Ok(json!({"state":"SAVED_SEPARATELY"}))
     }
 }

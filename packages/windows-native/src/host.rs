@@ -59,10 +59,12 @@ pub enum Request {
     },
     Threads {
         group_id: String,
+        after: Option<String>,
     },
     Entries {
         group_id: String,
         thread_id: String,
+        after: Option<String>,
     },
     Open {
         group_id: String,
@@ -75,6 +77,10 @@ pub enum Request {
     },
     Publish {
         draft_id: String,
+    },
+    ResolveDraft {
+        draft_id: String,
+        confirmed: bool,
     },
     Draft {
         draft_id: String,
@@ -107,6 +113,7 @@ pub enum Request {
         confirmed: bool,
     },
     Transfers {},
+    RecoveryJobs {},
     CancelJob {
         job_id: String,
     },
@@ -590,9 +597,15 @@ impl Host {
             &[],
             None,
         )?;
-        self.notes(cap,json!({"action":"open","request":{"group_id":group,"object_id":object,"revision_id":revision,"object_kind":state["object"]["object_kind"],"thread_id":state["object"]["thread_id"],"bundle":bundle["bundle"]}}))
+        let opened=self.notes(cap,json!({"action":"open","request":{"group_id":group,"object_id":object,"revision_id":revision,"object_kind":state["object"]["object_kind"],"thread_id":state["object"]["thread_id"],"bundle":bundle["bundle"]}}))?;
+        Ok(
+            json!({"object":state["object"],"payload":opened["payload"],"envelope_digest":opened["envelope_digest"]}),
+        )
     }
     pub fn publish(&self, cap: &Capability, draft: &str) -> Result<Value> {
+        self.publish_bound(cap, draft, false)
+    }
+    fn publish_bound(&self, cap: &Capability, draft: &str, merge: bool) -> Result<Value> {
         id(draft)?;
         let d = match self.notes(cap, json!({"action":"draft","draft_id":draft})) {
             Ok(v) => v,
@@ -610,6 +623,15 @@ impl Host {
             Err(e) => return Err(e),
         };
         let group = string(&d["payload"]["context"], "group_id")?;
+        check(
+            merge
+                || d["payload"]["context"]["parents"]
+                    .as_array()
+                    .ok_or(Error("INTEGRITY_FAILURE"))?
+                    .len()
+                    <= 1,
+            "CONFLICT_CONFIRMATION_REQUIRED",
+        )?;
         self.group(cap, group)?;
         let queued = self.notes(cap, json!({"action":"queue","draft_id":draft}))?;
         let attempt = string(&queued, "attempt_id")?;
@@ -746,16 +768,17 @@ impl Host {
                 &cap,
                 json!({"action":"sync","request":{"action":"offline"}}),
             ),
-            Request::Threads { group_id } => {
+            Request::Threads { group_id, after } => {
                 self.group(&cap, group_id)?;
-                self.list_open(&cap, Route::Threads, group_id, group_id)
+                self.list_open(&cap, Route::Threads, group_id, group_id, after.as_deref())
             }
             Request::Entries {
                 group_id,
                 thread_id,
+                after,
             } => {
                 self.group(&cap, group_id)?;
-                self.list_open(&cap, Route::Entries, thread_id, group_id)
+                self.list_open(&cap, Route::Entries, thread_id, group_id, after.as_deref())
             }
             Request::Open {
                 group_id,
@@ -771,6 +794,13 @@ impl Host {
                 }
             }
             Request::Publish { draft_id } => self.publish(&cap, draft_id),
+            Request::ResolveDraft {
+                draft_id,
+                confirmed,
+            } => {
+                check(*confirmed, "CONFIRMATION_REQUIRED")?;
+                self.publish_bound(&cap, draft_id, true)
+            }
             Request::Draft { draft_id } => {
                 self.notes(&cap, json!({"action":"draft","draft_id":draft_id}))
             }
@@ -838,6 +868,7 @@ impl Host {
             Request::Transfers {} => Ok(
                 json!({"jobs":self.jobs.summary(g)?,"transfers":self.vault.file_transfers(&cap)?}),
             ),
+            Request::RecoveryJobs {} => self.native_job_summaries(g),
             Request::CancelJob { job_id } => {
                 self.jobs.cancel(job_id)?;
                 Ok(json!({"state":"PAUSED"}))
@@ -924,7 +955,7 @@ impl Host {
                 confirmed,
             } => self.device(&cap, action, value.as_ref(), *confirmed),
             Request::Diagnostics {} => Ok(
-                json!({"version":"0.14.0","platform":std::env::consts::OS,"state":self.vault.status()?,"physical_acceptance":false,"logging":"content-free","custody":"native SQLite and current-user DPAPI","production_signing":"NOT_CONFIGURED"}),
+                json!({"version":"0.14.0","platform":std::env::consts::OS,"state":self.vault.status()?,"physical_acceptance":false,"logging":"content-free","memory":crate::memory::report(),"custody":"native SQLite and current-user DPAPI","production_signing":"NOT_CONFIGURED"}),
             ),
             _ => Err(Error("INVALID_REQUEST")),
         };
@@ -953,8 +984,13 @@ impl Host {
         route: Route,
         resource: &str,
         group: &str,
+        after: Option<&str>,
     ) -> Result<Value> {
-        let page = self.api(cap, route, Some(resource), None, &[], None)?;
+        if let Some(after) = after {
+            id(after)?;
+        }
+        let query = after.map(|v| vec![("after", v)]).unwrap_or_default();
+        let page = self.api(cap, route, Some(resource), None, &query, None)?;
         let mut items = Vec::new();
         for object in page["objects"].as_array().ok_or(Error("INVALID_PAGE"))? {
             let revision = object["heads"]
@@ -969,35 +1005,47 @@ impl Host {
     }
     fn refresh(&self, cap: &Capability) -> Result<Value> {
         self.resync(cap)?;
-        let page = self.api(cap, Route::GroupList, None, None, &[], None)?;
         let mut items = Vec::new();
-        for g in page["groups"].as_array().ok_or(Error("INVALID_PAGE"))? {
-            let group = string(g, "group_id")?;
-            self.group(cap, group)?;
-            let metadata = match self.api(cap, Route::Object, Some(group), None, &[], None) {
-                Ok(v) => v,
-                Err(Error("NOT_FOUND")) => Value::Null,
-                Err(e) => return Err(e),
-            };
-            let title = if metadata["object"]["heads"]
-                .as_array()
-                .is_some_and(|a| !a.is_empty())
-            {
-                self.open_revision(
-                    cap,
-                    group,
-                    group,
-                    string(&metadata["object"]["heads"][0], "revision_id")?,
-                )?["payload"]["title"]
-                    .clone()
-            } else {
-                json!("Untitled")
-            };
-            items.push(json!({"group":g,"title":title}));
+        let mut after = None::<String>;
+        loop {
+            let query = after
+                .as_ref()
+                .map(|v| vec![("after", v.as_str())])
+                .unwrap_or_default();
+            let page = self.api(cap, Route::GroupList, None, None, &query, None)?;
+            for g in page["groups"].as_array().ok_or(Error("INVALID_PAGE"))? {
+                let group = string(g, "group_id")?;
+                self.group(cap, group)?;
+                let metadata = match self.api(cap, Route::Object, Some(group), None, &[], None) {
+                    Ok(v) => v,
+                    Err(Error("NOT_FOUND")) => Value::Null,
+                    Err(e) => return Err(e),
+                };
+                let title = if metadata["object"]["heads"]
+                    .as_array()
+                    .is_some_and(|a| !a.is_empty())
+                {
+                    self.open_revision(
+                        cap,
+                        group,
+                        group,
+                        string(&metadata["object"]["heads"][0], "revision_id")?,
+                    )?["payload"]["title"]
+                        .clone()
+                } else {
+                    json!("Untitled")
+                };
+                items.push(json!({"group":g,"title":title}));
+            }
+            check(items.len() <= 1000, "RESOURCE_LIMIT")?;
+            if page["next"].is_null() {
+                break;
+            }
+            let next = string(&page, "next")?.to_owned();
+            check(after.as_ref() != Some(&next), "INVALID_PAGE_ORDER")?;
+            after = Some(next);
         }
-        Ok(
-            json!({"items":items,"next":page["next"],"local":self.notes(cap,json!({"action":"summary"}))?}),
-        )
+        Ok(json!({"items":items,"next":null,"local":self.notes(cap,json!({"action":"summary"}))?}))
     }
     fn shared_change(
         &self,
