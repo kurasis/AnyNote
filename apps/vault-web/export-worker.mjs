@@ -1,12 +1,12 @@
 // In-memory single-use export capabilities. This code never fetches or caches plaintext.
 const tickets=new Map();
 self.addEventListener('message',event=>{
- if(event.data?.kind!=='p12-export')return;
+ if(!['p12-export','p13-encrypted-export'].includes(event.data?.kind))return;
  const port=event.ports[0];if(!port)return;
  event.waitUntil((async()=>{
-  const client=await self.clients.get(event.source?.id),x=event.data;
-  if(!client||client.type!=='window'||new URL(client.url).origin!==self.location.origin||new URL(client.url).pathname!=='/auth/notes.html'||!Number.isSafeInteger(x.size)||x.size<0||x.size>1000000000||typeof x.name!=='string'||!/^[^\x00-\x1f\x7f<>:"/\\|?*]{1,120}$/.test(x.name)||tickets.size>=2){port.postMessage({error:true});port.close();return;}
-  const token=crypto.randomUUID().replaceAll('-',''),ticket={port,size:x.size,name:x.name,client:client.id,expires:Date.now()+60000};tickets.set(token,ticket);setTimeout(()=>{if(tickets.get(token)===ticket){tickets.delete(token);port.postMessage({error:true});port.close();}},60000);port.postMessage({ready:true,url:new URL('file-export/'+token,self.registration.scope).href});
+  const client=await self.clients.get(event.source?.id),x=event.data,encrypted=x.kind==='p13-encrypted-export';
+  if(!client||client.type!=='window'||new URL(client.url).origin!==self.location.origin||new URL(client.url).pathname!=='/auth/notes.html'||!(encrypted?x.size===null:Number.isSafeInteger(x.size)&&x.size>=0&&x.size<=1000000000)||typeof x.name!=='string'||!/^[^\x00-\x1f\x7f<>:"/\\|?*]{1,120}$/.test(x.name)||tickets.size>=2){port.postMessage({error:true});port.close();return;}
+  const token=crypto.randomUUID().replaceAll('-',''),ticket={port,size:x.size,encrypted,maximum:encrypted?116010000000:x.size,name:x.name,client:client.id,expires:Date.now()+60000};tickets.set(token,ticket);setTimeout(()=>{if(tickets.get(token)===ticket){tickets.delete(token);port.postMessage({error:true});port.close();}},60000);port.postMessage({ready:true,url:new URL('file-export/'+token,self.registration.scope).href});
  })());
 });
 self.addEventListener('fetch',event=>{
@@ -20,8 +20,8 @@ self.addEventListener('fetch',event=>{
   start(controller){
    ticket.port.onmessage=({data})=>{
     if(data?.cancel){controller.error(Error('EXPORT_INTERRUPTED'));finish();return;}
-    if(data?.end){if(bytes!==ticket.size||buffer){controller.error(Error('EXPORT_TRUNCATED'));finish();}else{controller.close();ended=true;resolve?.();clearTimeout(timer);ticket.port.postMessage({complete:true});ticket.port.close();done();}return;}
-    if(!(data?.bytes instanceof Uint8Array)||data.bytes.length>8388608||buffer||bytes+data.bytes.length>ticket.size){controller.error(Error('EXPORT_INTEGRITY_FAILURE'));finish();return;}
+    if(data?.end){if((ticket.encrypted?data.bytes!==bytes:bytes!==ticket.size)||buffer){controller.error(Error('EXPORT_TRUNCATED'));finish();}else{controller.close();ended=true;resolve?.();clearTimeout(timer);ticket.port.postMessage({complete:true});ticket.port.close();done();}return;}
+    if(!(data?.bytes instanceof Uint8Array)||data.bytes.length>8388608||buffer||bytes+data.bytes.length>ticket.maximum){controller.error(Error('EXPORT_INTEGRITY_FAILURE'));finish();return;}
     buffer=data.bytes;resolve?.();resolve=null;
    };timer=setTimeout(()=>{controller.error(Error('EXPORT_INTERRUPTED'));finish();},120000);
   },
@@ -31,5 +31,5 @@ self.addEventListener('fetch',event=>{
   },
   cancel(){ticket.port.postMessage({error:true});finish();},
  },{highWaterMark:0});
- event.respondWith(new Response(stream,{headers:{'Content-Type':'application/octet-stream','Content-Length':String(ticket.size),'Content-Disposition':'attachment; filename="'+ticket.name.replace(/[^\x20-\x7e]/g,'_')+'"','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}}));
+ event.respondWith(new Response(stream,{headers:{'Content-Type':'application/octet-stream',...(ticket.encrypted?{}:{'Content-Length':String(ticket.size)}),'Content-Disposition':'attachment; filename="'+ticket.name.replace(/[^\x20-\x7e]/g,'_')+'"','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}}));
 });

@@ -19,7 +19,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P10 | VERIFIED | Five protected workflow/transport suites, 407 actual HTTPS/SQL checks, 40 sandboxed three-account PWA checks, three native shared tests and 89 native/portable interop checks/platform; all eighteen hosted gates PASS |
 | P11 | VERIFIED | Ten portable suites, 112 actual sync HTTP/SQL checks, 418 membership/lease checks, 45 sandboxed PWA checks, seven native notes and nine new interop checks/platform; all twenty final code jobs PASS; Worker masking and background idle guards verified |
 | P12 | VERIFIED | Twelve portable file tests, 368 actual file HTTPS/SQL checks, 452 shared-authority checks, 60 sandboxed PWA checks, native 1 GB/cache/atomic export on Linux/MSVC; all twenty-two software gates PASS; physical G1/U11/U12 and qualified G2/G3 remain open |
-| P13 | NOT STARTED | P11/P12 |
+| P13 | VERIFIED | Protected content UX, safe previews/thumbnails, reference-safe retention, independent age recovery and fresh standard import; 401 HTTP/SQL, 427 authority, 59 sandboxed UI checks, actual Linux/Windows 1 GB archive and all 24 software gates PASS; physical/review gates remain open |
 | P14 | NOT STARTED | P07–P13 and actual Windows evidence |
 | P15 | NOT STARTED | P01/P07–P13 and actual iPhone evidence |
 | P16 | NOT STARTED | P04/P08/P11–P13 and appropriately sized synthetic host |
@@ -745,3 +745,57 @@ in docs/evidence/p12. Frozen spec/P02 corpora and prior dependency locks remain
 unchanged. Full physical G1/U11/U12 and qualified G2/G3 remain OPEN/NOT_RUN.
 Complete P13 handoff is NEXT_TASK. Final documentation-head CI, ordinary guarded
 merge and final configuration persistence require their separate actual outcomes.
+
+### P13 component development checkpoint
+
+P13 remains IN PROGRESS. Search, isolated previews, native protected records and
+search coordination, captured export leases, report-first note compaction and
+pruned full resync, downloaded-cache controls, streaming age/archive primitives
+and a clean offline reader now have development checks. Actual Linux 1 GB recovery
+and independent Go age interoperability passed without plaintext temporary files.
+See [component evidence](evidence/p13/development/DEVELOPMENT.md). Complete product export /
+resumable import, derived thumbnails, remaining retention controls and full P13 /
+inherited exact-source acceptance remain required. PR26 remains a draft; this is
+not the P14 handoff or phase completion.
+
+## Completed task: P13 protected content and independent recovery
+
+All 24 mandatory code jobs passed at `6c520c9867aaaa778de7462de748fa6b1da44625`, clean tree `f31f7c75f00ce66e51f5c2b8bd4ec12698a27952`.
+The original 22 gates remain mandatory. New Linux HTTP/browser and Windows
+content gates passed; GitHub raw artifact ZIP digests and source input arrays
+were independently checked against actual Git blobs. Exact raw public receipts
+are retained beside this file. Development observations remain in development/.
+
+Actual execution: seventeen Node protected-content/preview/archive/offline-CLI
+checks, four native protected-content checks, 401 export/import
+HTTPS/SQL checks, 427 signed-authority/removal checks,
+59 genuine sandboxed browser UI checks and nine isolated preview
+checks. Both Linux and Windows encrypted and independently decrypted an actual
+1,000,000,000-byte file/archive, authenticated every original chunk and full hash,
+with no plaintext archive/key temporary files. Linux used pinned Go age; Windows
+used maintained Rust age/MSVC. RSS observations keep their process/sampling scope;
+they are not iPhone/WebView2 or arbitrary 100 GB memory acceptance.
+
+The content slice includes protected search and coverage/rebuild, safe bounded
+previews, separately encrypted signed thumbnails, version compare/restore,
+trash/retention report/apply/pins, private favorites/read markers, explicit cache
+and completed-job controls, standard streaming age export, separate kit,
+pre-start space/time/lease estimates, clean independent recovery and explicit
+plaintext export. Standard import validates before any live mutation, defaults
+to a new private group, confirms current audience and publishes fresh IDs/DEKs/
+signatures. Empty/multi-group/full-history/current-only, wrong kit/altered or
+truncated/archive/footer/path failures, quota denial/resume, lost ACK/lock/pause,
+cross-root/service recovery, retained ancestry, derived-link protection and
+revoked access are covered by the actually executed suites.
+
+Frozen specification/P02 corpora/signatures and all prior dependency locks are
+unchanged. New dependencies have separate exact inventories/licenses. See
+[content/format guide](P13_CONTENT.md). Complete Windows host/dialog/native
+integration is P14; iPhone acceptance is P15; deployment/physical reconciliation
+and restore are P16. Physical G1/U11/U12/Hello/TPM/WebView2/iPhone memory and
+qualified G2/G3 remain OPEN/NOT_RUN. No owner trial, release, production operation
+or reviewer outreach occurred.
+
+Final documentation-head CI, ordinary guarded PR26 merge and configuration
+persistence require their separate recorded outcomes. Code acceptance does not
+claim Publish or independently observed fresh-task restoration.

@@ -1,3 +1,6 @@
+import {PreviewClient} from '../../packages/content-browser/preview-client.mjs';
+import {archiveUI} from './archive.mjs';
+import {contentUI} from './content.mjs';
 import {CipherCache} from '../../packages/protocol/files/cache.mjs';
 import {FilesClient,TransferManager} from '../../packages/protocol/files/client.mjs';
 import {browserSink} from '../../packages/protocol/files/browser-sink.mjs';
@@ -19,8 +22,9 @@ let synchronizer,poller,backgroundSync=false,uiInterrupt=false;
 const text=k=>words[language][k]??words.en[k]??k;
 const vault=new LocalVault('/auth/vault-worker.js',mask);
 function erase(v){if(v&&typeof v==='object')for(const k of Object.keys(v)){if(typeof v[k]==='string')v[k]='';else erase(v[k]);}}
-let transfers;
+let transfers,contentTools,portableTools;
 function mask(){
+ contentTools?.close();portableTools?.close({locked:true});
  transfers?.pause();if($('file-delete-confirm'))$('file-delete-confirm').checked=false;if($('file-restart-confirm'))$('file-restart-confirm').checked=false;if($('file-copy-confirm'))$('file-copy-confirm').checked=false;if($('file-copy-audience'))$('file-copy-audience').textContent='';if($('file-source'))$('file-source').value='';if($('file-items'))$('file-items').replaceChildren();if($('file-state'))$('file-state').textContent='';
  poller?.stop();synchronizer=undefined;
  generation++;clearTimeout(timer);editor&&erase(editor);editor=undefined;pendingConflict&&erase(pendingConflict);pendingConflict=undefined;
@@ -33,6 +37,7 @@ function mask(){
  for(const id of ['unlock','login','create-group','create-thread','save-note','save-local','refresh','retry'])$(id).disabled=false;
 }
 function translate(){
+ contentTools?.translate();portableTools?.translate();
  document.documentElement.lang=language;$('language').value=language;
  for(const e of document.querySelectorAll('[data-i18n]'))e.textContent=text(e.dataset.i18n);
  $('lock-state').textContent=text($('workspace').hidden?'locked':'unlocked');
@@ -124,6 +129,7 @@ async function synchronize(){
 }
 async function refresh(){await flushIfDirty();await prove();if(groupSelected)await groupStatus(groupSelected);await loadGroups();await copyDestinations();if(groupSelected&&groups.has(groupSelected))await openGroup(groupSelected);await retryPending();await summary();}
 async function openGroup(id){
+ contentTools?.close();portableTools?.close();
  clearTimeout(timer);await flushIfDirty();groupSelected=id;threadSelected=undefined;const g=await groupStatus(id);if(!g)throw Error('GROUP_REQUIRED');
  $('group-heading').textContent=titles.get(id)??text('pending_title');$('audience').textContent=text(g.state==='archived'?'archived':g.kind==='shared'?'shared_group':'private');$('thread-heading').textContent='';$('entries').replaceChildren();$('editor').hidden=true;$('threads').replaceChildren();threadCursor=null;
  if(server){await keyFor(g);await loadThreads();}else for(const [object,r]of references)if(r.group_id===id&&r.object_kind==='thread'&&!r.tombstoned)item($('threads'),titles.get(object)??text('untitled'),()=>openThread(object),object);
@@ -211,10 +217,10 @@ async function showConflict(){
 }
 async function versions(){
  if(!editor?.object_id)throw Error('DRAFT_NOT_FOUND');await flushIfDirty();const page=await api.call('/objects/'+editor.object_id+'/revisions',null,'revisions-page');$('versions').replaceChildren();
- for(const r of page.revisions)item($('versions'),text('saved_version')+' · '+r.revision_id.slice(-8),async()=>{
-  const ref={object_id:editor.object_id,object_kind:editor.object_kind,thread_id:editor.thread_id,heads:[r]},opened=await openRevision(editor.group_id,ref,r);$('conflict-remote').textContent=opened.payload.title+'\n\n'+opened.payload.markdown;
+ for(const r of page.revisions){if(r.ciphertext_bytes==='0'){const li=document.createElement('li');li.textContent=text('payload_pruned')+' · '+r.revision_id.slice(-8);$('versions').append(li);continue;}item($('versions'),text('saved_version')+' · '+r.revision_id.slice(-8),async()=>{
+  const ref={object_id:editor.object_id,object_kind:editor.object_kind,thread_id:editor.thread_id,heads:[r]},opened=await openRevision(editor.group_id,ref,r);$('conflict-remote').textContent=text('compare_current')+'\n'+$('note-title').value+'\n'+$('note-body').value+'\n\n'+text('compare_saved')+'\n'+opened.payload.title+'\n\n'+opened.payload.markdown;
   const li=document.createElement('li');li.append(button(text('restore'),async()=>{const current=await api.call('/objects/'+editor.object_id,null,'object-state');await openRevision(editor.group_id,current.object,current.object.heads[0]);showEditor(edit(editor.group_id,editor.object_kind,editor.object_id,editor.thread_id,payloadContent(opened.payload),current.object.heads,current.object.tombstoned?'restore':'update'));dirty();}));$('versions').append(li);
- },r.revision_id);
+ },r.revision_id);}
 }
 async function trash(){
  if(!groupSelected)throw Error('GROUP_REQUIRED');await flushIfDirty();const page=await api.call('/groups/'+groupSelected+'/trash',null,'objects-page');$('trash-items').replaceChildren();
@@ -283,6 +289,7 @@ async function sharedProof(id){
  proof={...proof,journal,accounts};const checked=await shared('adopt',proof);roles.set(id,checked.members.find(m=>m.account_id===selected.account_id)?.role);return proof;
 }
 async function accessChange(id){
+ contentTools?.close();portableTools?.close();
  const a=await shared('retry',{group_id:id}),r=a.body.invitation??a.body.acceptance??a.body.policy??a.body.intent??a.body.commit??a.body.history,op=r?.body.operation_id??a.body.operation_id;let result=await sharing.call('/me/group-receipts/'+op+'?family='+(a.family==='epoch'?'commit':a.family),null,'result').catch(e=>{if(e.message!=='NOT_FOUND')throw e;return null;});
  if(result){await shared('complete',{group_id:id,result});return result;}
  if(a.family==='epoch'){
@@ -356,14 +363,21 @@ $('file-refresh').onclick=()=>run(async()=>{
   if(f.state==='UNATTACHED')li.append(button(text('cleanup_file'),async()=>{if(!$('file-delete-confirm').checked)throw Error('CONFIRMATION_REQUIRED');await transport.call('/files/'+f.file_version_id+'/unattached','DELETE');$('file-delete-confirm').checked=false;$('file-state').textContent=text('file_cleanup_pending');}));
   if(!['UNATTACHED','ATTACHED'].includes(f.state)){li.append(button(text('file_restart'),async()=>{if(!$('file-restart-confirm').checked)throw Error('CONFIRMATION_REQUIRED');const result=await transfers.restart($('file-source').files[0],groupSelected,f.draft_id);if(result.draft_id===f.draft_id)$('file-state').textContent=text('file_receipt_recovered');$('file-restart-confirm').checked=false;}));li.append(button(text('cancel_file'),()=>transfers.cancel(f.draft_id)));}$('file-items').append(li);
  }
- let after=null,count=0;do{const page=await transport.call('/groups/'+groupSelected+'/files'+(after?'?after='+after:''));count+=page.items.length;if(count>1000)throw Error('RESOURCE_LIMIT');for(const f of page.items){const li=document.createElement('li');li.textContent=f.file_version_id+' · '+f.ciphertext_bytes+' '+text('encrypted_bytes')+(unattached.has(f.file_version_id)?' · '+text('file_expiry')+' '+new Date(Number(f.unattached_expires_at_ms)).toISOString():'');li.append(button(text('download_file'),async()=>{const record=await transport.call('/files/'+f.file_version_id+'/manifest'),size=Number(record.envelope.header.framing.plaintext_bytes),verified=await transfers.command('observe',{group_id:groupSelected,file_version_id:f.file_version_id,record}),sink=await browserSink(verified.name,size);await transfers.download(groupSelected,f.file_version_id,sink);}));li.append(button(text('attach_file'),()=>attachVerifiedFile(f)));if(unattached.has(f.file_version_id))li.append(button(text('cleanup_file'),async()=>{if(!$('file-delete-confirm').checked)throw Error('CONFIRMATION_REQUIRED');await transport.call('/files/'+f.file_version_id+'/unattached','DELETE');$('file-delete-confirm').checked=false;$('file-state').textContent=text('file_cleanup_pending');}));$('file-items').append(li);}after=page.next_after;}while(after!==null);
+ let after=null,count=0;do{const page=await transport.call('/groups/'+groupSelected+'/files'+(after?'?after='+after:''));count+=page.items.length;if(count>1000)throw Error('RESOURCE_LIMIT');for(const f of page.items){const li=document.createElement('li');li.textContent=f.file_version_id+' · '+f.ciphertext_bytes+' '+text('encrypted_bytes')+(unattached.has(f.file_version_id)?' · '+text('file_expiry')+' '+new Date(Number(f.unattached_expires_at_ms)).toISOString():'');li.append(button(text('preview_file'),()=>contentTools.preview(groupSelected,f.file_version_id)));li.append(button(text('download_file'),async()=>{const record=await transport.call('/files/'+f.file_version_id+'/manifest'),size=Number(record.envelope.header.framing.plaintext_bytes),verified=await transfers.command('observe',{group_id:groupSelected,file_version_id:f.file_version_id,record}),sink=await browserSink(verified.name,size);await transfers.download(groupSelected,f.file_version_id,sink);}));li.append(button(text('attach_file'),()=>attachVerifiedFile(f)));if(unattached.has(f.file_version_id))li.append(button(text('cleanup_file'),async()=>{if(!$('file-delete-confirm').checked)throw Error('CONFIRMATION_REQUIRED');await transport.call('/files/'+f.file_version_id+'/unattached','DELETE');$('file-delete-confirm').checked=false;$('file-state').textContent=text('file_cleanup_pending');}));$('file-items').append(li);}after=page.next_after;}while(after!==null);
 });
 $('file-upload').onclick=()=>run(async()=>{await flushIfDirty();if(!server)await prove();if(!groupSelected)throw Error('GROUP_REQUIRED');await groupStatus(groupSelected);await keyFor(groups.get(groupSelected));const source=$('file-source').files[0];if(!source)throw Error('SOURCE_IDENTITY_REQUIRED');await transfers.upload(source,groupSelected);$('file-source').value='';});
 
-$('file-offline').onclick=()=>run(async()=>{await flushIfDirty();if(!groupSelected)throw Error('GROUP_REQUIRED');$('file-items').replaceChildren();for(const f of await transfers.cache.list(groupSelected)){await transfers.cache.verify(vault,groupSelected,f.file_version_id);const metadata=await transfers.command('observe',{group_id:groupSelected,file_version_id:f.file_version_id,record:f.record}),li=document.createElement('li');li.textContent=text('file_offline_available')+' · '+metadata.name;li.append(button(text('download_file'),async()=>{const sink=await browserSink(metadata.name,Number(f.record.envelope.header.framing.plaintext_bytes));await transfers.cache.export(vault,groupSelected,f.file_version_id,sink);}));li.append(button(text('file_pin'),async()=>{await transfers.cache.pin(vault,groupSelected,f.file_version_id,Number($('file-extra-budget').value),$('file-pin-confirm').checked);$('file-pin-confirm').checked=false;}));$('file-items').append(li);}});
+$('file-offline').onclick=()=>run(async()=>{await flushIfDirty();if(!groupSelected)throw Error('GROUP_REQUIRED');$('file-items').replaceChildren();for(const f of await transfers.cache.list(groupSelected)){await transfers.cache.verify(vault,groupSelected,f.file_version_id);const metadata=await transfers.command('observe',{group_id:groupSelected,file_version_id:f.file_version_id,record:f.record}),li=document.createElement('li');li.textContent=text('file_offline_available')+' · '+metadata.name;li.append(button(text('preview_file'),()=>contentTools.preview(groupSelected,f.file_version_id,f.record)));li.append(button(text('download_file'),async()=>{const sink=await browserSink(metadata.name,Number(f.record.envelope.header.framing.plaintext_bytes));await transfers.cache.export(vault,groupSelected,f.file_version_id,sink);}));li.append(button(text('file_pin'),async()=>{await transfers.cache.pin(vault,groupSelected,f.file_version_id,Number($('file-extra-budget').value),$('file-pin-confirm').checked);$('file-pin-confirm').checked=false;}));$('file-items').append(li);}});
 
 async function attachVerifiedFile(file){
  if(!editor||editor.object_kind!=='entry')throw Error('THREAD_REQUIRED');await flushLocal();const draft=await vault.notes('draft',[editor.draft_id]),payload=draft.payload,context=payload.context;if(context.group_id!==file.group_id)throw Error('ATTACHMENT_CONTEXT_MISMATCH');const record=await transfers.transport.call('/files/'+file.file_version_id+'/manifest'),verified=await transfers.command('observe',{group_id:file.group_id,file_version_id:file.file_version_id,record}),attachment={file_id:record.envelope.header.context.file_id,file_version_id:file.file_version_id,envelope_digest:verified.envelope_digest};const attachments=[...context.attachments.filter(a=>a.file_id!==attachment.file_id),attachment];attachments.sort((a,b)=>{const x=a.file_id+'/'+a.file_version_id,y=b.file_id+'/'+b.file_version_id;return x<y?-1:x>y?1:0;});const content={};for(const key of ['title','markdown','metadata_kind','tags','checklist','summary_entry_id','preferences'])content[key]=payload[key];await vault.notes('save',[{draft_id:editor.draft_id,group_id:context.group_id,object_id:context.object_id,object_kind:'entry',thread_id:context.thread_id,action:context.action,parents:context.parents,archived:context.archived,content,attachments}]);await openDraft(editor.draft_id);
 }
 
-export {browserSink};
+export {browserSink,PreviewClient};
+
+contentTools=contentUI({vault,auth,getGroup:()=>groupSelected,text,run,files:()=>transfers,authorize:async(group,offline)=>{if(offline)return;if(!server)await prove();await groupStatus(group);await keyFor(groups.get(group));},open:async(result)=>{await openGroup(result.group_id);if(result.object_kind==='entry'){await openThread(result.thread_id);await openEntry(result.object_id);}else if(result.object_kind==='thread')await openThread(result.object_id);else if(result.object_kind==='file-manifest')await contentTools.preview(result.group_id,result.revision_id);}});
+
+const manageCache=document.createElement('button');manageCache.id='manage-downloaded-cache';manageCache.textContent=text('manage_cache');document.getElementById('content-tools').append(manageCache);
+manageCache.onclick=()=>run(async()=>{const report=await transfers.cache.reservations(groupSelected),list=document.createElement('ul');for(const entry of report.items){const li=document.createElement('li'),confirmed=document.createElement('input');confirmed.type='checkbox';const label=document.createElement('label');label.append(confirmed,document.createTextNode(text(entry.pinned?'cache_unpin_confirm':'cache_remove_confirm')));li.textContent=entry.file_version_id+' · '+entry.bytes+' '+text('encrypted_bytes')+' · '+text(entry.complete?'cache_complete':'cache_interrupted');li.append(label,button(text('cache_remove'),async()=>{if(!confirmed.checked)throw Error('CONFIRMATION_REQUIRED');await transfers.cache.evict(entry.group_id,entry.file_version_id,{confirm:true,unpin:entry.pinned});li.remove();}));list.append(li);}document.getElementById('search-results').replaceChildren(list);});
+
+portableTools=archiveUI({vault,plaintext:async()=>{if(!editor)throw Error('DRAFT_NOT_FOUND');await flushLocal();return (await vault.notes('draft',[editor.draft_id])).payload;},auth,files:()=>transfers,getGroup:()=>groupSelected,text,run,authorize:async(_group,all=false)=>{await flushIfDirty();if(!server)await prove();if(all){let after=null;do{const page=await api.call('/groups'+(after?'?after='+after:''),null,'groups-page');for(const g of page.groups){await groupStatus(g.group_id);await keyFor(groups.get(g.group_id));}after=page.next;}while(after);}else if(groupSelected){await groupStatus(groupSelected);await keyFor(groups.get(groupSelected));}}});

@@ -38,8 +38,9 @@ export function pageReceipt(page){decode('snapshot-page',wire(page));return {ind
 export function catalogCommitment(groups){const parts=[Buffer.from('AnyNote/P11/catalog\0'),u32(groups.length)];for(const g of groups){const b=canonicalBytes(wire(g));parts.push(u32(b.length),b);}return hash(Buffer.concat(parts));}
 export const itemOrder=item=>[item.group_id,item.object_kind,item.object_id,item.revision_id].join('/');
 export function checkedBundle(item,bundle){
- decode('snapshot-item',wire(item));const b=decode('bundle',wire(bundle)),c=b.envelope.header.context;
+ decode('snapshot-item',wire(item));const b=decode(item.payload_status==='pruned'?'export-pruned-record':'bundle',wire(bundle)),c=b.envelope.header.context;
  ensure(c.group_id===item.group_id&&c.object_id===item.object_id&&c.revision_id===item.revision_id&&c.object_kind===item.object_kind&&digest('envelope',wire(b.envelope))===item.envelope_digest,'CONTEXT_MISMATCH');
+ if(item.payload_status==='pruned'){ensure(b.payload_status==='pruned'&&b.record_kind===item.object_kind,'CONTEXT_MISMATCH');return b;}
  const bytes=un64(b.ciphertext);ensure(String(bytes.length)===b.envelope.header.ciphertext_bytes&&hash(bytes)===b.envelope.header.ciphertext_digest&&digest('wrap',wire(b.wrap))===b.envelope.header.key_wrap_digest,'CIPHERTEXT_MISMATCH');
  ensure((c.action==='soft-delete')===(item.payload_status==='tombstone')&&item.payload_status!=='pruned','CONTEXT_MISMATCH');return b;
 }

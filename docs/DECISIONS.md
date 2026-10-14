@@ -927,3 +927,97 @@ staged payload/location atomically. Changed group/object/revision/digest/kind,
 ancestry or author context remains a protective failure; no rollback/authority
 predicate or historical verification is waived. Portable/native interleaving and
 restart regressions exercise the distinction without fabricating hardware results.
+
+## ADR-023 — derived content custody and reference-safe payload compaction
+
+P13 introduces an additive device-signed protected-content profile. Search words,
+source names and content jobs stay under L with exact service/account/device/
+profile/root/record/part binding. Generic record writes and eviction cannot address
+this namespace. Native coordinators accept opaque revision IDs and open source
+payloads through existing certified-content authority; renderer-supplied plaintext
+never establishes a verified index. Missing, stale, unavailable and unanchored
+coverage remain explicit. Rebuild retires only derived search pages.
+
+Note retention may release ciphertext/wrap bytes after strong references and time
+policy permit it. Keep original signed envelopes and immutable ancestry forever.
+P13 changes the SQL update guards only for a one-way retained-to-pruned transition;
+no metadata rewrite or row deletion is permitted. Releasing note attachment refs
+requires successful containing-payload compaction in the same GC transaction.
+Quota movements and the final counter commit share that transaction. Physical DB
+page reclamation is separate from logical ciphertext accounting. Full resync can
+carry the frozen compact pruned record without fabricating a decryptable payload.
+
+An export captures both note and file references under the existing SQL/GC pin
+boundary before exposure. Every read rechecks current account/device/session/group
+access. Original captured descriptor bytes remain immutable; mutable lease expiry
+is separate and capped at 24 hours. Only new validated requested record/chunk work
+permits renewal, never an empty heartbeat or repeated frame; this is explicitly
+not evidence of completed network transfer or durable client storage.
+
+Use maintained standard age streams and preserve frozen P02 USTAR/header/footer/
+inventory/signature/original ciphertext bytes. A new export gets an independent
+X25519 identity. Keys are selected DEKs inside the encrypted stream, not root,
+device, session or group private keys. Offline recovery first validates outer end,
+footer/inventory/signatures/authority, then all content AEAD/full-file digests,
+before exposing recovered data. Explicit plaintext output is a separately selected
+sink. Intermediate history-chain packaging and full product export/import remain
+pending implementation and acceptance; these component decisions do not complete
+P13 or the independent security/physical gates.
+
+P13 public evidence adds the explicitly typed `p13-public-proof-v1` compact
+identity layout. It carries the existing P10 complete public journals, including
+intermediate signed history checkpoints, whose omission would prevent replaying
+later epochs. Original P02 ciphertext, signed frame, footer/inventory, standard
+age and USTAR/path bytes remain unchanged. The new reader dispatches by a closed
+evidence profile and validates the existing journal/root/group predicates. Older
+readers refuse this unsupported layout; they are not treated as compatible
+export/import clients. The legacy frozen evidence remains independently readable.
+
+## ADR-024: P13 recovery jobs, derived previews and retention boundary
+
+Standard import validates the entire immutable archive before any live mutation.
+Default destination is a new private group; existing current audience requires
+explicit confirmation. Protected journals bind stable import IDs, archive hashes
+and fresh immutable note/file attempts. Published recovered files receive durable
+entry references. Pause/lost ACK retains work; only completed job metadata can be
+explicitly retired, preserving publication and transfer receipts.
+
+A thumbnail is a distinct quota-charged encrypted file, and a separate current
+writer signature binds its manifest digest to the exact source. The custody job
+permits only its prepared PNG version. The shared collector boundary prevents
+link/GC races and keeps referenced derived content alive. Chains/cycles are denied.
+
+Retention reports why bytes remain pinned, and only the owner explicitly applies
+policy. Expired trash compacts only when every head is a tombstone; compact signed
+ancestry survives indefinitely. Existing file ancestry/strong references override
+the three-version soft target. Database pages and production reconciliation remain
+separate from released application content bytes.
+
+Export leases reauthorize the captured groups for status/renewal and every source
+resource. New server-observed bytes permit bounded renewal; a repeats-only job
+cannot extend it. Maximum expiry rounds downward to stay within 24 hours, and
+protected custody enforces its own deadline. The UI displays a conservative
+space/time estimate and masks stale completion/audience responses after scope
+change. Windows CI independently decrypts the actual 1 GB JS archive with standard
+Rust age; Linux uses independently pinned Go age. This is software execution,
+not WebView2/iPhone/Hello physical acceptance or independent security review.
+
+## P13 export history pin consistency
+
+A protected proof can retain an independently trusted older history pin while
+its full signed journal has advanced to a newly endorsed history checkpoint.
+Whole-account browser export exposed a mismatch: the kit contained the verified
+current head but the archived proof still named the older pin. Offline recovery
+correctly rejected INDEPENDENT_HISTORY_REQUIRED. Export now first replays the
+complete journal against the protected existing proof, then puts the resulting
+verified history head into the cloned export proof and independent kit together.
+It never changes protected live pins or accepts an unsigned server-provided head.
+The real sandboxed whole-account UI export, clean offline reader and fresh
+private import pass while every original pin/signature/history denial remains.
+
+Locked UI masking performs no custody RPC: Worker disposal already cancels
+protected work. Sending portable.cancel from the lock callback could recreate
+a locked Worker whose typed refusal locked again, preventing subsequent unlock.
+Scope/access changes while unlocked still cancel normally, and stale export
+finally blocks cannot cancel a later generation. A host lifecycle regression
+and the original real P12 lock/resume/1 GB scenario cover this behavior.

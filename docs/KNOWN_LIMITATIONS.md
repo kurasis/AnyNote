@@ -489,3 +489,16 @@ per-transfer mobile memory bound. Buffers are chunk-bounded in the implementatio
 these aggregate results require process/heap attribution and P15 optimization and
 real-device measurement before advertising the mobile memory target. Native
 transfer-phase observations are independently scoped in the platform receipts.
+
+P13 software acceptance is retained in [evidence/p13](evidence/p13/README.md).
+Documented resource/group/catalog/metadata bounds and 24-hour export leases may
+require a smaller selection. Source changes require explicit index rebuild.
+File ancestry is retained conservatively rather than forcing the three-version
+soft target. Compaction releases application bytes, not DB pages/backups. Import
+copies current tips with fresh authorship; full old history stays provenance in
+the original archive. PWA import is bounded at 1.1 GB, and arbitrary-duration
+resume of an age stream is not supported. Whole-account desktop output is a
+bounded stream; a complete packaged native Windows host remains P14.
+Hosted browser/native and measured process RSS are not physical iPhone Files,
+full WebView2/Hello/TPM or mobile heap proof. G1/U11/U12 and qualified G2/G3 remain
+OPEN/NOT_RUN. Setup draft, Publish and independent restoration are separate.

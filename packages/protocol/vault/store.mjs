@@ -1,4 +1,5 @@
 import {pagedFrame} from '../sync/paged-local.mjs';
+import {contentFrame} from '../content/local.mjs';
 import {noteFrame} from '../notes/local.mjs';
 import {localFrame} from '../devices/local.mjs';
 import canonicalize from 'canonicalize';
@@ -13,7 +14,7 @@ export function scope(value){
   ensure(value&&Object.keys(value).sort().join(',')==='account_id,device_id,profile_id,service_id'&&Object.values(value).every(id),'INVALID_PROFILE');return structuredClone(value);
 }
 export const name=s=>'anynote-vault-v1-'+[s.service_id,s.account_id,s.device_id,s.profile_id].join('-');
-export function record(s,frame){const e=frame?.contract==='p11-local-v1'?pagedFrame(frame):frame?.contract==='p09-local-v1'?noteFrame(frame):frame?.contract==='p08-local-v1'?localFrame(frame):decode('local-envelope',wire(frame));for(const k of Object.keys(s))ensure(e.context[k]===s[k],'LOCAL_CONTEXT_MISMATCH');return e;}
+export function record(s,frame){const e=frame?.contract==='p13-content-v1'?contentFrame(frame):frame?.contract==='p11-local-v1'?pagedFrame(frame):frame?.contract==='p09-local-v1'?noteFrame(frame):frame?.contract==='p08-local-v1'?localFrame(frame):decode('local-envelope',wire(frame));for(const k of Object.keys(s))ensure(e.context[k]===s[k],'LOCAL_CONTEXT_MISMATCH');return e;}
 const request=r=>new Promise((resolve,reject)=>{r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(Object.assign(new Error('STORAGE_FAILURE'),{code:'STORAGE_FAILURE'}));});
 export class IndexedVault {
   constructor(s){this.scope=scope(s);this.db=null;}
@@ -41,7 +42,7 @@ export class IndexedVault {
 }
 export function metadata(v,s){
   ensure(v&&v.schema===1&&same(v.scope,s)&&Number.isSafeInteger(v.epoch)&&v.epoch>=1&&Number.isSafeInteger(v.revision)&&v.revision>=1,'INTEGRITY_FAILURE');
-  ensure(Object.keys(v).filter(k=>k!=='file_profile').sort().join(',')==='epoch,lease,manifest,pins,revision,rotation,schema,scope,vault_id,wrappers'&&(v.file_profile===undefined||v.file_profile==='p12-files-v1'),'INTEGRITY_FAILURE');
+  ensure(Object.keys(v).filter(k=>!['file_profile','content_profile'].includes(k)).sort().join(',')==='epoch,lease,manifest,pins,revision,rotation,schema,scope,vault_id,wrappers'&&(v.file_profile===undefined||v.file_profile==='p12-files-v1')&&(v.content_profile===undefined||v.content_profile==='p13-content-v1'),'INTEGRITY_FAILURE');
   ensure(id(v.vault_id),'INTEGRITY_FAILURE');
   ensure(Array.isArray(v.wrappers)&&v.wrappers.length>=1&&v.wrappers.length<=20,'INTEGRITY_FAILURE');
   for(const w of v.wrappers){const kind=w.context?.method==='argon2id13'?'phrase-wrapper':'prf-wrapper';decode(kind,wire(w));for(const k of Object.keys(s))ensure(w.context[k]===s[k],'LOCAL_CONTEXT_MISMATCH');}

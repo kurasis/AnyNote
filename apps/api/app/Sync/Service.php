@@ -131,11 +131,11 @@ final class Service
         DB::table('snapshot_sessions')->where('id', $lease->id)->update(['state' => $state]);
     }
 
-    private function lease(Request $r, string $id): array
+    private function lease(Request $r, string $id, string $purpose = 'resync'): array
     {
         $a = $this->notes->actor($r);
         $l = DB::table('snapshot_sessions')->where('id', $id)->where('account_id', $a->accountId)->where('device_id', $a->deviceId)->lockForUpdate()->first();
-        D::require($l !== null && $l->session_id === $a->sessionId && $l->root_fingerprint === $a->rootFingerprint, 'NOT_FOUND');
+        D::require($l !== null && $l->purpose === $purpose && $l->session_id === $a->sessionId && $l->root_fingerprint === $a->rootFingerprint, 'NOT_FOUND');
         D::require($l->state === 'active' && $l->expires_at > now()->format('Y-m-d H:i:s'), 'SYNC_CURSOR_EXPIRED');
         $c = $this->counter();
         D::require($l->transport_generation === $c->generation, 'SYNC_CURSOR_EXPIRED');
@@ -173,24 +173,26 @@ final class Service
         }, 3);
     }
 
-    public function start(Request $r, stdClass $body): array
+    public function start(Request $r, stdClass $body, string $purpose = 'resync', ?stdClass $selection = null): array
     {
-        return DB::transaction(function () use ($r, $body) {
+        D::require(in_array($purpose, ['resync', 'export'], true), 'INVALID_REQUEST');
+
+        return DB::transaction(function () use ($r, $body, $purpose, $selection) {
             $a = $this->notes->actor($r);
             // Account/security locks precede the collector boundary; no counter lock.
             DB::table('gc_coordination')->where('singleton', 1)->lockForUpdate()->first();
-            $request = P::digest('p11-sync', 'snapshot-request', $body);
+            $request = $purpose === 'resync' ? P::digest('p11-sync', 'snapshot-request', $body) : P::b64(hash('sha256', "AnyNote/P13/export-request\0".P::canonical($selection), true));
             $old = DB::table('snapshot_sessions')->where('account_id', $a->accountId)->where('device_id', $a->deviceId)->where('operation_id', $body->operation_id)->lockForUpdate()->first();
             if ($old) {
-                D::require($old->request_digest === $request, 'IDEMPOTENCY_MISMATCH');
-                [$actor,$lease] = $this->lease($r, $old->id);
+                D::require($old->request_digest === $request && $old->purpose === $purpose, 'IDEMPOTENCY_MISMATCH');
+                [$actor,$lease] = $this->lease($r, $old->id, $purpose);
 
                 return $this->result($actor, $lease);
             }
             foreach (DB::table('snapshot_sessions')->where('account_id', $a->accountId)->where('state', 'active')->where('expires_at', '<=', now())->lockForUpdate()->get() as $expired) {
                 $this->release($expired, 'expired');
             }
-            D::require(DB::table('snapshot_sessions')->where('account_id', $a->accountId)->where('state', 'active')->count() < 8, 'RESOURCE_LIMIT');
+            D::require(DB::table('snapshot_sessions')->where('account_id', $a->accountId)->where('state', 'active')->where('purpose', $purpose)->count() < ($purpose === 'export' ? 1 : 8), 'RESOURCE_LIMIT');
             $counter = $this->counter();
             $id = P::b64(random_bytes(16));
             $created = (int) floor(microtime(true) * 1000);
@@ -199,7 +201,11 @@ final class Service
             if ($body->group_id !== null) {
                 $q->where('id', $body->group_id);
             }
+            if ($purpose === 'export' && $selection->group_ids !== []) {
+                $q->whereIn('id', $selection->group_ids);
+            }
             $groups = $q->limit(1001)->get();
+            D::require($purpose !== 'export' || $selection->group_ids === [] || $groups->count() === count($selection->group_ids), 'NOT_FOUND');
             D::require($groups->count() <= 1000, 'RESOURCE_LIMIT');
             $catalog = [];
             $groupIds = [];
@@ -211,7 +217,7 @@ final class Service
             if ($body->group_id !== null) {
                 D::require(count($groupIds) === 1, 'NOT_FOUND');
             }
-            $rows = DB::table('object_revisions as r')->join('objects as o', 'r.object_id', '=', 'o.id')->join('object_key_wraps as w', 'r.revision_id', '=', 'w.revision_id')->whereIn('r.group_id', $groupIds)->orderBy('r.group_id')->orderByRaw('CAST(o.kind AS CHAR)')->orderBy('r.object_id')->orderBy('r.revision_id')->limit(50001)->get(['r.group_id', 'o.id', 'r.object_id', 'r.revision_id', 'r.envelope_digest', 'r.signed_envelope', 'r.ciphertext_bytes', 'w.wrap_record', 'o.kind', 'o.thread_id', 'o.archived', 'o.tombstoned', 'o.created_sequence', 'o.updated_sequence', DB::raw('OCTET_LENGTH(r.ciphertext) AS stored_bytes'), DB::raw('SHA2(r.ciphertext,256) AS stored_hash')]);
+            $rows = DB::table('object_revisions as r')->join('objects as o', 'r.object_id', '=', 'o.id')->join('object_key_wraps as w', 'r.revision_id', '=', 'w.revision_id')->whereIn('r.group_id', $groupIds)->orderBy('r.group_id')->orderByRaw('CAST(o.kind AS CHAR)')->orderBy('r.object_id')->orderBy('r.revision_id')->limit(50001)->get(['r.group_id', 'o.id', 'r.object_id', 'r.revision_id', 'r.envelope_digest', 'r.signed_envelope', 'r.payload_status', 'r.ciphertext_bytes', 'w.wrap_record', 'o.kind', 'o.thread_id', 'o.archived', 'o.tombstoned', 'o.created_sequence', 'o.updated_sequence', DB::raw('OCTET_LENGTH(r.ciphertext) AS stored_bytes'), DB::raw('SHA2(r.ciphertext,256) AS stored_hash')]);
             D::require($rows->count() <= 50000, 'RESOURCE_LIMIT');
             $expected = DB::table('object_revisions')->whereIn('group_id', $groupIds)->count();
             D::require($rows->count() === $expected, 'INVALID_CHUNK');
@@ -220,8 +226,10 @@ final class Service
             foreach ($rows as $row) {
                 $envelope = json_decode($row->signed_envelope);
                 $context = $envelope->header->context;
-                D::require((string) $row->stored_bytes === (string) $row->ciphertext_bytes && hash_equals(strtolower(bin2hex(P::binary($envelope->header->ciphertext_digest))), $row->stored_hash), 'INVALID_CHUNK');
-                $item = (object) ['group_id' => $row->group_id, 'object_kind' => $row->kind, 'object_id' => $row->object_id, 'revision_id' => $row->revision_id, 'envelope_digest' => $row->envelope_digest, 'payload_status' => $context->action === 'soft-delete' ? 'tombstone' : 'retained'];
+                if ($row->payload_status !== 'pruned') {
+                    D::require((string) $row->stored_bytes === (string) $row->ciphertext_bytes && hash_equals(strtolower(bin2hex(P::binary($envelope->header->ciphertext_digest))), $row->stored_hash), 'INVALID_CHUNK');
+                }
+                $item = (object) ['group_id' => $row->group_id, 'object_kind' => $row->kind, 'object_id' => $row->object_id, 'revision_id' => $row->revision_id, 'envelope_digest' => $row->envelope_digest, 'payload_status' => $row->payload_status === 'pruned' ? 'pruned' : ($context->action === 'soft-delete' ? 'tombstone' : 'retained')];
                 $ref = $this->notes->reference($row);
                 $items[] = $item;
                 $records[] = [$row, $ref];
@@ -239,8 +247,8 @@ final class Service
             if ($part !== []) {
                 $pages[] = $make($part, count($pages));
             }
-            $descriptor = (object) [...$this->frozen('snapshot-descriptor'), 'snapshot_id' => $id, 'account_id' => $a->accountId, 'device_id' => $a->deviceId, 'snapshot_purpose' => 'resync', 'watermark' => ['generation' => $counter->generation, 'sequence' => (string) $counter->sequence], 'created_at' => (string) $created, 'expires_at' => (string) $expires, 'page_count' => (string) count($pages), 'item_count' => (string) count($items), 'inventory_digest' => $this->inventoryHash($pages, count($items))];
-            DB::table('snapshot_sessions')->insert(['id' => $id, 'account_id' => $a->accountId, 'device_id' => $a->deviceId, 'purpose' => 'resync', 'transport_generation' => $counter->generation, 'watermark' => $counter->sequence, 'created_at' => gmdate('Y-m-d H:i:s', (int) floor($created / 1000)), 'expires_at' => gmdate('Y-m-d H:i:s', (int) ceil($expires / 1000)), 'state' => 'active', 'session_id' => $a->sessionId, 'root_fingerprint' => $a->rootFingerprint, 'operation_id' => $body->operation_id, 'scope_group_id' => $body->group_id, 'request_digest' => $request, 'descriptor' => P::canonical($descriptor), 'catalog_count' => count($catalog), 'catalog_digest' => $this->catalogHash($catalog)]);
+            $descriptor = (object) [...$this->frozen('snapshot-descriptor'), 'snapshot_id' => $id, 'account_id' => $a->accountId, 'device_id' => $a->deviceId, 'snapshot_purpose' => $purpose, 'watermark' => ['generation' => $counter->generation, 'sequence' => (string) $counter->sequence], 'created_at' => (string) $created, 'expires_at' => (string) $expires, 'page_count' => (string) count($pages), 'item_count' => (string) count($items), 'inventory_digest' => $this->inventoryHash($pages, count($items))];
+            DB::table('snapshot_sessions')->insert(['id' => $id, 'account_id' => $a->accountId, 'device_id' => $a->deviceId, 'purpose' => $purpose, 'maximum_expires_at' => $purpose === 'export' ? gmdate('Y-m-d H:i:s', (int) floor(($created + 86400000) / 1000)) : null, 'transport_generation' => $counter->generation, 'watermark' => $counter->sequence, 'created_at' => gmdate('Y-m-d H:i:s', (int) floor($created / 1000)), 'expires_at' => gmdate('Y-m-d H:i:s', (int) ceil($expires / 1000)), 'state' => 'active', 'session_id' => $a->sessionId, 'root_fingerprint' => $a->rootFingerprint, 'operation_id' => $body->operation_id, 'scope_group_id' => $body->group_id, 'request_digest' => $request, 'descriptor' => P::canonical($descriptor), 'catalog_count' => count($catalog), 'catalog_digest' => $this->catalogHash($catalog)]);
             foreach ($catalog as $n => $g) {
                 DB::table('snapshot_catalog')->insert(['snapshot_id' => $id, 'group_id' => $g['group_id'], 'item_index' => $n, 'status_record' => P::canonical((object) $g)]);
             }
@@ -315,7 +323,13 @@ final class Service
             $v = json_decode($stored->inventory_record);
             $this->notes->group($a, $stored->group_id);
             D::require(DB::table('reference_pins')->where('snapshot_id', $id)->where('revision_id', $revision)->exists(), 'INVALID_CHUNK');
-            $result = $this->notes->bundle($r, $v->item->object_id, $revision);
+            if ($v->item->payload_status === 'pruned') {
+                $row = DB::table('object_revisions')->where('revision_id', $revision)->where('payload_status', 'pruned')->first();
+                D::require($row !== null, 'INVALID_CHUNK');
+                $result = ['bundle' => ['payload_status' => 'pruned', 'record_kind' => $v->item->object_kind, 'envelope' => json_decode($row->signed_envelope)]];
+            } else {
+                $result = $this->notes->bundle($r, $v->item->object_id, $revision);
+            }
             D::require(P::digest('p02-v1', 'envelope', $result['bundle']['envelope']) === $v->item->envelope_digest, 'INVALID_CHUNK');
 
             return ['version' => 1, 'snapshot_id' => $id, 'item' => $v->item, 'bundle' => $result['bundle'], 'reference' => $v->reference];
@@ -336,12 +350,12 @@ final class Service
         }, 3);
     }
 
-    public function cancel(Request $r, string $id): array
+    public function cancel(Request $r, string $id, string $purpose = 'resync'): array
     {
-        return DB::transaction(function () use ($r, $id) {
+        return DB::transaction(function () use ($r, $id, $purpose) {
             $a = $this->notes->actor($r);
             DB::table('gc_coordination')->where('singleton', 1)->lockForUpdate()->first();
-            $l = DB::table('snapshot_sessions')->where('id', $id)->where('account_id', $a->accountId)->where('device_id', $a->deviceId)->where('session_id', $a->sessionId)->lockForUpdate()->first();
+            $l = DB::table('snapshot_sessions')->where('id', $id)->where('account_id', $a->accountId)->where('device_id', $a->deviceId)->where('session_id', $a->sessionId)->where('purpose', $purpose)->lockForUpdate()->first();
             D::require($l !== null && $l->root_fingerprint === $a->rootFingerprint, 'NOT_FOUND');
             $this->release($l, 'cancelled');
 

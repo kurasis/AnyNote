@@ -4,6 +4,7 @@ use App\Auth\Maintenance;
 use App\Auth\Registration;
 use App\Backend\AccountAdministration;
 use App\Backend\QuotaLedger;
+use App\Content\Retainer;
 use App\Files\Service;
 use App\Jobs\MaintenanceHeartbeat;
 use Illuminate\Support\Facades\Artisan;
@@ -39,3 +40,7 @@ Artisan::command('files:collect', function (Service $files) {
 Artisan::command('files:reconcile {--correct}', function (QuotaLedger $ledger) {
     $this->line(json_encode($ledger->reconcile((bool) $this->option('correct')), JSON_THROW_ON_ERROR));
 })->purpose('Report quota journal differences; correction requires an explicit operator flag');
+
+Artisan::command('content:retain {group} {--after=} {--limit=100} {--apply}', function (Retainer $retainer) {
+    $this->line(json_encode($retainer->run($this->argument('group'), (int) $this->option('limit'), (bool) $this->option('apply'), $this->option('after') ?: null), JSON_THROW_ON_ERROR));
+})->purpose('Report reference-safe retention; explicit apply compacts eligible payloads while preserving signed ancestry');

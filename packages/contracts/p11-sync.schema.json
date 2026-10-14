@@ -279,7 +279,14 @@
           "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/snapshot-item"
         },
         "bundle": {
-          "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/bundle"
+          "oneOf": [
+            {
+              "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/bundle"
+            },
+            {
+              "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/export-pruned-record"
+            }
+          ]
         },
         "reference": {
           "$ref": "urn:anynote:p09:notes:v1#/$defs/object-ref"
@@ -304,7 +311,14 @@
           "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/snapshot-item"
         },
         "bundle": {
-          "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/bundle"
+          "oneOf": [
+            {
+              "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/bundle"
+            },
+            {
+              "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/export-pruned-record"
+            }
+          ]
         },
         "reference": {
           "$ref": "urn:anynote:p09:notes:v1#/$defs/object-ref"

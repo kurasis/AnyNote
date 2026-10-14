@@ -10,7 +10,7 @@ export class FilesClient {
  #csrf;
  constructor(auth){ensure(auth instanceof AuthClient,'AUTH_CLIENT_REQUIRED');this.auth=auth;}
  async call(path,method='GET',body,signal){
-  ensure(/^\/(?:groups\/[A-Za-z0-9_-]{22}\/(?:uploads|files)|uploads\/[A-Za-z0-9_-]{22}(?:\/(?:commit|parts\/(?:0|[1-9][0-9]{0,2})))?|files\/[A-Za-z0-9_-]{22}\/(?:manifest|chunks\/(?:0|[1-9][0-9]{0,2})|unattached)|me\/(?:storage|unattached-files)|snapshots\/[A-Za-z0-9_-]{22}\/files)(?:\?(?:after=[A-Za-z0-9_-]{22}|start=(?:0|[1-9][0-9]{0,3})))?$/.test(path),'INVALID_FILE_PATH');
+  ensure(/^\/(?:groups\/[A-Za-z0-9_-]{22}\/(?:uploads|files)|uploads\/[A-Za-z0-9_-]{22}(?:\/(?:commit|parts\/(?:0|[1-9][0-9]{0,2})))?|files\/[A-Za-z0-9_-]{22}\/(?:manifest|thumbnail|chunks\/(?:0|[1-9][0-9]{0,2})|unattached)|me\/(?:storage|unattached-files)|snapshots\/[A-Za-z0-9_-]{22}\/files)(?:\?(?:after=[A-Za-z0-9_-]{22}|start=(?:0|[1-9][0-9]{0,3})))?$/.test(path),'INVALID_FILE_PATH');
   const write=method!=='GET',binary=method==='PUT';if(write)this.#csrf??=(await this.auth.csrf()).csrf_token;
   if(binary)ensure(body instanceof Uint8Array&&body.length>=16&&body.length<=CHUNK+16,'RESOURCE_LIMIT');else if(body!==undefined)ensure(JSON.stringify(body).length<=262144,'RESOURCE_LIMIT');
   const response=await this.auth.fetcher(this.auth.issuer+'/api/v1'+path,{method,credentials:'include',cache:'no-store',redirect:'error',signal,headers:{Accept:'application/json',...(write?{'X-CSRF-TOKEN':this.#csrf}:{}),...(body!==undefined?{'Content-Type':binary?'application/octet-stream':'application/json'}:{})},...(body!==undefined?{body:binary?body:JSON.stringify(body)}:{})});

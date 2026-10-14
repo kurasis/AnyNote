@@ -4658,6 +4658,709 @@
           }
         }
       }
+    },
+    "/api/v1/exports": {
+      "post": {
+        "operationId": "post_exports",
+        "summary": "Bounded captured export with current account/device/group authorization",
+        "x-implementation-phase": "P13",
+        "x-implemented": true,
+        "description": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+        "parameters": [],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P13ContentExportResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P13ContentExportRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exports/{id}": {
+      "get": {
+        "operationId": "get_exports_id",
+        "summary": "Bounded captured export with current account/device/group authorization",
+        "x-implementation-phase": "P13",
+        "x-implemented": true,
+        "description": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P13ContentExportResult"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete_exports_id",
+        "summary": "Bounded captured export with current account/device/group authorization",
+        "x-implementation-phase": "P13",
+        "x-implemented": true,
+        "description": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P13ContentCancelResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exports/{id}/renew": {
+      "post": {
+        "operationId": "post_exports_id_renew",
+        "summary": "Bounded captured export with current account/device/group authorization",
+        "x-implementation-phase": "P13",
+        "x-implemented": true,
+        "description": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P13ContentExportResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P13ContentRenewRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exports/{id}/catalog": {
+      "get": {
+        "operationId": "get_exports_id_catalog",
+        "summary": "Bounded captured export with current account/device/group authorization",
+        "x-implementation-phase": "P13",
+        "x-implemented": true,
+        "description": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P13ContentCatalogPage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exports/{id}/pages": {
+      "get": {
+        "operationId": "get_exports_id_pages",
+        "summary": "Bounded captured export with current account/device/group authorization",
+        "x-implementation-phase": "P13",
+        "x-implemented": true,
+        "description": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P13ContentExportPageResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exports/{id}/records/{revision}": {
+      "get": {
+        "operationId": "get_exports_id_records_revision",
+        "summary": "Bounded captured export with current account/device/group authorization",
+        "x-implementation-phase": "P13",
+        "x-implemented": true,
+        "description": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          },
+          {
+            "name": "revision",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P13ContentExportRecordResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exports/{id}/files/{revision}/chunks/{index}": {
+      "get": {
+        "operationId": "get_exports_id_files_revision_chunks_index",
+        "summary": "Bounded captured export with current account/device/group authorization",
+        "x-implementation-phase": "P13",
+        "x-implemented": true,
+        "description": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          },
+          {
+            "name": "revision",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          },
+          {
+            "name": "index",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$",
+              "maxLength": 3,
+              "format": "decimal-119"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Authorized immutable ciphertext chunk; clients authenticate the full AEAD frame",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary",
+                  "x-maximum-observed-bytes": 8388624
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exports/{id}/headers": {
+      "get": {
+        "operationId": "get_exports_id_headers",
+        "summary": "Bounded captured public envelopes and original cipher record lengths",
+        "x-implementation-phase": "P13",
+        "x-implemented": true,
+        "description": "Current export owner/device/session and current group read access; captured pins never bypass revocation.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P13ContentExportHeaderPage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/files/{revision}/thumbnail": {
+      "post": {
+        "operationId": "post_files_revision_thumbnail",
+        "summary": "Bind a separately encrypted bounded thumbnail to its signed source",
+        "x-implementation-phase": "P13",
+        "x-implemented": true,
+        "description": "Current certified source-group writer; exact source and derived manifests in the same group/current epoch.",
+        "parameters": [
+          {
+            "name": "revision",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P13ContentThumbnailResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P13ContentThumbnailLink"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{id}/retention": {
+      "get": {
+        "operationId": "get_groups_id_retention",
+        "summary": "Report or explicitly apply reference-safe note retention and owner pins",
+        "x-implementation-phase": "P13",
+        "x-implemented": true,
+        "description": "Current group reader for report; current certified owner for explicit compaction or pins. Pins and collector share the transaction boundary.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P13ContentRetentionResult"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_groups_id_retention",
+        "summary": "Report or explicitly apply reference-safe note retention and owner pins",
+        "x-implementation-phase": "P13",
+        "x-implemented": true,
+        "description": "Current group reader for report; current certified owner for explicit compaction or pins. Pins and collector share the transaction boundary.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P13ContentRetentionResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P13ContentRetentionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/revisions/{revision}/retention-pin": {
+      "post": {
+        "operationId": "post_revisions_revision_retention_pin",
+        "summary": "Report or explicitly apply reference-safe note retention and owner pins",
+        "x-implementation-phase": "P13",
+        "x-implemented": true,
+        "description": "Current group reader for report; current certified owner for explicit compaction or pins. Pins and collector share the transaction boundary.",
+        "parameters": [
+          {
+            "name": "revision",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P13ContentRetentionPinResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P13ContentRetentionPinRequest"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -13783,6 +14486,12 @@
                 "type": "null"
               }
             ]
+          },
+          "import_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "archive_sha256": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
           }
         },
         "required": [
@@ -13830,6 +14539,15 @@
           },
           "copy_audience_digest": {
             "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "import_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "source_revision_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "archive_sha256": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
           }
         },
         "required": [
@@ -13867,6 +14585,15 @@
               "ACCESS_LOST",
               "COMMITTED"
             ]
+          },
+          "import_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "source_revision_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "archive_sha256": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
           }
         },
         "required": [
@@ -15063,7 +15790,14 @@
             "$ref": "#/components/schemas/P02V1SnapshotItem"
           },
           "bundle": {
-            "$ref": "#/components/schemas/P02V1Bundle"
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/P02V1Bundle"
+              },
+              {
+                "$ref": "#/components/schemas/P02V1ExportPrunedRecord"
+              }
+            ]
           },
           "reference": {
             "$ref": "#/components/schemas/P09NotesObjectRef"
@@ -15088,7 +15822,14 @@
             "$ref": "#/components/schemas/P02V1SnapshotItem"
           },
           "bundle": {
-            "$ref": "#/components/schemas/P02V1Bundle"
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/P02V1Bundle"
+              },
+              {
+                "$ref": "#/components/schemas/P02V1ExportPrunedRecord"
+              }
+            ]
           },
           "reference": {
             "$ref": "#/components/schemas/P09NotesObjectRef"
@@ -15899,6 +16640,15 @@
           },
           "local_draft_id": {
             "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "import_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "source_revision_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "archive_sha256": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
           }
         },
         "required": [
@@ -16176,6 +16926,15 @@
           },
           "local_draft_id": {
             "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "import_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "source_revision_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "archive_sha256": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
           }
         },
         "required": [
@@ -16465,6 +17224,568 @@
           "start",
           "items",
           "next"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentExportRequest": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "operation_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "group_ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            },
+            "maxItems": 1000,
+            "uniqueItems": true
+          },
+          "include_history": {
+            "type": "boolean"
+          },
+          "include_trash": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "version",
+          "operation_id",
+          "group_ids",
+          "include_history",
+          "include_trash"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentRenewRequest": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentExportResult": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "scope": {
+            "$ref": "#/components/schemas/P11SyncScope"
+          },
+          "descriptor": {
+            "$ref": "#/components/schemas/P02V1SnapshotDescriptor"
+          },
+          "catalog_count": {
+            "$ref": "#/components/schemas/P02FileC1Counter"
+          },
+          "catalog_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "lease_expires_at_ms": {
+            "$ref": "#/components/schemas/P02FileC1Counter"
+          },
+          "maximum_expires_at_ms": {
+            "$ref": "#/components/schemas/P02FileC1Counter"
+          },
+          "served_bytes": {
+            "$ref": "#/components/schemas/P02FileC1Counter"
+          },
+          "selection": {
+            "type": "object",
+            "properties": {
+              "version": {
+                "const": 1
+              },
+              "operation_id": {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              "group_ids": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/P02FileC1Id"
+                },
+                "maxItems": 1000,
+                "uniqueItems": true
+              },
+              "include_history": {
+                "type": "boolean"
+              },
+              "include_trash": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "version",
+              "operation_id",
+              "group_ids",
+              "include_history",
+              "include_trash"
+            ],
+            "additionalProperties": false
+          },
+          "estimated_archive_bytes": {
+            "$ref": "#/components/schemas/P02FileC1Counter"
+          }
+        },
+        "required": [
+          "version",
+          "scope",
+          "descriptor",
+          "catalog_count",
+          "catalog_digest",
+          "lease_expires_at_ms",
+          "maximum_expires_at_ms",
+          "served_bytes",
+          "selection",
+          "estimated_archive_bytes"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentCatalogPage": {
+        "$ref": "#/components/schemas/P11SyncCatalogPage"
+      },
+      "P13ContentCancelResult": {
+        "$ref": "#/components/schemas/P11SyncCancelResult"
+      },
+      "P13ContentExportPageResult": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "scope": {
+            "$ref": "#/components/schemas/P11SyncScope"
+          },
+          "page": {
+            "$ref": "#/components/schemas/P02V1SnapshotPage"
+          }
+        },
+        "required": [
+          "version",
+          "scope",
+          "page"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentExportRecordResult": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "snapshot_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "item": {
+            "$ref": "#/components/schemas/P02V1SnapshotItem"
+          },
+          "record": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/P02V1Bundle"
+              },
+              {
+                "$ref": "#/components/schemas/P02V1ExportFileRecord"
+              },
+              {
+                "$ref": "#/components/schemas/P02V1ExportPrunedRecord"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "snapshot_id",
+          "item",
+          "record"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentPortableEvidence": {
+        "type": "object",
+        "properties": {
+          "profile": {
+            "const": "p13-public-proof-v1"
+          },
+          "version": {
+            "const": 1
+          },
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P10SharedAdoptRequest"
+            },
+            "maxItems": 200
+          },
+          "accounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P10SharedAccountProof"
+            },
+            "maxItems": 1000
+          }
+        },
+        "required": [
+          "profile",
+          "version",
+          "groups",
+          "accounts"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentExportHeaderItem": {
+        "type": "object",
+        "properties": {
+          "item": {
+            "$ref": "#/components/schemas/P02V1SnapshotItem"
+          },
+          "envelope": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/P02V1Envelope"
+              },
+              {
+                "$ref": "#/components/schemas/P02FileC1Envelope"
+              }
+            ]
+          },
+          "record_bytes": {
+            "$ref": "#/components/schemas/P02FileC1Counter"
+          }
+        },
+        "required": [
+          "item",
+          "envelope",
+          "record_bytes"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentExportHeaderPage": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "snapshot_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "start": {
+            "$ref": "#/components/schemas/P02FileC1Counter"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/P13ContentExportHeaderItem"
+            },
+            "maxItems": 100
+          },
+          "next": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Counter"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "snapshot_id",
+          "start",
+          "items",
+          "next"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentThumbnailBody": {
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "const": "derived-thumbnail-link"
+          },
+          "version": {
+            "const": 1
+          },
+          "service_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "operation_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "author": {
+            "$ref": "#/components/schemas/P02FileC1Author"
+          },
+          "policy": {
+            "$ref": "#/components/schemas/P02FileC1Policy"
+          },
+          "source_version_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "source_envelope_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "derived_version_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "derived_envelope_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "kind": {
+            "const": "png-256"
+          }
+        },
+        "required": [
+          "purpose",
+          "version",
+          "service_id",
+          "group_id",
+          "operation_id",
+          "author",
+          "policy",
+          "source_version_id",
+          "source_envelope_digest",
+          "derived_version_id",
+          "derived_envelope_digest",
+          "kind"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentThumbnailLink": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "$ref": "#/components/schemas/P13ContentThumbnailBody"
+          },
+          "signature": {
+            "type": "string",
+            "format": "base64url-64"
+          }
+        },
+        "required": [
+          "body",
+          "signature"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentThumbnailResult": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "operation_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "source_version_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "derived_version_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "version": {
+            "const": 1
+          },
+          "digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "state": {
+            "const": "LINKED"
+          }
+        },
+        "required": [
+          "group_id",
+          "operation_id",
+          "source_version_id",
+          "derived_version_id",
+          "version",
+          "digest",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentRetentionRequest": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "confirm": {
+            "const": true
+          },
+          "after": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "confirm",
+          "after"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentRetentionPinRequest": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "pinned": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "version",
+          "pinned"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentRetentionPinResult": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "revision_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "payload_status": {
+            "enum": [
+              "retained",
+              "pruned"
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "group_id",
+          "revision_id",
+          "pinned",
+          "payload_status"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentRetentionItem": {
+        "type": "object",
+        "properties": {
+          "revision_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "object_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "payload_status": {
+            "enum": [
+              "retained",
+              "pruned"
+            ]
+          },
+          "eligible": {
+            "type": "boolean"
+          },
+          "reasons": {
+            "type": "array",
+            "maxItems": 7,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "current-or-conflict-head",
+                "explicit-retention-pin",
+                "active-snapshot-or-export",
+                "retained-trash",
+                "latest-thirty-days",
+                "daily-ninety-days",
+                "monthly-history"
+              ]
+            }
+          }
+        },
+        "required": [
+          "revision_id",
+          "object_id",
+          "payload_status",
+          "eligible",
+          "reasons"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentRetentionResult": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "mode": {
+            "enum": [
+              "report-only",
+              "explicit-apply"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/P13ContentRetentionItem"
+            }
+          },
+          "next": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "released_ciphertext_bytes": {
+            "$ref": "#/components/schemas/P02FileC1Counter"
+          },
+          "signed_ancestry_retained": {
+            "const": true
+          },
+          "physical_database_pages_reclaimed": {
+            "const": false
+          }
+        },
+        "required": [
+          "version",
+          "group_id",
+          "mode",
+          "items",
+          "next",
+          "released_ciphertext_bytes",
+          "signed_ancestry_retained",
+          "physical_database_pages_reclaimed"
         ],
         "additionalProperties": false
       }

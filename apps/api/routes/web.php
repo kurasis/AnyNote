@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CapabilitiesController;
+use App\Http\Controllers\ContentController;
 use App\Http\Controllers\DevicesController;
 use App\Http\Controllers\FilesController;
 use App\Http\Controllers\GroupsController;
@@ -120,3 +121,27 @@ Route::get('/api/v1/me/unattached-files', FilesController::class)->name('get_me_
 Route::get('/api/v1/me/storage', FilesController::class)->name('get_me_storage');
 Route::delete('/api/v1/files/{version}/unattached', FilesController::class)->name('delete_files_version_unattached');
 Route::get('/api/v1/snapshots/{id}/files', SyncController::class)->name('get_snapshots_id_files');
+
+Route::post('/api/v1/exports', ContentController::class)->name('post_exports');
+
+Route::get('/api/v1/exports/{id}', ContentController::class)->name('get_exports_id');
+
+Route::post('/api/v1/exports/{id}/renew', ContentController::class)->name('post_exports_id_renew');
+
+Route::delete('/api/v1/exports/{id}', ContentController::class)->name('delete_exports_id');
+
+Route::get('/api/v1/exports/{id}/catalog', ContentController::class)->name('get_exports_id_catalog');
+
+Route::get('/api/v1/exports/{id}/pages', ContentController::class)->name('get_exports_id_pages');
+
+Route::get('/api/v1/exports/{id}/records/{revision}', ContentController::class)->name('get_exports_id_records_revision');
+
+Route::get('/api/v1/exports/{id}/files/{revision}/chunks/{index}', ContentController::class)->name('get_exports_id_files_revision_chunks_index');
+
+Route::get('/api/v1/exports/{id}/headers', ContentController::class)->name('get_exports_id_headers');
+
+Route::post('/api/v1/files/{revision}/thumbnail', ContentController::class)->name('post_files_revision_thumbnail');
+
+Route::get('/api/v1/groups/{id}/retention', ContentController::class)->name('get_groups_id_retention');
+Route::post('/api/v1/groups/{id}/retention', ContentController::class)->name('post_groups_id_retention');
+Route::post('/api/v1/revisions/{revision}/retention-pin', ContentController::class)->name('post_revisions_revision_retention_pin');

@@ -4,13 +4,15 @@ An invite-only, end-to-end encrypted notes and files service for Windows
 (Tauri 2 / WebView2) and iPhone (installed PWA), backed by Laravel, MariaDB,
 Nginx and PHP-FPM.
 
-**Current state:** P00 and P02–P12 are software verified. P10 adds shared roles, full-history
+**Current state:** P00 and P02–P13 are software verified. P13 adds protected search,
+safe previews/thumbnails, reference-safe retention and independent portable recovery.
+P10 adds shared roles, full-history
 invitations, signed membership, revocation/rekey and owner transfer. P09 includes private
 groups, encrypted notes/preferences, safe Markdown/checklists, protected local
 and server saving, conflicts and cross-device flows. P08 includes independently
 pinned enrollment, signed rosters, cascading revoke and root-signed recovery.
 P01 has scoped Windows/iPhone feasibility evidence; its full physical matrix is
-open. The next phase is P13 search, safe previews, history, retention and exports. Qualified
+open. The next phase is P14 Windows application integration. Qualified
 independent review and production release gates remain open. Do not store real
 secrets or user data in experimental builds.
 
@@ -67,3 +69,6 @@ Shared groups: [P10 roles, signed membership and maintenance](docs/P10_SHARED_GR
 Synchronization and offline durability: [P11 implementation and evidence](docs/P11_SYNC.md).
 
 Encrypted files, recovery and quota lifecycle: [P12 implementation and evidence](docs/P12_FILES.md).
+
+Protected content and independent recovery: [P13 guide](docs/P13_CONTENT.md) and
+[exact-source acceptance](docs/evidence/p13/README.md).

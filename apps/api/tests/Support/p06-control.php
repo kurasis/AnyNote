@@ -6,9 +6,11 @@ use App\Backend\AccountAdministration;
 use App\Backend\Authorization;
 use App\Backend\QuotaLedger;
 use App\Backend\SyncWriter;
+use App\Content\Retainer;
 use App\Crypto\PublicProtocol as P;
 use App\Files\Service;
 use App\Http\ApiException;
+use Carbon\Carbon;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -23,6 +25,36 @@ if (! $app->runningInConsole() || ! $app->environment('testing') || config('data
 }
 $op = $argv[1] ?? '';
 $value = match ($op) {
+    'p13-retention-fixture' => (function () {
+        $v = json_decode(stream_get_contents(STDIN));
+        if (! P::isBinary($v->group_id ?? '', 16) || ! P::isBinary($v->revision_id ?? '', 16)) {
+            throw new LogicException('Invalid synthetic retention fixture');
+        }
+        $revision = DB::table('object_revisions')->where('group_id', $v->group_id)->where('revision_id', $v->revision_id)->first();
+        if (! $revision) {
+            throw new LogicException('Synthetic revision missing');
+        }
+
+        return ['prepared' => true];
+    })(),
+    'p13-retain' => (function () {
+        $v = json_decode(stream_get_contents(STDIN));
+        Carbon::setTestNow(now()->addDays(45));
+        try {
+            return app(Retainer::class)->run($v->group_id, 100, ($v->apply ?? false) === true, $v->after ?? null);
+        } finally {
+            Carbon::setTestNow();
+        }
+    })(),
+    'p13-payload-state' => (function () {
+        $v = json_decode(stream_get_contents(STDIN));
+        if (! P::isBinary($v->revision_id ?? '', 16)) {
+            throw new LogicException('Invalid synthetic revision');
+        }
+        $r = DB::table('object_revisions')->where('revision_id', $v->revision_id)->first();
+
+        return ['payload_status' => $r->payload_status, 'has_ciphertext' => $r->ciphertext !== null, 'has_signature' => $r->signed_envelope !== null, 'attachments' => DB::table('attachment_refs')->where('revision_id', $v->revision_id)->count()];
+    })(),
     'p12-budget' => (function () {
         $v = json_decode(stream_get_contents(STDIN));
         if (! P::counter($v->available_bytes ?? '', '1000000000')) {

@@ -1,0 +1,132 @@
+name: P13 protected content and independent recovery
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: content-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  content-linux-http-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      ANYNOTE_TOOLCHAINS: /tmp/anynote-p06-toolchains
+      CHROMIUM_EXECUTABLE: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.12.14'
+      - name: Frozen dependencies and actual trusted test services
+        run: |
+          bash scripts/install-p01-toolchains.sh
+          source scripts/runtime-env.sh
+          for package in packages/protocol experiments/p01 packages/api-client apps/devices-web apps/notes-web packages/content-browser; do
+            npm --prefix "$package" ci --ignore-scripts --no-audit --no-fund
+          done
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libnss3-tools
+          python3 scripts/install-p02-tools.py
+          python3 scripts/dev-stack.py install
+          python3 scripts/dev-stack.py up
+      - name: Protected store, native SQL and format checks
+        run: |
+          source scripts/runtime-env.sh
+          python3 scripts/check-p13.py
+          cargo fmt --manifest-path packages/content-native/Cargo.toml --check
+          cargo clippy --manifest-path packages/content-native/Cargo.toml --locked --all-targets -j 4 -- -D warnings
+          cargo test --manifest-path packages/content-native/Cargo.toml --locked -j 4 -- --test-threads=1
+          python3 scripts/p13-native-inventory.py
+          cargo build --manifest-path packages/vault-native/Cargo.toml --locked --features integration-harness -j 4
+      - name: Actual HTTPS, SQL, immutable resumable import and reference-safe retention
+        run: |
+          source scripts/runtime-env.sh
+          python3 scripts/p06-stack.py reset
+          node packages/protocol/p13-http.mjs
+          python3 scripts/p06-stack.py reset
+          node packages/protocol/p10-http.mjs --p11-sync --p13-content
+          node packages/protocol/content/gigabyte.mjs
+      - name: Sandboxed shipped UI and independent recovery
+        run: |
+          source scripts/runtime-env.sh
+          python3 scripts/p06-stack.py reset
+          node experiments/p01/p10-browser.mjs --p11-sync --p13-content
+          node experiments/p01/p13-preview-probe.mjs
+          python3 scripts/p13-evidence.py linux
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: p13-linux-content-report
+          path: |
+            artifacts/p13/*.json
+            artifacts/p10/browser-report.json
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Stop only owned services
+        if: always()
+        run: |
+          python3 scripts/p06-stack.py stop
+          python3 scripts/dev-stack.py stop
+  content-windows-native:
+    runs-on: windows-2025
+    timeout-minutes: 55
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.14.8'
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.21.0'
+      - name: Exact toolchain and isolated maintained dependencies
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal --component clippy,rustfmt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          rustup override set 1.99.0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm --prefix packages/protocol ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm --prefix packages/content-browser ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Actual native protected index, SQL, lock and independent age
+        run: |
+          cargo fmt --manifest-path packages/content-native/Cargo.toml --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo clippy --manifest-path packages/content-native/Cargo.toml --locked --all-targets -j 4 -- -D warnings
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --manifest-path packages/content-native/Cargo.toml --locked -j 4 -- --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/check-p13.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/p13-native-inventory.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo build --manifest-path packages/content-native/Cargo.toml --locked --bin age-stream-interop -j 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node packages/protocol/content/gigabyte.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/p13-evidence.py windows
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: p13-windows-content-report
+          path: |
+            artifacts/p13/source-report.json
+            artifacts/p13/gigabyte-development.json
+          retention-days: 14
+          if-no-files-found: error

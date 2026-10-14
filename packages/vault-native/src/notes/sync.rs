@@ -460,7 +460,9 @@ impl Vault {
                         && r["reference"]["object_kind"] == item["object_kind"]
                         && r["reference"]["thread_id"] == x["thread_id"]
                         && item["payload_status"]
-                            == if x["action"] == "soft-delete" {
+                            == if b["payload_status"] == "pruned" {
+                                "pruned"
+                            } else if x["action"] == "soft-delete" {
                                 "tombstone"
                             } else {
                                 "retained"
@@ -477,9 +479,19 @@ impl Vault {
                     }
                 }
                 let open = json!({"group_id":x["group_id"],"object_id":x["object_id"],"revision_id":x["revision_id"],"object_kind":x["object_kind"],"thread_id":x["thread_id"],"bundle":b});
-                let mut payload = self.note_verify(i, state, &temp, evidence, &open)?;
+                let mut payload = self.note_verify_payload(
+                    i,
+                    state,
+                    &temp,
+                    evidence,
+                    &open,
+                    item["payload_status"] == "pruned",
+                )?;
                 wipe_value(&mut payload);
-                let write = self.note_cache(&mut temp, b)?;
+                let mut write = self.note_cache(&mut temp, b)?;
+                if item["payload_status"] == "pruned" {
+                    write.data = json!({"purpose":"p11-header-evidence","version":1,"envelope":b["envelope"]});
+                }
                 let witness = values(&temp, "witnesses")?
                     .iter()
                     .find(|w| w["revision_id"] == item["revision_id"])

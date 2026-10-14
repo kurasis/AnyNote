@@ -37,6 +37,7 @@ jobs:
           npm --prefix packages/api-client ci --ignore-scripts --no-audit --no-fund
           npm --prefix apps/devices-web ci --ignore-scripts --no-audit --no-fund
           npm --prefix apps/notes-web ci --ignore-scripts --no-audit --no-fund
+          npm --prefix packages/content-browser ci --ignore-scripts --no-audit --no-fund
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends libnss3-tools
           python3 scripts/dev-stack.py install
@@ -114,6 +115,9 @@ jobs:
       - name: Exact maintained PWA adapter dependencies
         run: |
           npm --prefix packages/protocol ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm --prefix packages/content-browser ci --ignore-scripts --no-audit --no-fund
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Independent official C-header ABI reference
         working-directory: packages/vault-native

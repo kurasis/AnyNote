@@ -120,7 +120,7 @@ final class ObjectService
             }
             DB::table('object_heads')->where('object_id', $c->object_id)->delete();
             DB::table('object_heads')->insert(['group_id' => $g->id, 'object_id' => $c->object_id, 'revision_id' => $c->revision_id]);
-            DB::table('objects')->where('id', $c->object_id)->update(['archived' => $c->archived, 'tombstoned' => $c->action === 'soft-delete']);
+            DB::table('objects')->where('id', $c->object_id)->update(['archived' => $c->archived, 'tombstoned' => $c->action === 'soft-delete', 'trash_expires_at' => $c->action === 'soft-delete' ? now()->addDays(30) : null]);
             foreach ($files as $file) {
                 DB::table('attachment_refs')->insert(['revision_id' => $c->revision_id, 'file_version_id' => $file->id, 'group_id' => $g->id]);
                 DB::table('publication_journal')->where('file_version_id', $file->id)->where('state', 'unattached')->update(['state' => 'referenced']);

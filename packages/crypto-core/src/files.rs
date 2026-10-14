@@ -238,6 +238,11 @@ impl FileReader {
             hash: Sha256::new(),
         })
     }
+    /// Authenticated display fields only. This never returns a DEK or nonce prefix,
+    /// and manifest verification does not claim full-file stream completion.
+    pub fn metadata(&self) -> Value {
+        json!({"name":self.manifest["original_name"],"media":self.manifest["client_media_type"],"plaintext_bytes":self.header["framing"]["plaintext_bytes"]})
+    }
     pub fn decrypt_next(&mut self, cipher: &[u8]) -> Result<Zeroizing<Vec<u8>>> {
         require(
             self.next < num(&self.header["framing"]["chunk_count"])?,

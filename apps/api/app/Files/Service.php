@@ -341,7 +341,7 @@ final class Service
                 if ($lease->state !== 'active' || $lease->expires_at > now()->format('Y-m-d H:i:s')) {
                     return;
                 }
-                foreach (['snapshot_file_pins', 'reference_pins', 'snapshot_items', 'snapshot_pages', 'snapshot_catalog'] as $table) {
+                foreach (['export_snapshot_items', 'export_snapshot_pages', 'snapshot_progress', 'snapshot_file_pins', 'reference_pins', 'snapshot_items', 'snapshot_pages', 'snapshot_catalog'] as $table) {
                     DB::table($table)->where('snapshot_id', $lease->id)->delete();
                 }
                 DB::table('snapshot_sessions')->where('id', $lease->id)->update(['state' => 'expired']);
@@ -385,6 +385,7 @@ final class Service
                 if ($v->state !== 'reclaimable' || ! $this->unreferenced($v)) {
                     return 0;
                 }
+                DB::table('derived_preview_links')->where('source_version_id', $v->id)->delete();
                 foreach (DB::table('file_chunks')->where('file_version_id', $v->id)->get() as $part) {
                     $this->blobs->remove($part->blob_id);
                 }
@@ -415,6 +416,9 @@ final class Service
 
     private function unreferenced(stdClass $file): bool
     {
+        if (DB::table('derived_preview_links')->where('derived_version_id', $file->id)->exists()) {
+            return false;
+        }
         if (DB::table('attachment_refs')->where('file_version_id', $file->id)->exists() || DB::table('snapshot_file_pins')->where('file_version_id', $file->id)->exists()) {
             return false;
         }
