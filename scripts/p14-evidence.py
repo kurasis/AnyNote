@@ -15,12 +15,17 @@ for name,minimum in [('native-pairing-development.json',33),('native-sharing-dev
  assert value['status']=='PASS' and value['source_commit']==head and not value['source_tree_dirty']
  assert value['checks']>=minimum and value['physical_acceptance'] is False
  if 'large_file' in value:assert value['large_file']['status']=='PASS' and value['large_file']['bytes']==1000000000
- if name.startswith('windows-webview'):assert value['updater']['status']=='PASS' and value['updater']['production_signing'] is False
+ if name.startswith('windows-webview'):
+  assert value['updater']['status']=='PASS' and value['updater']['production_signing'] is False
+  assert value['memory']['transfer']['samples']>=2 and value['memory']['transfer']['baseline_bytes']['native']>0
  reports[name]={'path':'artifacts/p14/'+name,'sha256':sha(path),'checks':value['checks']}
 capability=ROOT/'artifacts/p14/backend-filesystem-capability.json'
 value=json.loads(capability.read_text(encoding='utf-8'));assert value['file_fsync'] is True
 assert value['ci_directory_durability_adapter']['status']=='PASS' and value['ci_directory_durability_adapter']['primitive']=='Windows FlushFileBuffers volume'
 reports[capability.name]={'path':'artifacts/p14/'+capability.name,'sha256':sha(capability)}
+audit=ROOT/'artifacts/p14/capability-audit.json';value=json.loads(audit.read_text(encoding='utf-8'))
+assert value['status']=='PASS' and value['source_commit']==head and not value['source_tree_dirty'] and value['unchanged_files']==179
+reports[audit.name]={'path':'artifacts/p14/'+audit.name,'sha256':sha(audit)}
 installers=list((ROOT/'apps/desktop/src-tauri/target/release/bundle/nsis').glob('*.exe'));assert len(installers)==1
 paths=sorted(p for p in git('ls-files','-z').decode().split('\0') if p and not p.startswith(('docs/evidence/','artifacts/')))
 inputs=[{'path':p,'sha256':sha(ROOT/p)} for p in paths]

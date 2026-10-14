@@ -76,6 +76,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           npm --prefix apps/desktop run tauri -- build --ci -- --locked -j 4
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/check-p14.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           git diff --exit-code
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Actual owned Windows TLS, PHP and MariaDB
@@ -120,6 +122,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Move-Item apps/desktop/src-tauri/target/release/bundle/nsis/*0.14.1*.exe .local/p14-candidate/
           Copy-Item .local/p14-tools/instrumented-host.exe apps/desktop/src-tauri/target/release/anynote-desktop.exe
+          python scripts/check-p14.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $sourceChanges = git status --porcelain
           if ($sourceChanges) { $sourceChanges; throw 'Candidate build changed the source tree' }
       - name: Actual installed Windows and WebView2 dialogs lifecycle SQL and 1 GB workflows
