@@ -357,3 +357,64 @@ fn interrupted_profile_publication_resumes_same_encrypted_vault_and_fixed_servic
         .unwrap();
     recovered.capability(0).unwrap();
 }
+
+#[test]
+fn downloaded_cache_controls_preserve_original_sources_and_encrypted_drafts() {
+    use anynote_local_vault::notes::file_cache::CipherCache;
+    let f = Fixture::new();
+    let cap = f.vault.unlock_phrase(PHRASE).unwrap();
+    let g = group(&f, &cap);
+    let (saved, _, _) = attempt(&f, &cap, &g);
+    let path = f.vault.path().parent().unwrap().join("owner-source.bin");
+    std::fs::write(&path, b"PUBLIC synthetic original").unwrap();
+    let mut source = std::fs::File::open(&path).unwrap();
+    let prepared = f
+        .vault
+        .prepare_file(
+            &cap,
+            g["group_id"].as_str().unwrap(),
+            &mut source,
+            "source.bin",
+            "application/octet-stream",
+        )
+        .unwrap();
+    let draft = prepared["draft_id"].as_str().unwrap();
+    let cipher = f.vault.file_part(&cap, draft, &mut source, 0).unwrap();
+    let part = json!({"index":"0","ciphertext_bytes":cipher.len().to_string(),"ciphertext_digest":hash(&cipher)});
+    let finished = f.vault.file_finish(&cap, draft, &[part]).unwrap();
+    let record = &finished["request"]["record"];
+    let cache = CipherCache::for_vault(&f.vault).unwrap();
+    let mut job = cache.begin(&Codec::new().unwrap(), record).unwrap();
+    cache.put(&mut job, 0, &cipher).unwrap();
+    cache.finish(&mut job).unwrap();
+    drop(job);
+    let c = &record["envelope"]["header"]["context"];
+    let group = c["group_id"].as_str().unwrap();
+    let version = c["file_version_id"].as_str().unwrap();
+    assert_eq!(
+        cache.summary().unwrap()["items"].as_array().unwrap().len(),
+        1
+    );
+    cache.pin_existing(group, version, 1000000, true).unwrap();
+    assert_eq!(cache.summary().unwrap()["items"][0]["pinned"], true);
+    assert_eq!(
+        cache.remove(group, version, false).unwrap_err().0,
+        "CONFIRMATION_REQUIRED"
+    );
+    cache.remove(group, version, true).unwrap();
+    assert!(
+        cache.summary().unwrap()["items"]
+            .as_array()
+            .unwrap()
+            .is_empty()
+    );
+    assert_eq!(std::fs::read(path).unwrap(), b"PUBLIC synthetic original");
+    assert_eq!(
+        command(
+            &f,
+            &cap,
+            json!({"action":"draft","draft_id":saved["draft_id"]})
+        )["draft_id"],
+        saved["draft_id"]
+    );
+}

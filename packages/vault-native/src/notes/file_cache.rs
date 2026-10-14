@@ -80,6 +80,89 @@ fn atomic(path: &Path, bytes: &[u8]) -> Result<()> {
     result
 }
 impl CipherCache {
+    pub fn summary(&self) -> Result<Value> {
+        let mut items = Vec::new();
+        let mut used = 0u64;
+        for entry in fs::read_dir(&self.root).map_err(|_| Error("STORAGE_UNAVAILABLE"))? {
+            let entry = entry.map_err(|_| Error("STORAGE_UNAVAILABLE"))?;
+            if !entry
+                .file_type()
+                .map_err(|_| Error("STORAGE_UNAVAILABLE"))?
+                .is_dir()
+            {
+                continue;
+            }
+            let metadata = Self::metadata(&entry.path())?;
+            let bytes = metadata["bytes"]
+                .as_u64()
+                .ok_or(Error("INTEGRITY_FAILURE"))?;
+            let c = &metadata["record"]["envelope"]["header"]["context"];
+            check(
+                Self::name(text(&c["group_id"])?, text(&c["file_version_id"])?)?
+                    == entry.file_name().to_string_lossy(),
+                "INTEGRITY_FAILURE",
+            )?;
+            used = used.checked_add(bytes).ok_or(Error("RESOURCE_LIMIT"))?;
+            items.push(json!({"group_id":c["group_id"],"file_version_id":c["file_version_id"],"bytes":bytes.to_string(),"complete":metadata["complete"],"pinned":metadata["pinned"]}));
+        }
+        Ok(
+            json!({"budget_bytes":self.budget.to_string(),"used_bytes":used.to_string(),"items":items}),
+        )
+    }
+    /// Only the replaceable downloaded-ciphertext namespace is affected.
+    pub fn remove(&self, group: &str, version: &str, confirmed: bool) -> Result<()> {
+        check(confirmed, "CONFIRMATION_REQUIRED")?;
+        let guard = OpenOptions::new()
+            .create(true)
+            .truncate(false)
+            .read(true)
+            .write(true)
+            .open(self.root.join("budget.lock"))
+            .map_err(|_| Error("STORAGE_UNAVAILABLE"))?;
+        guard.try_lock().map_err(|_| Error("VAULT_BUSY"))?;
+        let name = Self::name(group, version)?;
+        let path = self.root.join(&name);
+        check(
+            path.is_dir()
+                && !fs::symlink_metadata(&path)
+                    .map_err(|_| Error("OFFLINE_UNAVAILABLE"))?
+                    .file_type()
+                    .is_symlink(),
+            "OFFLINE_UNAVAILABLE",
+        )?;
+        let metadata = Self::metadata(&path)?;
+        check(metadata["name"] == name, "INTEGRITY_FAILURE")?;
+        fs::remove_dir_all(path).map_err(|_| Error("STORAGE_UNAVAILABLE"))
+    }
+    pub fn pin_existing(
+        &self,
+        group: &str,
+        version: &str,
+        extra: u64,
+        confirmed: bool,
+    ) -> Result<()> {
+        let guard = OpenOptions::new()
+            .create(true)
+            .truncate(false)
+            .read(true)
+            .write(true)
+            .open(self.root.join("budget.lock"))
+            .map_err(|_| Error("STORAGE_UNAVAILABLE"))?;
+        guard.try_lock().map_err(|_| Error("VAULT_BUSY"))?;
+        let name = Self::name(group, version)?;
+        let directory = self.root.join(&name);
+        let metadata = Self::metadata(&directory)?;
+        check(
+            metadata["name"] == name && metadata["complete"] == true,
+            "OFFLINE_UNAVAILABLE",
+        )?;
+        CacheJob {
+            directory,
+            metadata,
+            _budget_lock: guard,
+        }
+        .pin(extra, confirmed)
+    }
     pub fn for_vault(vault: &Vault) -> Result<Self> {
         let root = vault
             .path()

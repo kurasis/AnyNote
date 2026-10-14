@@ -32,6 +32,7 @@ fn file_hash(p: &Path) -> Result<String> {
     Ok(anynote_crypto_core::crypto::b64(&h.finalize()))
 }
 pub struct Bridge {
+    _assets: Vec<std::fs::File>,
     child: Arc<Mutex<Child>>,
     pub input: ChildStdin,
     output: ChildStdout,
@@ -39,6 +40,10 @@ pub struct Bridge {
 }
 impl Bridge {
     pub fn spawn(assets: &Assets, interrupted: impl Fn() -> bool + Send + 'static) -> Result<Self> {
+        // Hold read-only handles while the verified runtime loads and executes the script.
+        // Windows denies concurrent writes and reparse-point replacement.
+        let runtime = crate::selection::Source::open(assets.node, 268435456)?;
+        let script = crate::selection::Source::open(assets.script, 67108864)?;
         check(
             file_hash(assets.node)? == assets.node_sha
                 && file_hash(assets.script)? == assets.script_sha,
@@ -88,6 +93,7 @@ impl Bridge {
             }
         });
         Ok(Self {
+            _assets: vec![runtime.file, script.file],
             child,
             input,
             output,

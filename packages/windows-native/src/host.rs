@@ -94,6 +94,18 @@ pub enum Request {
     },
     RebuildSearch {},
     Storage {},
+    Cache {},
+    RemoveCache {
+        group_id: String,
+        file_version_id: String,
+        confirmed: bool,
+    },
+    PinCache {
+        group_id: String,
+        file_version_id: String,
+        additional_bytes: u64,
+        confirmed: bool,
+    },
     Transfers {},
     CancelJob {
         job_id: String,
@@ -800,6 +812,29 @@ impl Host {
                 search.index(&revisions)
             }
             Request::Storage {} => self.api(&cap, Route::Storage, None, None, &[], None),
+            Request::Cache {} => {
+                anynote_local_vault::notes::file_cache::CipherCache::for_vault(&self.vault)?
+                    .summary()
+            }
+            Request::RemoveCache {
+                group_id,
+                file_version_id,
+                confirmed,
+            } => {
+                anynote_local_vault::notes::file_cache::CipherCache::for_vault(&self.vault)?
+                    .remove(group_id, file_version_id, *confirmed)?;
+                Ok(json!({"state":"REMOVED"}))
+            }
+            Request::PinCache {
+                group_id,
+                file_version_id,
+                additional_bytes,
+                confirmed,
+            } => {
+                anynote_local_vault::notes::file_cache::CipherCache::for_vault(&self.vault)?
+                    .pin_existing(group_id, file_version_id, *additional_bytes, *confirmed)?;
+                Ok(json!({"state":"PINNED"}))
+            }
             Request::Transfers {} => Ok(
                 json!({"jobs":self.jobs.summary(g)?,"transfers":self.vault.file_transfers(&cap)?}),
             ),
