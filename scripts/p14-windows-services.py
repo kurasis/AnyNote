@@ -164,12 +164,18 @@ def untrust():
         hosts=Path(os.environ['SystemRoot'])/'System32/drivers/etc/hosts'
         if hashlib.sha256(hosts.read_bytes()).hexdigest()!=(STATE/'hosts.after.sha256').read_text():raise RuntimeError('Hosts changed independently; refusing to overwrite')
         hosts.write_bytes(before.read_bytes());before.unlink();(STATE/'hosts.after.sha256').unlink()
+def diagnose():
+    require_ci();marker()
+    folder=STATE/'durability-probe';folder.mkdir(exist_ok=True)
+    code='$root='+json.dumps(str(folder).replace('\\','/'))+';$f=fopen($root."/probe.bin","wb");fwrite($f,"P14 SYNTHETIC");$file=fflush($f)&&fsync($f);fclose($f);$d=@fopen($root,"r");$opened=is_resource($d);$dir=false;if($opened){try{$dir=@fsync($d);}catch(Throwable $e){}fclose($d);}unlink($root."/probe.bin");echo json_encode(["purpose"=>"Actual Windows PHP filesystem durability capability","file_fsync"=>$file,"directory_open"=>$opened,"directory_fsync"=>$dir]);'
+    value=json.loads(php('-r',code));destination=ROOT/'artifacts/p14';destination.mkdir(parents=True,exist_ok=True);(destination/'backend-filesystem-capability.json').write_text(json.dumps(value,indent=2)+'\n');print(json.dumps(value))
 def main():
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('operation',choices=['up','control','stop','trust','untrust']);parser.add_argument('arguments',nargs='*');a=parser.parse_args()
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('operation',choices=['up','control','stop','trust','untrust','diagnose']);parser.add_argument('arguments',nargs='*');a=parser.parse_args()
     if a.operation=='up':up()
     elif a.operation=='control':print(control(a.arguments))
     elif a.operation=='trust':trust()
     elif a.operation=='untrust':untrust()
+    elif a.operation=='diagnose':diagnose()
     else:stop()
 if __name__=='__main__':
     try:main()

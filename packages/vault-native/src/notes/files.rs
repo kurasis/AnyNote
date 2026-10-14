@@ -33,6 +33,10 @@ fn response(value: anynote_auth_native::FileResponse) -> Result<Value> {
             Some("STALE_REVISION") => "STALE_REVISION",
             Some("IDEMPOTENCY_MISMATCH") => "IDEMPOTENCY_MISMATCH",
             Some("INSUFFICIENT_STORAGE") => "INSUFFICIENT_STORAGE",
+            Some("STORAGE_UNAVAILABLE") => "STORAGE_UNAVAILABLE",
+            Some("INTERNAL_ERROR") => "INTERNAL_ERROR",
+            Some("INVALID_REQUEST") => "INVALID_REQUEST",
+            Some("RATE_LIMITED") => "RATE_LIMITED",
             _ => "FILE_TRANSPORT_DENIED",
         }));
     }

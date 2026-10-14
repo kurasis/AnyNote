@@ -101,6 +101,7 @@ jobs:
         if: always()
         run: |
           if (Test-Path .local/p14-windows-services/owner.json) {
+            python scripts/p14-windows-services.py diagnose
             python scripts/p14-windows-services.py untrust
             python scripts/p14-windows-services.py stop
           }
