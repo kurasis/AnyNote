@@ -34,6 +34,7 @@ export class FileWriter {
   #prefix;
   #digest = createHash("sha256");
   #closed = false;
+  #sourceDigest;
   constructor(contextBytes, size) {
     check(
       Number.isSafeInteger(size) && size >= 0 && size <= 1000000000,
@@ -45,6 +46,23 @@ export class FileWriter {
     this.#manifestKey = randomKey();
     this.#prefix = sodium.randombytes_buf(16);
   }
+  // Only protected custody persists these secrets inside its encrypted local journal.
+  checkpoint() {
+    check(!this.#closed, 'INCOMPLETE_FILE');
+    return {context:this.#context,size:this.#size,next:this.#next,parts:this.#parts,
+      file_key:b64(this.#fileKey),manifest_key:b64(this.#manifestKey),prefix:b64(this.#prefix),source_digest:this.#sourceDigest??null};
+  }
+  static resume(state) {
+    const w=new FileWriter(wire(state.context),state.size);
+    check(Number.isSafeInteger(state.next)&&state.next>=0&&state.next<=Math.ceil(state.size/CHUNK)&&state.parts.length===state.next,'INVALID_CHUNK_INDEX');
+    sodium.memzero(w.#fileKey);sodium.memzero(w.#manifestKey);
+    w.#fileKey=un64(state.file_key);w.#manifestKey=un64(state.manifest_key);w.#prefix=un64(state.prefix);
+    key(w.#fileKey);key(w.#manifestKey);check(w.#prefix.length===16,'INVALID_NONCE');
+    w.#next=state.next;w.#parts=structuredClone(state.parts);w.#sourceDigest=state.source_digest;
+    check(typeof w.#sourceDigest==='string'&&un64(w.#sourceDigest).length===32,'SOURCE_IDENTITY_REQUIRED');
+    return w;
+  }
+  bindSource(digest) {check(this.#next===0&&typeof digest==='string'&&un64(digest).length===32,'SOURCE_IDENTITY_REQUIRED');this.#sourceDigest=digest;}
   #header() {
     return {
       purpose: "file-manifest",
@@ -115,7 +133,7 @@ export class FileWriter {
         nonce_prefix: b64(this.#prefix),
         original_name: name,
         client_media_type: media,
-        plaintext_digest: this.#digest.digest("base64url"),
+        plaintext_digest: this.#sourceDigest??this.#digest.digest("base64url"),
       };
       const plain = encode("manifest", wire(manifest));
       let cipher;
@@ -185,6 +203,7 @@ export class FileReader {
   #next = 0;
   #closed = false;
   #digest = createHash("sha256");
+  metadata() {return {name:this.#manifest.original_name,media:this.#manifest.client_media_type};}
   constructor(recordBytes, groupKey, publicKey, contextBytes) {
     const record = completeDecode("export-file-record", recordBytes);
     key(groupKey);
@@ -227,6 +246,7 @@ export class FileReader {
       this.#fileKey = un64(m.file_data_key);
       this.#prefix = un64(m.nonce_prefix);
       delete m.file_data_key;
+      if(Number(h.framing.plaintext_bytes)===0)check(m.plaintext_digest===null||m.plaintext_digest===hash(new Uint8Array()),'PLAINTEXT_MISMATCH');
       this.#manifest = m;
       this.#header = h;
     } finally {
@@ -239,7 +259,14 @@ export class FileReader {
       !this.#closed && this.#next < Number(this.#header.framing.chunk_count),
       "INVALID_CHUNK_INDEX",
     );
-    const p = this.#header.framing.parts[this.#next];
+    const plain=this.decryptAt(this.#next,cipher);
+    this.#digest.update(plain);
+    this.#next++;
+    return plain;
+  }
+  decryptAt(index,cipher) {
+    check(!this.#closed&&Number.isSafeInteger(index)&&index>=0&&index<Number(this.#header.framing.chunk_count),'INVALID_CHUNK_INDEX');
+    const p = this.#header.framing.parts[index];
     check(
       cipher instanceof Uint8Array &&
         cipher.length === Number(p.ciphertext_bytes) &&
@@ -248,12 +275,10 @@ export class FileReader {
     );
     const plain = decrypt(
       cipher,
-      fileAad(wire(this.#header), "chunk-aad", BigInt(this.#next)),
-      chunkNonce(this.#prefix, BigInt(this.#next)),
+      fileAad(wire(this.#header), "chunk-aad", BigInt(index)),
+      chunkNonce(this.#prefix, BigInt(index)),
       this.#fileKey,
     );
-    this.#digest.update(plain);
-    this.#next++;
     return plain;
   }
   finish() {

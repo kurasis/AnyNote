@@ -3448,11 +3448,13 @@ final readonly class P09NotesEditRequest implements \JsonSerializable
         public array $parents,
         public bool $archived,
         public array $content,
+        public array|null $attachments = null,
     ) {}
 
     public function jsonSerialize(): array
     {
         $values = get_object_vars($this);
+        if ($values['attachments'] === null) { unset($values['attachments']); }
         return $values;
     }
 }
@@ -4026,11 +4028,13 @@ final readonly class P11SyncSnapshotResult implements \JsonSerializable
         public array $descriptor,
         public string $catalog_count,
         public string $catalog_digest,
+        public array|null $files = null,
     ) {}
 
     public function jsonSerialize(): array
     {
         $values = get_object_vars($this);
+        if ($values['files'] === null) { unset($values['files']); }
         return $values;
     }
 }
@@ -4357,11 +4361,13 @@ final readonly class P11SyncSnapshotStage implements \JsonSerializable
         public array $inventory,
         public null|string $last,
         public string $all_items,
+        public bool|null $files_verified = null,
     ) {}
 
     public function jsonSerialize(): array
     {
         $values = get_object_vars($this);
+        if ($values['files_verified'] === null) { unset($values['files_verified']); }
         return $values;
     }
 }
@@ -4381,6 +4387,293 @@ final readonly class P11SyncSyncControl implements \JsonSerializable
         public array $projection,
         public string $state,
         public null|string $quarantine,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P12FilesReserveRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $upload_id,
+        public array $context,
+        public string $plaintext_bytes,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P12FilesCommitRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $record,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P12FilesTransferRef implements \JsonSerializable
+{
+    public function __construct(
+        public string $draft_id,
+        public string $record_id,
+        public string $group_id,
+        public string $state,
+        public string $file_version_id,
+        public string|null $local_draft_id = null,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        if ($values['local_draft_id'] === null) { unset($values['local_draft_id']); }
+        return $values;
+    }
+}
+
+final readonly class P12FilesWitnessRef implements \JsonSerializable
+{
+    public function __construct(
+        public string $record_id,
+        public string $group_id,
+        public string $file_version_id,
+        public string $envelope_digest,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P12FilesFileControl implements \JsonSerializable
+{
+    public function __construct(
+        public string $purpose,
+        public int $version,
+        public string $id,
+        public array $transfers,
+        public array|null $witnesses = null,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        if ($values['witnesses'] === null) { unset($values['witnesses']); }
+        return $values;
+    }
+}
+
+final readonly class P12FilesSource implements \JsonSerializable
+{
+    public function __construct(
+        public int $size,
+        public array $parts,
+        public string $digest,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P12FilesWriter implements \JsonSerializable
+{
+    public function __construct(
+        public array $context,
+        public int $size,
+        public int $next,
+        public array $parts,
+        public string $file_key,
+        public string $manifest_key,
+        public string $prefix,
+        public string $source_digest,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P12FilesReceipt implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $upload_id,
+        public string $file_id,
+        public string $file_version_id,
+        public string $group_id,
+        public string $operation_id,
+        public string $envelope_digest,
+        public string $ciphertext_bytes,
+        public string $state,
+        public array $cursor,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P12FilesFileTransfer implements \JsonSerializable
+{
+    public function __construct(
+        public string $purpose,
+        public int $version,
+        public string $draft_id,
+        public string $upload_id,
+        public array $context,
+        public array $source,
+        public string $name,
+        public string $media,
+        public array $writer,
+        public array $acknowledged,
+        public array|null $record,
+        public array|null $receipt,
+        public string $state,
+        public string|null $local_draft_id = null,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        if ($values['local_draft_id'] === null) { unset($values['local_draft_id']); }
+        return $values;
+    }
+}
+
+final readonly class P12FilesFileEvidence implements \JsonSerializable
+{
+    public function __construct(
+        public string $purpose,
+        public int $version,
+        public array $envelope,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P12FilesUploadStatus implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $upload_id,
+        public string $group_id,
+        public string $file_version_id,
+        public string $state,
+        public string $expires_at_ms,
+        public string $reserved_bytes,
+        public array $parts,
+        public array|null $receipt,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P12FilesFileRef implements \JsonSerializable
+{
+    public function __construct(
+        public string $file_id,
+        public string $file_version_id,
+        public string $group_id,
+        public string $envelope_digest,
+        public string $ciphertext_bytes,
+        public string $unattached_expires_at_ms,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P12FilesFilesPage implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public array $items,
+        public null|string $next_after,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P12FilesStorage implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $limit_bytes,
+        public string $committed_bytes,
+        public string $reserved_bytes,
+        public string $pending_limit_bytes,
+        public string $account_id,
+        public bool $physical_overhead_included,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P12FilesReclaimResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $file_version_id,
+        public string $state,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P12FilesSnapshotFilesPage implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $snapshot_id,
+        public string $start,
+        public array $items,
+        public null|string $next,
     ) {}
 
     public function jsonSerialize(): array

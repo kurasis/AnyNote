@@ -107,6 +107,7 @@ final class Service
     {
         $q = DB::table('group_security_receipts')->where('account_id', $a->accountId)->where('device_id', $a->deviceId)->where('operation_id', $op)->where('family', $family);
         D::require(! DB::table('mutation_receipts')->where('account_id', $a->accountId)->where('device_id', $a->deviceId)->where('operation_id', $op)->exists(), 'IDEMPOTENCY_MISMATCH');
+        D::require(! DB::table('file_publication_ids')->where('account_id', $a->accountId)->where('device_id', $a->deviceId)->where('operation_id', $op)->exists(), 'IDEMPOTENCY_MISMATCH');
         foreach (['private_group_geneses', 'shared_group_geneses'] as $table) {
             D::require(! DB::table($table)->where('account_id', $a->accountId)->where('device_id', $a->deviceId)->where('operation_id', $op)->exists(), 'IDEMPOTENCY_MISMATCH');
         }
@@ -254,6 +255,7 @@ final class Service
                         $reserve = DB::table('quota_ledgers')->where('scope', 'security')->lockForUpdate()->first();
                         D::require($reserve && $bytes <= (int) $reserve->limit_bytes - (int) $reserve->committed_bytes - (int) $reserve->reserved_bytes, 'INSUFFICIENT_STORAGE');
                         DB::table('quota_ledgers')->where('scope', 'security')->increment('committed_bytes', $bytes);
+                        DB::table('quota_movements')->insert(['id' => P::b64(random_bytes(16)), 'scope' => 'security', 'committed_delta' => $bytes, 'reserved_delta' => 0]);
                     } else {
                         $this->quota->apply($this->quota->lock($a->accountId, $g->id), $bytes, 0);
                     }
@@ -320,8 +322,11 @@ final class Service
             $c = json_decode($r->signed_envelope)->header->context;
             $expected[$r->revision_id] = (object) ['object_kind' => $c->object_kind, 'object_id' => $r->object_id, 'revision_id' => $r->revision_id, 'envelope_digest' => $r->envelope_digest, 'parents' => $c->parents, 'payload_status' => 'retained'];
         }
-        // Files are P12; no incomplete file inventory can be certified here.
-        D::require(! DB::table('file_versions')->where('group_id', $g->id)->exists(), 'HISTORY_CLOSURE_REQUIRED');
+        foreach (DB::table('file_versions')->where('group_id', $g->id)->whereNotNull('manifest_record')->get() as $file) {
+            $c = json_decode($file->manifest_record)->envelope->header->context;
+            $expected[$file->id] = (object) ['object_kind' => 'file-manifest', 'object_id' => $file->file_id, 'revision_id' => $file->id, 'envelope_digest' => $file->manifest_digest, 'parents' => $c->parents, 'payload_status' => $file->state === 'deleted' ? 'pruned' : 'retained'];
+        }
+        D::require(count($expected) <= 5000, 'RESOURCE_LIMIT');
         $count = array_sum(array_map(fn ($p) => count($p->records), $pages));
         D::require($count === count($expected) && $d->record_count === (string) $count && $d->page_count === (string) count($pages), 'HISTORY_CLOSURE_REQUIRED');
         $h = hash_init('sha256');

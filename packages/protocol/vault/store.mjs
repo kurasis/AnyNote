@@ -41,7 +41,7 @@ export class IndexedVault {
 }
 export function metadata(v,s){
   ensure(v&&v.schema===1&&same(v.scope,s)&&Number.isSafeInteger(v.epoch)&&v.epoch>=1&&Number.isSafeInteger(v.revision)&&v.revision>=1,'INTEGRITY_FAILURE');
-  ensure(Object.keys(v).sort().join(',')==='epoch,lease,manifest,pins,revision,rotation,schema,scope,vault_id,wrappers','INTEGRITY_FAILURE');
+  ensure(Object.keys(v).filter(k=>k!=='file_profile').sort().join(',')==='epoch,lease,manifest,pins,revision,rotation,schema,scope,vault_id,wrappers'&&(v.file_profile===undefined||v.file_profile==='p12-files-v1'),'INTEGRITY_FAILURE');
   ensure(id(v.vault_id),'INTEGRITY_FAILURE');
   ensure(Array.isArray(v.wrappers)&&v.wrappers.length>=1&&v.wrappers.length<=20,'INTEGRITY_FAILURE');
   for(const w of v.wrappers){const kind=w.context?.method==='argon2id13'?'phrase-wrapper':'prf-wrapper';decode(kind,wire(w));for(const k of Object.keys(s))ensure(w.context[k]===s[k],'LOCAL_CONTEXT_MISMATCH');}

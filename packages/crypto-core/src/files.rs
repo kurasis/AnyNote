@@ -37,6 +37,7 @@ pub struct FileWriter {
     manifest_key: Zeroizing<Vec<u8>>,
     prefix: Vec<u8>,
     plain_hash: Sha256,
+    source_digest: Option<String>,
 }
 impl FileWriter {
     pub fn new(c: &Codec, context: &[u8], size: u64) -> Result<Self> {
@@ -50,6 +51,49 @@ impl FileWriter {
             manifest_key: random_key()?,
             prefix: libsodium_rs::random::bytes(16),
             plain_hash: Sha256::new(),
+            source_digest: None,
+        })
+    }
+    /// Custody-only checkpoint: callers must encrypt it, never return it to a renderer.
+    pub fn checkpoint(&self, source_digest: &str) -> Result<Value> {
+        require(un64(source_digest)?.len() == 32, "SOURCE_IDENTITY_REQUIRED")?;
+        Ok(
+            json!({"context":self.context,"size":self.size,"next":self.next,"parts":self.parts,
+            "file_key":b64(&self.file_key),"manifest_key":b64(&self.manifest_key),"prefix":b64(&self.prefix),"source_digest":source_digest}),
+        )
+    }
+    pub fn resume(c: &Codec, state: &Value) -> Result<Self> {
+        let size = state["size"].as_u64().ok_or(Error("INTEGRITY_FAILURE"))?;
+        let next = state["next"].as_u64().ok_or(Error("INTEGRITY_FAILURE"))?;
+        let parts = state["parts"]
+            .as_array()
+            .ok_or(Error("INTEGRITY_FAILURE"))?
+            .clone();
+        require(
+            size <= 1000000000 && next <= size.div_ceil(CHUNK) && parts.len() as u64 == next,
+            "INTEGRITY_FAILURE",
+        )?;
+        let file_key = un64(text(&state["file_key"])?)?;
+        let manifest_key = un64(text(&state["manifest_key"])?)?;
+        let prefix = un64(text(&state["prefix"])?)?;
+        let digest = text(&state["source_digest"])?;
+        require(
+            file_key.len() == 32
+                && manifest_key.len() == 32
+                && prefix.len() == 16
+                && un64(digest)?.len() == 32,
+            "INTEGRITY_FAILURE",
+        )?;
+        Ok(Self {
+            context: c.decode("p02-file-c1", "context", &canonical(&state["context"])?)?,
+            size,
+            next,
+            parts,
+            file_key: Zeroizing::new(file_key),
+            manifest_key: Zeroizing::new(manifest_key),
+            prefix,
+            plain_hash: Sha256::new(),
+            source_digest: Some(digest.to_owned()),
         })
     }
     fn header(&self) -> Value {
@@ -85,7 +129,10 @@ impl FileWriter {
         h["purpose"] = json!("file-manifest");
         let wn = libsodium_rs::random::bytes(24);
         let mn = libsodium_rs::random::bytes(24);
-        let mut manifest = json!({"purpose":"file-manifest-plaintext","context":self.context,"framing":h["framing"],"file_data_key":b64(&self.file_key),"nonce_prefix":b64(&self.prefix),"original_name":name,"client_media_type":media,"plaintext_digest":b64(&self.plain_hash.finalize())});
+        let plain_digest = self
+            .source_digest
+            .unwrap_or_else(|| b64(&self.plain_hash.finalize()));
+        let mut manifest = json!({"purpose":"file-manifest-plaintext","context":self.context,"framing":h["framing"],"file_data_key":b64(&self.file_key),"nonce_prefix":b64(&self.prefix),"original_name":name,"client_media_type":media,"plaintext_digest":plain_digest});
         c.validate("p02-file-c1", "manifest", &manifest)?;
         let wrap = json!({"purpose":"file-manifest-key-wrap","context":h["context"],"nonce":b64(&wn),"ciphertext":b64(&encrypt(&self.manifest_key,&aad(&h,"file-manifest-key-wrap",0)?,&wn,group)?)});
         let plain = Zeroizing::new(canonical(&manifest)?);
@@ -196,7 +243,17 @@ impl FileReader {
             self.next < num(&self.header["framing"]["chunk_count"])?,
             "INVALID_CHUNK_INDEX",
         )?;
-        let part = &self.header["framing"]["parts"][self.next as usize];
+        let plain = self.decrypt_at(self.next, cipher)?;
+        self.hash.update(&plain);
+        self.next += 1;
+        Ok(plain)
+    }
+    pub fn decrypt_at(&self, index: u64, cipher: &[u8]) -> Result<Zeroizing<Vec<u8>>> {
+        require(
+            index < num(&self.header["framing"]["chunk_count"])?,
+            "INVALID_CHUNK_INDEX",
+        )?;
+        let part = &self.header["framing"]["parts"][index as usize];
         require(
             cipher.len() as u64 == num(&part["ciphertext_bytes"])?
                 && hash(cipher) == part["ciphertext_digest"],
@@ -204,12 +261,10 @@ impl FileReader {
         )?;
         let plain = decrypt(
             cipher,
-            &aad(&self.header, "file-chunk", self.next)?,
-            &nonce(&self.prefix, self.next)?,
+            &aad(&self.header, "file-chunk", index)?,
+            &nonce(&self.prefix, index)?,
             &self.key,
         )?;
-        self.hash.update(&plain);
-        self.next += 1;
         Ok(plain)
     }
     pub fn finish(self) -> Result<()> {

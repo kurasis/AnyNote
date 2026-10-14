@@ -76,6 +76,7 @@ final class NotesController
     {
         return DB::transaction(function () use ($r, $body, $id, $op) {
             $a = $this->repository->actor($r);
+            DB::table('gc_coordination')->where('singleton', 1)->lockForUpdate()->first();
             $this->repository->group($a, $body->group_id);
             if ($op === 'post_groups_id_threads') {
                 Protocol::require($body->group_id === $id && $body->object_kind === 'thread' && $body->thread_id === null && $body->action === 'create', 'MALFORMED_ENVELOPE');

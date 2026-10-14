@@ -1681,3 +1681,75 @@ configuration persistence still require their actual recorded outcomes.
 Complete latest installation passed at `08ca97c7f9b1caff1ffc55b284a2afa7a8f0bb65` with all
 810 then-visible tracked files and marked private/shared quota/counter
 and snapshot/pin state unchanged. Full startup/static/API readiness passed again.
+
+## Initial P12 exact-source software acceptance before the resync follow-up
+
+PASS at `4d6f3c93f54919987f64f669b27e5c1eb0907ec1`, complete clean tree `e5d5f22f3ce758dceb76244bb03fb4284bd1a511`: all twenty-two mandatory jobs,
+twelve portable file tests, 368 actual verified HTTPS/SQL/blob checks with a 1 GB
+round trip, 452 real file authority/full-quota security checks and 60 actual
+sandboxed shipped-PWA checks. Both native source receipts execute the real 1 GB
+SQLite/source/resume/export test and report actual all-feature counts:
+Linux 109, Windows 137.
+Raw implementation inputs/platform: 522/522;
+each was independently matched to the accepted Git blob (raw Windows line endings
+verified), and GitHub ZIP digests matched downloaded bytes. Frozen corpora and
+prior dependency locks were preserved.
+
+The desktop PWA actually locks a pending upload, reselects/resumes identical bytes,
+exports 1 GB through its single-use service-worker channel, verifies ciphertext
+OPFS/pin state, exports the same hash with file network requests disabled, attaches
+and publishes the note, and checks masked DOM/ordinary stores. Native tests reject
+source changes, preserve immutable attempts, verify cached bytes, refuse corrupt
+exports and atomically finalize only a complete selected output. Public memory
+samples retain baseline/peak/growth and process scope; they are not iPhone or
+packaged WebView2 physical acceptance or a hard RSS ceiling.
+
+Actual socket/receipt loss, quota/commit rollback, concurrent reservations,
+collector/commit and snapshot pin races do not charge twice or expose partial files.
+Pruning drops encrypted payload/key-wrap metadata but retains signed proof and the
+exact request digest for receipt reconciliation. Qualified G2/G3 and physical
+G1/U11/U12 remain OPEN/NOT_RUN; no production operation, release or new owner trial.
+
+Public [all-gate receipt](evidence/p12/initial/acceptance.json), [HTTP](evidence/p12/initial/http-report.json),
+[authority](evidence/p12/initial/membership-report.json), [browser](evidence/p12/initial/browser-report.json),
+[Linux](evidence/p12/initial/linux-source-report.json) and [Windows](evidence/p12/initial/windows-source-report.json)
+preserve raw execution bytes. Final documentation-head source-byte comparison,
+ordinary guarded merge and tested configuration persistence are separately checked.
+
+The complete frozen installer actually passed at `4d6f3c93f54919987f64f669b27e5c1eb0907ec1`, preserving all 849 then-tracked files, 26 independently hashed persistent tables and TLS/OAuth files. Startup/static/API and read-only contracts passed. Draft persistence, Publish and independent fresh restoration remain separate outcomes.
+
+## P12 exact-source software acceptance
+
+PASS at `d53b90f1ee3398ea0c784becdd1557e2eac78bd2`, complete clean tree `e6fb1363c2398e5dd4c5182a6709a95720602e14`: all twenty-two mandatory jobs,
+twelve portable file tests, eleven protected sync tests, 368 actual verified HTTPS/SQL/blob checks with a 1 GB
+round trip, 452 real file authority/full-quota security checks and 60 actual
+sandboxed shipped-PWA checks. Both native source receipts execute the real 1 GB
+SQLite/source/resume/export test and report actual all-feature counts:
+Linux 109, Windows 137.
+Raw implementation inputs/platform: 522/522;
+each was independently matched to the accepted Git blob (raw Windows line endings
+verified), and GitHub ZIP digests matched downloaded bytes. Frozen corpora and
+prior dependency locks were preserved.
+
+The desktop PWA actually locks a pending upload, reselects/resumes identical bytes,
+exports 1 GB through its single-use service-worker channel, verifies ciphertext
+OPFS/pin state, exports the same hash with file network requests disabled, attaches
+and publishes the note, and checks masked DOM/ordinary stores. Native tests reject
+source changes, preserve immutable attempts, verify cached bytes, refuse corrupt
+exports and atomically finalize only a complete selected output. Public memory
+samples retain baseline/peak/growth and process scope; they are not iPhone or
+packaged WebView2 physical acceptance or a hard RSS ceiling.
+
+Actual socket/receipt loss, quota/commit rollback, concurrent reservations,
+collector/commit and snapshot pin races do not charge twice or expose partial files.
+Pruning drops encrypted payload/key-wrap metadata but retains signed proof and the
+exact request digest for receipt reconciliation. Qualified G2/G3 and physical
+G1/U11/U12 remain OPEN/NOT_RUN; no production operation, release or new owner trial.
+
+Public [all-gate receipt](evidence/p12/acceptance.json), [HTTP](evidence/p12/http-report.json),
+[authority](evidence/p12/membership-report.json), [browser](evidence/p12/browser-report.json),
+[Linux](evidence/p12/linux-source-report.json) and [Windows](evidence/p12/windows-source-report.json)
+preserve raw execution bytes. Final documentation-head source-byte comparison,
+ordinary guarded merge and tested configuration persistence are separately checked.
+
+The complete frozen installer actually passed at `afc6bbd88130372f0a013073e12f55a5853c2099`, preserving all 860 then-tracked files, 26 independently hashed persistent tables and TLS/OAuth files. Startup/static/API and read-only contracts passed. Draft persistence, Publish and independent fresh restoration remain separate outcomes.

@@ -1,80 +1,99 @@
 # Next implementation batch
 
-## Complete P12 encrypted large files and quota accounting
+## Complete P13 search, safe previews, history, retention and exports
 
-Confirm the final P11 exact-source reports, twenty passing jobs, ordinary guarded
-merge and clean local/remote main. Read AGENTS, PROGRESS, TEST_EVIDENCE, DECISIONS,
-KNOWN_LIMITATIONS and P03–P11 guides. Start the supplied archive at 00; read 04,
-07, 08, 10, 13, 14, 19, 20 and relevant 09/11/17. Russian chat, English repository;
-passing push/merge and GitHub Actions are authorized. Use this checkout, no worktree
-or subagents unless explicitly requested. No production migration/deployment, live
-purge, release, new owner trial or reviewer outreach without its authorized scope.
+First verify final P12 exact-source receipts, all twenty-two mandatory jobs,
+ordinary SHA-guarded PR25 merge, clean local/remote main and its tested tree.
+Read AGENTS, PROGRESS, TEST_EVIDENCE, DECISIONS, KNOWN_LIMITATIONS, P03–P12 guides
+and the supplied specification starting at 00. P13 requires 01, 07, 09, 10, 13, 17;
+include 04/08/14/19/20 for frozen formats, authority and review findings.
+Russian chat, English repository. Ordinary passing push/merge and GitHub Actions
+are authorized. Use this checkout; no worktree/subagents unless explicitly asked.
+No production migration/deployment, live purge, release, new owner hardware trial
+or qualified-review outreach follows from this implementation task.
 
-Activate runtime-env.sh. Start/check owned dev-stack and p06-stack, verify original
-spec checksums, read-only contracts and P11 checks. Keep owner markers, TLS/OAuth,
-SQL volumes, local encrypted drafts/outbox, all independent pins, signed ancestry,
-prepared private candidate G, exact security attempts, staged sync cursors and cleanup
-journals. No remove-orphans/prune/blanket reset. Disposable HTTP attack suites must
-run sequentially; their explicit owner-marked reset/cleanup controls do not authorize
-production operations. Native all-feature tests are serial under the real Argon gate.
+Activate scripts/runtime-env.sh. Start/check only owned dev-stack and p06-stack;
+verify original spec checksums, read-only contracts, frozen dependency inventories
+and P12 checks. Preserve owner markers, TLS/OAuth material, SQL volumes, encrypted
+drafts/outbox, file sources/intents/immutable attempts, independent root/history
+pins, signed rosters, prepared candidate group keys, staged cursors, snapshot file
+pins and cleanup journals. No blanket reset, prune or remove-orphans. Synthetic
+HTTP/reset suites run sequentially; use only their explicitly marked disposable
+DB. Native all-feature tests are serial under the real Argon gate; the actual
+1 GB native test takes several minutes and is not silently skipped.
 
-Implement the complete P12 product path: source/sink adapters, immutable upload
-sessions, independently authenticated manifests and file key chain, ciphertext chunk
-store, reservation and actual-byte quota, streaming ingest/download, authorized
-range/revision selection, resume/reselect/restart and durable commit/reconciliation.
-Preserve frozen P02 bytes and exact framing-overhead arithmetic: 1,000,000,000
-plaintext bytes, 120 chunks, 1,755,648 final plaintext part, 1,000,001,920 data
-ciphertext bytes before manifest/wrap overhead. Never materialize a giant plaintext
-array or persist plaintext spill, source path, filename, preview or credentials in
-ordinary storage/logs/URLs. Use bounded maintained crypto, verified TLS, strict CSP
-and the actual protected native/Worker storage. Never disable provider eligibility.
+Implement the whole P13 product slice: encrypted local search with scope/coverage
+and rebuild controls; safe Markdown/bounded text/raster/PDF previews; encrypted
+client thumbnails; version compare/restore, trash/retention, favorites/read markers;
+portable encrypted export/import and explicit plaintext export. Keep current EN/RU
+UX, role/authority checks and existing conflict/offline work. Search tokens/indexes,
+preview plaintext, thumbnails' keys and source names belong in protected custody;
+no ordinary local/server logs, query parameters or plaintext search service.
+Distinguish not indexed, unavailable payload and unanchored history from no match.
 
-The manifest must authenticate its immutable file-key envelope and exact content
-scope, not depend on an unrelated key wrapper. A data version fixes file/version,
-operation and upload IDs, DEK, nonce prefix, source bytes and base/current signed
-policy. Every session/retry/range/commit binds account, device, group and source
-identity; reject cross-group links, body substitution and invalid recipients.
+Select a maintained isolated PDF/image rendering path with narrow bounded decode,
+pixels/pages/text/CPU budgets, cancellation and no native/device secrets, active
+script/launch actions, external images/URL unfurling or automatic HTML/SVG execution.
+Derived thumbnails are separately encrypted/context-bound/quota-charged; local
+reader preview grants no server write authority. A failed preview cannot block
+original-file commit or require decrypting through the server. Unsupported/huge
+formats retain explicit safe download. Freeze new dependency inventory/license
+bytes where needed without silently updating old Cargo/npm locks or P02 corpora.
 
-Integrate note pending attachments with the current P11 projection/cursor and actual
-signed history. Server-committed files remain recoverable if note attachment fails;
-show unpublished/unattached work and offer explicit attach/copy/cleanup. Do not
-erase the only source/draft/intent after acknowledgement loss, quota or lifecycle
-failure. Readers retain narrowly authorized maintenance; they cannot create content
-or certify unwitnessed history. Preserved private shared-copy audience fences remain.
+Implement complete reference-safe retention: immutable note/file ancestry,
+conflict heads, tombstones, retained parents, attachments, snapshot/export pins,
+unfinished uploads and thirty-day unattached recovery. Keep the common GC/pin
+boundary and canonical lock order; commit all pins before exposing a lease and
+reauthorize every page/chunk. User-visible history/trash/purge decisions must show
+what is retained/pruned/unavailable. Never erase the only unpublished source/intent,
+reuse burned publication identity or fabricate history from current heads.
+Add explicit downloaded-cache management for conservatively retained interrupted
+reservations; keep pinned ciphertext/unsynced work distinct from eviction candidates.
+Quota release follows successful eligible physical deletion, with report-first
+reconciliation. Production restore/physical accounting remains P16.
 
-Resume must verify actual selected/reopened source bytes and context before reuse.
-On expired/cancelled session, source change or epoch change, burn prior publication
-identity and create fresh IDs, DEK and nonce prefix after current authority checks.
-Reconcile old receipts before creating a new attempt; superseded/unknown attempts
-remain distinct from the stable local draft. No idempotency key can change signed
-bytes. Real lock/suspend, process/worker termination and generation/lease fencing
-must abort pending work and preserve encrypted recoverable state.
+Use maintained age v1 for a streaming outer portable archive and fresh independent
+user export identity. Preserve frozen P02 archive profile, footer/inventory/signature
+and original ciphertext frames. Include selected data's independently verifiable
+identities/certificates/policy ancestry/manifests/key envelopes; place only needed
+content/manifest DEKs inside the encrypted stream. Never export root/device private
+keys, sessions/passkeys or unrelated group keys. Never stage an unencrypted archive
+or giant plaintext Blob. Show inclusion of history/trash and separate export-kit
+storage. Whole accessible account export is a Windows streaming job, not a required
+iPhone 100 GB operation. Lease/estimated-duration bounds must be honest.
 
-Implement reservation TTL, chunk PUT idempotency, byte-based reconciliation and
-commit/cleanup jobs under the existing GC/snapshot pin boundary. Missing signed
-ancestry differs from intentionally pruned payload. Never delete active snapshot
-pins, retained parent/file references or pending uploads. Pins commit before lease
-exposure; reauthorize every download/page. P13 owns full retention/purge/export,
-P14/P15 full hosts and P16 production restore/deployment, with no cleanup shortcut.
+Build a clean offline importer/viewer that recovers using only archive + independent
+kit + documented maintained reader, with no original API/device cache. Validate
+outer end and mandatory footer, counts/digests/authorized historical evidence,
+unique safe paths, resource bounds and no symlink/sparse/archive bombs. Wrong kit,
+truncation, altered frames, trailing data, missing footer and unanchored provenance
+fail closed. Standard import decrypts locally and publishes fresh destination
+IDs/keys/signatures after current-audience confirmation/quota reservation. Cross-group
+copies re-encrypt; resumable import IDs do not mutate immutable operations. Do not
+silently widen access or relabel unanchored historical authors as live trusted ones.
 
-Run incompressible 1 GB and all chunk boundary tests through actual HTTP/SQL/blob
-and native/browser paths, including abort, quota/low-space, corruption/truncation,
-resume with same/wrong source, expired sessions, duplicate/changing retries,
-two-device conflicts, revoke/remove/rekey/ownership races, commit loss and crash
-recovery. Verify actual SQL/WAL/IndexedDB/ordinary storage/logs for leaks and double
-counting. Publish only public metadata/exact-source receipts; preserve raw platform
-bytes, ZIP digests, complete trees and all twenty inherited final gates plus new
-P12 gates. No physical/iPhone memory/background or external review claims from CI.
+Exercise real protected Worker/native stores, actual HTTP/SQL/blob, Windows and
+sandboxed strict-CSP browser: search leakage/coverage/migration; malicious Markdown,
+PDF/image/archive limits; retained/dangling file references and GC/export/commit
+races; empty/note/1 GB/multi-group/current-only/full-history exports; wrong kit,
+truncated/altered/footer/path failures; cancelled/full-quota resumable import;
+clean offline recovery and no plaintext temporary/SQL/WAL/IDB/OPFS/log leakage.
+Keep all twenty-two inherited mandatory gates plus necessary P13 gates. Publish
+only public metadata/exact-source receipts; validate raw platform bytes/Git inputs,
+ZIP digests and final source equality. Do not bypass TLS, sandbox, CSP or providers.
 
-Owner preferences remain: one Windows EXE and a simple iPhone static ZIP test kit
-when a new owner trial is actually authorized. Current owner devices are iPhone 17
-Pro/iOS 26.7.1 and Windows 11 Pro 25H2 with Hello. Their trusted private HTTPS host
-is not ready; never ask for keys/passwords in chat. Full physical G1/U11/U12 and
-qualified G2/G3 remain open/NOT_RUN, with no reviewer booking or outreach implied.
+Owner preferences persist: one Windows EXE and simple static iPhone ZIP when a
+new owner trial is actually authorized. Devices: iPhone 17 Pro/iOS 26.7.1 and
+Windows 11 Pro25H2 with Hello; trusted private HTTPS host not ready. Never ask for
+private keys/passwords in chat. Full physical G1/U11/U12 and qualified G2/G3 remain
+open/NOT_RUN; complete hosts remain P14/P15. Do not fabricate acceptance or book
+reviewers from this task's software authorization.
 
-Finish the entire software slice and U01–U10/U13–U17 evidence, honest remaining
-physical gates, tracking, dependency/limitation updates and full P13 handoff. Test
-and save complete read-only install/start instructions, preserve unrelated config,
-then merge after all final exact-head jobs pass using an explicit SHA guard. Fetch
-and verify clean local/remote main and tested tree. Draft save is not Publish or a
-fresh restore; only independently observed restoration supports that claim.
+Finish the entire P13 software slice, honest acceptance matrix, progress/decisions/
+dependencies/limitations/evidence and complete P14 handoff. Test complete read-only
+installer/start steps while preserving tracked files/owned persistent data. Inspect
+all /workspace repositories before replacing the declaration. After final exact-head
+gates pass, ordinary SHA-guarded merge and verify clean local/remote main/tested tree;
+save complete tested setup/start with actual merged SHA and read back, preserving
+unrelated settings. Draft save is not Publish or fresh-task restoration; report
+only actually observed publication/restoration.

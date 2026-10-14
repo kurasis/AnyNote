@@ -6,6 +6,10 @@ on:
     branches: [main]
   workflow_dispatch:
     inputs:
+      files_stream_only:
+        description: Diagnose the actual bounded service-worker export sink; full acceptance remains mandatory
+        type: boolean
+        default: false
       device_browser_only:
         description: Run the actual P08 browser fault scenario only
         type: boolean
@@ -29,7 +33,7 @@ concurrency:
 
 jobs:
   auth-linux-http-browser:
-    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only && !inputs.shared_browser_only }}
+    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only && !inputs.shared_browser_only && !inputs.files_stream_only }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
@@ -96,7 +100,7 @@ jobs:
           python3 scripts/dev-stack.py stop
 
   auth-windows-native:
-    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only && !inputs.shared_browser_only }}
+    if: ${{ !inputs.device_browser_only && !inputs.notes_browser_only && !inputs.shared_browser_only && !inputs.files_stream_only }}
     runs-on: windows-2025
     timeout-minutes: 20
     defaults:
@@ -134,7 +138,7 @@ jobs:
           retention-days: 14
 
   browser-fault-diagnosis:
-    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.device_browser_only || inputs.notes_browser_only || inputs.shared_browser_only) }}
+    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.device_browser_only || inputs.notes_browser_only || inputs.shared_browser_only || inputs.files_stream_only) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -164,7 +168,9 @@ jobs:
       - name: Actual sandboxed CSP and verified-TLS UI
         run: |
           source scripts/runtime-env.sh
-          if [ "${{ inputs.shared_browser_only }}" = "true" ]; then
+          if [ "${{ inputs.files_stream_only }}" = "true" ]; then
+            node experiments/p01/p12-stream-probe.mjs
+          elif [ "${{ inputs.shared_browser_only }}" = "true" ]; then
             node experiments/p01/p10-browser.mjs
           elif [ "${{ inputs.notes_browser_only }}" = "true" ]; then
             node experiments/p01/p09-browser.mjs
@@ -177,6 +183,7 @@ jobs:
         with:
           name: browser-fault-public-report
           path: |
+            artifacts/p12/stream-report.json
             artifacts/p08/browser-report.json
             artifacts/p09/browser-report.json
             artifacts/p10/browser-report.json

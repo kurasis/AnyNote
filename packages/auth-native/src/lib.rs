@@ -235,6 +235,153 @@ pub struct Adapter {
     app: String,
     http: reqwest::blocking::Client,
 }
+
+/// Fixed product file routes; no arbitrary URL, cookie, origin or redirect proxy.
+pub enum FileOperation<'a> {
+    Reserve {
+        group: &'a str,
+        body: &'a serde_json::Value,
+    },
+    Status {
+        upload: &'a str,
+    },
+    Part {
+        upload: &'a str,
+        index: u8,
+        ciphertext: &'a [u8],
+    },
+    Commit {
+        upload: &'a str,
+        body: &'a serde_json::Value,
+    },
+    Cancel {
+        upload: &'a str,
+    },
+    Manifest {
+        version: &'a str,
+    },
+    Chunk {
+        version: &'a str,
+        index: u8,
+    },
+}
+pub struct FileResponse {
+    pub status: u16,
+    pub bytes: Vec<u8>,
+}
+impl Adapter {
+    pub fn file(
+        &self,
+        credentials: &Credentials,
+        operation: FileOperation<'_>,
+    ) -> Result<FileResponse, Error> {
+        use FileOperation::*;
+        let (id, path, method, payload, control) = match operation {
+            Reserve { group, body } => (
+                group,
+                format!("groups/{group}/uploads"),
+                reqwest::Method::POST,
+                None,
+                Some(body),
+            ),
+            Status { upload } => (
+                upload,
+                format!("uploads/{upload}"),
+                reqwest::Method::GET,
+                None,
+                None,
+            ),
+            Part {
+                upload,
+                index,
+                ciphertext,
+            } => {
+                if index >= 120 || ciphertext.len() < 16 || ciphertext.len() > 8388624 {
+                    return Err(Error::Configuration);
+                }
+                (
+                    upload,
+                    format!("uploads/{upload}/parts/{index}"),
+                    reqwest::Method::PUT,
+                    Some(ciphertext),
+                    None,
+                )
+            }
+            Commit { upload, body } => (
+                upload,
+                format!("uploads/{upload}/commit"),
+                reqwest::Method::POST,
+                None,
+                Some(body),
+            ),
+            Cancel { upload } => (
+                upload,
+                format!("uploads/{upload}"),
+                reqwest::Method::DELETE,
+                None,
+                None,
+            ),
+            Manifest { version } => (
+                version,
+                format!("files/{version}/manifest"),
+                reqwest::Method::GET,
+                None,
+                None,
+            ),
+            Chunk { version, index } => {
+                if index >= 120 {
+                    return Err(Error::Configuration);
+                }
+                (
+                    version,
+                    format!("files/{version}/chunks/{index}"),
+                    reqwest::Method::GET,
+                    None,
+                    None,
+                )
+            }
+        };
+        if !binary(id, 16) || credentials.state != "trusted" {
+            return Err(Error::Configuration);
+        }
+        let mut request = self
+            .http
+            .request(method, format!("{}/api/v1/{path}", self.issuer))
+            .bearer_auth(credentials.access.as_str());
+        if let Some(bytes) = payload {
+            request = request
+                .header("Content-Type", "application/octet-stream")
+                .body(bytes.to_vec());
+        }
+        if let Some(value) = control {
+            if serde_json::to_vec(value)
+                .map_err(|_| Error::Transport)?
+                .len()
+                > 262144
+            {
+                return Err(Error::Configuration);
+            }
+            request = request.json(value);
+        }
+        let response = request.send().map_err(|_| Error::Transport)?;
+        let status = response.status().as_u16();
+        let limit = if status == 200 && path.contains("/chunks/") {
+            8388624
+        } else if status == 200 {
+            1048576
+        } else {
+            4096
+        };
+        let mut bytes = Vec::new();
+        std::io::Read::take(response, limit + 1)
+            .read_to_end(&mut bytes)
+            .map_err(|_| Error::Transport)?;
+        if bytes.len() as u64 > limit {
+            return Err(Error::Transport);
+        }
+        Ok(FileResponse { status, bytes })
+    }
+}
 pub struct Pending {
     loopback: Loopback,
     client: Client,

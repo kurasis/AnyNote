@@ -107,6 +107,8 @@ struct Rotation {
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct State {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    file_profile: Option<String>,
     rotation: Option<Rotation>,
     schema: u32,
     scope: Scope,
@@ -122,6 +124,10 @@ impl State {
     fn validate(&self, c: &Codec, s: &Scope) -> Result<()> {
         check(
             self.schema == 1
+                && self
+                    .file_profile
+                    .as_deref()
+                    .is_none_or(|p| p == "p12-files-v1")
                 && self.scope == *s
                 && self.epoch > 0
                 && self.revision > 0
@@ -452,6 +458,7 @@ impl Vault {
             rotation: None,
             manifest,
             schema: 1,
+            file_profile: None,
             scope: self.scope.clone(),
             epoch: 1,
             revision: 1,
@@ -524,7 +531,7 @@ impl Vault {
             "INTEGRITY_FAILURE",
         )?;
         check(
-            s.manifest["body"] == manifest_body(&self.scope, &s.pins, &s.vault_id)
+            s.manifest["body"] == expected_manifest(&self.scope, &s)
                 && s.manifest.as_object().is_some_and(|o| o.len() == 2),
             "INTEGRITY_FAILURE",
         )?;
@@ -566,7 +573,7 @@ impl Vault {
             return Err(Error("STALE_CAPABILITY"));
         }
         check(
-            s.manifest["body"] == manifest_body(&self.scope, &s.pins, &s.vault_id)
+            s.manifest["body"] == expected_manifest(&self.scope, &s)
                 && s.manifest.as_object().is_some_and(|o| o.len() == 2),
             "INTEGRITY_FAILURE",
         )?;
@@ -1101,6 +1108,13 @@ impl Vault {
     }
 }
 
+fn expected_manifest(scope: &Scope, s: &State) -> Value {
+    let mut body = manifest_body(scope, &s.pins, &s.vault_id);
+    if let Some(profile) = &s.file_profile {
+        body["file_profile"] = json!(profile);
+    }
+    body
+}
 fn manifest_body(scope: &Scope, pins: &Value, vault_id: &str) -> Value {
     json!({"contract":"p07-local-v1","protocol":"anynote","protocol_version":1,"purpose":"local-vault-manifest","scope":scope,"pins":pins,"vault_id":vault_id})
 }

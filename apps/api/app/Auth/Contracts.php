@@ -28,11 +28,14 @@ final class Contracts
         $f->registerCallable('string', 'bounded-binary-4096', fn ($s) => P::isBinary($s) && strlen(P::binary($s)) >= 48 && strlen(P::binary($s)) <= 4096);
         $f->registerCallable('string', 'bounded-binary-16384', fn ($s) => P::isBinary($s) && strlen(P::binary($s)) >= 18 && strlen(P::binary($s)) <= 16384);
         $f->registerCallable('string', 'decimal-u63', fn ($s) => P::counter($s));
+        foreach (['119', '120', '65536', '8388608', '8388624', '1000000000', '9223372036854775807'] as $max) {
+            $f->registerCallable('string', 'decimal-'.$max, fn ($s) => P::counter($s, $max));
+        }
     }
 
     public function value(string $component, string $kind, stdClass $value): stdClass
     {
-        $ids = ['p06' => 'urn:anynote:p06:auth:v1', 'p08' => 'urn:anynote:p08:devices:v1', 'p09' => 'urn:anynote:p09:notes:v1', 'p10' => 'urn:anynote:p10:shared:v1', 'p11' => 'urn:anynote:p11:sync:v1', 'group' => 'urn:anynote:p02:group-contract:c2', 'state' => 'urn:anynote:p02:state-contract:c1', 'identity' => 'urn:anynote:p02:identity-contract:c1'];
+        $ids = ['p06' => 'urn:anynote:p06:auth:v1', 'p08' => 'urn:anynote:p08:devices:v1', 'p09' => 'urn:anynote:p09:notes:v1', 'p10' => 'urn:anynote:p10:shared:v1', 'p11' => 'urn:anynote:p11:sync:v1', 'p12' => 'urn:anynote:p12:files:v1', 'group' => 'urn:anynote:p02:group-contract:c2', 'state' => 'urn:anynote:p02:state-contract:c1', 'identity' => 'urn:anynote:p02:identity-contract:c1'];
         if (! isset($ids[$component]) || ! preg_match('/^[a-z-]+$/D', $kind) || ! $this->validator->validate($value, $ids[$component].'#/$defs/'.$kind)->isValid()) {
             throw new ApiException('INVALID_REQUEST');
         }

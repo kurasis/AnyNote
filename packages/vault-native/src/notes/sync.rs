@@ -19,6 +19,7 @@ pub enum Request {
     Catalog { page: Value },
     SnapshotPage { result: Value },
     SnapshotItem { result: Value },
+    SnapshotFiles { inventory: Value },
     SnapshotFinish {},
     SnapshotCancel {},
     DeltaStart { page: Value },
@@ -33,6 +34,7 @@ impl Request {
             | Self::SnapshotPage { result }
             | Self::SnapshotItem { result }
             | Self::DeltaItem { result } => wipe_value(result),
+            Self::SnapshotFiles { inventory } => wipe_value(inventory),
             Self::Catalog { page } | Self::DeltaStart { page } => wipe_value(page),
             _ => (),
         }
@@ -87,10 +89,18 @@ impl Vault {
         let mut witnesses = values(c, "witnesses")?.clone();
         for v in staged {
             if let Some(w) = witnesses
-                .iter()
+                .iter_mut()
                 .find(|w| w["revision_id"] == v["witness"]["revision_id"])
             {
-                check(*w == v["witness"], "ROLLBACK_QUARANTINE")?;
+                let mut old_proof = w.as_object().ok_or(Error("INTEGRITY_FAILURE"))?.clone();
+                let mut new_proof = v["witness"]
+                    .as_object()
+                    .ok_or(Error("INTEGRITY_FAILURE"))?
+                    .clone();
+                old_proof.remove("cache_id");
+                new_proof.remove("cache_id");
+                check(old_proof == new_proof, "ROLLBACK_QUARANTINE")?;
+                *w = v["witness"].clone();
             } else {
                 witnesses.push(v["witness"].clone());
             }
@@ -478,6 +488,41 @@ impl Vault {
                 list(&mut c["sync"][slot],"items")?.push(json!({"item":item,"cache_id":write.id,"witness":witness,"reference":r["reference"]}));
                 writes.push(write);
             }
+            Request::SnapshotFiles { inventory } => {
+                let t = &c["sync"]["stage"];
+                let items = inventory.as_array().ok_or(Error("INVALID_REQUEST"))?;
+                check(
+                    t.is_object()
+                        && items.len() <= 1000
+                        && items.len().to_string() == text(&t["result"]["files"]["count"])?,
+                    "SYNC_GAP",
+                )?;
+                let files = self.file_control(i, state)?;
+                for item in items {
+                    let witness = files["witnesses"]
+                        .as_array()
+                        .into_iter()
+                        .flatten()
+                        .find(|w| {
+                            w["group_id"] == item["group_id"]
+                                && w["file_version_id"] == item["file_version_id"]
+                                && w["envelope_digest"] == item["envelope_digest"]
+                        })
+                        .ok_or(Error("UNANCHORED_HISTORY"))?;
+                    check(
+                        self.file_evidence(i, state, witness)?["envelope"]["header"]["context"]["file_id"]
+                            == item["file_id"],
+                        "CONTEXT_MISMATCH",
+                    )?;
+                }
+                let mut bytes = b"AnyNote/P12/snapshot-files\0".to_vec();
+                bytes.extend(canonical(inventory)?);
+                check(
+                    hash(&bytes) == t["result"]["files"]["digest"],
+                    "INTEGRITY_FAILURE",
+                )?;
+                c["sync"]["stage"]["files_verified"] = json!(true);
+            }
             Request::SnapshotFinish {} => {
                 let t = c["sync"]["stage"].clone();
                 check(
@@ -487,6 +532,7 @@ impl Vault {
                             == number(&t["result"]["descriptor"]["page_count"])? as usize
                         && t["all_items"] == t["result"]["descriptor"]["item_count"]
                         && values(&t, "items")?.len() == values(&t, "inventory")?.len()
+                        && (t["result"]["files"].is_null() || t["files_verified"] == true)
                         && inventory_hash(values(&t, "pages")?)?
                             == t["result"]["descriptor"]["inventory_digest"],
                     "SYNC_GAP",

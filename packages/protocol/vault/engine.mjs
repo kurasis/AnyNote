@@ -5,6 +5,8 @@ import {bootstrapControl} from '../devices/bootstrap.mjs';
 import {NotesWorkflow} from '../notes/workflow.mjs';
 import {noteControlId,sealNoteLocal,openNoteLocal,noteFrameHash} from '../notes/local.mjs';
 import {noteValue} from '../notes/client.mjs';
+import {fileControlId,fileIds} from '../files/workflow.mjs';
+import {fileValue} from '../files/codec.mjs';
 import {sealLifecycle,openLifecycle,lifecycleHash} from '../devices/local.mjs';
 import {strictJson} from '../src/strict-json.mjs';
 import {DeviceWorkflow,controlId} from '../devices/workflow.mjs';
@@ -103,7 +105,7 @@ export class VaultEngine {
   async #secretData(tx,s,key=this.#key){const row=await tx.read(s.vault_id);ensure(row,'INTEGRITY_FAILURE');return row.frame.contract==='p11-local-v1'?syncValue('secrets',await readPaged(row.frame,this.scope,s.pins,s.vault_id,'vault-secrets',key,id=>tx.read(id))):this.#load(row.frame,key).data;}
   async #addGroupKeys(tx,s,keys){const data=await this.#secretData(tx,s);try{for(const value of keys){const old=data.group_keys.find(k=>k.group_id===value.group_id&&k.key_epoch===value.key_epoch);ensure(value.service_id===this.scope.service_id&&(!old||(old.epoch_digest===value.epoch_digest&&old.group_secret===value.group_secret)),'INTEGRITY_FAILURE');if(!old)data.group_keys.push(structuredClone(value));}data.group_keys.sort((a,b)=>{const x=a.group_id+'/'+a.key_epoch.padStart(19,'0'),y=b.group_id+'/'+b.key_epoch.padStart(19,'0');return x<y?-1:x>y?1:0;});syncValue('secrets',data);const old=await tx.read(s.vault_id),frame=await this.#storePaged(tx,s.pins,s.vault_id,'vault-secrets',data,old.frame);await tx.put({id:s.vault_id,frame});}finally{wipe(data);}}
   async #publicControl(tx){const row=await tx.read(controlId(this.scope));if(!row)return null;const s=metadata(await tx.get(),this.scope);return openLifecycle(row.frame,this.scope,s.pins,controlId(this.scope),'device-control',this.#key);}
-  async #reserved(tx,recordId){if(recordId===controlId(this.scope)||recordId===noteControlId(this.scope))return true;const c=await this.#publicControl(tx);if(c&&(c.pages.includes(recordId)||(c.staging?.pages??[]).includes(recordId)))return true;const n=await this.#noteControl(tx);return !!n&&this.#noteIds(n).has(recordId)||await this.#criticalPart(tx,recordId);}
+  async #reserved(tx,recordId){if(recordId===controlId(this.scope)||recordId===noteControlId(this.scope)||recordId===fileControlId(this.scope))return true;const files=await this.#fileControl(tx);if(files){for(const [id,kind]of fileIds(files)){if(id===recordId)return true;const row=await tx.read(id);if(row&&publicPartIds(row.frame,this.scope,(await tx.get()).pins,id,kind,this.#key).includes(recordId))return true;}}const c=await this.#publicControl(tx);if(c&&(c.pages.includes(recordId)||(c.staging?.pages??[]).includes(recordId)))return true;const n=await this.#noteControl(tx);return !!n&&this.#noteIds(n).has(recordId)||await this.#criticalPart(tx,recordId);}
   async #loadDevices(cap,includeSecrets=false){
     return this.store.transaction(false,async tx=>{const s=await this.#state(tx,cap),control=await this.#publicControl(tx),pages=[];let bytes=0;
       for(const pageId of control?.pages??[]){const row=await tx.read(pageId);ensure(row,'INTEGRITY_FAILURE');const page=openLifecycle(row.frame,this.scope,s.pins,pageId,'roster-page',this.#key);bytes+=wire(page.events).length;ensure(bytes<=33554432,'RESOURCE_LIMIT');pages.push(page.events);}
@@ -173,13 +175,31 @@ export class VaultEngine {
     });this.#revision=committed.revision;this.#notesHash=committed.hash;return {state:'local-saved'};
   }
   notes(cap,operation,args=[]){
-    const copied=structuredClone(args),run=this.#notesTail.then(()=>this.#notesCommand(cap,operation,copied));this.#notesTail=run.catch(()=>{});return run;
+    let copied;
+    if(operation==='files'&&args[1]?.source instanceof Blob){const {source,...control}=args[1];copied=[args[0],{...structuredClone(control),source}];}
+    else copied=structuredClone(args);
+    const run=this.#notesTail.then(()=>this.#notesCommand(cap,operation,copied));this.#notesTail=run.catch(()=>{});return run;
   }
+  async #fileControl(tx){
+    const id=fileControlId(this.scope),row=await tx.read(id);if(!row)return null;const s=metadata(await tx.get(),this.scope);const control=fileValue('file-control',await readPaged(row.frame,this.scope,s.pins,id,'file-control',this.#key,p=>tx.read(p)));ensure(control.id===id,'INTEGRITY_FAILURE');return control;
+  }
+  #fileHash;
+  #filesAdapter(cap){return {
+    readControl:()=>this.store.transaction(false,async tx=>{await this.#state(tx,cap);return this.#fileControl(tx);}),
+    load:()=>this.store.transaction(false,async tx=>{await this.#state(tx,cap);const row=await tx.read(fileControlId(this.scope));this.#fileHash=row?frameHash(row.frame):null;return this.#fileControl(tx);}),
+    readRecord:(id,kind)=>this.store.transaction(false,async tx=>{const s=await this.#state(tx,cap),c=await this.#fileControl(tx);ensure(c&&fileIds(c).get(id)===kind,'RESERVED_RECORD');const row=await tx.read(id);ensure(row,'RECORD_NOT_FOUND');return fileValue(kind,await readPaged(row.frame,this.scope,s.pins,id,kind,this.#key,p=>tx.read(p)));}),
+    persist:async(control,values)=>{
+      const fence=await this.lease(cap);const result=await this.store.transaction(true,async tx=>{const s=await this.#state(tx,cap);this.#fence(s,fence);const id=fileControlId(this.scope),old=await tx.read(id);ensure((old?frameHash(old.frame):null)===this.#fileHash,'STALE_WRITER');fileValue('file-control',control);ensure(control.id===id,'INTEGRITY_FAILURE');const before=await this.#fileControl(tx),allowed=fileIds(control),prior=before?fileIds(before):new Map();
+       for(const v of values){fileValue(v.kind,v.data);ensure(allowed.get(v.id)===v.kind&&['file-transfer','file-evidence'].includes(v.kind)&&v.data.purpose==='p12-'+v.kind&&wire(v.data).length<=262144,'INVALID_FILE_DTO');const row=await tx.read(v.id);ensure(!row||prior.get(v.id)===v.kind,'RESERVED_RECORD');await tx.put({id:v.id,frame:await this.#storePaged(tx,s.pins,v.id,v.kind,v.data,row?.frame)});}
+       const frame=await this.#storePaged(tx,s.pins,id,'file-control',control,old?.frame);await tx.put({id,frame});s.file_profile='p12-files-v1';s.manifest=signManifest(this.scope,s.pins,s.vault_id,this.#keys.signing.privateKey,s.file_profile);s.revision++;await tx.set(s);this.#authorize(cap);this.#fence(s,fence);return {revision:s.revision,hash:frameHash(frame)};
+      });this.#revision=result.revision;this.#fileHash=result.hash;
+    },
+  };}
   async #notesCommand(cap,operation,args=[]){
-    this.#authorize(cap);ensure(typeof operation==='string'&&Array.isArray(args)&&args.length<=3&&wire(args).length<=4194304,'RESOURCE_LIMIT');
+    this.#authorize(cap);ensure(typeof operation==='string'&&Array.isArray(args)&&args.length<=3&&(operation==='files'?args.length===2:wire(args).length<=4194304),'RESOURCE_LIMIT');
     const {s,currentHash}=await this.store.transaction(false,async tx=>{const s=await this.#state(tx,cap),row=await tx.read(noteControlId(this.scope));return {s,currentHash:row?frameHash(row.frame):null};});
     if(this.#notes&&currentHash!==this.#notesHash){this.#notes.close();this.#notes=undefined;}this.#notesHash=currentHash;this.#notesFence=await this.lease(cap);
-    this.#notes??=new NotesWorkflow({scope:this.scope,pins:s.pins,keys:this.#keys,load:()=>this.store.transaction(false,async tx=>{await this.#state(tx,cap);return this.#noteControl(tx);}),read:(id,kind)=>this.#noteRead(cap,id,kind),persist:(c,e)=>this.#persistNotes(cap,c,e),devices:()=>this.#loadDevices(cap,false),secrets:async()=>{const loaded=await this.#loadDevices(cap,true);return loaded.secrets;}});
+    this.#notes??=new NotesWorkflow({scope:this.scope,pins:s.pins,keys:this.#keys,load:()=>this.store.transaction(false,async tx=>{await this.#state(tx,cap);return this.#noteControl(tx);}),read:(id,kind)=>this.#noteRead(cap,id,kind),persist:(c,e)=>this.#persistNotes(cap,c,e),devices:()=>this.#loadDevices(cap,false),secrets:async()=>{const loaded=await this.#loadDevices(cap,true);return loaded.secrets;},files:this.#filesAdapter(cap)});
     try{const result=structuredClone(await this.#notes.command(operation,args));this.#authorize(cap);await this.store.transaction(false,tx=>this.#state(tx,cap));return result;}catch(e){this.#notes?.close();this.#notes=undefined;throw e;}
   }
   async evict(cap,fence,recordId){return this.store.transaction(true,async tx=>{const s=await this.#state(tx,cap);this.#fence(s,fence);ensure(recordId!==s.vault_id&&!await this.#reserved(tx,recordId),'RESERVED_RECORD');const r=await tx.read(recordId);ensure(r,'RECORD_NOT_FOUND');ensure(record(this.scope,r.frame).context.record_kind==='cache','UNSYNCED_WORK_PROTECTED');await tx.remove(recordId);s.revision++;await tx.set(s);this.#revision=s.revision;this.#anchors.delete(recordId);return {state:'cache-evicted'};});}

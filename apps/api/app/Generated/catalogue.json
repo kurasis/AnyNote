@@ -568,7 +568,12 @@
       "authorization": "Account/session/device and signed operation; see original chapter 08",
       "operation_id": "get_files_version_chunks_index",
       "phase": "P12",
-      "implemented": false
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "binary_response": true
     },
     {
       "method": "GET",
@@ -577,7 +582,12 @@
       "authorization": "Account/session/device and signed operation; see original chapter 08",
       "operation_id": "get_files_version_manifest",
       "phase": "P12",
-      "implemented": false
+      "implemented": true,
+      "response": "p12-files/manifest-result",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "DELETE",
@@ -586,7 +596,12 @@
       "authorization": "Account/session/device and signed operation; see original chapter 08",
       "operation_id": "delete_files_version_unattached",
       "phase": "P12",
-      "implemented": false
+      "implemented": true,
+      "response": "p12-files/reclaim-result",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "GET",
@@ -621,10 +636,15 @@
       "method": "GET",
       "path": "/api/v1/groups/{id}/files",
       "summary": "Paginated attachment/file-version metadata",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted session and device; exact account/group/immutable file scope; writer for upload and current read access for every ciphertext request.",
       "operation_id": "get_groups_id_files",
       "phase": "P12",
-      "implemented": false
+      "implemented": true,
+      "response": "p12-files/files-page",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "POST",
@@ -693,10 +713,16 @@
       "method": "POST",
       "path": "/api/v1/groups/{id}/uploads",
       "summary": "Reserve bytes, bind upload to device/group/new file version",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted session and device; exact account/group/immutable file scope; writer for upload and current read access for every ciphertext request.",
       "operation_id": "post_groups_id_uploads",
       "phase": "P12",
-      "implemented": false
+      "implemented": true,
+      "request": "p12-files/reserve-request",
+      "response": "p12-files/upload-status",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "GET",
@@ -929,19 +955,29 @@
       "method": "GET",
       "path": "/api/v1/me/storage",
       "summary": "storage",
-      "authorization": "See original chapter 08; no implicit public data access",
+      "authorization": "Current trusted session and device; exact account/group/immutable file scope; writer for upload and current read access for every ciphertext request.",
       "operation_id": "get_me_storage",
-      "phase": "P13",
-      "implemented": false
+      "phase": "P12",
+      "implemented": true,
+      "response": "p12-files/storage",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "GET",
       "path": "/api/v1/me/unattached-files",
       "summary": "Recoverable committed versions uploaded by this account, still in currently accessible groups, awaiting entry publication",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted session and device; exact account/group/immutable file scope; writer for upload and current read access for every ciphertext request.",
       "operation_id": "get_me_unattached_files",
       "phase": "P12",
-      "implemented": false
+      "implemented": true,
+      "response": "p12-files/files-page",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "GET",
@@ -1108,37 +1144,58 @@
       "method": "DELETE",
       "path": "/api/v1/uploads/{id}",
       "summary": "Cancel/release reservation idempotently",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted session and device; exact account/group/immutable file scope; writer for upload and current read access for every ciphertext request.",
       "operation_id": "delete_uploads_id",
       "phase": "P12",
-      "implemented": false
+      "implemented": true,
+      "response": "p12-files/upload-status",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "GET",
       "path": "/api/v1/uploads/{id}",
       "summary": "Missing part list, acknowledged digests, expiry, reservation",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted session and device; exact account/group/immutable file scope; writer for upload and current read access for every ciphertext request.",
       "operation_id": "get_uploads_id",
       "phase": "P12",
-      "implemented": false
+      "implemented": true,
+      "response": "p12-files/upload-status",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "POST",
       "path": "/api/v1/uploads/{id}/commit",
       "summary": "Signed encrypted manifest and exact part inventory -> committed unattached version",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted session and device; exact account/group/immutable file scope; writer for upload and current read access for every ciphertext request.",
       "operation_id": "post_uploads_id_commit",
       "phase": "P12",
-      "implemented": false
+      "implemented": true,
+      "request": "p12-files/commit-request",
+      "response": "p12-files/receipt",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "PUT",
       "path": "/api/v1/uploads/{id}/parts/{index}",
       "summary": "Bounded binary ciphertext body, expected length/digest",
-      "authorization": "Account/session/device and signed operation; see original chapter 08",
+      "authorization": "Current trusted session and device; exact account/group/immutable file scope; writer for upload and current read access for every ciphertext request.",
       "operation_id": "put_uploads_id_parts_index",
       "phase": "P12",
-      "implemented": false
+      "implemented": true,
+      "response": "p02-file-c1/part",
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ]
     },
     {
       "method": "GET",
@@ -1534,6 +1591,20 @@
       "phase": "P11",
       "implemented": true,
       "response": "p11-sync/snapshot-bundle"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/snapshots/{id}/files",
+      "summary": "Pinned exact file manifest inventory at the snapshot watermark",
+      "authorization": "Bound snapshot owner/device/session with every-page current group authorization",
+      "operation_id": "get_snapshots_id_files",
+      "phase": "P12",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p12-files/snapshot-files-page"
     }
   ]
 }

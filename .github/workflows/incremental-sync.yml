@@ -90,7 +90,7 @@ jobs:
 
   sync-windows-native:
     runs-on: windows-2025
-    timeout-minutes: 20
+    timeout-minutes: 40
     defaults:
       run:
         shell: pwsh

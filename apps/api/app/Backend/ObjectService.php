@@ -19,6 +19,7 @@ final class ObjectService
 
         return DB::transaction(function () use ($sessionSecret, $request) {
             $a = $this->authorization->actor($sessionSecret);
+            DB::table('gc_coordination')->where('singleton', 1)->lockForUpdate()->first();
             $g = $this->authorization->group($a, $request->group_id);
             $b = $this->protocol->bundle(P::canonical($request->bundle), $a->signingKey);
             $c = $b->envelope->header->context;
@@ -29,6 +30,7 @@ final class ObjectService
                 throw new ApiException('INVALID_SIGNATURE');
             }
             Protocol::require((! Schema::hasTable('group_security_receipts') || ! DB::table('group_security_receipts')->where('account_id', $a->accountId)->where('device_id', $a->deviceId)->where('operation_id', $c->operation_id)->exists()), 'IDEMPOTENCY_MISMATCH');
+            Protocol::require(! DB::table('file_publication_ids')->where('account_id', $a->accountId)->where('device_id', $a->deviceId)->where('operation_id', $c->operation_id)->exists(), 'IDEMPOTENCY_MISMATCH');
             $digest = P::digest('p02-v1', 'bundle', $b);
             $receiptQuery = DB::table('mutation_receipts')->where('account_id', $a->accountId)->where('device_id', $a->deviceId)->where('operation_id', $c->operation_id);
             if ($old = $receiptQuery->first()) {
@@ -93,6 +95,9 @@ final class ObjectService
                 throw new ApiException('REVISION_ID_CONFLICT');
             }
             $files = [];
+            if ($c->attachments !== []) {
+                DB::table('gc_coordination')->where('singleton', 1)->lockForUpdate()->first();
+            }
             foreach ($c->attachments as $attachment) {
                 $file = DB::table('file_versions')->where('id', $attachment->file_version_id)->where('group_id', $g->id)->where('file_id', $attachment->file_id)->lockForUpdate()->first();
                 if (! $file || $file->state !== 'committed' || $file->manifest_digest !== $attachment->envelope_digest) {
@@ -118,6 +123,7 @@ final class ObjectService
             DB::table('objects')->where('id', $c->object_id)->update(['archived' => $c->archived, 'tombstoned' => $c->action === 'soft-delete']);
             foreach ($files as $file) {
                 DB::table('attachment_refs')->insert(['revision_id' => $c->revision_id, 'file_version_id' => $file->id, 'group_id' => $g->id]);
+                DB::table('publication_journal')->where('file_version_id', $file->id)->where('state', 'unattached')->update(['state' => 'referenced']);
             }
             $cursor = $this->sync->append([['group_id' => $g->id, 'kind' => $c->object_kind, 'object_id' => $c->object_id, 'revision_id' => $c->revision_id, 'digest' => $envelopeDigest]]);
             DB::table('objects')->where('id', $c->object_id)->update(['updated_sequence' => $cursor['sequence'], ...($object === null ? ['created_sequence' => $cursor['sequence']] : [])]);

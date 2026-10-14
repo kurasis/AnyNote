@@ -451,3 +451,41 @@ and latest lifecycle follow-up each passed all twenty mandatory jobs. New closed
 reason diagnostics and immediate host masking make a later protective closure
 observable; background polling preserves the five-minute idle deadline. These
 software results do not establish physical/G2/G3 or universal freshness guarantees.
+
+## P12 software and physical boundaries
+
+P12 has a bounded single-transfer pipeline, protected source/attempt checkpoints,
+actual HTTP/SQL/blob integration, native selected-handle streaming and replaceable
+ciphertext caches. One maximum original file is 1,000,000,000 bytes / 120 chunks;
+logical retained quota is 100 GB plus separately provisioned physical overhead.
+Source verification hashes the actual file before encryption and on reselect;
+large copies re-encrypt complete versions. Current local attempts/witnesses and
+snapshot files are bounded to 512/1,000/1,000; eight manifests per snapshot page.
+These bounds are explicit errors preserving work, not an unlimited scale claim.
+
+Browser storage can be evicted despite persistence; interrupted cache reservations
+are conservatively retained and need P13 cache-management UX. Native cache OS locks
+serialize active jobs; pins and incomplete jobs are not automatic victims. Actual
+free-space/write errors remain authoritative. Quota counters/journal do not include
+DB pages, logs/backups or independently prove the pre-P12 physical inventory.
+Operator physical reconciliation, capacity/load and restore remain P16.
+
+Native library tests on Windows exercise actual handles, SQLite, gigabyte
+crypto/resume/export, cache and atomic output. Complete packaged WebView2 file
+UI/dialog/network integration and measured OS memory/lock/suspend remain P14/G1.
+Hosted Chromium is genuine sandboxed desktop PWA, not an iPhone Files surrogate.
+The installed iPhone PWA 1 GB save/background/force-close/low-space U11/U12 and
+full physical G1 remain OPEN/NOT_RUN in this batch. The owner's private trusted
+HTTPS host is not ready. Older 0.1.4 owner-kit evidence remains separately retained.
+No new owner trial, production operation, release or reviewer outreach occurred.
+Qualified G2/G3 remain OPEN/NOT_RUN. A tested current environment, saved draft,
+Publish and independently observed fresh restoration remain separate facts.
+
+Initial P12 hosted Chromium observation (4d6f3c9): aggregate process RSS grew by
+1219571712 bytes above a
+4518518784-byte multi-window baseline.
+This sums shared pages and the other fixture windows and cannot establish a
+per-transfer mobile memory bound. Buffers are chunk-bounded in the implementation;
+these aggregate results require process/heap attribution and P15 optimization and
+real-device measurement before advertising the mobile memory target. Native
+transfer-phase observations are independently scoped in the platform receipts.

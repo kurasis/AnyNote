@@ -1,0 +1,646 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:anynote:p12:files:v1",
+  "$defs": {
+    "reserve-request": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "upload_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "context": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/context"
+        },
+        "plaintext_bytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 10,
+          "format": "decimal-1000000000"
+        }
+      },
+      "required": [
+        "version",
+        "upload_id",
+        "context",
+        "plaintext_bytes"
+      ],
+      "additionalProperties": false
+    },
+    "commit-request": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "record": {
+          "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/export-file-record"
+        }
+      },
+      "required": [
+        "version",
+        "record"
+      ],
+      "additionalProperties": false
+    },
+    "transfer-ref": {
+      "type": "object",
+      "properties": {
+        "draft_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "record_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "group_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "state": {
+          "enum": [
+            "NEEDS_SOURCE",
+            "READY",
+            "UPLOADING",
+            "COMMIT_UNKNOWN",
+            "UNATTACHED",
+            "ATTACHED",
+            "SUPERSEDED"
+          ]
+        },
+        "file_version_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "local_draft_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        }
+      },
+      "required": [
+        "draft_id",
+        "record_id",
+        "group_id",
+        "state",
+        "file_version_id"
+      ],
+      "additionalProperties": false
+    },
+    "witness-ref": {
+      "type": "object",
+      "properties": {
+        "record_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "group_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "file_version_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "envelope_digest": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        }
+      },
+      "required": [
+        "record_id",
+        "group_id",
+        "file_version_id",
+        "envelope_digest"
+      ],
+      "additionalProperties": false
+    },
+    "file-control": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "const": "p12-file-control"
+        },
+        "version": {
+          "const": 1
+        },
+        "id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "transfers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/transfer-ref"
+          },
+          "maxItems": 512
+        },
+        "witnesses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/witness-ref"
+          },
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "purpose",
+        "version",
+        "id",
+        "transfers"
+      ],
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "parts": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+          },
+          "maxItems": 120
+        },
+        "digest": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        }
+      },
+      "required": [
+        "size",
+        "parts",
+        "digest"
+      ],
+      "additionalProperties": false
+    },
+    "writer": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/context"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "next": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 120
+        },
+        "parts": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/part"
+          },
+          "maxItems": 120
+        },
+        "file_key": {
+          "type": "string",
+          "format": "base64url-32",
+          "minLength": 43,
+          "maxLength": 43
+        },
+        "manifest_key": {
+          "type": "string",
+          "format": "base64url-32",
+          "minLength": 43,
+          "maxLength": 43
+        },
+        "prefix": {
+          "type": "string",
+          "format": "base64url-16",
+          "minLength": 22,
+          "maxLength": 22
+        },
+        "source_digest": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        }
+      },
+      "required": [
+        "context",
+        "size",
+        "next",
+        "parts",
+        "file_key",
+        "manifest_key",
+        "prefix",
+        "source_digest"
+      ],
+      "additionalProperties": false
+    },
+    "receipt": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "upload_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "file_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "file_version_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "group_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "operation_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "envelope_digest": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        },
+        "ciphertext_bytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 19,
+          "format": "decimal-u63"
+        },
+        "state": {
+          "const": "COMMITTED"
+        },
+        "cursor": {
+          "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/cursor"
+        }
+      },
+      "required": [
+        "version",
+        "upload_id",
+        "file_id",
+        "file_version_id",
+        "group_id",
+        "operation_id",
+        "envelope_digest",
+        "ciphertext_bytes",
+        "state",
+        "cursor"
+      ],
+      "additionalProperties": false
+    },
+    "file-transfer": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "const": "p12-file-transfer"
+        },
+        "version": {
+          "const": 1
+        },
+        "draft_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "upload_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "context": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/context"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "media": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "writer": {
+          "$ref": "#/$defs/writer"
+        },
+        "acknowledged": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]{0,2})$"
+          },
+          "maxItems": 120
+        },
+        "record": {
+          "anyOf": [
+            {
+              "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/export-file-record"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/receipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "state": {
+          "enum": [
+            "NEEDS_SOURCE",
+            "READY",
+            "UPLOADING",
+            "COMMIT_UNKNOWN",
+            "UNATTACHED",
+            "ATTACHED",
+            "SUPERSEDED"
+          ]
+        },
+        "local_draft_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        }
+      },
+      "required": [
+        "purpose",
+        "version",
+        "draft_id",
+        "upload_id",
+        "context",
+        "source",
+        "name",
+        "media",
+        "writer",
+        "acknowledged",
+        "record",
+        "receipt",
+        "state"
+      ],
+      "additionalProperties": false
+    },
+    "file-evidence": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "const": "p12-file-evidence"
+        },
+        "version": {
+          "const": 1
+        },
+        "envelope": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/envelope"
+        }
+      },
+      "required": [
+        "purpose",
+        "version",
+        "envelope"
+      ],
+      "additionalProperties": false
+    },
+    "upload-status": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "upload_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "group_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "file_version_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "state": {
+          "enum": [
+            "RESERVED",
+            "RECEIVING",
+            "READY",
+            "COMMITTED",
+            "CANCELLED",
+            "EXPIRED"
+          ]
+        },
+        "expires_at_ms": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 19,
+          "format": "decimal-u63"
+        },
+        "reserved_bytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 19,
+          "format": "decimal-u63"
+        },
+        "parts": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/part"
+          },
+          "maxItems": 120
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/receipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "version",
+        "upload_id",
+        "group_id",
+        "file_version_id",
+        "state",
+        "expires_at_ms",
+        "reserved_bytes",
+        "parts",
+        "receipt"
+      ],
+      "additionalProperties": false
+    },
+    "file-ref": {
+      "type": "object",
+      "properties": {
+        "file_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "file_version_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "group_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "envelope_digest": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        },
+        "ciphertext_bytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 19,
+          "format": "decimal-u63"
+        },
+        "unattached_expires_at_ms": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 19,
+          "format": "decimal-u63"
+        }
+      },
+      "required": [
+        "file_id",
+        "file_version_id",
+        "group_id",
+        "envelope_digest",
+        "ciphertext_bytes",
+        "unattached_expires_at_ms"
+      ],
+      "additionalProperties": false
+    },
+    "files-page": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/file-ref"
+          },
+          "maxItems": 100
+        },
+        "next_after": {
+          "anyOf": [
+            {
+              "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "version",
+        "items",
+        "next_after"
+      ],
+      "additionalProperties": false
+    },
+    "storage": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "limit_bytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 19,
+          "format": "decimal-u63"
+        },
+        "committed_bytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 19,
+          "format": "decimal-u63"
+        },
+        "reserved_bytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 19,
+          "format": "decimal-u63"
+        },
+        "pending_limit_bytes": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 19,
+          "format": "decimal-u63"
+        },
+        "account_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "physical_overhead_included": {
+          "const": false
+        }
+      },
+      "required": [
+        "version",
+        "limit_bytes",
+        "committed_bytes",
+        "reserved_bytes",
+        "pending_limit_bytes",
+        "account_id",
+        "physical_overhead_included"
+      ],
+      "additionalProperties": false
+    },
+    "reclaim-result": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "file_version_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "state": {
+          "const": "RECLAIMABLE"
+        }
+      },
+      "required": [
+        "version",
+        "file_version_id",
+        "state"
+      ],
+      "additionalProperties": false
+    },
+    "manifest-result": {
+      "$ref": "urn:anynote:p02:complete-contract:v1#/$defs/export-file-record"
+    },
+    "snapshot-files-page": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "snapshot_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "start": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 19,
+          "format": "decimal-u63"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/manifest-result"
+          },
+          "maxItems": 8
+        },
+        "next": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$",
+              "maxLength": 19,
+              "format": "decimal-u63"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "version",
+        "snapshot_id",
+        "start",
+        "items",
+        "next"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

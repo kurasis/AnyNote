@@ -4,8 +4,10 @@ use App\Auth\Maintenance;
 use App\Auth\Policy;
 use App\Backend\AccountAdministration;
 use App\Backend\Authorization;
+use App\Backend\QuotaLedger;
 use App\Backend\SyncWriter;
 use App\Crypto\PublicProtocol as P;
+use App\Files\Service;
 use App\Http\ApiException;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +23,75 @@ if (! $app->runningInConsole() || ! $app->environment('testing') || config('data
 }
 $op = $argv[1] ?? '';
 $value = match ($op) {
+    'p12-budget' => (function () {
+        $v = json_decode(stream_get_contents(STDIN));
+        if (! P::counter($v->available_bytes ?? '', '1000000000')) {
+            throw new LogicException('Invalid synthetic quota budget');
+        }
+
+        return DB::transaction(function () use ($v) {
+            $ledger = DB::table('quota_ledgers')->where('scope', 'global')->lockForUpdate()->first();
+            $next = (int) $ledger->committed_bytes + (int) $ledger->reserved_bytes + (int) $v->available_bytes;
+            if ($next > 100000000000) {
+                throw new LogicException('Synthetic quota cannot exceed the product limit');
+            }
+            DB::table('quota_ledgers')->where('scope', 'global')->update(['limit_bytes' => $next]);
+
+            return ['previous_limit_bytes' => (string) $ledger->limit_bytes];
+        });
+    })(),
+    'p12-budget-restore' => (function () {
+        $v = json_decode(stream_get_contents(STDIN));
+        if (! P::counter($v->limit_bytes ?? '', '100000000000')) {
+            throw new LogicException('Invalid synthetic quota restore');
+        }
+        DB::table('quota_ledgers')->where('scope', 'global')->update(['limit_bytes' => (int) $v->limit_bytes]);
+
+        return ['status' => 'PASS'];
+    })(),
+    'p12-fault-on' => (function () {
+        DB::unprepared("CREATE TRIGGER p12_fault BEFORE INSERT ON mutation_receipts FOR EACH ROW BEGIN IF NEW.family = 'file' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Synthetic file receipt fault'; END IF; END");
+
+        return ['status' => 'armed'];
+    })(),
+    'p12-fault-off' => (function () {
+        DB::unprepared('DROP TRIGGER IF EXISTS p12_fault');
+
+        return ['status' => 'disarmed'];
+    })(),
+    'p12-transaction-state' => (function () {
+        $counts = [];
+        foreach (['file_chunks', 'publication_journal', 'mutation_receipts', 'quota_movements', 'sync_events'] as $table) {
+            $counts[$table] = DB::table($table)->count();
+        }
+
+        return ['counts' => $counts, 'counter' => (string) DB::table('sync_counters')->value('sequence'),
+            'quota' => DB::table('quota_ledgers')->orderBy('scope')->get(['scope', 'committed_bytes', 'reserved_bytes'])->all()];
+    })(),
+    'p12-collect' => app(Service::class)->collect(),
+    'p12-reconcile' => app(QuotaLedger::class)->reconcile(),
+    'p12-expire' => (function () {
+        $v = json_decode(stream_get_contents(STDIN));
+        if (! P::isBinary($v->upload_id ?? '', 16)) {
+            throw new LogicException('Invalid synthetic upload');
+        }
+        DB::table('upload_sessions')->where('id', $v->upload_id)->whereIn('state', ['reserved', 'receiving'])->update(['expires_at' => now()->subSeconds(1)]);
+
+        return ['status' => 'PASS'];
+    })(),
+    'p12-pruned-proof' => (function () {
+        $v = json_decode(stream_get_contents(STDIN));
+        if (! P::isBinary($v->file_version_id ?? '', 16)) {
+            throw new LogicException('Invalid synthetic file');
+        }
+        $row = DB::table('file_versions')->where('id', $v->file_version_id)->where('state', 'deleted')->first();
+        if (! $row) {
+            throw new LogicException('Synthetic file is not pruned');
+        }
+
+        return ['retained_fields' => array_keys(json_decode($row->manifest_record, true))];
+    })(),
+    'p12-file-state' => ['uploads' => DB::table('upload_sessions')->count(), 'committed_files' => DB::table('file_versions')->where('state', 'committed')->count(), 'file_pins' => DB::table('snapshot_file_pins')->count()],
     'p11-state' => (function () {
         return ['snapshots' => DB::table('snapshot_sessions')->count(), 'active' => DB::table('snapshot_sessions')->where('state', 'active')->count(), 'pins' => DB::table('reference_pins')->count(), 'items' => DB::table('snapshot_items')->count(), 'pages' => DB::table('snapshot_pages')->count(), 'catalog' => DB::table('snapshot_catalog')->count()];
     })(),
