@@ -918,3 +918,12 @@ read-only server-code check prevents local-only error leakage into HTTP handlers
 P13 owns safe previews, complete retention/history/export/import; P14/P15 own
 complete hosts and physical acceptance. No qualified composition review, universal
 freshness, secure erasure or production readiness follows from software CI.
+
+P12 synchronization follow-up: a foreground read can establish an independently
+verified witness while the same revision is staged in a snapshot. Its local
+cache_id is a replaceable storage address, not part of immutable revision identity.
+Compare all other witness fields exactly and publish the independently verified
+staged payload/location atomically. Changed group/object/revision/digest/kind,
+ancestry or author context remains a protective failure; no rollback/authority
+predicate or historical verification is waived. Portable/native interleaving and
+restart regressions exercise the distinction without fabricating hardware results.

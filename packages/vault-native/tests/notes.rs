@@ -236,6 +236,12 @@ fn staged_sync_cursor_is_atomic_and_restore_regression_keeps_drafts() {
         &cap,
         json!({"action":"sync","request":{"action":"snapshot-item","result":{"version":1,"snapshot_id":snapshot_id,"item":item,"bundle":bundle,"reference":{"object_id":x["object_id"],"object_kind":"thread","thread_id":null,"archived":false,"tombstoned":false,"created_sequence":"3","updated_sequence":"3","heads":[{"revision_id":x["revision_id"],"envelope_digest":ed}]}}}}),
     );
+    let foreground = command(
+        &f,
+        &cap,
+        json!({"action":"open","request":{"group_id":g["group_id"],"object_id":x["object_id"],"revision_id":x["revision_id"],"object_kind":"thread","thread_id":null,"bundle":bundle}}),
+    );
+    assert_eq!(foreground["envelope_digest"], ed);
     assert!(
         command(
             &f,

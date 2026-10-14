@@ -89,10 +89,18 @@ impl Vault {
         let mut witnesses = values(c, "witnesses")?.clone();
         for v in staged {
             if let Some(w) = witnesses
-                .iter()
+                .iter_mut()
                 .find(|w| w["revision_id"] == v["witness"]["revision_id"])
             {
-                check(*w == v["witness"], "ROLLBACK_QUARANTINE")?;
+                let mut old_proof = w.as_object().ok_or(Error("INTEGRITY_FAILURE"))?.clone();
+                let mut new_proof = v["witness"]
+                    .as_object()
+                    .ok_or(Error("INTEGRITY_FAILURE"))?
+                    .clone();
+                old_proof.remove("cache_id");
+                new_proof.remove("cache_id");
+                check(old_proof == new_proof, "ROLLBACK_QUARANTINE")?;
+                *w = v["witness"].clone();
             } else {
                 witnesses.push(v["witness"].clone());
             }

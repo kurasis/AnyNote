@@ -1,6 +1,7 @@
 # P12 encrypted files and quota lifecycle
 
-The P12 software slice passed all twenty-two mandatory hosted gates. This guide
+Initial P12 code passed all twenty-two mandatory hosted gates; a subsequent
+final-head run exposed a protected snapshot publication race now under revalidation. This guide
 describes the product path; PROGRESS and TEST_EVIDENCE own exact execution evidence. Physical iPhone/Hello,
 memory/network lifecycle and qualified external review remain separate open gates.
 
@@ -109,9 +110,9 @@ software outcomes do not close physical or qualified review.
 | U16 | Actual SQL/log, protected SQLite/WAL and shipped IndexedDB/OPFS inspection; server/caches contain ciphertext and public framing only |
 | U17 | Actual content-quota-full revoke/rekey/reader maintenance, ordinary file reservation denial and exact security-byte journal reconciliation |
 
-[File HTTP](evidence/p12/http-report.json), [authority races](evidence/p12/membership-report.json),
-[shipped PWA](evidence/p12/browser-report.json), [Linux source](evidence/p12/linux-source-report.json),
-[Windows source](evidence/p12/windows-source-report.json) and [all gates](evidence/p12/acceptance.json)
+[File HTTP](evidence/p12/initial/http-report.json), [authority races](evidence/p12/initial/membership-report.json),
+[shipped PWA](evidence/p12/initial/browser-report.json), [Linux source](evidence/p12/initial/linux-source-report.json),
+[Windows source](evidence/p12/initial/windows-source-report.json) and [all gates](evidence/p12/initial/acceptance.json)
 contain public metadata only. Complete phase scope and open release gates remain
 separate from a successful software pipeline.
 

@@ -1682,7 +1682,7 @@ Complete latest installation passed at `08ca97c7f9b1caff1ffc55b284a2afa7a8f0bb65
 810 then-visible tracked files and marked private/shared quota/counter
 and snapshot/pin state unchanged. Full startup/static/API readiness passed again.
 
-## P12 exact-source software acceptance
+## Initial P12 exact-source software acceptance before the resync follow-up
 
 PASS at `4d6f3c93f54919987f64f669b27e5c1eb0907ec1`, complete clean tree `e5d5f22f3ce758dceb76244bb03fb4284bd1a511`: all twenty-two mandatory jobs,
 twelve portable file tests, 368 actual verified HTTPS/SQL/blob checks with a 1 GB
@@ -1710,9 +1710,9 @@ Pruning drops encrypted payload/key-wrap metadata but retains signed proof and t
 exact request digest for receipt reconciliation. Qualified G2/G3 and physical
 G1/U11/U12 remain OPEN/NOT_RUN; no production operation, release or new owner trial.
 
-Public [all-gate receipt](evidence/p12/acceptance.json), [HTTP](evidence/p12/http-report.json),
-[authority](evidence/p12/membership-report.json), [browser](evidence/p12/browser-report.json),
-[Linux](evidence/p12/linux-source-report.json) and [Windows](evidence/p12/windows-source-report.json)
+Public [all-gate receipt](evidence/p12/initial/acceptance.json), [HTTP](evidence/p12/initial/http-report.json),
+[authority](evidence/p12/initial/membership-report.json), [browser](evidence/p12/initial/browser-report.json),
+[Linux](evidence/p12/initial/linux-source-report.json) and [Windows](evidence/p12/initial/windows-source-report.json)
 preserve raw execution bytes. Final documentation-head source-byte comparison,
 ordinary guarded merge and tested configuration persistence are separately checked.
 

@@ -265,7 +265,7 @@ export class NotesWorkflow {
  }
  async #syncPublish(items,snapshot){
   const s=this.#state.sync,merged=new Map(this.#state.witnesses.map(w=>[w.revision_id,w]));
-  for(const v of items){const old=merged.get(v.witness.revision_id);ensure(!old||same(old,v.witness),'ROLLBACK_QUARANTINE');merged.set(v.witness.revision_id,structuredClone(v.witness));}
+  for(const v of items){const old=merged.get(v.witness.revision_id);if(old){const {cache_id:oldCache,...oldProof}=old,{cache_id:newCache,...newProof}=v.witness;ensure(same(oldProof,newProof),'ROLLBACK_QUARANTINE');}merged.set(v.witness.revision_id,structuredClone(v.witness));}
   for(const v of items){const data=await this.read(v.cache_id,'cache'),envelope=data.purpose==='p11-header-evidence'?syncValue('header-evidence',data).envelope:decode('bundle',un64(decode('cache',wire(data)).record_bytes)).envelope;ensure(digest('envelope',wire(envelope))===v.item.envelope_digest,'INTEGRITY_FAILURE');for(const parent of envelope.header.context.parents){const w=merged.get(parent.revision_id);ensure(w&&w.group_id===v.item.group_id&&w.object_id===v.item.object_id&&w.envelope_digest===parent.envelope_digest,'UNANCHORED_HISTORY');}}
   const refs=new Map(snapshot?s.projection.filter(p=>s.scope.group_id!==null&&p.group_id!==s.scope.group_id).map(p=>[p.group_id+'/'+p.reference.object_id,p]):s.projection.map(p=>[p.group_id+'/'+p.reference.object_id,p]));
   for(const v of items){for(const h of v.reference.heads){const w=merged.get(h.revision_id);ensure(w&&w.group_id===v.item.group_id&&w.object_id===v.item.object_id&&w.envelope_digest===h.envelope_digest,'UNANCHORED_HISTORY');}refs.set(v.item.group_id+'/'+v.item.object_id,{group_id:v.item.group_id,reference:structuredClone(v.reference)});}

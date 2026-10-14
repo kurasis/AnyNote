@@ -18,7 +18,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P09 | VERIFIED | Eight workflow/transport suites, 131 actual HTTPS/SQL checks, 49 sandboxed two-PWA UI checks, six native note tests/platform and 16 native/PWA interop checks/platform; all sixteen hosted gates PASS |
 | P10 | VERIFIED | Five protected workflow/transport suites, 407 actual HTTPS/SQL checks, 40 sandboxed three-account PWA checks, three native shared tests and 89 native/portable interop checks/platform; all eighteen hosted gates PASS |
 | P11 | VERIFIED | Ten portable suites, 112 actual sync HTTP/SQL checks, 418 membership/lease checks, 45 sandboxed PWA checks, seven native notes and nine new interop checks/platform; all twenty final code jobs PASS; Worker masking and background idle guards verified |
-| P12 | VERIFIED | Twelve portable file tests, 368 actual file HTTPS/SQL checks, 452 shared-authority checks, 60 sandboxed PWA checks, native 1 GB/cache/atomic export on Linux/MSVC; all twenty-two software gates PASS; physical G1/U11/U12 and qualified G2/G3 remain open |
+| P12 | IN PROGRESS | Initial twenty-two code gates passed; final-head execution exposed a foreground-read/snapshot cache-ID race; correction and complete final revalidation are in progress; physical/review gates stay open |
 | P13 | NOT STARTED | P11/P12 |
 | P14 | NOT STARTED | P07–P13 and actual Windows evidence |
 | P15 | NOT STARTED | P01/P07–P13 and actual iPhone evidence |
@@ -717,3 +717,13 @@ in docs/evidence/p12. Frozen spec/P02 corpora and prior dependency locks remain
 unchanged. Full physical G1/U11/U12 and qualified G2/G3 remain OPEN/NOT_RUN.
 Complete P13 handoff is NEXT_TASK. Final documentation-head CI, ordinary guarded
 merge and final configuration persistence require their separate actual outcomes.
+
+P12 final-head follow-up: the shared browser's ROLLBACK_QUARANTINE was reproduced
+by staging a revision, reading it in the foreground, then publishing the snapshot.
+Both paths verified the same immutable witness but assigned distinct local cache
+IDs. Publication now compares every immutable witness field, treating only its
+replaceable cache location separately; the staged verified payload replaces the
+older location atomically. Existing ancestry, signature/digest, cursor and rollback
+checks remain intact. Portable regression and native lock/reopen regression pass.
+Initial public receipts are retained unchanged in evidence/p12/initial; corrected
+final exact-source and full-hosted acceptance remain required before merge.

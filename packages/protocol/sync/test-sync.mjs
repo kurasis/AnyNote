@@ -139,3 +139,7 @@ test('cancelled partial application releases only staging caches and keeps all p
   await assert.rejects(()=>client.snapshot(),/SYNC_CURSOR_EXPIRED/);assert.equal(deletes,2);assert.equal((await sync(f,'status')).stage,null);assert.deepEqual((await notes(f,'summary')).drafts,before.drafts);
  }finally{await close(f);}
 });
+
+test('foreground reads of a staged revision preserve its immutable witness across snapshot publication',async()=>{
+ const f=await scenario();try{await stage(f);await sync(f,'snapshotItem',f.values[0]);const v=f.values[0],c=v.bundle.envelope.header.context;const expected=await notes(f,'open',[{group_id:v.item.group_id,object_id:v.item.object_id,revision_id:v.item.revision_id,object_kind:c.object_kind,thread_id:c.thread_id,bundle:v.bundle}]);assert.equal((await notes(f,'summary')).witnessed,1);await sync(f,'snapshotItem',f.values[1]);const finished=await sync(f,'snapshotFinish');assert.deepEqual(finished.cursor,f.cursor);assert.equal((await notes(f,'summary')).witnessed,2);assert.equal((await notes(f,'cached',[v.item.revision_id])).payload.title,expected.payload.title);}finally{await close(f);}
+});
