@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Real owned Windows CI PHP/MariaDB/TLS services. No Docker substitute or token issuer."""
-import argparse,base64,hashlib,json,os,re,secrets,shutil,subprocess,sys,time,urllib.request,zipfile
+import argparse,base64,hashlib,json,os,re,secrets,shutil,ssl,subprocess,sys,time,urllib.request,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 STATE=ROOT/'.local/p14-windows-services';P06=ROOT/'.local/p06';API=ROOT/'apps/api'
@@ -144,26 +144,40 @@ def trust():
     hosts=Path(os.environ['SystemRoot'])/'System32/drivers/etc/hosts'
     original=hosts.read_bytes()
     if b'app.anynote.test' in original or b'api.anynote.test' in original:raise RuntimeError('Refusing existing test hostname mapping')
+    der=ssl.PEM_cert_to_DER_cert((P06/'tls/ca.crt').read_text(encoding='ascii'))
+    thumb=hashlib.sha1(der,usedforsecurity=False).hexdigest().upper()
+    # DER bytes and an independent fingerprint bind the OS-store receipt. No private key.
+    certificate=STATE/'test-root.der';certificate.write_bytes(der)
+    certificate_argument=str(certificate).replace("'","''")
+    prefix="$ErrorActionPreference='Stop';$store=[System.Security.Cryptography.X509Certificates.X509Store]::new('Root','CurrentUser');"
+    find="$store.Certificates.Find([System.Security.Cryptography.X509Certificates.X509FindType]::FindByThumbprint,'"+thumb+"',$false)"
+    existing=checked(['powershell','-NoProfile','-Command',prefix+"$store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadOnly);try{[Console]::Write(("+find+").Count)}finally{$store.Close()}"]).decode('ascii').strip()
+    if existing!='0':raise RuntimeError('Refusing pre-existing or unverifiable synthetic root certificate')
     expected=original+b'\r\n127.0.0.1 app.anynote.test api.anynote.test # AnyNote P14 owned CI\r\n'
+    # Record cleanup intent before either OS mutation, including uncertain failures.
     (STATE/'hosts.before').write_bytes(original);(STATE/'hosts.after.sha256').write_text(hashlib.sha256(expected).hexdigest())
+    (STATE/'trust-thumbprint').write_text(thumb,encoding='ascii')
     hosts.write_bytes(expected)
-    certificate=str(P06/'tls/ca.crt').replace("'","''")
-    thumb=checked(['powershell','-NoProfile','-Command',"$c=Import-Certificate -FilePath '"+certificate+"' -CertStoreLocation Cert:\\CurrentUser\\Root; $c.Thumbprint"]).decode().strip()
-    if not re.fullmatch('[A-Fa-f0-9]{40}',thumb):raise RuntimeError('Synthetic CA installation receipt missing')
-    (STATE/'trust-thumbprint').write_text(thumb)
-    print('PASS: synthetic test CA trusted through current-user Windows store and owned hostname mapping')
+    command=prefix+"$certificate=[System.Security.Cryptography.X509Certificates.X509Certificate2]::new([IO.File]::ReadAllBytes('"+certificate_argument+"'));if($certificate.Thumbprint -ne '"+thumb+"'){throw 'Synthetic DER fingerprint mismatch'};$store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadWrite);try{$store.Add($certificate);$found="+find+";if($found.Count -ne 1 -or [Convert]::ToBase64String($found[0].RawData) -cne [Convert]::ToBase64String($certificate.RawData)){throw 'Synthetic root store verification failed'};[Console]::Write($certificate.Thumbprint)}finally{$store.Close();$certificate.Reset()}"
+    installed=checked(['powershell','-NoProfile','-Command',command]).decode('ascii').strip()
+    if installed!=thumb:raise RuntimeError('Synthetic CA installation receipt missing')
+    print('PASS: exact synthetic DER root verified in current-user Windows store and owned hostname mapping')
 def untrust():
     require_ci();marker()
     thumb=STATE/'trust-thumbprint'
     if thumb.exists():
-        value=thumb.read_text().strip()
+        value=thumb.read_text(encoding='ascii').strip()
         if not re.fullmatch('[A-Fa-f0-9]{40}',value):raise RuntimeError('Invalid owned synthetic CA receipt')
-        checked(['powershell','-NoProfile','-Command',"Remove-Item -LiteralPath 'Cert:\\CurrentUser\\Root\\"+value+"' -ErrorAction SilentlyContinue"]);thumb.unlink()
+        path="Cert:\\CurrentUser\\Root\\"+value
+        command="$ErrorActionPreference='Stop';$path='"+path+"';if(Test-Path -LiteralPath $path){Remove-Item -LiteralPath $path};if(Test-Path -LiteralPath $path){throw 'Owned synthetic root removal failed'}"
+        checked(['powershell','-NoProfile','-Command',command]);thumb.unlink()
     before=STATE/'hosts.before'
     if before.exists():
         hosts=Path(os.environ['SystemRoot'])/'System32/drivers/etc/hosts'
-        if hashlib.sha256(hosts.read_bytes()).hexdigest()!=(STATE/'hosts.after.sha256').read_text():raise RuntimeError('Hosts changed independently; refusing to overwrite')
-        hosts.write_bytes(before.read_bytes());before.unlink();(STATE/'hosts.after.sha256').unlink()
+        original=before.read_bytes();current=hashlib.sha256(hosts.read_bytes()).hexdigest()
+        if current==(STATE/'hosts.after.sha256').read_text():hosts.write_bytes(original)
+        elif current!=hashlib.sha256(original).hexdigest():raise RuntimeError('Hosts changed independently; refusing to overwrite')
+        before.unlink();(STATE/'hosts.after.sha256').unlink()
 def diagnose():
     require_ci();marker()
     folder=STATE/'durability-probe';folder.mkdir(exist_ok=True)

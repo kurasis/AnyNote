@@ -86,7 +86,10 @@ try{
  memory.transfer.initial_native_helper_target_bytes=134217728;memory.transfer.target_observation=memory.transfer.observed_increase_bytes.native_helper<=134217728?'OBSERVED_WITHIN_INITIAL_TARGET':'OBSERVED_ABOVE_INITIAL_TARGET';
  check(memory.transfer.samples>=2,'Actual repeated OS working-set samples during gigabyte workflow');
  // Stop actual synthetic input and observe the unchanged real five-minute idle policy.
- clearInterval(inputTimer);inputTimer=null;await ui('input',app.pid);await product('draft',{draft_id:saved.draft_id});const idleGeneration=await generation(),idleStarted=Date.now();
+ clearInterval(inputTimer);inputTimer=null;
+ await invoke('file_job',{generation:await generation(),request:{operation:'preview',group_id:group.group_id,file_version_id:textUpload.receipt.file_version_id}});
+ await until(async()=>(await targets()).some(t=>t.url.includes('/auth/preview.html')),'Live sensitive preview before idle');
+ await ui('foreground',app.pid);await ui('input',app.pid);await product('draft',{draft_id:saved.draft_id});const idleGeneration=await generation(),idleStarted=Date.now();
  await until(async()=>{const s=await product('status');return s.state==='locked'&&s.generation>idleGeneration;},'Actual Windows idle lock and generation fence',330000);check(Date.now()-idleStarted>=280000,'Idle policy was not shortened for the test');check(!(await targets()).some(t=>t.url.includes('/auth/preview.html')),'Idle closes sensitive previews');await stop();
  // Installer rerun and process restart preserve exact existing encrypted data.
  const vault=join(profileRoot,'vault.sqlite'),beforeInstall=await sha(vault);execFileSync(installer,['/S','/D='+installRoot],{windowsHide:true,stdio:'ignore',timeout:180000});check(await sha(vault)===beforeInstall,'Installer retained encrypted SQLite byte-for-byte');await start();check((await product('draft',{draft_id:saved.draft_id})).payload.title==='P14 synthetic retained draft','Independent application process restart retained draft');await stop();

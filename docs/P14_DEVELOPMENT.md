@@ -186,3 +186,27 @@ The complete preserved-data setup also passes at c524a65 after the session fix:
 all1018 tracked files,31 persistent tables and TLS/OAuth files remain identical.
 The real gigabyte native test remains enabled. Later changes in this batch affect
 generated-output accounting and test observations, not product runtime code.
+
+At clean da83624 the Linux release native coordinator passes all62 checks with an
+actual incompressible1,000,000,000-byte source, fresh shared copy, downloads/full
+SHA-256, standard-age export, separate kit, complete offline validation and fresh
+import/download. Source hash:Q9DtNs-u1-xZmv7jCWOyqwN_lNQrW0f5nL7hXSufHdY.
+Observed lifetime OS peaks:239,656,960 native and403,738,624 helper bytes. These are
+not baseline-subtracted Windows/mobile memory measurements. A first trial failed
+closed before export with real insufficient disk space; only generated compiler
+caches were cleared, preserving source/recovery data, before the successful run.
+
+Windows da83624 passes the generated permission audit, clean source checks,
+pairing33/sharing20, real Tauri instrumented host and0.14.1 candidate installer
+build. It stops before GUI execution because the test CA import returns no usable
+receipt. The CI trust helper now converts public PEM to DER, computes an independent
+thumbprint, refuses a pre-existing root, records cleanup intent before OS mutation,
+and checks the exact certificate bytes in the current-user root store. PowerShell
+errors terminate and retain sanitized diagnostics; no TLS bypass is introduced.
+The full GUI/upgrade test is still pending. Its idle case now opens a live sensitive
+preview immediately before waiting the unchanged five-minute idle policy.
+
+CI caches the public Cargo registry plus native and complete desktop build outputs
+after successful compilation, including when later acceptance fails. Candidate
+preparation no longer overwrites Cargo's executable with instrumented bytes; the
+separate explicit harness path is passed only to the owned GUI runner.
