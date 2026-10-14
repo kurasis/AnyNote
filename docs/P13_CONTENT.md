@@ -1,7 +1,7 @@
 # P13 protected content and independent recovery
 
-This guide describes the candidate implementation. Exact final acceptance and
-phase completion are recorded separately in docs/evidence/p13 and PROGRESS.
+This guide describes the accepted software implementation. Exact source and
+platform receipts are in docs/evidence/p13; physical/review gates remain separate.
 
 ## Content UX and custody
 
@@ -87,6 +87,9 @@ Bounds are explicit: 116,010,000,000 ciphertext bytes including overhead,
 bounded notes/group proof catalogs. A single file remains at most 1,000,000,000
 plaintext bytes. The whole-account stream avoids a giant Blob and is a desktop
 job. A 24-hour maximum lease and resource bounds can require a smaller selection.
+The frozen recovery-kit/public-proof catalog allows at most 200 groups; the
+existing UI protected group catalog is bounded at 100. These limits are explicit
+selection constraints and do not establish arbitrary 100 GB capacity acceptance.
 Export pins never bypass later account/device/group revocation. Renewal requires
 new server-observed resource progress; that is not proof of client durable output.
 The UI shows a conservative space/time estimate at an explicitly assumed rate

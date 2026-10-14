@@ -1001,3 +1001,23 @@ space/time estimate and masks stale completion/audience responses after scope
 change. Windows CI independently decrypts the actual 1 GB JS archive with standard
 Rust age; Linux uses independently pinned Go age. This is software execution,
 not WebView2/iPhone/Hello physical acceptance or independent security review.
+
+## P13 export history pin consistency
+
+A protected proof can retain an independently trusted older history pin while
+its full signed journal has advanced to a newly endorsed history checkpoint.
+Whole-account browser export exposed a mismatch: the kit contained the verified
+current head but the archived proof still named the older pin. Offline recovery
+correctly rejected INDEPENDENT_HISTORY_REQUIRED. Export now first replays the
+complete journal against the protected existing proof, then puts the resulting
+verified history head into the cloned export proof and independent kit together.
+It never changes protected live pins or accepts an unsigned server-provided head.
+The real sandboxed whole-account UI export, clean offline reader and fresh
+private import pass while every original pin/signature/history denial remains.
+
+Locked UI masking performs no custody RPC: Worker disposal already cancels
+protected work. Sending portable.cancel from the lock callback could recreate
+a locked Worker whose typed refusal locked again, preventing subsequent unlock.
+Scope/access changes while unlocked still cancel normally, and stale export
+finally blocks cannot cancel a later generation. A host lifecycle regression
+and the original real P12 lock/resume/1 GB scenario cover this behavior.

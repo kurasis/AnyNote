@@ -1,0 +1,78 @@
+{
+  "purpose": "P10 actual multi-account shared-group UI and protected persistent storage",
+  "status": "PASS",
+  "source_commit": "6c520c9867aaaa778de7462de748fa6b1da44625",
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "p11_staged_sync_checks": 4,
+  "p13_content": {
+    "status": "PASS",
+    "source_notes": 8,
+    "live_device_acceptance": false,
+    "archive_output": "actual age ciphertext saved by single-client service-worker stream and fully validated without original API"
+  },
+  "checks": 59,
+  "custody_diagnostics": [
+    {
+      "role": "owner",
+      "events": []
+    },
+    {
+      "role": "editor",
+      "events": [
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "PINNED_ACCOUNT_REQUIRED",
+          "ms": 179923
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "PINNED_ACCOUNT_REQUIRED",
+          "ms": 203483
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "PINNED_ACCOUNT_REQUIRED",
+          "ms": 212114
+        }
+      ]
+    },
+    {
+      "role": "reader",
+      "events": [
+        {
+          "event": "custody-error",
+          "operation": "notes.queue",
+          "error": "ROLE_FORBIDDEN",
+          "ms": 281162
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "ROSTER_CHANGED",
+          "ms": 367936
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.group",
+          "error": "POLICY_CHANGED",
+          "ms": 388303
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "VAULT_LOCKED",
+          "lock_reason": "explicit",
+          "ms": 584366
+        }
+      ]
+    }
+  ],
+  "chromium_sandbox": true,
+  "request_pacing": "Genuine roster/group requests paced below unchanged production limits; no mocked API responses",
+  "tls_verification": "Real trusted disposable CA and hostname validation",
+  "source_tree_dirty": false
+}

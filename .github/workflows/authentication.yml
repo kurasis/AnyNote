@@ -153,7 +153,7 @@ jobs:
   browser-fault-diagnosis:
     if: ${{ github.event_name == 'workflow_dispatch' && (inputs.device_browser_only || inputs.notes_browser_only || inputs.shared_browser_only || inputs.files_stream_only || inputs.p13_preview_only || inputs.p13_browser_only || inputs.files_browser_only) }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 55
     env:
       ANYNOTE_TOOLCHAINS: /tmp/anynote-p08-tools
       CHROMIUM_EXECUTABLE: /usr/bin/google-chrome
