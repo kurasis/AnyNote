@@ -151,6 +151,7 @@ async fn product(
         }
         let result = host.execute(&b, generation, request);
         if closing || host.current() != generation {
+            clipboard::clear();
             state.mask();
         }
         result.map_err(|e| e.0.into())
@@ -449,7 +450,7 @@ async fn file_job(
     let opened=host.execute(&binding(&window)?,generation,Request::Open{group_id,object_id,revision_id}).map_err(|e|e.0)?;
     public_consent(&window,&state,ru,if ru{"Передать сохранённый текст в системный буфер обмена? Другие приложения смогут его прочитать. Через 30 секунд и при блокировке AnyNote попытается очистить только свою неизменённую копию."}else{"Copy the saved text to the system clipboard? Other applications can read it. After 30 seconds and on lock, AnyNote attempts to clear only its own unchanged copy."})?;
     host.capability(generation).map_err(|e|e.0)?;
-    let text=format!("{}\n\n{}",opened["payload"]["title"].as_str().unwrap_or(""),opened["payload"]["markdown"].as_str().unwrap_or(""));
+    let text=zeroize::Zeroizing::new(format!("{}\n\n{}",opened["payload"]["title"].as_str().unwrap_or(""),opened["payload"]["markdown"].as_str().unwrap_or("")));
     clipboard::copy(binding(&window)?.hwnd,&text)?;Ok(json!({"state":"COPIED","best_effort_clear_seconds":30}))
   },
   FileCommand::CopyFile{draft_id,destination_group}=>{
@@ -473,7 +474,7 @@ async fn file_job(
    let data=Arc::new(Mutex::new(Some(payload)));let label=format!("preview-{}",anynote_crypto_core::crypto::b64(&anynote_crypto_core::crypto::random_key().map_err(|e|e.0)?[..16]));
    let preview_host=host.clone();let window_state=state.clone();
    let preview=tauri::WebviewWindowBuilder::new(&app,&label,tauri::WebviewUrl::App("auth/preview.html".into())).title("AnyNote file preview").parent(&window).map_err(|_|"PREVIEW_UNAVAILABLE")?.devtools(false).incognito(true)
-    .on_navigation(|url|url.path()=="/auth/preview.html"&&url.query().is_none()&&url.fragment().is_none())
+    .on_navigation(|url|["http://tauri.localhost","tauri://localhost"].contains(&url.origin().ascii_serialization().as_str())&&url.username().is_empty()&&url.password().is_none()&&url.path()=="/auth/preview.html"&&url.query().is_none()&&url.fragment().is_none())
     .on_new_window(|_,_|tauri::webview::NewWindowResponse::Deny)
     .on_download(|_,_|false)
     .on_page_load(move|view,page|{if page.event()==tauri::webview::PageLoadEvent::Finished{if preview_host.current()!=generation{let _=view.close();return;}if let Ok(mut data)=data.lock()&&let Some(payload)=data.take(){let _=view.eval(format!("window.dispatchEvent(new CustomEvent('anynote-preview',{{detail:{payload}}}))"));}}})

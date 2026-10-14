@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Files\DirectoryDurability;
 use Illuminate\Support\ServiceProvider;
+use Tests\Support\P14WindowsDurability;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
     {
         require_once app_path('Generated/Dtos.php');
         if (PHP_OS_FAMILY === 'Windows' && getenv('APP_ENV') === 'testing' && getenv('GITHUB_ACTIONS') === 'true') {
-            $this->app->bind(\App\Files\DirectoryDurability::class, \Tests\Support\P14WindowsDurability::class);
+            $this->app->bind(DirectoryDurability::class, P14WindowsDurability::class);
         }
     }
 

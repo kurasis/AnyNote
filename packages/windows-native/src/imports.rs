@@ -287,6 +287,34 @@ impl Host {
         }
         let group = string(&input.state["destination"], "group_id")?.to_owned();
         self.group(cap, &group)?;
+        if input.state["group_request"].is_object()
+            && input.state["destination_metadata_published"] != true
+        {
+            if input.state["destination_metadata_draft"].is_null() {
+                let summary = self.notes(cap, json!({"action":"summary"}))?;
+                let existing = summary["drafts"]
+                    .as_array()
+                    .ok_or(Error("INTEGRITY_FAILURE"))?
+                    .iter()
+                    .find(|d| {
+                        d["group_id"] == group
+                            && d["object_id"] == group
+                            && d["object_kind"] == "group-metadata"
+                    });
+                let draft = if let Some(existing) = existing {
+                    existing["draft_id"].clone()
+                } else {
+                    let export = string(&input.state, "export_id")?;
+                    let content = json!({"title":format!("Recovered archive {}",&export[..8.min(export.len())]),"markdown":"","metadata_kind":"content","tags":[],"checklist":[],"summary_entry_id":null,"preferences":[]});
+                    self.notes(cap,json!({"action":"save","edit":Self::edit(&group,"group-metadata",Some(&group),None,&content,json!([]),"create")}))?["draft_id"].clone()
+                };
+                input.state["destination_metadata_draft"] = draft;
+                self.save_native_job(cap, &iid, &input.state)?;
+            }
+            self.publish(cap, string(&input.state, "destination_metadata_draft")?)?;
+            input.state["destination_metadata_published"] = json!(true);
+            self.save_native_job(cap, &iid, &input.state)?;
+        }
         input.state["state"] = json!("IMPORTING");
         self.save_native_job(cap, &iid, &input.state)?;
         input.bridge.ack()?;

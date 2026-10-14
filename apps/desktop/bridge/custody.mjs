@@ -2,11 +2,12 @@
 import {writePortable,PortableReader} from '../../../packages/protocol/content/portable.mjs';
 import {wire} from '../../../packages/protocol/adapters/codecs/identity-codec.mjs';
 import {strictJson} from '../../../packages/protocol/src/strict-json.mjs';
-const CAP=16777216,queue=[],waiters=[];let pending=Buffer.alloc(0),ended=false;
-process.stdin.on('data',b=>{pending=Buffer.concat([pending,b]);pump();});process.stdin.on('end',()=>{ended=true;pump();});
+const CAP=16777216,queue=[],waiters=[],pending=Buffer.alloc(CAP+8);let used=0,ended=false;
+// One fixed bounded frame buffer avoids repeatedly copying a growing 8 MiB frame.
+process.stdin.on('data',bytes=>{let offset=0;while(offset<bytes.length){const n=Math.min(bytes.length-offset,pending.length-used);if(n===0){process.exitCode=1;process.stdin.destroy();for(const w of waiters.splice(0))w.reject(Error('RESOURCE_LIMIT'));return;}bytes.copy(pending,used,offset,offset+n);used+=n;offset+=n;pump();}});process.stdin.on('end',()=>{ended=true;pump();});
 function accepts(w,frame){return !w.kinds||w.kinds.includes(frame.kind);}
 function pump(){
- while(pending.length>=8){const kind=pending.readUInt32BE(0),size=pending.readUInt32BE(4);if(size>CAP){process.exitCode=1;process.stdin.destroy();for(const w of waiters.splice(0))w.reject(Error('RESOURCE_LIMIT'));return;}if(pending.length<8+size)break;queue.push({kind,bytes:Buffer.from(pending.subarray(8,8+size))});pending=pending.subarray(8+size);if(queue.length>=4){process.stdin.pause();break;}}
+ while(used>=8&&queue.length<4){const kind=pending.readUInt32BE(0),size=pending.readUInt32BE(4);if(size>CAP){process.exitCode=1;process.stdin.destroy();for(const w of waiters.splice(0))w.reject(Error('RESOURCE_LIMIT'));return;}if(used<8+size)break;queue.push({kind,bytes:Buffer.from(pending.subarray(8,8+size))});const previous=used;used-=8+size;pending.copyWithin(0,8+size,previous);pending.fill(0,used,previous);if(queue.length>=4){process.stdin.pause();break;}}
  for(let i=0;i<waiters.length;){const w=waiters[i],index=queue.findIndex(f=>accepts(w,f));if(index>=0){waiters.splice(i,1);w.resolve(queue.splice(index,1)[0]);}else if(ended){waiters.splice(i,1);w.reject(Error('BRIDGE_CLOSED'));}else i++;}
  if(queue.length<4)process.stdin.resume();
 }

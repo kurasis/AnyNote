@@ -95,3 +95,20 @@ Windows bd9d7da failed to compile a pairing confirmation's Arc reference, before
 backend/gigabyte/WebView acceptance. The corrected reference and separately
 cacheable native release build are included in the next run. The failure is not
 platform acceptance, and cached/stale installer output is not a new candidate.
+
+The next development batch reaches 50 native API checks including a durable
+recovered destination title. A real release-mode 1,000,000,000-byte round trip
+passed the earlier 49 checks, with fresh shared-file copy, complete standard-age
+recovery/import and final SHA-256 equality. That dirty development run measured
+239,673,344 native and 812,802,048 helper peak bytes. These lifetime peaks are
+not an incremental Windows memory-target pass. A fixed bounded helper input
+buffer replaces quadratic growing-frame copies; the independent frozen archive
+bridge test passes, and a fresh gigabyte measurement remains required.
+
+The desktop now includes canonical tag/checklist editing, keyboard publication,
+a modal group/thread destination picker, stricter preview origin checks, explicit
+Permissions-Policy/frame-ancestors, all lock-path clipboard cleanup, and a final
+exact-source receipt collector. A Windows gate also found a provider import style
+issue; the maintained Pint formatter fixed it and all 102 PHP files pass lint.
+No required failed check has been bypassed. See P14_WINDOWS.md for the operator
+and build guide; installed GUI/update acceptance is still pending.

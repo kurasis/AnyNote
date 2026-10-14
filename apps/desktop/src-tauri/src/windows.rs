@@ -39,6 +39,7 @@ unsafe extern "system" fn subclass(
             host.invalidate();
             std::thread::spawn(move || host.finish_lock());
         }
+        clipboard::clear();
         hook.state.mask();
         let _ = hook
             .app
@@ -88,6 +89,7 @@ pub fn attach(
                     && host.vault.status().ok() == Some("unlocked")
                 {
                     host.lock();
+                    clipboard::clear();
                     state.mask();
                     let _ = app.emit("vault-locked", json!({"reason":"idle"}));
                 }

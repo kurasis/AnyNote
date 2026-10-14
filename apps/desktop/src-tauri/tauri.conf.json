@@ -23,10 +23,14 @@
       }
     ],
     "security": {
-      "csp": "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src ipc: http://ipc.localhost; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'; worker-src 'self'",
+      "csp": "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src ipc: http://ipc.localhost; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none'; worker-src 'self'; frame-ancestors 'none'",
       "capabilities": [
         "main"
-      ]
+      ],
+      "headers": {
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=(), display-capture=(), fullscreen=(), clipboard-read=(), clipboard-write=()",
+        "X-Content-Type-Options": "nosniff"
+      }
     }
   },
   "bundle": {

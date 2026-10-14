@@ -122,6 +122,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node scripts/p14-webview.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exact-source installed-host and installer receipt
+        run: python scripts/p14-evidence.py
       - name: Stop only owned Windows services
         if: always()
         run: |

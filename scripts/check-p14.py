@@ -16,7 +16,8 @@ assert cap['windows']==['main'] and set(cap['permissions'])==expected and len(ca
 assert 'remote' not in cap and 'webviews' not in cap
 window=config['app']['windows'];assert len(window)==1 and window[0]['label']=='main' and window[0]['devtools'] is False and window[0]['incognito'] is True
 assert config['app']['security']['capabilities']==['main']
-csp=config['app']['security']['csp'];assert "default-src 'none'" in csp and "script-src 'self'" in csp and "object-src 'none'" in csp and "frame-src 'none'" in csp and 'unsafe-' not in csp and 'https:' not in csp
+csp=config['app']['security']['csp'];assert "default-src 'none'" in csp and "script-src 'self'" in csp and "object-src 'none'" in csp and "frame-src 'none'" in csp and "frame-ancestors 'none'" in csp and 'unsafe-' not in csp and 'https:' not in csp
+assert config['app']['security']['headers']['Permissions-Policy']=='camera=(), microphone=(), geolocation=(), display-capture=(), fullscreen=(), clipboard-read=(), clipboard-write=()'
 update=config['plugins']['updater'];assert update['requireSignedVersion'] is True and update['allowDowngrades'] is False and update['pubkey']==''
 assert config['bundle']['targets']==['nsis'] and config['bundle']['windows']['nsis']['installMode']=='currentUser'
 assert config['bundle']['windows']['webviewInstallMode']=={'type':'downloadBootstrapper','silent':True}
