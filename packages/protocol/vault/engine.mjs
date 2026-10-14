@@ -234,8 +234,9 @@ export class VaultEngine {
           const frame=await this.#storeContent(tx,state.pins,row.id,row.kind,row.data,existing?.frame);await tx.put({id:row.id,frame});
         }
         for(const id of remove){
-          ensure(before.get(id)==='search-page'&&!ids.has(id),'UNSYNCED_WORK_PROTECTED');const row=await tx.read(id);ensure(row,'RECORD_NOT_FOUND');
-          for(const part of contentManifest(row.frame,this.scope,state.pins,id,'search-page',this.#key).parts)await tx.remove(part.record_id);await tx.remove(id);
+          const kind=before.get(id);ensure(['search-page','import-state','preview-state'].includes(kind)&&!ids.has(id),'UNSYNCED_WORK_PROTECTED');const row=await tx.read(id);ensure(row,'RECORD_NOT_FOUND');
+          if(kind!=='search-page'){const data=await readContent(row.frame,this.scope,state.pins,id,kind,this.#key,async part=>tx.read(part));try{ensure(kind==='import-state'&&data.state==='COMPLETE'||kind==='preview-state'&&data.state==='LINKED','UNSYNCED_WORK_PROTECTED');}finally{wipe(data);}}
+          for(const part of contentManifest(row.frame,this.scope,state.pins,id,kind,this.#key).parts)await tx.remove(part.record_id);await tx.remove(id);
         }
         const frame=await this.#storeContent(tx,state.pins,root,'content-control',value,old?.frame);await tx.put({id:root,frame});
         state.content_profile=CONTENT_PROFILE;state.manifest=signManifest(this.scope,state.pins,state.vault_id,this.#keys.signing.privateKey,state.file_profile,state.content_profile);

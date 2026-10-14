@@ -76,7 +76,7 @@
     },
     {
       "path": "packages/contracts/p03-operations.json",
-      "sha256": "a2e55469387a636d4c6c1aefa338604e660b959b7b547f0b3e7ade6f1b0dd1fc"
+      "sha256": "694c4cbd9151207a4a3f97a89a3e097cccd3c1c6d0fb9940c23e23aba421b19a"
     },
     {
       "path": "packages/contracts/p02-errors.json",
@@ -152,7 +152,7 @@
     },
     {
       "path": "packages/contracts/p09-notes.schema.json",
-      "sha256": "25fe578c4448e3dffc301d9eb32316927e1d77d74d36169fd3be135ddc59ac34"
+      "sha256": "96f05ee1db05886d01514fa953df1302c766bfbc3b85e34f3f804144c44a28a8"
     },
     {
       "path": "packages/contracts/p10-shared.schema.json",
@@ -164,11 +164,11 @@
     },
     {
       "path": "packages/contracts/p12-files.schema.json",
-      "sha256": "483bd770b7cb3311b8d20f47d11bda71d9a1553490425d05eab3c1937a8e6440"
+      "sha256": "3a3c801e3563ef5f3aa74f5296f8d1a93d84249d812a0917aab9489565403883"
     },
     {
       "path": "packages/contracts/p13-content.schema.json",
-      "sha256": "75541d0370a45a920db66a5bcea8541f9899bdc18f2c7ef964ce6138deb90f50"
+      "sha256": "d08712163a36d8cf970edec4a8271671d8f3967cbe07a4b460f148899ec06573"
     },
     {
       "path": "apps/api/bootstrap/app.php",
@@ -176,7 +176,7 @@
     },
     {
       "path": "apps/api/routes/web.php",
-      "sha256": "065ac28522e708320684047a17ea85b9e9b7ed66f5bf52970e993e0c7e3d89cb"
+      "sha256": "073a02ebf6d536c2bdc20505d96a6003665c82c8b39397cf87621671164b84c2"
     },
     {
       "path": "apps/api/routes/console.php",
@@ -404,11 +404,15 @@
     },
     {
       "path": "apps/api/app/Content/Retainer.php",
-      "sha256": "950a30b5c30850da434cf44871a56bcc3f61e7d7f8783af40c788d34ee685b35"
+      "sha256": "3acdb3d5ac92d002c83cc305c514314d7f1be714303b79c125c3b19eb50ae269"
+    },
+    {
+      "path": "apps/api/app/Content/Thumbnails.php",
+      "sha256": "ccfee73ced6733b203e8d2836debc7f8ff08144b77897d9594b9eefb259eb853"
     },
     {
       "path": "apps/api/app/Http/Controllers/ContentController.php",
-      "sha256": "e56cf0309b158ec43badfd02f24d8647956ba72d448cbf5370080d85384fa57a"
+      "sha256": "fa909de65b30c9043edb3bcf09c6a470d4dcfa8bb5225754cf321f48d9ab3a1b"
     },
     {
       "path": "apps/api/database/migrations/2026_10_14_000013_add_content_retention_and_exports.php",
@@ -418,29 +422,29 @@
   "outputs": [
     {
       "path": "packages/contracts/generated/openapi.json",
-      "sha256": "f9e7e8236a009f3ba48d0b92987e91e298fcf925ea99288f5b9b11469a348536"
+      "sha256": "1472567f12b94c992455cbeffc8dbc0ad37ef680be48eb84f66128f2fcad352d"
     },
     {
       "path": "packages/contracts/generated/protocol.d.ts",
-      "sha256": "41c5bb82d6253eaa50334c972306824d18c04fe6e9e15534f2374d458cefd81f"
+      "sha256": "1be3b17188d91b8de90315fe17e4ff2d3c154cf2ec64343c2854ac5ac08d7592"
     },
     {
       "path": "packages/contracts/generated/runtime-schemas.json",
-      "sha256": "ffff2100580083c2089e80da8a6775273a08a4376e1c8019145a66813fcfa957"
+      "sha256": "9c5015bf0a3f6bb3590660d2e1618e10d1159a3361a79c4358575f716a4013d7"
     },
     {
       "path": "apps/api/app/Generated/Dtos.php",
-      "sha256": "bb97a8238b59ab48951ef0ef0b183b4107fe374c147ad4c5e347e7d55ff2c9f5"
+      "sha256": "f60ddc716684abccbb0d4d684f0e42def4d76acedf1e87649db2b68ced615774"
     },
     {
       "path": "apps/api/app/Generated/catalogue.json",
-      "sha256": "2ae7adb56f78e0bf4ef7754fa1bafb1c7b02f6ec594bbc41c1d3e214b6c8d2ff"
+      "sha256": "a50e09471cfa447dc6fd8fcff2a575f38fc92162426735df050b65c153c9f965"
     },
     {
       "path": "apps/api/app/Generated/schemas.json",
-      "sha256": "ffff2100580083c2089e80da8a6775273a08a4376e1c8019145a66813fcfa957"
+      "sha256": "9c5015bf0a3f6bb3590660d2e1618e10d1159a3361a79c4358575f716a4013d7"
     }
   ],
-  "structures": 317,
-  "operations": 107
+  "structures": 325,
+  "operations": 111
 }

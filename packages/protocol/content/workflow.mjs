@@ -34,6 +34,9 @@ export class ContentWorkflow {
   #control; #cache = new Map(); #cacheBytes = 0;
   constructor({load, read, persist, catalog, accessible, open}) { Object.assign(this, {load, read, persist, catalog, accessible, open}); }
   fileReferences(){return structuredClone(this.#control?.files??[]);}
+  // Internal custody coordinators only; no generic job read/write command exists.
+  async job(job_id,kind){await this.#ready();ensure(id(job_id)&&['export-state','import-state','preview-state'].includes(kind),'INVALID_CONTENT_RECORD');const ref=this.#control.jobs.find(j=>j.record_id===job_id&&j.kind===kind);ensure(ref,'RECORD_NOT_FOUND');return this.read(ref.record_id,kind);}
+  async saveJob(job_id,kind,data){await this.#ready();ensure(id(job_id)&&['export-state','import-state','preview-state'].includes(kind),'INVALID_CONTENT_RECORD');const ref=this.#control.jobs.find(j=>j.record_id===job_id);ensure(!ref||ref.kind===kind,'INVALID_CONTENT_RECORD');if(!ref){ensure(this.#control.jobs.length<32,'RESOURCE_LIMIT');this.#control.jobs.push({record_id:job_id,kind});}try{await this.persist(this.#control,[{id:job_id,kind,data}]);}finally{this.close();}}
   close() { wipe(this.#control); for (const value of this.#cache.values()) wipe(value.value); this.#cache.clear(); this.#cacheBytes = 0; this.#control = undefined; }
   async #ready() {
     const next = contentState(await this.load() ?? {purpose: 'p13-content-control', version: 1, pages: [], jobs: []});
@@ -72,6 +75,8 @@ export class ContentWorkflow {
   async command(op, x = {}) {
     await this.#ready(); const accessible = await this.accessible();
     ensure(x.group_id === undefined || accessible.has(x.group_id), 'ROLE_FORBIDDEN');
+    if(op==='jobs'){const items=[];for(const ref of this.#control.jobs){const value=await this.read(ref.record_id,ref.kind);items.push({job_id:ref.record_id,kind:ref.kind,state:value.state??'PREPARED',retirable:ref.kind==='import-state'&&value.state==='COMPLETE'||ref.kind==='preview-state'&&value.state==='LINKED'});}return {items,limit:32};}
+    if(op==='retireJob'){ensure(x.confirm===true&&id(x.job_id),'CONFIRMATION_REQUIRED');const ref=this.#control.jobs.find(j=>j.record_id===x.job_id);ensure(ref,'RECORD_NOT_FOUND');const value=await this.read(ref.record_id,ref.kind);ensure(ref.kind==='import-state'&&value.state==='COMPLETE'||ref.kind==='preview-state'&&value.state==='LINKED','UNSYNCED_WORK_PROTECTED');this.#control.jobs=this.#control.jobs.filter(j=>j!==ref);try{await this.persist(this.#control,[],[ref.record_id]);return {retired:true,publication_journals_preserved:true};}finally{this.close();}}
     const failures=new Map((this.#control.failures??[]).map(f=>[f.revision_id,f.code]));
     const catalog = (await this.catalog()).filter(d => accessible.has(d.group_id) && (!x.group_id || d.group_id === x.group_id)).map(d=>({...d,payload_status:failures.get(d.revision_id)==='PAYLOAD_UNAVAILABLE'?'unavailable':failures.get(d.revision_id)==='UNANCHORED_HISTORY'?'unanchored':failures.get(d.revision_id)==='KEYS_PENDING'?'keys-pending':d.payload_status}));
     const indexed = this.#control.pages.flatMap(p => p.documents).filter(d => accessible.has(d.group_id) && (!x.group_id || d.group_id === x.group_id));

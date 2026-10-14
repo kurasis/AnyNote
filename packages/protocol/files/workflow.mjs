@@ -27,6 +27,26 @@ export class FileWorkflow {
  async #ready(){this.#control??=await this.load()??{purpose:'p12-file-control',version:1,id:fileControlId(this.scope),transfers:[],witnesses:[]};check(this.#control.id===fileControlId(this.scope)&&this.#control.transfers.length<=512,'INTEGRITY_FAILURE');}
  async #get(id){const ref=this.#control.transfers.find(t=>t.draft_id===id);check(ref,'TRANSFER_NOT_FOUND');const data=await this.readRecord(ref.record_id,'file-transfer');check(data.draft_id===id&&data.context.group_id===ref.group_id,'LOCAL_CONTEXT_MISMATCH');return {ref,data};}
  async #save(ref,data){await this.persist(this.#control,[{id:ref.record_id,kind:'file-transfer',data}]);}
+ // Trusted recovered-source path. These are not renderer commands or a nonce-
+ // reuse exception: every part is bound to a fully validated archive commitment.
+ async recoveredPrepare(x){
+  await this.#ready();check(x.identityProof&&Number.isSafeInteger(x.identityProof.size)&&x.identityProof.size>=0&&x.identityProof.size<=1000000000&&Array.isArray(x.identityProof.parts)&&x.identityProof.parts.length===Math.ceil(x.identityProof.size/CHUNK),'SOURCE_IDENTITY_REQUIRED');
+  const existing=this.#control.transfers.find(t=>t.import_id===x.import_id&&t.source_revision_id===x.source_revision_id);
+  if(existing){const {data}=await this.#get(existing.draft_id);check(data.archive_sha256===x.archive_sha256&&data.context.group_id===x.group_id&&same(data.source,x.identityProof),'IDEMPOTENCY_MISMATCH');return {draft_id:existing.draft_id,request:await this.command('request',{draft_id:existing.draft_id}),state:existing.state};}
+  const auth=await this.authority(x.group_id,true);let writer;
+  try{check(x.audience_digest===hash(canonicalBytes(wire({policy:auth.policy,members:auth.members}))),'COPY_CONFIRMATION_REQUIRED');check(this.#control.transfers.length<512,'RESOURCE_LIMIT');
+   const context={contract:'p02-file-c1',protocol:'anynote',protocol_version:1,service_id:this.scope.service_id,group_id:x.group_id,file_id:random(),file_version_id:random(),operation_id:random(),author:structuredClone(auth.author),policy:structuredClone(auth.policy),parents:[],file_format:'xchacha20poly1305-chunks-c1',manifest_schema:1};
+   writer=new FileWriter(wire(context),x.identityProof.size);writer.bindSource(x.identityProof.digest);
+   const association={import_id:x.import_id,source_revision_id:x.source_revision_id,archive_sha256:x.archive_sha256},ref={draft_id:random(),record_id:random(),group_id:x.group_id,state:'NEEDS_SOURCE',file_version_id:context.file_version_id,...association},data={purpose:'p12-file-transfer',version:1,draft_id:ref.draft_id,local_draft_id:ref.draft_id,upload_id:random(),context,source:structuredClone(x.identityProof),name:x.name,media:x.media??'application/octet-stream',writer:writer.checkpoint(),acknowledged:[],record:null,receipt:null,state:'NEEDS_SOURCE',...association};
+   ref.local_draft_id=ref.draft_id;this.#control.transfers.push(ref);await this.#save(ref,data);return {draft_id:ref.draft_id,request:{version:1,upload_id:data.upload_id,context,plaintext_bytes:String(x.identityProof.size)},state:ref.state};
+  }finally{writer?.close();wipe(auth);}
+ }
+ async recoveredPart(draft_id,index,bytes){
+  await this.#ready();const {ref,data}=await this.#get(draft_id),auth=await this.authority(ref.group_id,true);let writer;
+  try{check(data.import_id&&same(auth.policy,data.context.policy)&&data.receipt===null&&data.record===null&&Number.isSafeInteger(index)&&index>=0&&index<=data.writer.next&&index<data.source.parts.length,'INVALID_TRANSFER_STATE');check(bytes instanceof Uint8Array&&bytes.length===Math.min(CHUNK,data.source.size-index*CHUNK)&&hash(bytes)===data.source.parts[index],'SOURCE_CHANGED');
+   writer=FileWriter.resume(data.writer);let ciphertext;if(index===data.writer.next){ciphertext=writer.encryptNext(bytes);data.writer=writer.checkpoint();data.state=ref.state='UPLOADING';await this.#save(ref,data);}else{const state=structuredClone(data.writer);state.next=index;state.parts=state.parts.slice(0,index);writer.close();writer=FileWriter.resume(state);ciphertext=writer.encryptNext(bytes);check(hash(ciphertext)===data.writer.parts[index].ciphertext_digest,'INTEGRITY_FAILURE');wipe(state);}return {upload_id:data.upload_id,index:String(index),ciphertext};
+  }finally{writer?.close();wipe(auth);}
+ }
  async command(op,x={}){
   await this.#ready();
   if(op==='list')return this.#control.transfers.map(t=>({...t}));

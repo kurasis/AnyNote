@@ -11,7 +11,7 @@ for name in ['native_main_ipc_refuses_foreign_preview_stale_and_unknown_note_com
 assert 'native_receipt_fault_rolls_back_retirement_and_preserves_the_acknowledged_draft ... ok' in test.stdout
 assert 'native_note_restart_and_encrypted_sqlite_wal_inspection ... ok' in test.stdout
 assert 'native_verified_revoke_blocks_old_epoch_even_if_service_flags_are_false ... ok' in test.stdout
-assert '15 passed; 0 failed; 0 ignored' in test.stdout
+assert '16 passed; 0 failed; 0 ignored' in test.stdout
 if role=='windows':assert 'actual_windows_wts_registration_and_message_fences_without_hello_objects ... ok' in test.stdout
 paths=subprocess.check_output(['git','ls-files','-z'],cwd=ROOT).decode().split('\0');prefixes=('packages/vault-native/','packages/crypto-core/','packages/auth-native/','packages/protocol/','packages/contracts/','packages/api-client/','apps/api/','apps/auth-web/','apps/vault-web/','apps/devices-web/','apps/notes-web/','experiments/p01/p09-','experiments/p01/p06-build','infra/dev/p06-','scripts/p09','scripts/check-p09','scripts/p06-stack.py','scripts/runtime-env.sh','.github/workflows/')
 inputs=[{'path':p,'sha256':hashlib.sha256((ROOT/p).read_bytes()).hexdigest()} for p in sorted(paths) if p and p.startswith(prefixes)]

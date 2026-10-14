@@ -8,7 +8,7 @@ test=subprocess.run(['cargo','test','--manifest-path','packages/vault-native/Car
 assert '9 passed; 0 failed; 0 ignored' in test.stdout
 assert 'native_fresh_recovery_rejects_substituted_root_and_recovers_keys_only_after_activation ... ok' in test.stdout
 assert 'native_two_connections_and_aborted_sql_write_preserve_acknowledged_control ... ok' in test.stdout
-assert '15 passed; 0 failed; 0 ignored' in test.stdout
+assert '16 passed; 0 failed; 0 ignored' in test.stdout
 if role=='windows':assert 'actual_windows_wts_registration_and_message_fences_without_hello_objects ... ok' in test.stdout
 paths=subprocess.check_output(['git','ls-files','-z'],cwd=ROOT).decode().split('\0');prefixes=('packages/vault-native/','packages/crypto-core/','packages/auth-native/','packages/protocol/','packages/contracts/','packages/api-client/','apps/api/','apps/auth-web/','apps/vault-web/','apps/devices-web/','experiments/p01/p08-','experiments/p01/p06-build','infra/dev/p06-','scripts/p08','scripts/check-p08','scripts/p06-stack.py','scripts/runtime-env.sh','.github/workflows/')
 inputs=[{'path':p,'sha256':hashlib.sha256((ROOT/p).read_bytes()).hexdigest()} for p in sorted(paths) if p and p.startswith(prefixes)]

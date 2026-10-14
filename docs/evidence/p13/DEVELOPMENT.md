@@ -67,3 +67,19 @@ The inherited native all-feature set passed all 110 tests serially on Linux,
 including its actual incompressible 1 GB resume/export. Both native crates passed
 Clippy with warnings denied. None of these observations replaces final exact-head
 CI or physical platform evidence.
+
+The next component includes actual protected standard import, a default fresh
+private destination, fresh publication identities and encryption, durable file
+containers, thumbnail links, and owner retention report/pins. The pre-follow-up
+real TLS/SQL test reached 230 checks; subsequent crash/pause/expired-trash tests
+are still being checked. UI now streams an age archive with a separate kit,
+validates before copying, compares saved/current content and explicitly exports
+a selected plaintext note. A mandatory P13 Linux/browser and Windows workflow
+has been added. These are development facts, not final phase acceptance; its
+sandboxed full-path browser checks have not passed yet. PR26 remains a draft.
+
+Actual follow-up HTTP/SQL checks reached 249 with expired-trash compaction,
+resumed immutable publication after a lost acknowledgement and lock/reopen,
+paused import continuation, and confirmed completed-job retirement. Original
+publication journals remain protected. The browser/full-source workflow is
+pending; this is still component development, not P13 completion.

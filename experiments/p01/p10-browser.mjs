@@ -1,3 +1,4 @@
+import {contentCase} from './p13-browser-case.mjs';
 import {filesCase} from './p12-browser-case.mjs';
 // Mandatory hosted sandboxed Chromium: genuine WebAuthn through the shipped strict-CSP UI.
 import {chromium} from 'playwright-core';
@@ -97,6 +98,7 @@ try{
       report.p11_staged_sync_checks=4;
     }
     if(process.argv.includes('--p12-files'))report.p12_files=await filesCase({page:p,action,check,scratch,control});
+    if(process.argv.includes('--p13-content'))report.p13_content=await contentCase({page:p,action,check,scratch,control});
     check(errors.length===0,'NO_RUNTIME_OR_CSP_ERRORS');report.status='PASS';report.checks=checks;report.custody_diagnostics=await Promise.all([owner,...peers].map(async(d,i)=>({role:['owner','editor','reader'][i],events:await d.p.evaluate(()=>globalThis.__custodyDiagnostics)})));report.chromium_sandbox=true;report.request_pacing='Genuine roster/group requests paced below unchanged production limits; no mocked API responses';report.tls_verification='Real trusted disposable CA and hostname validation';report.source_tree_dirty=!!spawnSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}).stdout.trim();writeFileSync(root+'/artifacts/p10/browser-report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
   }
 }catch(e){report.status='FAIL';report.checks=checks;report.reason=String(e.message).slice(0,1000);report.custody_diagnostics=await Promise.all([context,...children].filter(Boolean).map(async ctx=>Promise.all(ctx.pages().map(p=>p.evaluate(()=>({hidden:Boolean(document.getElementById('workspace')?.hidden),events:globalThis.__custodyDiagnostics??[]})).catch(()=>({unavailable:true}))))));writeFileSync(root+'/artifacts/p10/browser-report.json',JSON.stringify(report,null,2)+'\n');throw e;}finally{for(const ctx of children)await ctx.close();await context?.close();rmSync(scratch,{recursive:true,force:true});}

@@ -658,6 +658,12 @@
               "type": "null"
             }
           ]
+        },
+        "import_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "archive_sha256": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
         }
       },
       "required": [
@@ -705,6 +711,15 @@
         },
         "copy_audience_digest": {
           "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+        },
+        "import_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "source_revision_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "archive_sha256": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
         }
       },
       "required": [
@@ -742,6 +757,15 @@
             "ACCESS_LOST",
             "COMMITTED"
           ]
+        },
+        "import_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "source_revision_id": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+        },
+        "archive_sha256": {
+          "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
         }
       },
       "required": [

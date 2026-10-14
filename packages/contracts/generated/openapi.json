@@ -5073,6 +5073,18 @@
                 }
               }
             }
+          },
+          "200": {
+            "description": "Authorized immutable ciphertext chunk; clients authenticate the full AEAD frame",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary",
+                  "x-maximum-observed-bytes": 8388624
+                }
+              }
+            }
           }
         }
       }
@@ -5120,6 +5132,230 @@
                 "schema": {
                   "$ref": "#/components/schemas/P13ContentExportHeaderPage"
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/files/{revision}/thumbnail": {
+      "post": {
+        "operationId": "post_files_revision_thumbnail",
+        "summary": "Bind a separately encrypted bounded thumbnail to its signed source",
+        "x-implementation-phase": "P13",
+        "x-implemented": true,
+        "description": "Current certified source-group writer; exact source and derived manifests in the same group/current epoch.",
+        "parameters": [
+          {
+            "name": "revision",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P13ContentThumbnailResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P13ContentThumbnailLink"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{id}/retention": {
+      "get": {
+        "operationId": "get_groups_id_retention",
+        "summary": "Report or explicitly apply reference-safe note retention and owner pins",
+        "x-implementation-phase": "P13",
+        "x-implemented": true,
+        "description": "Current group reader for report; current certified owner for explicit compaction or pins. Pins and collector share the transaction boundary.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P13ContentRetentionResult"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "post_groups_id_retention",
+        "summary": "Report or explicitly apply reference-safe note retention and owner pins",
+        "x-implementation-phase": "P13",
+        "x-implemented": true,
+        "description": "Current group reader for report; current certified owner for explicit compaction or pins. Pins and collector share the transaction boundary.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P13ContentRetentionResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P13ContentRetentionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/revisions/{revision}/retention-pin": {
+      "post": {
+        "operationId": "post_revisions_revision_retention_pin",
+        "summary": "Report or explicitly apply reference-safe note retention and owner pins",
+        "x-implementation-phase": "P13",
+        "x-implemented": true,
+        "description": "Current group reader for report; current certified owner for explicit compaction or pins. Pins and collector share the transaction boundary.",
+        "parameters": [
+          {
+            "name": "revision",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/P02FileC1Id"
+            }
+          }
+        ],
+        "security": [
+          {
+            "CookieSession": []
+          },
+          {
+            "NativeBearer": []
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": "Fixed typed error; unavailable resources are concealed as NOT_FOUND",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P02V1ErrorResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Strict phase-owned response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/P13ContentRetentionPinResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/P13ContentRetentionPinRequest"
               }
             }
           }
@@ -14250,6 +14486,12 @@
                 "type": "null"
               }
             ]
+          },
+          "import_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "archive_sha256": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
           }
         },
         "required": [
@@ -14297,6 +14539,15 @@
           },
           "copy_audience_digest": {
             "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "import_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "source_revision_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "archive_sha256": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
           }
         },
         "required": [
@@ -14334,6 +14585,15 @@
               "ACCESS_LOST",
               "COMMITTED"
             ]
+          },
+          "import_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "source_revision_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "archive_sha256": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
           }
         },
         "required": [
@@ -16380,6 +16640,15 @@
           },
           "local_draft_id": {
             "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "import_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "source_revision_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "archive_sha256": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
           }
         },
         "required": [
@@ -16657,6 +16926,15 @@
           },
           "local_draft_id": {
             "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "import_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "source_revision_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "archive_sha256": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
           }
         },
         "required": [
@@ -17223,6 +17501,287 @@
           "start",
           "items",
           "next"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentThumbnailBody": {
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "const": "derived-thumbnail-link"
+          },
+          "version": {
+            "const": 1
+          },
+          "service_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "operation_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "author": {
+            "$ref": "#/components/schemas/P02FileC1Author"
+          },
+          "policy": {
+            "$ref": "#/components/schemas/P02FileC1Policy"
+          },
+          "source_version_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "source_envelope_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "derived_version_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "derived_envelope_digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "kind": {
+            "const": "png-256"
+          }
+        },
+        "required": [
+          "purpose",
+          "version",
+          "service_id",
+          "group_id",
+          "operation_id",
+          "author",
+          "policy",
+          "source_version_id",
+          "source_envelope_digest",
+          "derived_version_id",
+          "derived_envelope_digest",
+          "kind"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentThumbnailLink": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "$ref": "#/components/schemas/P13ContentThumbnailBody"
+          },
+          "signature": {
+            "type": "string",
+            "format": "base64url-64"
+          }
+        },
+        "required": [
+          "body",
+          "signature"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentThumbnailResult": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "operation_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "source_version_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "derived_version_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "version": {
+            "const": 1
+          },
+          "digest": {
+            "$ref": "#/components/schemas/P02FileC1Digest"
+          },
+          "state": {
+            "const": "LINKED"
+          }
+        },
+        "required": [
+          "group_id",
+          "operation_id",
+          "source_version_id",
+          "derived_version_id",
+          "version",
+          "digest",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentRetentionRequest": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "confirm": {
+            "const": true
+          },
+          "after": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "confirm",
+          "after"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentRetentionPinRequest": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "pinned": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "version",
+          "pinned"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentRetentionPinResult": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "revision_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "payload_status": {
+            "enum": [
+              "retained",
+              "pruned"
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "group_id",
+          "revision_id",
+          "pinned",
+          "payload_status"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentRetentionItem": {
+        "type": "object",
+        "properties": {
+          "revision_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "object_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "payload_status": {
+            "enum": [
+              "retained",
+              "pruned"
+            ]
+          },
+          "eligible": {
+            "type": "boolean"
+          },
+          "reasons": {
+            "type": "array",
+            "maxItems": 7,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "current-or-conflict-head",
+                "explicit-retention-pin",
+                "active-snapshot-or-export",
+                "retained-trash",
+                "latest-thirty-days",
+                "daily-ninety-days",
+                "monthly-history"
+              ]
+            }
+          }
+        },
+        "required": [
+          "revision_id",
+          "object_id",
+          "payload_status",
+          "eligible",
+          "reasons"
+        ],
+        "additionalProperties": false
+      },
+      "P13ContentRetentionResult": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/P02FileC1Id"
+          },
+          "mode": {
+            "enum": [
+              "report-only",
+              "explicit-apply"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/P13ContentRetentionItem"
+            }
+          },
+          "next": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/P02FileC1Id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "released_ciphertext_bytes": {
+            "$ref": "#/components/schemas/P02FileC1Counter"
+          },
+          "signed_ancestry_retained": {
+            "const": true
+          },
+          "physical_database_pages_reclaimed": {
+            "const": false
+          }
+        },
+        "required": [
+          "version",
+          "group_id",
+          "mode",
+          "items",
+          "next",
+          "released_ciphertext_bytes",
+          "signed_ancestry_retained",
+          "physical_database_pages_reclaimed"
         ],
         "additionalProperties": false
       }

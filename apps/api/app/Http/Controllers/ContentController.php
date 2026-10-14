@@ -7,6 +7,8 @@ use App\Auth\Policy;
 use App\Auth\RateLimits;
 use App\Auth\Sessions;
 use App\Content\Exports;
+use App\Content\Retainer;
+use App\Content\Thumbnails;
 use App\Crypto\PublicProtocol as P;
 use App\Devices\Protocol as D;
 use App\Http\ApiException;
@@ -31,15 +33,30 @@ final class ContentController
             D::require($value === null || P::isBinary($value, 16), 'NOT_FOUND');
         }
         D::require($index === null || P::counter($index, '119'), 'NOT_FOUND');
-        $query = DevicesController::query($r, in_array($op, ['get_exports_id_catalog', 'get_exports_id_pages', 'get_exports_id_headers'], true) ? ['start'] : []);
+        $query = DevicesController::query($r, in_array($op, ['get_exports_id_catalog', 'get_exports_id_pages', 'get_exports_id_headers'], true) ? ['start'] : ($op === 'get_groups_id_retention' ? ['after'] : []));
         D::require(! isset($query['start']) || P::counter($query['start'], '51000'), 'INVALID_REQUEST');
+        D::require(! isset($query['after']) || P::isBinary($query['after'], 16), 'INVALID_REQUEST');
         $start = (int) ($query['start'] ?? '0');
         if ($r->isMethod('POST')) {
             $body = $r->attributes->get('anynote_control');
             D::require($body instanceof \stdClass, 'INVALID_REQUEST');
-            $this->contracts->value('p13', $op === 'post_exports' ? 'export-request' : 'renew-request', $body);
+            $this->contracts->value('p13', match ($op) {
+                'post_exports' => 'export-request', 'post_files_revision_thumbnail' => 'thumbnail-link', 'post_groups_id_retention' => 'retention-request', 'post_revisions_revision_retention_pin' => 'retention-pin-request', default => 'renew-request'
+            }, $body);
         } else {
             D::require($r->getContent() === '', 'INVALID_REQUEST');
+        }
+        if (in_array($op, ['get_groups_id_retention', 'post_groups_id_retention', 'post_revisions_revision_retention_pin'], true)) {
+            $result = $op === 'post_revisions_revision_retention_pin' ? app(Retainer::class)->pin($r, $revision, $body->pinned) : app(Retainer::class)->request($r, $id, $r->isMethod('POST'), $r->isMethod('POST') ? $body->after : ($query['after'] ?? null));
+            $this->contracts->value('p13', $op === 'post_revisions_revision_retention_pin' ? 'retention-pin-result' : 'retention-result', json_decode(json_encode($result, JSON_THROW_ON_ERROR)));
+
+            return response()->json($result);
+        }
+        if ($op === 'post_files_revision_thumbnail') {
+            $result = app(Thumbnails::class)->link($r, $revision, $body);
+            $this->contracts->value('p13', 'thumbnail-result', json_decode(json_encode($result, JSON_THROW_ON_ERROR)));
+
+            return response()->json($result);
         }
         if ($op === 'get_exports_id_files_revision_chunks_index') {
             D::require(! $r->headers->has('Range'), 'INVALID_REQUEST');
@@ -50,7 +67,7 @@ final class ContentController
                     while (! feof($handle)) {
                         $part = fread($handle, 65536);
                         if ($part === false) {
-                            throw new ApiException('STORAGE_UNAVAILABLE');
+                            throw new ApiException('TEMPORARY_UNAVAILABLE');
                         } echo $part;
                     }
                 } finally {

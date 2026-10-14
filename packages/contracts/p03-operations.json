@@ -1369,7 +1369,8 @@
       "security": [
         "CookieSession",
         "NativeBearer"
-      ]
+      ],
+      "binary_response": true
     },
     {
       "method": "GET",
@@ -1384,6 +1385,65 @@
         "NativeBearer"
       ],
       "response": "p13-content/export-header-page"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/files/{revision}/thumbnail",
+      "summary": "Bind a separately encrypted bounded thumbnail to its signed source",
+      "authorization": "Current certified source-group writer; exact source and derived manifests in the same group/current epoch.",
+      "operation_id": "post_files_revision_thumbnail",
+      "phase": "P13",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "request": "p13-content/thumbnail-link",
+      "response": "p13-content/thumbnail-result"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/groups/{id}/retention",
+      "summary": "Report or explicitly apply reference-safe note retention and owner pins",
+      "authorization": "Current group reader for report; current certified owner for explicit compaction or pins. Pins and collector share the transaction boundary.",
+      "operation_id": "get_groups_id_retention",
+      "phase": "P13",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p13-content/retention-result"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/groups/{id}/retention",
+      "summary": "Report or explicitly apply reference-safe note retention and owner pins",
+      "authorization": "Current group reader for report; current certified owner for explicit compaction or pins. Pins and collector share the transaction boundary.",
+      "operation_id": "post_groups_id_retention",
+      "phase": "P13",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p13-content/retention-result",
+      "request": "p13-content/retention-request"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/revisions/{revision}/retention-pin",
+      "summary": "Report or explicitly apply reference-safe note retention and owner pins",
+      "authorization": "Current group reader for report; current certified owner for explicit compaction or pins. Pins and collector share the transaction boundary.",
+      "operation_id": "post_revisions_revision_retention_pin",
+      "phase": "P13",
+      "implemented": true,
+      "security": [
+        "CookieSession",
+        "NativeBearer"
+      ],
+      "response": "p13-content/retention-pin-result",
+      "request": "p13-content/retention-pin-request"
     }
   ]
 }

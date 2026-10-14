@@ -1,4 +1,5 @@
 import {PreviewClient} from '../../packages/content-browser/preview-client.mjs';
+import {archiveUI} from './archive.mjs';
 import {contentUI} from './content.mjs';
 import {CipherCache} from '../../packages/protocol/files/cache.mjs';
 import {FilesClient,TransferManager} from '../../packages/protocol/files/client.mjs';
@@ -21,9 +22,9 @@ let synchronizer,poller,backgroundSync=false,uiInterrupt=false;
 const text=k=>words[language][k]??words.en[k]??k;
 const vault=new LocalVault('/auth/vault-worker.js',mask);
 function erase(v){if(v&&typeof v==='object')for(const k of Object.keys(v)){if(typeof v[k]==='string')v[k]='';else erase(v[k]);}}
-let transfers,contentTools;
+let transfers,contentTools,portableTools;
 function mask(){
- contentTools?.close();
+ contentTools?.close();portableTools?.close();
  transfers?.pause();if($('file-delete-confirm'))$('file-delete-confirm').checked=false;if($('file-restart-confirm'))$('file-restart-confirm').checked=false;if($('file-copy-confirm'))$('file-copy-confirm').checked=false;if($('file-copy-audience'))$('file-copy-audience').textContent='';if($('file-source'))$('file-source').value='';if($('file-items'))$('file-items').replaceChildren();if($('file-state'))$('file-state').textContent='';
  poller?.stop();synchronizer=undefined;
  generation++;clearTimeout(timer);editor&&erase(editor);editor=undefined;pendingConflict&&erase(pendingConflict);pendingConflict=undefined;
@@ -36,7 +37,7 @@ function mask(){
  for(const id of ['unlock','login','create-group','create-thread','save-note','save-local','refresh','retry'])$(id).disabled=false;
 }
 function translate(){
- contentTools?.translate();
+ contentTools?.translate();portableTools?.translate();
  document.documentElement.lang=language;$('language').value=language;
  for(const e of document.querySelectorAll('[data-i18n]'))e.textContent=text(e.dataset.i18n);
  $('lock-state').textContent=text($('workspace').hidden?'locked':'unlocked');
@@ -128,7 +129,7 @@ async function synchronize(){
 }
 async function refresh(){await flushIfDirty();await prove();if(groupSelected)await groupStatus(groupSelected);await loadGroups();await copyDestinations();if(groupSelected&&groups.has(groupSelected))await openGroup(groupSelected);await retryPending();await summary();}
 async function openGroup(id){
- contentTools?.close();
+ contentTools?.close();portableTools?.close();
  clearTimeout(timer);await flushIfDirty();groupSelected=id;threadSelected=undefined;const g=await groupStatus(id);if(!g)throw Error('GROUP_REQUIRED');
  $('group-heading').textContent=titles.get(id)??text('pending_title');$('audience').textContent=text(g.state==='archived'?'archived':g.kind==='shared'?'shared_group':'private');$('thread-heading').textContent='';$('entries').replaceChildren();$('editor').hidden=true;$('threads').replaceChildren();threadCursor=null;
  if(server){await keyFor(g);await loadThreads();}else for(const [object,r]of references)if(r.group_id===id&&r.object_kind==='thread'&&!r.tombstoned)item($('threads'),titles.get(object)??text('untitled'),()=>openThread(object),object);
@@ -216,10 +217,10 @@ async function showConflict(){
 }
 async function versions(){
  if(!editor?.object_id)throw Error('DRAFT_NOT_FOUND');await flushIfDirty();const page=await api.call('/objects/'+editor.object_id+'/revisions',null,'revisions-page');$('versions').replaceChildren();
- for(const r of page.revisions)item($('versions'),text('saved_version')+' · '+r.revision_id.slice(-8),async()=>{
-  const ref={object_id:editor.object_id,object_kind:editor.object_kind,thread_id:editor.thread_id,heads:[r]},opened=await openRevision(editor.group_id,ref,r);$('conflict-remote').textContent=opened.payload.title+'\n\n'+opened.payload.markdown;
+ for(const r of page.revisions){if(r.ciphertext_bytes==='0'){const li=document.createElement('li');li.textContent=text('payload_pruned')+' · '+r.revision_id.slice(-8);$('versions').append(li);continue;}item($('versions'),text('saved_version')+' · '+r.revision_id.slice(-8),async()=>{
+  const ref={object_id:editor.object_id,object_kind:editor.object_kind,thread_id:editor.thread_id,heads:[r]},opened=await openRevision(editor.group_id,ref,r);$('conflict-remote').textContent=text('compare_current')+'\n'+$('note-title').value+'\n'+$('note-body').value+'\n\n'+text('compare_saved')+'\n'+opened.payload.title+'\n\n'+opened.payload.markdown;
   const li=document.createElement('li');li.append(button(text('restore'),async()=>{const current=await api.call('/objects/'+editor.object_id,null,'object-state');await openRevision(editor.group_id,current.object,current.object.heads[0]);showEditor(edit(editor.group_id,editor.object_kind,editor.object_id,editor.thread_id,payloadContent(opened.payload),current.object.heads,current.object.tombstoned?'restore':'update'));dirty();}));$('versions').append(li);
- },r.revision_id);
+ },r.revision_id);}
 }
 async function trash(){
  if(!groupSelected)throw Error('GROUP_REQUIRED');await flushIfDirty();const page=await api.call('/groups/'+groupSelected+'/trash',null,'objects-page');$('trash-items').replaceChildren();
@@ -288,7 +289,7 @@ async function sharedProof(id){
  proof={...proof,journal,accounts};const checked=await shared('adopt',proof);roles.set(id,checked.members.find(m=>m.account_id===selected.account_id)?.role);return proof;
 }
 async function accessChange(id){
- contentTools?.close();
+ contentTools?.close();portableTools?.close();
  const a=await shared('retry',{group_id:id}),r=a.body.invitation??a.body.acceptance??a.body.policy??a.body.intent??a.body.commit??a.body.history,op=r?.body.operation_id??a.body.operation_id;let result=await sharing.call('/me/group-receipts/'+op+'?family='+(a.family==='epoch'?'commit':a.family),null,'result').catch(e=>{if(e.message!=='NOT_FOUND')throw e;return null;});
  if(result){await shared('complete',{group_id:id,result});return result;}
  if(a.family==='epoch'){
@@ -374,7 +375,9 @@ async function attachVerifiedFile(file){
 
 export {browserSink,PreviewClient};
 
-contentTools=contentUI({vault,getGroup:()=>groupSelected,text,run,files:()=>transfers,authorize:async(group,offline)=>{if(offline)return;if(!server)await prove();await groupStatus(group);await keyFor(groups.get(group));},open:async(result)=>{await openGroup(result.group_id);if(result.object_kind==='entry'){await openThread(result.thread_id);await openEntry(result.object_id);}else if(result.object_kind==='thread')await openThread(result.object_id);else if(result.object_kind==='file-manifest')await contentTools.preview(result.group_id,result.revision_id);}});
+contentTools=contentUI({vault,auth,getGroup:()=>groupSelected,text,run,files:()=>transfers,authorize:async(group,offline)=>{if(offline)return;if(!server)await prove();await groupStatus(group);await keyFor(groups.get(group));},open:async(result)=>{await openGroup(result.group_id);if(result.object_kind==='entry'){await openThread(result.thread_id);await openEntry(result.object_id);}else if(result.object_kind==='thread')await openThread(result.object_id);else if(result.object_kind==='file-manifest')await contentTools.preview(result.group_id,result.revision_id);}});
 
 const manageCache=document.createElement('button');manageCache.id='manage-downloaded-cache';manageCache.textContent=text('manage_cache');document.getElementById('content-tools').append(manageCache);
 manageCache.onclick=()=>run(async()=>{const report=await transfers.cache.reservations(groupSelected),list=document.createElement('ul');for(const entry of report.items){const li=document.createElement('li'),confirmed=document.createElement('input');confirmed.type='checkbox';const label=document.createElement('label');label.append(confirmed,document.createTextNode(text(entry.pinned?'cache_unpin_confirm':'cache_remove_confirm')));li.textContent=entry.file_version_id+' · '+entry.bytes+' '+text('encrypted_bytes')+' · '+text(entry.complete?'cache_complete':'cache_interrupted');li.append(label,button(text('cache_remove'),async()=>{if(!confirmed.checked)throw Error('CONFIRMATION_REQUIRED');await transfers.cache.evict(entry.group_id,entry.file_version_id,{confirm:true,unpin:entry.pinned});li.remove();}));list.append(li);}document.getElementById('search-results').replaceChildren(list);});
+
+portableTools=archiveUI({vault,plaintext:async()=>{if(!editor)throw Error('DRAFT_NOT_FOUND');await flushLocal();return (await vault.notes('draft',[editor.draft_id])).payload;},auth,files:()=>transfers,getGroup:()=>groupSelected,text,run,authorize:async(_group,all=false)=>{await flushIfDirty();if(!server)await prove();if(all){let after=null;do{const page=await api.call('/groups'+(after?'?after='+after:''),null,'groups-page');for(const g of page.groups){await groupStatus(g.group_id);await keyFor(groups.get(g.group_id));}after=page.next;}while(after);}else if(groupSelected){await groupStatus(groupSelected);await keyFor(groups.get(groupSelected));}}});

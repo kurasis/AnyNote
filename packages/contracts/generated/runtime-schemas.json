@@ -9184,6 +9184,12 @@
                 "type": "null"
               }
             ]
+          },
+          "import_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "archive_sha256": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
           }
         },
         "required": [
@@ -9231,6 +9237,15 @@
           },
           "copy_audience_digest": {
             "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+          },
+          "import_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "source_revision_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "archive_sha256": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
           }
         },
         "required": [
@@ -9268,6 +9283,15 @@
               "ACCESS_LOST",
               "COMMITTED"
             ]
+          },
+          "import_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "source_revision_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "archive_sha256": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
           }
         },
         "required": [
@@ -11333,6 +11357,15 @@
           },
           "local_draft_id": {
             "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "import_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "source_revision_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "archive_sha256": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
           }
         },
         "required": [
@@ -11610,6 +11643,15 @@
           },
           "local_draft_id": {
             "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "import_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "source_revision_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "archive_sha256": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
           }
         },
         "required": [
@@ -12182,6 +12224,287 @@
           "start",
           "items",
           "next"
+        ],
+        "additionalProperties": false
+      },
+      "thumbnail-body": {
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "const": "derived-thumbnail-link"
+          },
+          "version": {
+            "const": 1
+          },
+          "service_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "group_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "operation_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "author": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/author"
+          },
+          "policy": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/policy"
+          },
+          "source_version_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "source_envelope_digest": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+          },
+          "derived_version_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "derived_envelope_digest": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+          },
+          "kind": {
+            "const": "png-256"
+          }
+        },
+        "required": [
+          "purpose",
+          "version",
+          "service_id",
+          "group_id",
+          "operation_id",
+          "author",
+          "policy",
+          "source_version_id",
+          "source_envelope_digest",
+          "derived_version_id",
+          "derived_envelope_digest",
+          "kind"
+        ],
+        "additionalProperties": false
+      },
+      "thumbnail-link": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "$ref": "#/$defs/thumbnail-body"
+          },
+          "signature": {
+            "type": "string",
+            "format": "base64url-64"
+          }
+        },
+        "required": [
+          "body",
+          "signature"
+        ],
+        "additionalProperties": false
+      },
+      "thumbnail-result": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "operation_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "source_version_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "derived_version_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "version": {
+            "const": 1
+          },
+          "digest": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/digest"
+          },
+          "state": {
+            "const": "LINKED"
+          }
+        },
+        "required": [
+          "group_id",
+          "operation_id",
+          "source_version_id",
+          "derived_version_id",
+          "version",
+          "digest",
+          "state"
+        ],
+        "additionalProperties": false
+      },
+      "retention-request": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "confirm": {
+            "const": true
+          },
+          "after": {
+            "oneOf": [
+              {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "confirm",
+          "after"
+        ],
+        "additionalProperties": false
+      },
+      "retention-pin-request": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "pinned": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "version",
+          "pinned"
+        ],
+        "additionalProperties": false
+      },
+      "retention-pin-result": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "group_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "revision_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "payload_status": {
+            "enum": [
+              "retained",
+              "pruned"
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "group_id",
+          "revision_id",
+          "pinned",
+          "payload_status"
+        ],
+        "additionalProperties": false
+      },
+      "retention-item": {
+        "type": "object",
+        "properties": {
+          "revision_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "object_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "payload_status": {
+            "enum": [
+              "retained",
+              "pruned"
+            ]
+          },
+          "eligible": {
+            "type": "boolean"
+          },
+          "reasons": {
+            "type": "array",
+            "maxItems": 7,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "current-or-conflict-head",
+                "explicit-retention-pin",
+                "active-snapshot-or-export",
+                "retained-trash",
+                "latest-thirty-days",
+                "daily-ninety-days",
+                "monthly-history"
+              ]
+            }
+          }
+        },
+        "required": [
+          "revision_id",
+          "object_id",
+          "payload_status",
+          "eligible",
+          "reasons"
+        ],
+        "additionalProperties": false
+      },
+      "retention-result": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "const": 1
+          },
+          "group_id": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+          },
+          "mode": {
+            "enum": [
+              "report-only",
+              "explicit-apply"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/$defs/retention-item"
+            }
+          },
+          "next": {
+            "oneOf": [
+              {
+                "$ref": "urn:anynote:p02:file-contract:c1#/$defs/id"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "released_ciphertext_bytes": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
+          },
+          "signed_ancestry_retained": {
+            "const": true
+          },
+          "physical_database_pages_reclaimed": {
+            "const": false
+          }
+        },
+        "required": [
+          "version",
+          "group_id",
+          "mode",
+          "items",
+          "next",
+          "released_ciphertext_bytes",
+          "signed_ancestry_retained",
+          "physical_database_pages_reclaimed"
         ],
         "additionalProperties": false
       }

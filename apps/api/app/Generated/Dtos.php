@@ -3524,11 +3524,15 @@ final readonly class P09NotesLocalGroup implements \JsonSerializable
         public string $record_id,
         public string $state,
         public array|null $status,
+        public string|null $import_id = null,
+        public string|null $archive_sha256 = null,
     ) {}
 
     public function jsonSerialize(): array
     {
         $values = get_object_vars($this);
+        if ($values['import_id'] === null) { unset($values['import_id']); }
+        if ($values['archive_sha256'] === null) { unset($values['archive_sha256']); }
         return $values;
     }
 }
@@ -3544,12 +3548,18 @@ final readonly class P09NotesLocalDraft implements \JsonSerializable
         public null|string $thread_id,
         public string $saved_digest,
         public string|null $copy_audience_digest = null,
+        public string|null $import_id = null,
+        public string|null $source_revision_id = null,
+        public string|null $archive_sha256 = null,
     ) {}
 
     public function jsonSerialize(): array
     {
         $values = get_object_vars($this);
         if ($values['copy_audience_digest'] === null) { unset($values['copy_audience_digest']); }
+        if ($values['import_id'] === null) { unset($values['import_id']); }
+        if ($values['source_revision_id'] === null) { unset($values['source_revision_id']); }
+        if ($values['archive_sha256'] === null) { unset($values['archive_sha256']); }
         return $values;
     }
 }
@@ -3562,11 +3572,17 @@ final readonly class P09NotesLocalAttempt implements \JsonSerializable
         public string $draft_id,
         public string $source_digest,
         public string $state,
+        public string|null $import_id = null,
+        public string|null $source_revision_id = null,
+        public string|null $archive_sha256 = null,
     ) {}
 
     public function jsonSerialize(): array
     {
         $values = get_object_vars($this);
+        if ($values['import_id'] === null) { unset($values['import_id']); }
+        if ($values['source_revision_id'] === null) { unset($values['source_revision_id']); }
+        if ($values['archive_sha256'] === null) { unset($values['archive_sha256']); }
         return $values;
     }
 }
@@ -4435,12 +4451,18 @@ final readonly class P12FilesTransferRef implements \JsonSerializable
         public string $state,
         public string $file_version_id,
         public string|null $local_draft_id = null,
+        public string|null $import_id = null,
+        public string|null $source_revision_id = null,
+        public string|null $archive_sha256 = null,
     ) {}
 
     public function jsonSerialize(): array
     {
         $values = get_object_vars($this);
         if ($values['local_draft_id'] === null) { unset($values['local_draft_id']); }
+        if ($values['import_id'] === null) { unset($values['import_id']); }
+        if ($values['source_revision_id'] === null) { unset($values['source_revision_id']); }
+        if ($values['archive_sha256'] === null) { unset($values['archive_sha256']); }
         return $values;
     }
 }
@@ -4553,12 +4575,18 @@ final readonly class P12FilesFileTransfer implements \JsonSerializable
         public array|null $receipt,
         public string $state,
         public string|null $local_draft_id = null,
+        public string|null $import_id = null,
+        public string|null $source_revision_id = null,
+        public string|null $archive_sha256 = null,
     ) {}
 
     public function jsonSerialize(): array
     {
         $values = get_object_vars($this);
         if ($values['local_draft_id'] === null) { unset($values['local_draft_id']); }
+        if ($values['import_id'] === null) { unset($values['import_id']); }
+        if ($values['source_revision_id'] === null) { unset($values['source_revision_id']); }
+        if ($values['archive_sha256'] === null) { unset($values['archive_sha256']); }
         return $values;
     }
 }
@@ -4804,6 +4832,146 @@ final readonly class P13ContentExportHeaderPage implements \JsonSerializable
         public string $start,
         public array $items,
         public null|string $next,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P13ContentThumbnailBody implements \JsonSerializable
+{
+    public function __construct(
+        public string $purpose,
+        public int $version,
+        public string $service_id,
+        public string $group_id,
+        public string $operation_id,
+        public array $author,
+        public array $policy,
+        public string $source_version_id,
+        public string $source_envelope_digest,
+        public string $derived_version_id,
+        public string $derived_envelope_digest,
+        public string $kind,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P13ContentThumbnailLink implements \JsonSerializable
+{
+    public function __construct(
+        public array $body,
+        public string $signature,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P13ContentThumbnailResult implements \JsonSerializable
+{
+    public function __construct(
+        public string $group_id,
+        public string $operation_id,
+        public string $source_version_id,
+        public string $derived_version_id,
+        public int $version,
+        public string $digest,
+        public string $state,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P13ContentRetentionRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public bool $confirm,
+        public null|string $after,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P13ContentRetentionPinRequest implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public bool $pinned,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P13ContentRetentionPinResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $group_id,
+        public string $revision_id,
+        public bool $pinned,
+        public string $payload_status,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P13ContentRetentionItem implements \JsonSerializable
+{
+    public function __construct(
+        public string $revision_id,
+        public string $object_id,
+        public string $payload_status,
+        public bool $eligible,
+        public array $reasons,
+    ) {}
+
+    public function jsonSerialize(): array
+    {
+        $values = get_object_vars($this);
+        return $values;
+    }
+}
+
+final readonly class P13ContentRetentionResult implements \JsonSerializable
+{
+    public function __construct(
+        public int $version,
+        public string $group_id,
+        public string $mode,
+        public array $items,
+        public null|string $next,
+        public string $released_ciphertext_bytes,
+        public bool $signed_ancestry_retained,
+        public bool $physical_database_pages_reclaimed,
     ) {}
 
     public function jsonSerialize(): array

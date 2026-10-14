@@ -385,6 +385,7 @@ final class Service
                 if ($v->state !== 'reclaimable' || ! $this->unreferenced($v)) {
                     return 0;
                 }
+                DB::table('derived_preview_links')->where('source_version_id', $v->id)->delete();
                 foreach (DB::table('file_chunks')->where('file_version_id', $v->id)->get() as $part) {
                     $this->blobs->remove($part->blob_id);
                 }
@@ -415,6 +416,9 @@ final class Service
 
     private function unreferenced(stdClass $file): bool
     {
+        if (DB::table('derived_preview_links')->where('derived_version_id', $file->id)->exists()) {
+            return false;
+        }
         if (DB::table('attachment_refs')->where('file_version_id', $file->id)->exists() || DB::table('snapshot_file_pins')->where('file_version_id', $file->id)->exists()) {
             return false;
         }

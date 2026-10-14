@@ -139,3 +139,9 @@ Route::get('/api/v1/exports/{id}/records/{revision}', ContentController::class)-
 Route::get('/api/v1/exports/{id}/files/{revision}/chunks/{index}', ContentController::class)->name('get_exports_id_files_revision_chunks_index');
 
 Route::get('/api/v1/exports/{id}/headers', ContentController::class)->name('get_exports_id_headers');
+
+Route::post('/api/v1/files/{revision}/thumbnail', ContentController::class)->name('post_files_revision_thumbnail');
+
+Route::get('/api/v1/groups/{id}/retention', ContentController::class)->name('get_groups_id_retention');
+Route::post('/api/v1/groups/{id}/retention', ContentController::class)->name('post_groups_id_retention');
+Route::post('/api/v1/revisions/{revision}/retention-pin', ContentController::class)->name('post_revisions_revision_retention_pin');

@@ -143,6 +143,7 @@ test("OpenAPI local refs and operation signatures resolve; future product paths 
     }
   };
   visit(spec);
+  const p13 = new Set('post_exports get_exports_id post_exports_id_renew delete_exports_id get_exports_id_catalog get_exports_id_pages get_exports_id_records_revision get_exports_id_files_revision_chunks_index get_exports_id_headers post_files_revision_thumbnail get_groups_id_retention post_groups_id_retention post_revisions_revision_retention_pin'.split(' '));
   const ids = new Set();
   for (const [path, methods] of Object.entries(spec.paths))
     for (const [method, op] of Object.entries(methods)) {
@@ -150,15 +151,15 @@ test("OpenAPI local refs and operation signatures resolve; future product paths 
       ids.add(op.operationId);
       for (const parameter of op.parameters)
         assert.ok(path.includes("{" + parameter.name + "}"));
-      assert.equal(op["x-implemented"], ["P06", "P08", "P09", "P10", "P11", "P12"].includes(op["x-implementation-phase"]) || ["get_capabilities", "get_health_live", "get_health_ready"].includes(op.operationId));
+      assert.equal(op["x-implemented"], ["P06", "P08", "P09", "P10", "P11", "P12"].includes(op["x-implementation-phase"]) || p13.has(op.operationId) || ["get_capabilities", "get_health_live", "get_health_ready"].includes(op.operationId));
       if (op.operationId === "get_health_ready") assert.deepEqual(op.security, [{NativeBearer:[]}]);
-      if (op["x-implemented"] && !["P06", "P08", "P09", "P10", "P11", "P12"].includes(op["x-implementation-phase"])) assert.ok(["get", "head"].includes(method));
-      if (["P06", "P08", "P09", "P10", "P11", "P12"].includes(op["x-implementation-phase"])) {
+      if (op["x-implemented"] && !["P06", "P08", "P09", "P10", "P11", "P12", "P13"].includes(op["x-implementation-phase"])) assert.ok(["get", "head"].includes(method));
+      if (op["x-implemented"] && ["P06", "P08", "P09", "P10", "P11", "P12", "P13"].includes(op["x-implementation-phase"])) {
         if (path.endsWith("/chunks/{index}")) {
           assert.equal(op.responses["200"].content["application/octet-stream"].schema["x-maximum-observed-bytes"],8388624);
         } else assert.ok(op.responses["200"].content["application/json"].schema.$ref);
       }
       assert.ok(!path.includes("/search"));
     }
-  assert.equal(ids.size, 98);
+  assert.equal(ids.size, 111);
 });
