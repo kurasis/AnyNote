@@ -1054,3 +1054,19 @@ Tauri payload signatures are independently verified. HTTPS-only clients, bounded
 requests/download size, a single-operation permit and generation cancellation
 cover stalled transfers as well as arriving chunks. Ephemeral CI signatures are
 software test material, never production signing identity or release approval.
+
+## P14 native access-token lifetime and synthetic Windows input
+
+The actual Windows gigabyte run exposed a missing production integration: access
+tokens expire after fifteen minutes, but the host had not called the existing
+durable refresh mechanism. Both native control and file requests now check only
+protected expiry metadata before opening their bearer and refresh proactively.
+One native transport gate serializes refresh and in-flight requests, preventing
+concurrent reuse of a one-use refresh token or a race with a revoked old bearer.
+Unknown refresh responses preserve the durable marker and require fresh login.
+No token lifetime, signature, TLS or custody boundary is relaxed.
+
+Long GUI tests simulate an active operator with real OS input scoped to their
+owned disposable foreground app. They then stop input and observe the real
+five-minute idle/generation/preview boundary. Hosted synthetic input and WTS
+messages remain distinct from physical owner Win+L/suspend/Hello/TPM acceptance.

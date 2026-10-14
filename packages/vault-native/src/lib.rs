@@ -265,6 +265,7 @@ pub struct Vault {
     codec: Codec,
     signal: LockSignal,
     owner: String,
+    credential_refresh: Mutex<()>,
     inner: Arc<Mutex<Inner>>,
 }
 fn state(c: &Connection, codec: &Codec, s: &Scope) -> Result<State> {
@@ -352,6 +353,7 @@ impl Vault {
             codec: Codec::new()?,
             signal,
             owner: random_id(),
+            credential_refresh: Mutex::new(()),
             inner,
         })
     }

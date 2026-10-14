@@ -276,6 +276,38 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                     job.finish(result.clone());
                     result
                 }
+                Some("file-status") => {
+                    let cap = host.capability(host.current())?;
+                    let request = host.vault.file_request(
+                        cap.as_ref(),
+                        command["draft_id"]
+                            .as_str()
+                            .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?,
+                    )?;
+                    let result = host.vault.file_http(
+                        cap.as_ref(),
+                        &host.profile.credential_id,
+                        &host.adapter,
+                        anynote_auth_native::FileOperation::Status {
+                            upload: request["upload_id"]
+                                .as_str()
+                                .ok_or(anynote_crypto_core::Error("INVALID_REQUEST"))?,
+                        },
+                    )?;
+                    Ok(json!({"status":result.status}))
+                }
+                Some("session-expiry") => {
+                    let cap = host.capability(host.current())?;
+                    Ok(
+                        json!({"expires_at":host.vault.native_credentials_expires_at(cap.as_ref(),&host.profile.credential_id)?}),
+                    )
+                }
+                Some("expire-session") => {
+                    let cap = host.capability(host.current())?;
+                    Ok(
+                        json!({"prior_expires_at":host.vault.synthetic_expire_native_session(cap.as_ref(),&host.profile.credential_id)?}),
+                    )
+                }
                 Some("prepare-note-attempt") => {
                     let cap = host.capability(host.current())?;
                     let queued = host.vault.notes_command(

@@ -10,7 +10,7 @@ def sha(path):return hashlib.file_digest(path.open('rb'),'sha256').hexdigest()
 head=git('rev-parse','HEAD').decode().strip()
 assert not git('status','--porcelain'),'Refuse dirty-source acceptance'
 reports={}
-for name,minimum in [('native-pairing-development.json',33),('native-sharing-development.json',20),('native-http-development.json',57),('windows-webview-development.json',35)]:
+for name,minimum in [('native-pairing-development.json',33),('native-sharing-development.json',20),('native-http-development.json',62),('windows-webview-development.json',35)]:
  path=ROOT/'artifacts/p14'/name;value=json.loads(path.read_text(encoding='utf-8'))
  assert value['status']=='PASS' and value['source_commit']==head and not value['source_tree_dirty']
  assert value['checks']>=minimum and value['physical_acceptance'] is False

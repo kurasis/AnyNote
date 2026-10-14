@@ -86,7 +86,7 @@ pub fn attach(
                 let idle = (unsafe { GetTickCount64() } as u32).wrapping_sub(input.dwTime);
                 if idle >= 300000
                     && let Ok(host) = state.host()
-                    && host.vault.status().ok() == Some("unlocked")
+                    && host.has_capability()
                 {
                     host.lock();
                     clipboard::clear();

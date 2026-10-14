@@ -94,16 +94,19 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/p14-windows-services.py diagnose
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Actual native Windows 1 GB upload download export independent recovery and fresh import
+          $sourceChanges = git status --porcelain
+          if ($sourceChanges) { $sourceChanges; throw 'Windows backend setup changed the source tree' }
+      - name: Actual native Windows enrollment in both QR directions
         run: |
           cargo build --manifest-path packages/windows-native/Cargo.toml --release --features integration-harness --locked -j 4
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $env:ANYNOTE_P14_PAIRING_RELEASE = '1'
           node scripts/p14-pairing.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Actual native independent cards role loss and ownership
+        run: |
+          $env:ANYNOTE_P14_PAIRING_RELEASE = '1'
           node scripts/p14-sharing.mjs
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          node scripts/p14-http.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build separately instrumented real WebView2 host
         run: |
@@ -117,11 +120,17 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Move-Item apps/desktop/src-tauri/target/release/bundle/nsis/*0.14.1*.exe .local/p14-candidate/
           Copy-Item .local/p14-tools/instrumented-host.exe apps/desktop/src-tauri/target/release/anynote-desktop.exe
+          $sourceChanges = git status --porcelain
+          if ($sourceChanges) { $sourceChanges; throw 'Candidate build changed the source tree' }
       - name: Actual installed Windows and WebView2 dialogs lifecycle SQL and 1 GB workflows
         run: |
           python scripts/p14-windows-services.py trust
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node scripts/p14-webview.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Actual native 1 GB transfer export recovery import and token refresh
+        run: |
+          node scripts/p14-http.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Exact-source installed-host and installer receipt
         run: python scripts/p14-evidence.py

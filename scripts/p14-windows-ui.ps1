@@ -1,5 +1,5 @@
 # CI-owned real Windows dialog/lifecycle automation. Never used by the product.
-param([ValidateSet('file','consent','foreground','wts-lock','wts-unlock','memory','clipboard-read','clipboard-other','installed-version')][string]$Operation,[int]$ProcessId,[string]$Value)
+param([ValidateSet('file','consent','foreground','wts-lock','wts-unlock','memory','clipboard-read','clipboard-other','installed-version','input')][string]$Operation,[int]$ProcessId,[string]$Value)
 $ErrorActionPreference='Stop'
 if($env:GITHUB_ACTIONS -ne 'true'){throw 'Synthetic Windows Actions runner required'}
 if($Operation -eq 'installed-version'){[Console]::Write([Diagnostics.FileVersionInfo]::GetVersionInfo($Value).ProductVersion);exit}
@@ -13,6 +13,14 @@ using System.Runtime.InteropServices;
 public static class AnyNoteTestWindow {
  [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);
  [DllImport("user32.dll")] public static extern IntPtr SendMessage(IntPtr h,uint m,IntPtr w,IntPtr l);
+ [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
+ [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr h,out uint p);
+ [DllImport("user32.dll", SetLastError=true)] public static extern uint SendInput(uint n,INPUT[] inputs,int size);
+ [StructLayout(LayoutKind.Sequential)] public struct KEYBDINPUT {public ushort key,scan;public uint flags,time;public UIntPtr extra;}
+ [StructLayout(LayoutKind.Explicit,Size=32)] public struct INPUTUNION {[FieldOffset(0)] public KEYBDINPUT keyboard;}
+ [StructLayout(LayoutKind.Sequential)] public struct INPUT {public uint type;public INPUTUNION data;}
+ public static bool NeutralInput(){var a=new INPUT[2];a[0].type=a[1].type=1;a[0].data.keyboard.key=a[1].data.keyboard.key=0x10;a[1].data.keyboard.flags=2;return SendInput(2,a,Marshal.SizeOf(typeof(INPUT)))==2;}
+
 }
 '@
 if($Operation -eq 'memory'){
@@ -24,6 +32,13 @@ if($Operation -eq 'memory'){
 $p=Get-Process -Id $ProcessId
 $window=$p.MainWindowHandle
 if($window -eq [IntPtr]::Zero){throw 'Real main HWND required'}
+# Real OS input simulates an active synthetic operator. It does not disable idle policy.
+if($Operation -eq 'input'){
+ [void][AnyNoteTestWindow]::SetForegroundWindow($window)
+ [uint32]$foregroundOwner=0;[void][AnyNoteTestWindow]::GetWindowThreadProcessId([AnyNoteTestWindow]::GetForegroundWindow(),[ref]$foregroundOwner)
+ if($foregroundOwner -ne $ProcessId -or [IntPtr]::Size -ne 8 -or ![AnyNoteTestWindow]::NeutralInput()){throw 'Owned synthetic operator input failed'}
+ exit
+}
 if($Operation -eq 'foreground'){[void][AnyNoteTestWindow]::SetForegroundWindow($window);exit}
 # Software messages test the installed handler. They are not a physical Win+L trial.
 if($Operation -eq 'wts-lock'){[void][AnyNoteTestWindow]::SendMessage($window,0x2B1,[IntPtr]7,[IntPtr]0);exit}

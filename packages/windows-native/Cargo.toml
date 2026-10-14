@@ -6,7 +6,7 @@ rust-version = "1.99"
 license = "GPL-3.0-only"
 publish = false
 [features]
-integration-harness = ["anynote-auth-native/integration-harness"]
+integration-harness = ["anynote-auth-native/integration-harness", "anynote-local-vault/integration-harness"]
 [[bin]]
 name = "p14-integration"
 path = "src/bin/p14-integration.rs"

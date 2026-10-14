@@ -466,6 +466,9 @@ impl Host {
         }
         let _ = self.vault.lock_all();
     }
+    pub fn has_capability(&self) -> bool {
+        self.cap.lock().is_ok_and(|c| c.is_some())
+    }
     pub fn capability(&self, g: u64) -> Result<Arc<Capability>> {
         check(g == self.current(), "STALE_CAPABILITY")?;
         let cap = self
@@ -474,7 +477,12 @@ impl Host {
             .map_err(|_| Error("HOST_BUSY"))?
             .clone()
             .ok_or(Error("VAULT_LOCKED"))?;
-        self.vault.lease(&cap)?;
+        if let Err(error) = self.vault.lease(&cap) {
+            if matches!(error.0, "VAULT_LOCKED" | "STALE_CAPABILITY") {
+                self.lock();
+            }
+            return Err(error);
+        }
         self.verify_service(&cap)?;
         Ok(cap)
     }

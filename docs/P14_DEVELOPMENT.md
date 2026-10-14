@@ -144,3 +144,30 @@ operations now capture current verified peer publications before preparation.
 An explicit native-confirmed pending-access cancellation reconciles its result
 before retiring the pending key. UI entry creation and attachment preservation
 were corrected during host review. Final Windows acceptance remains outstanding.
+
+Windows 0ab095a built the installer, passed native tests, real filesystem flush,
+pairing33 and sharing17. Its native gigabyte run uploaded the original and fresh
+shared copy, then failed during import when the fifteen-minute OAuth access
+token expired. The verified raw artifact's last API failure is401SESSION_EXPIRED;
+no signature/TLS/storage check was disabled. This is not a completed host receipt.
+
+Native control and binary transports now serialize request/credential rotation
+and proactively invoke the maintained protected one-use refresh before expiry.
+The durable unknown-refresh marker still requires fresh login after uncertainty.
+A feature-only test can shorten its synthetic cached expiry, never extend server
+authorization or expose credentials. Actual small API62 checks pass with forced
+expiry/rotation through both control and binary transports, followed by complete
+file/export/import flows. Windows full acceptance
+must now exercise real expiry during its longer run.
+
+The complete reusable setup succeeded. A separate clean-source repeat at97a128e
+preserved all1018 tracked files,31 persistent content/security tables and every
+TLS/OAuth file byte-for-byte. Native all-feature tests, including the real gigabyte
+case, remained enabled; release tests use the same assertions as the shipped
+profile. A final merged-head setup/start and configuration readback remain due.
+
+CI input uses real Windows SendInput only for an owned synthetic foreground app,
+then stops input and waits the unchanged five-minute idle/generation fence. It
+does not disable idle. Native generation also follows an underlying vault timeout
+so a previously auto-locked vault cannot leave previews under an old host scope.
+These new Windows UI checks remain pending; physicalG1 is not inferred.

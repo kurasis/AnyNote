@@ -511,6 +511,12 @@ impl Vault {
         operation: anynote_auth_native::FileOperation<'_>,
     ) -> Result<anynote_auth_native::FileResponse> {
         check(valid_id(credential_id), "INVALID_SESSION")?;
+        // Serialize credential rotation with in-flight native requests as well.
+        let _transport = self
+            .credential_refresh
+            .lock()
+            .map_err(|_| Error("VAULT_BUSY"))?;
+        self.refresh_native_credentials(cap, credential_id, adapter)?;
         let credentials = {
             let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
             let s = self.authorize(&mut i, cap)?;
