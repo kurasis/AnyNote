@@ -95,3 +95,14 @@ These exact-source candidate receipts are retained locally, but source changed
 after them: new native filenames, estimate/lifecycle guards, stronger lease
 authorization and Windows actual 1 GB/Rust age remain under final acceptance.
 The phase is still IN PROGRESS and PR26 is a draft.
+
+Cross-root and cross-service standard imports passed, including fresh destination
+signatures and real copied-file decryption, with source-account denial of the
+new private copy. The actual HTTP development run reached 401 checks. A separate
+427-check signed shared-group/lease removal test passed. The clean offline CLI
+checks explicit plaintext intent, wrong digest, existing destination preservation
+and cleanup of only its owned stage. These extend the candidate tests to sixteen
+Node checks; final exact-head gates remain required. Complete installer at 8807100
+preserved all 920 tracked files, 31 persistent tables and private TLS/OAuth.
+The first hosted 8807100 content Linux job lacked the native integration harness
+needed by its newly added authority suite; the workflow now builds it explicitly.

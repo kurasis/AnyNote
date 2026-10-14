@@ -44,6 +44,7 @@ jobs:
           cargo clippy --manifest-path packages/content-native/Cargo.toml --locked --all-targets -j 4 -- -D warnings
           cargo test --manifest-path packages/content-native/Cargo.toml --locked -j 4 -- --test-threads=1
           python3 scripts/p13-native-inventory.py
+          cargo build --manifest-path packages/vault-native/Cargo.toml --locked --features integration-harness -j 4
       - name: Actual HTTPS, SQL, immutable resumable import and reference-safe retention
         run: |
           source scripts/runtime-env.sh
