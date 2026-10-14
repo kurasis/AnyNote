@@ -92,6 +92,11 @@ def main():
     operation.add_argument('operation', choices=['up', 'reset', 'check', 'stop', 'control'])
     operation.add_argument('arguments', nargs='*')
     args = operation.parse_args()
+    if os.name=='nt':
+        if args.operation!='control':raise RuntimeError('Windows CI services are managed by p14-windows-services.py')
+        windows_spec=importlib.util.spec_from_file_location('p14_owned_windows',ROOT/'scripts/p14-windows-services.py')
+        windows=importlib.util.module_from_spec(windows_spec);windows_spec.loader.exec_module(windows)
+        print(windows.control(args.arguments));return
     initialize()
     if args.operation in ['up', 'reset']:
         stack.compose('up', '-d', '--wait', 'db', capture=True)

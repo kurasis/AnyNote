@@ -49,6 +49,26 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           git diff --exit-code
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Actual owned Windows TLS, PHP and MariaDB
+        run: |
+          $env:ANYNOTE_TEST_PYTHON = (Get-Command python).Source
+          "ANYNOTE_TEST_PYTHON=$env:ANYNOTE_TEST_PYTHON" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          New-Item -ItemType Directory -Force .local/p14-tools | Out-Null
+          rustc scripts/p14-python3-shim.rs -o .local/p14-tools/python3.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          (Resolve-Path .local/p14-tools).Path | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          python scripts/p14-windows-services.py up
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Actual native Windows 1 GB upload download export independent recovery and fresh import
+        run: |
+          cargo build --manifest-path packages/windows-native/Cargo.toml --release --features integration-harness --locked -j 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node scripts/p14-http.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Stop only owned Windows services
+        if: always()
+        run: |
+          if (Test-Path .local/p14-windows-services/owner.json) { python scripts/p14-windows-services.py stop }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -56,5 +76,6 @@ jobs:
           path: |
             apps/desktop/src-tauri/target/release/bundle/nsis/*.exe
             apps/desktop/src-tauri/resources/runtime-manifest.json
+            artifacts/p14/*.json
           retention-days: 14
           if-no-files-found: warn
