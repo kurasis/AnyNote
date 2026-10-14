@@ -1,7 +1,7 @@
 # P12 encrypted files and quota lifecycle
 
-Implementation is undergoing final verification. This guide describes the product
-path; PROGRESS and TEST_EVIDENCE own actual acceptance. Physical iPhone/Hello,
+The P12 software slice passed all twenty-two mandatory hosted gates. This guide
+describes the product path; PROGRESS and TEST_EVIDENCE own exact execution evidence. Physical iPhone/Hello,
 memory/network lifecycle and qualified external review remain separate open gates.
 
 Files use the frozen P02 file context, independently authenticated manifest key
@@ -88,3 +88,40 @@ manifests and 1,000 captured file versions per snapshot; eight manifests per fil
 page. Exceeding a bound preserves work and returns a limit error. Full large-scale
 operational capacity and independent composition review are not inferred from
 software tests.
+
+## Software acceptance trace
+
+The public source receipts identify the full clean Git tree and raw input hashes;
+acceptance.json records every mandatory job and downloaded ZIP digest. These
+software outcomes do not close physical or qualified review.
+
+| Acceptance | Exercised software path |
+| --- | --- |
+| U01–U02 | Incompressible actual 1 GB native/HTTP/PWA, zero and 8 MiB boundaries; exact 120-part/tag/final-byte accounting and upfront oversize denial |
+| U03–U04 | Missing/corrupt/truncated/range parts, authenticated full digest, exact same/changing PUT and commit retries |
+| U05–U06 | Genuine partial socket disconnect, response-body loss after committed headers, protected lock/reopen/reselect, same/wrong source and fresh burned attempt |
+| U07 | Actual shared reader denial, role downgrade/removal, epoch restart and owner-transfer fences; retained source/intent |
+| U08–U09 | Concurrent near-limit reservations, real collector/commit race, receipt-trigger transaction rollback and pin-protected explicit cleanup |
+| U10 | Actual MSVC native selected-handle 1 GB/resume/export, cache/corruption/atomic output and sampled transfer-phase working set; full packaged WebView2/physical matrix remains P14/G1 |
+| U11–U12 | OPEN/NOT_RUN here: installed owner iPhone 1 GB Files save, background/lock/force-close/low-space and measured memory; P15 final acceptance |
+| U13–U14 | Actual 72-hour expiry/collection, immutable operation identity and cross-account/group manifest/chunk/session/pin denial |
+| U15 | Safe export filename/path/device-name handling, originals opaque and never automatically opened/decoded; bounded preview viewers remain P13 |
+| U16 | Actual SQL/log, protected SQLite/WAL and shipped IndexedDB/OPFS inspection; server/caches contain ciphertext and public framing only |
+| U17 | Actual content-quota-full revoke/rekey/reader maintenance, ordinary file reservation denial and exact security-byte journal reconciliation |
+
+[File HTTP](evidence/p12/http-report.json), [authority races](evidence/p12/membership-report.json),
+[shipped PWA](evidence/p12/browser-report.json), [Linux source](evidence/p12/linux-source-report.json),
+[Windows source](evidence/p12/windows-source-report.json) and [all gates](evidence/p12/acceptance.json)
+contain public metadata only. Complete phase scope and open release gates remain
+separate from a successful software pipeline.
+
+Browser export uses an ordinary navigation to the worker's attachment response;
+setting an anchor download attribute bypassed interception in the observed Chromium
+flow. A separate real 64 MiB hosted diagnostic proved the transport correction;
+the full 1 GB acceptance then verified both online and offline saved hashes.
+The channel waits for authenticated complete-stream acknowledgement; browser/OS
+persistence after delivery remains the explicitly documented physical boundary.
+The inherited static-cache check now waits for all nine exact permitted resources,
+including the three note assets; partial/empty caches do not satisfy the check.
+No API/auth/recovery/export responses enter Cache Storage. Platform job budgets
+allow the retained repeated 1 GB native evidence runs without skipping assertions.

@@ -480,3 +480,12 @@ HTTPS host is not ready. Older 0.1.4 owner-kit evidence remains separately retai
 No new owner trial, production operation, release or reviewer outreach occurred.
 Qualified G2/G3 remain OPEN/NOT_RUN. A tested current environment, saved draft,
 Publish and independently observed fresh restoration remain separate facts.
+
+P12 hosted Chromium memory observation: aggregate process RSS grew by
+1219571712 bytes above a
+4518518784-byte multi-window baseline.
+This sums shared pages and the other fixture windows and cannot establish a
+per-transfer mobile memory bound. Buffers are chunk-bounded in the implementation;
+these aggregate results require process/heap attribution and P15 optimization and
+real-device measurement before advertising the mobile memory target. Native
+transfer-phase observations are independently scoped in the platform receipts.
