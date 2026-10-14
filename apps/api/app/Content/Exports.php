@@ -25,6 +25,9 @@ final class Exports
         $lease = DB::table('snapshot_sessions')->where('id', $id)->where('account_id', $actor->accountId)->where('device_id', $actor->deviceId)->lockForUpdate()->first();
         D::require($lease !== null && $lease->purpose === 'export' && $lease->session_id === $actor->sessionId && $lease->root_fingerprint === $actor->rootFingerprint, 'NOT_FOUND');
         D::require($lease->state === 'active' && $lease->expires_at > now()->format('Y-m-d H:i:s'), 'SYNC_CURSOR_EXPIRED');
+        foreach (DB::table('snapshot_catalog')->where('snapshot_id', $lease->id)->orderBy('group_id')->get(['group_id']) as $captured) {
+            $this->notes->group($actor, $captured->group_id);
+        }
         $counter = DB::table('sync_counters')->where('id', 1)->first();
         D::require($counter !== null && $counter->generation === $lease->transport_generation, 'SYNC_CURSOR_EXPIRED');
 
@@ -33,10 +36,13 @@ final class Exports
 
     private function result(Actor $actor, stdClass $lease): array
     {
+        $total = DB::table('export_snapshot_items as i')->leftJoin('object_revisions as n', 'n.revision_id', '=', 'i.revision_id')->leftJoin('object_key_wraps as w', 'w.revision_id', '=', 'i.revision_id')->leftJoin('file_versions as f', 'f.id', '=', 'i.revision_id')->where('i.snapshot_id', $lease->id)->selectRaw('COALESCE(SUM(CEIL(COALESCE(n.ciphertext_bytes, 0) * 4 / 3) + COALESCE(w.ciphertext_bytes, 0) + COALESCE(f.ciphertext_bytes, 0)), 0) AS bytes, COUNT(*) AS items')->first();
+        $estimate = (int) $total->bytes + (int) $total->items * 65536 + 67108864;
+
         return ['version' => 1, 'scope' => ['service_id' => config('api.service_id'), 'account_id' => $actor->accountId, 'root_fingerprint' => $actor->rootFingerprint, 'group_id' => $lease->scope_group_id],
             'descriptor' => json_decode($lease->descriptor), 'catalog_count' => (string) $lease->catalog_count, 'catalog_digest' => $lease->catalog_digest,
             'lease_expires_at_ms' => (string) (strtotime($lease->expires_at.' UTC') * 1000), 'maximum_expires_at_ms' => (string) (strtotime($lease->maximum_expires_at.' UTC') * 1000),
-            'served_bytes' => (string) $lease->served_bytes, 'selection' => json_decode($lease->export_selection)];
+            'estimated_archive_bytes' => (string) $estimate, 'served_bytes' => (string) $lease->served_bytes, 'selection' => json_decode($lease->export_selection)];
     }
 
     public function start(Request $r, stdClass $selection): array

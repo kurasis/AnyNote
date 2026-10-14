@@ -4753,6 +4753,7 @@ final readonly class P13ContentExportResult implements \JsonSerializable
         public string $maximum_expires_at_ms,
         public string $served_bytes,
         public array $selection,
+        public string $estimated_archive_bytes,
     ) {}
 
     public function jsonSerialize(): array

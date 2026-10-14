@@ -12054,6 +12054,9 @@
               "include_trash"
             ],
             "additionalProperties": false
+          },
+          "estimated_archive_bytes": {
+            "$ref": "urn:anynote:p02:file-contract:c1#/$defs/counter"
           }
         },
         "required": [
@@ -12065,7 +12068,8 @@
           "lease_expires_at_ms",
           "maximum_expires_at_ms",
           "served_bytes",
-          "selection"
+          "selection",
+          "estimated_archive_bytes"
         ],
         "additionalProperties": false
       },

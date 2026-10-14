@@ -972,3 +972,32 @@ age and USTAR/path bytes remain unchanged. The new reader dispatches by a closed
 evidence profile and validates the existing journal/root/group predicates. Older
 readers refuse this unsupported layout; they are not treated as compatible
 export/import clients. The legacy frozen evidence remains independently readable.
+
+## ADR-024: P13 recovery jobs, derived previews and retention boundary
+
+Standard import validates the entire immutable archive before any live mutation.
+Default destination is a new private group; existing current audience requires
+explicit confirmation. Protected journals bind stable import IDs, archive hashes
+and fresh immutable note/file attempts. Published recovered files receive durable
+entry references. Pause/lost ACK retains work; only completed job metadata can be
+explicitly retired, preserving publication and transfer receipts.
+
+A thumbnail is a distinct quota-charged encrypted file, and a separate current
+writer signature binds its manifest digest to the exact source. The custody job
+permits only its prepared PNG version. The shared collector boundary prevents
+link/GC races and keeps referenced derived content alive. Chains/cycles are denied.
+
+Retention reports why bytes remain pinned, and only the owner explicitly applies
+policy. Expired trash compacts only when every head is a tombstone; compact signed
+ancestry survives indefinitely. Existing file ancestry/strong references override
+the three-version soft target. Database pages and production reconciliation remain
+separate from released application content bytes.
+
+Export leases reauthorize the captured groups for status/renewal and every source
+resource. New server-observed bytes permit bounded renewal; a repeats-only job
+cannot extend it. Maximum expiry rounds downward to stay within 24 hours, and
+protected custody enforces its own deadline. The UI displays a conservative
+space/time estimate and masks stale completion/audience responses after scope
+change. Windows CI independently decrypts the actual 1 GB JS archive with standard
+Rust age; Linux uses independently pinned Go age. This is software execution,
+not WebView2/iPhone/Hello physical acceptance or independent security review.

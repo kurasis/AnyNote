@@ -49,6 +49,8 @@ jobs:
           source scripts/runtime-env.sh
           python3 scripts/p06-stack.py reset
           node packages/protocol/p13-http.mjs
+          python3 scripts/p06-stack.py reset
+          node packages/protocol/p10-http.mjs --p11-sync --p13-content
           node packages/protocol/content/gigabyte.mjs
       - name: Sandboxed shipped UI and independent recovery
         run: |
@@ -111,6 +113,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/p13-native-inventory.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo build --manifest-path packages/content-native/Cargo.toml --locked --bin age-stream-interop -j 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node packages/protocol/content/gigabyte.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python scripts/p13-evidence.py windows
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           git diff --exit-code
@@ -118,6 +124,8 @@ jobs:
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: p13-windows-content-report
-          path: artifacts/p13/source-report.json
+          path: |
+            artifacts/p13/source-report.json
+            artifacts/p13/gigabyte-development.json
           retention-days: 14
           if-no-files-found: error

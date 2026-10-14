@@ -65,3 +65,14 @@ test('filenames enter protected search only after authenticated manifest verific
   assert.equal((await content(f,'search',{query:'документ'})).results.length,1);
  }finally{await close(f);}
 });
+
+test('a transplanted protected index part fails closed before any search result',async()=>{
+ const f=await fixture();try{const g=await group(f),revision=await publish(f,g,'P13 scoped protected marker');await content(f,'index',{revision_ids:[revision]});
+  await f.old.engine.globalLock();f.old.cap=(await f.old.engine.unlock(phrase)).capability;
+  const row=[...f.old.store.rows.values()].find(r=>r.frame.contract==='p13-content-v1'&&r.frame.context.record_kind==='content-part');assert(row);
+  const original=structuredClone(row),changed=structuredClone(row);changed.frame.context.profile_id=f.fresh.scope.profile_id;f.old.store.rows.set(row.id,changed);
+  await assert.rejects(()=>content(f,'search',{query:'protected'}),/LOCAL_CONTEXT_MISMATCH|INTEGRITY_FAILURE/);
+  await f.old.engine.globalLock();f.old.store.rows.set(row.id,original);f.old.cap=(await f.old.engine.unlock(phrase)).capability;
+  assert.equal((await content(f,'search',{query:'protected'})).results.length,1);
+ }finally{await close(f);}
+});

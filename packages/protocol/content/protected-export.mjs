@@ -10,13 +10,14 @@ import {ensure,id} from '../vault/store.mjs';
 import {b64,sodium,hash} from '../adapters/primitives.mjs';
 const random=()=>b64(sodium.randombytes_buf(16)),index=i=>String(i).padStart(8,'0');
 export class ProtectedExport{
- #transport;#reader;#identity;#kit;#digest=createHash('sha256');#closed=false;#bytes=0n;#authorize;#lease;#path;
+ #transport;#reader;#identity;#kit;#digest=createHash('sha256');#closed=false;#bytes=0n;#authorize;#lease;#path;#deadline;
  constructor({transport,authorize,scope,pins,signer,sign,proofs,selected,verifyChunk}){Object.assign(this,{scope,pins,signer,sign,proofs,selected,verifyChunk});this.#transport=transport;this.#authorize=authorize;}
- async #tick(){await this.#authorize();if(!this.#lease)return;ensure(Date.now()<Number(this.#lease.maximum_expires_at_ms),'SYNC_CURSOR_EXPIRED');if(Date.now()+120000>=Number(this.#lease.lease_expires_at_ms)){const next=contentValue('export-result',await this.#transport.renew(this.#path));ensure(same(next.descriptor,this.#lease.descriptor)&&same(next.scope,this.#lease.scope),'EXPORT_SOURCE_MISMATCH');this.#lease=next;}}
+ async #tick(){await this.#authorize();if(!this.#lease)return;ensure(Date.now()<this.#deadline,'SYNC_CURSOR_EXPIRED');if(Date.now()+120000>=Number(this.#lease.lease_expires_at_ms)){const next=contentValue('export-result',await this.#transport.renew(this.#path));ensure(same(next.descriptor,this.#lease.descriptor)&&same(next.scope,this.#lease.scope),'EXPORT_SOURCE_MISMATCH');this.#lease=next;}}
  async #read(...args){await this.#tick();return this.#transport.get(...args);}
  async begin(input){
   const lease=contentValue('export-result',input);ensure(lease.scope.service_id===this.scope.service_id&&lease.scope.account_id===this.scope.account_id&&lease.scope.root_fingerprint===this.pins.root_fingerprint&&lease.descriptor.device_id===this.scope.device_id&&lease.descriptor.snapshot_purpose==='export','LOCAL_CONTEXT_MISMATCH');
   ensure(BigInt(lease.descriptor.page_count)<=8000n&&BigInt(lease.descriptor.item_count)<=51000n&&BigInt(lease.catalog_count)<=1000n,'RESOURCE_LIMIT');
+  ensure(BigInt(lease.maximum_expires_at_ms)>BigInt(lease.descriptor.created_at)&&BigInt(lease.maximum_expires_at_ms)-BigInt(lease.descriptor.created_at)<=86400000n&&BigInt(lease.lease_expires_at_ms)<=BigInt(lease.maximum_expires_at_ms),'EXPORT_SOURCE_MISMATCH');this.#deadline=Math.min(Number(lease.maximum_expires_at_ms),Date.now()+86400000);
   this.#lease=lease;this.#path='/exports/'+lease.descriptor.snapshot_id;const path=this.#path,groups=[];let start=0;
   do{const page=contentValue('catalog-page',await this.#read(path+'/catalog?start='+start));ensure(page.snapshot_id===lease.descriptor.snapshot_id&&page.start===String(start),'EXPORT_SOURCE_MISMATCH');groups.push(...page.groups);ensure(groups.length<=200,'RESOURCE_LIMIT');if(page.next===null)break;ensure(Number(page.next)===start+page.groups.length&&page.groups.length>0,'INVALID_PAGE_ORDER');start=Number(page.next);}while(start<1000);
   ensure(String(groups.length)===lease.catalog_count&&catalogCommitment(groups)===lease.catalog_digest&&new Set(groups.map(g=>g.group_id)).size===groups.length,'EXPORT_SOURCE_MISMATCH');

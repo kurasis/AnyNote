@@ -21,7 +21,7 @@ fn tokens(text: &str) -> BTreeSet<String> {
 }
 fn fingerprint(summary: &Value) -> Result<String> {
     Ok(hash(&canonical(
-        &json!({"groups":summary["groups"],"witnesses":summary["witnesses"],"projection":summary["projection"]}),
+        &json!({"groups":summary["groups"],"witnesses":summary["witnesses"],"projection":summary["projection"],"files":summary["files"]}),
     )?))
 }
 fn wipe(value: &mut Value) {
@@ -50,14 +50,110 @@ impl<'a> Search<'a> {
         })
     }
     fn summary(&self) -> Result<Value> {
-        self.vault.notes_command(self.cap, NotesRequest::Summary {})
+        let mut value = self
+            .vault
+            .notes_command(self.cap, NotesRequest::Summary {})?;
+        value["files"] = self.control()?["files"]
+            .as_array()
+            .cloned()
+            .map_or(json!([]), |files| json!(files));
+        Ok(value)
     }
     fn control(&self) -> Result<Value> {
-        Ok(self.vault.content_read(self.cap,&self.control_id,"content-control")?.data.unwrap_or(json!({"purpose":"p13-native-search","version":1,"pages":[],"failures":[],"source":""})))
+        Ok(self.vault.content_read(self.cap,&self.control_id,"content-control")?.data.unwrap_or(json!({"purpose":"p13-native-search","version":1,"pages":[],"failures":[],"files":[],"source":""})))
+    }
+    pub fn observe_file(&self, record: &Value) -> Result<Value> {
+        let c = &record["envelope"]["header"]["context"];
+        let group = c["group_id"].as_str().ok_or(Error("CONTEXT_MISMATCH"))?;
+        let version = c["file_version_id"]
+            .as_str()
+            .ok_or(Error("CONTEXT_MISMATCH"))?;
+        self.vault.observe_file(self.cap, group, version, record)?;
+        let mut verified = self.vault.file_metadata(self.cap, record)?;
+        let result = (|| {
+            let mut control = self.control()?;
+            if control["files"].is_null() {
+                control["files"] = json!([]);
+            }
+            let files = control["files"]
+                .as_array_mut()
+                .ok_or(Error("INTEGRITY_FAILURE"))?;
+            if let Some(old) = files.iter().find(|f| f["revision_id"] == version) {
+                check(
+                    old["envelope_digest"] == verified["envelope_digest"],
+                    "ROLLBACK_QUARANTINE",
+                )?;
+                return Ok(json!({"state":"VERIFIED","revision_id":version}));
+            }
+            check(files.len() < 1000, "RESOURCE_LIMIT")?;
+            let record_id = anynote_crypto_core::crypto::b64(&libsodium_random_id());
+            files.push(json!({"group_id":group,"object_id":c["file_id"],"object_kind":"file-manifest","revision_id":version,"record_id":record_id,"envelope_digest":verified["envelope_digest"]}));
+            let snap = self
+                .vault
+                .content_read(self.cap, &self.control_id, "content-control")?;
+            self.vault.content_commit(self.cap, snap.revision, &[
+                Record { id: record_id, kind:"file-metadata".into(),data:json!({"purpose":"p13-native-file-metadata","version":1,"record":record}) },
+                Record { id:self.control_id.clone(),kind:"content-control".into(),data:control }
+            ], &[])?;
+            Ok(json!({"state":"VERIFIED","revision_id":version}))
+        })();
+        wipe(&mut verified);
+        result
+    }
+    fn verified(&self, reference: &Value) -> Result<Value> {
+        if reference["object_kind"] != "file-manifest" {
+            return self.vault.notes_command(
+                self.cap,
+                NotesRequest::Cached {
+                    revision_id: reference["revision_id"]
+                        .as_str()
+                        .ok_or(Error("INTEGRITY_FAILURE"))?
+                        .to_owned(),
+                },
+            );
+        }
+        let id = reference["record_id"]
+            .as_str()
+            .ok_or(Error("INTEGRITY_FAILURE"))?;
+        let mut data = self
+            .vault
+            .content_read(self.cap, id, "file-metadata")?
+            .data
+            .ok_or(Error("RECORD_NOT_FOUND"))?;
+        let result = (|| {
+            check(
+                data["purpose"] == "p13-native-file-metadata" && data["version"] == 1,
+                "INTEGRITY_FAILURE",
+            )?;
+            let c = &data["record"]["envelope"]["header"]["context"];
+            check(
+                c["file_version_id"] == reference["revision_id"]
+                    && c["file_id"] == reference["object_id"]
+                    && c["group_id"] == reference["group_id"],
+                "CONTEXT_MISMATCH",
+            )?;
+            let mut metadata = self.vault.file_metadata(self.cap, &data["record"])?;
+            let digest = metadata["envelope_digest"].clone();
+            let out = json!({"envelope_digest":digest,"payload":{"context":{"object_kind":"file-manifest","group_id":c["group_id"],"object_id":c["file_id"],"revision_id":c["file_version_id"]},"title":metadata["name"],"markdown":"","tags":[],"checklist":[]}});
+            wipe(&mut metadata);
+            Ok(out)
+        })();
+        wipe(&mut data);
+        result
     }
     pub fn catalog(&self) -> Result<Value> {
         let summary = self.summary()?;
-        Ok(json!({"items":summary["witnesses"],"known_corpus_only":true}))
+        let mut items = summary["witnesses"]
+            .as_array()
+            .cloned()
+            .ok_or(Error("INTEGRITY_FAILURE"))?;
+        items.extend(
+            summary["files"]
+                .as_array()
+                .cloned()
+                .ok_or(Error("INTEGRITY_FAILURE"))?,
+        );
+        Ok(json!({"items":items,"known_corpus_only":true}))
     }
     pub fn clear(&self, confirmed: bool) -> Result<Value> {
         check(confirmed, "CONFIRMATION_REQUIRED")?;
@@ -153,13 +249,14 @@ impl<'a> Search<'a> {
                 .ok_or(Error("INTEGRITY_FAILURE"))?
                 .iter()
                 .find(|r| r["revision_id"] == *revision)
+                .or_else(|| {
+                    summary["files"]
+                        .as_array()?
+                        .iter()
+                        .find(|r| r["revision_id"] == *revision)
+                })
                 .ok_or(Error("RECORD_NOT_FOUND"))?;
-            let mut verified = match self.vault.notes_command(
-                self.cap,
-                NotesRequest::Cached {
-                    revision_id: revision.clone(),
-                },
-            ) {
+            let mut verified = match self.verified(reference) {
                 Ok(v) => v,
                 Err(e)
                     if ["PAYLOAD_UNAVAILABLE", "UNANCHORED_HISTORY", "KEYS_PENDING"]
@@ -209,7 +306,7 @@ impl<'a> Search<'a> {
                     .take(1000)
                     .collect();
                 Ok(
-                    json!({"group_id":p["context"]["group_id"],"object_id":p["context"]["object_id"],"revision_id":revision,"envelope_digest":reference["envelope_digest"],"tokens":tokens,"bounded":bounded,"title":p["title"],"snippet":p["markdown"].as_str().unwrap_or("").chars().take(512).collect::<String>()}),
+                    json!({"group_id":p["context"]["group_id"],"object_id":p["context"]["object_id"],"object_kind":p["context"]["object_kind"],"record_id":reference["record_id"],"revision_id":revision,"envelope_digest":reference["envelope_digest"],"tokens":tokens,"bounded":bounded,"title":p["title"],"snippet":p["markdown"].as_str().unwrap_or("").chars().take(512).collect::<String>()}),
                 )
             })();
             wipe(&mut verified);
@@ -293,6 +390,14 @@ impl<'a> Search<'a> {
                     {
                         continue;
                     }
+                    // Verify before token comparison, so inaccessible content cannot
+                    // become a query-dependent authorization oracle.
+                    let mut current = self.verified(d)?;
+                    check(
+                        current["envelope_digest"] == d["envelope_digest"],
+                        "INTEGRITY_FAILURE",
+                    )?;
+                    wipe(&mut current);
                     bounded += usize::from(d["bounded"] == true);
                     let words: BTreeSet<_> = d["tokens"]
                         .as_array()
@@ -301,19 +406,7 @@ impl<'a> Search<'a> {
                         .filter_map(Value::as_str)
                         .collect();
                     if needle.iter().all(|q| words.contains(q.as_str())) && results.len() < 100 {
-                        // Reverify custody authority at display time; an index is never an access grant.
-                        let mut current = self.vault.notes_command(
-                            self.cap,
-                            NotesRequest::Cached {
-                                revision_id: revision.into(),
-                            },
-                        )?;
-                        check(
-                            current["envelope_digest"] == d["envelope_digest"],
-                            "INTEGRITY_FAILURE",
-                        )?;
-                        wipe(&mut current);
-                        results.push(json!({"group_id":d["group_id"],"object_id":d["object_id"],"revision_id":revision,"title":d["title"],"snippet":d["snippet"]}));
+                        results.push(json!({"group_id":d["group_id"],"object_id":d["object_id"],"object_kind":d["object_kind"],"revision_id":revision,"title":d["title"],"snippet":d["snippet"]}));
                     }
                 }
                 wipe(&mut value);
@@ -322,7 +415,7 @@ impl<'a> Search<'a> {
         let failures = control["failures"].clone();
         wipe(&mut control);
         Ok(
-            json!({"results":results,"rebuild_required":stale,"known":summary["witnesses"].as_array().map_or(0,Vec::len),"indexed":if stale{0}else{seen.len()},"bounded":bounded,"failures":failures,"known_corpus_only":true}),
+            json!({"results":results,"rebuild_required":stale,"known":summary["witnesses"].as_array().map_or(0,Vec::len)+summary["files"].as_array().map_or(0,Vec::len),"indexed":if stale{0}else{seen.len()},"bounded":bounded,"failures":failures,"known_corpus_only":true}),
         )
     }
 }

@@ -83,3 +83,15 @@ resumed immutable publication after a lost acknowledgement and lock/reopen,
 paused import continuation, and confirmed completed-job retirement. Original
 publication journals remain protected. The browser/full-source workflow is
 pending; this is still component development, not P13 completion.
+
+Latest follow-up: 322 actual development HTTP checks include empty and two-group
+archives, full quota denial plus stable import-ID retry, and actual progressive
+lease renewal. Fifteen Node content/preview/archive tests and four native content
+tests passed. Full frozen installer at f78270a preserved 918 source files, 31
+SQL tables and TLS/OAuth files. Earlier f782 hosted content jobs passed with 58
+sandboxed UI checks, nine isolated preview checks and Linux 1 GB independent Go
+age recovery. Original Windows content job passed three native content tests.
+These exact-source candidate receipts are retained locally, but source changed
+after them: new native filenames, estimate/lifecycle guards, stronger lease
+authorization and Windows actual 1 GB/Rust age remain under final acceptance.
+The phase is still IN PROGRESS and PR26 is a draft.

@@ -961,6 +961,14 @@ impl Vault {
         Ok(self.file_control(&i, &s)?["transfers"].clone())
     }
     /// Verified own-current manifest; historical/shared authority is checked by the caller's signed group workflow.
+    /// Trusted custody display API; no keys/raw signing command enters renderer IPC.
+    pub fn file_metadata(&self, cap: &Capability, record: &Value) -> Result<Value> {
+        let reader = self.file_reader(cap, record)?;
+        let mut metadata = reader.metadata();
+        metadata["envelope_digest"] =
+            json!(digest("p02-file-c1", "file-envelope", &record["envelope"])?);
+        Ok(metadata)
+    }
     pub fn observe_file(
         &self,
         cap: &Capability,
