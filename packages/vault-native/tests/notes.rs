@@ -922,6 +922,18 @@ fn p12_native_ciphertext_cache_verifies_bytes_and_refuses_corruption() {
         std::fs::read(&offline_destination).unwrap(),
         b"public synthetic encrypted cache fixture"
     );
+    let mut corrupt_size = meta.clone();
+    corrupt_size["bytes"] = json!(u64::MAX);
+    std::fs::write(
+        directory.join("manifest.json"),
+        serde_json::to_vec(&corrupt_size).unwrap(),
+    )
+    .unwrap();
+    assert_eq!(
+        cache.begin(&Codec::new().unwrap(), record).err().unwrap().0,
+        "INTEGRITY_FAILURE"
+    );
+    std::fs::write(directory.join("manifest.json"), manifest).unwrap();
     let mut wrong = cipher.clone();
     wrong[0] ^= 1;
     std::fs::write(directory.join("0"), wrong).unwrap();

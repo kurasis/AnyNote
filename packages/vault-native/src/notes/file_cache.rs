@@ -149,6 +149,7 @@ impl CipherCache {
             let size = metadata["bytes"]
                 .as_u64()
                 .ok_or(Error("INTEGRITY_FAILURE"))?;
+            check(size <= 1_001_000_000, "INTEGRITY_FAILURE")?;
             let pinned = metadata["pinned"] == true;
             if pinned {
                 extra = extra
