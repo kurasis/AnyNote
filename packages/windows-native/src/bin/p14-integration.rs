@@ -16,10 +16,15 @@ use std::{
     sync::Arc,
 };
 use zeroize::{Zeroize, Zeroizing};
-struct Owned(PathBuf);
+struct Owned {
+    path: PathBuf,
+    cleanup: bool,
+}
 impl Drop for Owned {
     fn drop(&mut self) {
-        let _ = std::fs::remove_dir_all(&self.0);
+        if self.cleanup {
+            let _ = std::fs::remove_dir_all(&self.path);
+        }
     }
 }
 fn line(
@@ -53,11 +58,32 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let mut input = std::io::stdin().lock();
     let mut init = strict(&line(&mut input)?.ok_or("INIT_REQUIRED")?, 4194304)?;
     let scope: Scope = serde_json::from_value(init["scope"].clone())?;
-    let owned = Owned(std::env::temp_dir().join(format!(
-        "anynote-p14-synthetic-{}",
-        b64(&anynote_crypto_core::crypto::random_key()?[..16])
-    )));
-    let vault = Arc::new(Vault::open(&owned.0.join("vault.sqlite"), scope.clone())?);
+    let mut owned = Owned {
+        path: std::env::temp_dir().join(format!(
+            "anynote-p14-synthetic-{}",
+            b64(&anynote_crypto_core::crypto::random_key()?[..16])
+        )),
+        cleanup: true,
+    };
+    if let Some(path) = init["fixture_root"].as_str() {
+        if !cfg!(windows) || std::env::var("GITHUB_ACTIONS").as_deref() != Ok("true") {
+            return Err("Owned Windows Actions fixture required".into());
+        }
+        let target = PathBuf::from(path);
+        if target.exists() {
+            return Err("Refusing existing fixture root".into());
+        }
+        std::fs::create_dir_all(&target)?;
+        std::fs::write(
+            target.join("owner.json"),
+            canonical(&json!({"purpose":"p14-owned-installed-application","scope":scope}))?,
+        )?;
+        owned.path = target;
+    }
+    let vault = Arc::new(Vault::open(
+        &owned.path.join("vault.sqlite"),
+        scope.clone(),
+    )?);
     let phrase = Zeroizing::new(init["phrase"].as_str().ok_or("PHRASE_REQUIRED")?.to_owned());
     vault.initialize_phrase(
         &phrase,
@@ -81,7 +107,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         },
         credential_id: b64(&anynote_crypto_core::crypto::random_key()?[..16]),
     };
-    let host = Arc::new(Host::from_parts(&owned.0, profile, vault, adapter));
+    let host = Arc::new(Host::from_parts(&owned.path, profile, vault, adapter));
     let binding = Binding {
         label: "main".into(),
         origin: "http://tauri.localhost".into(),
@@ -124,6 +150,19 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                         &credentials,
                     )?;
                     Ok(json!({"state":credentials.state}))
+                }
+                Some("persist") => {
+                    if init["fixture_root"].is_null() && !owned.path.join("owner.json").exists() {
+                        return Err(anynote_crypto_core::Error("FIXTURE_OWNERSHIP_REQUIRED"));
+                    }
+                    std::fs::write(
+                        owned.path.join("profile.json"),
+                        canonical(&json!(host.profile))?,
+                    )
+                    .map_err(|_| anynote_crypto_core::Error("STORAGE_UNAVAILABLE"))?;
+                    host.lock();
+                    owned.cleanup = false;
+                    Ok(json!({"state":"PERSISTED","physical_acceptance":false}))
                 }
                 Some("product") => {
                     let request: Request = serde_json::from_value(command["request"].clone())

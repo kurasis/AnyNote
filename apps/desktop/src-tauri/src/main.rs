@@ -25,7 +25,15 @@ struct State {
 struct Modal(Arc<State>);
 impl Drop for Modal {
     fn drop(&mut self) {
-        self.0.modal.fetch_sub(1, Ordering::SeqCst);
+        if self.0.modal.fetch_sub(1, Ordering::SeqCst) == 1 && !self.0.owns_foreground() {
+            self.0.lock();
+            if let Some(app) = self.0.app.get() {
+                let _ = app.emit(
+                    "vault-locked",
+                    json!({"reason":"background-after-system-dialog"}),
+                );
+            }
+        }
     }
 }
 impl State {
@@ -94,35 +102,28 @@ async fn product(
     state: tauri::State<'_, Arc<State>>,
     generation: u64,
     request: Value,
+    language: Option<String>,
 ) -> Result<Value, String> {
     let b = binding(&window)?;
     let host = state.host()?;
-    let request: Request = serde_json::from_value(request).map_err(|_| "INVALID_REQUEST")?;
+    let mut request: Request = serde_json::from_value(request).map_err(|_| "INVALID_REQUEST")?;
     let hello = matches!(&request, Request::UnlockHello {});
     let closing = matches!(&request, Request::Lock {} | Request::Logout {});
     let state = state.inner().clone();
     tauri::async_runtime::spawn_blocking(move || {
         let _modal = hello.then(|| state.modal());
+        let ru=language.as_deref()==Some("ru");
+        let revoke=if let Request::Device{action,value:Some(value),confirmed:true}=&request {
+            if action=="revoke" {Some(host.revoke_preview(generation,value).map_err(|e|e.0.to_owned())?)}else{None}
+        }else{None};
         let consent = match &request {
-            Request::ResolveDraft {
-                confirmed: true, ..
-            } => Some(
-                "Publish the reviewed content as a resolution of all selected conflict branches?",
-            ),
-            Request::Shared {
-                confirmed: true, ..
-            } => {
-                Some("Apply the selected membership, ownership or key-policy change to this group?")
-            }
-            Request::Device {
-                confirmed: true, ..
-            } => Some("Apply the selected trusted-device security change?"),
-            Request::Retention {
-                apply: true,
-                confirmed: true,
-                ..
-            } => Some("Apply the previewed retention operation?"),
-            _ => None,
+            Request::ResolveDraft {draft_id,confirmed:true}=>Some(format!("{}\n{}",if ru{"Опубликовать проверенный результат объединения всех выбранных конфликтующих веток?"}else{"Publish the reviewed resolution of all selected conflict branches?"},draft_id)),
+            Request::Shared {group_id,action,target_account_id,role,confirmed:true}=>Some(format!("{}\nGroup: {}\nAction: {}\nAccount: {}\nRole: {}",if ru{"Применить изменение доступа к общей группе?"}else{"Apply this shared-group access change?"},group_id,action,target_account_id.as_deref().unwrap_or("—"),role.as_deref().unwrap_or("—"))),
+            Request::Device {confirmed:true,..}=>Some(if let Some(preview)=&revoke {format!("{}\n{}",if ru{"Отозвать эти устройства и все перечисленные дочерние устройства?"}else{"Revoke these devices and every listed descendant?"},serde_json::to_string(&preview["affected"]).map_err(|_|"INVALID_REQUEST")?)}else{if ru{"Подтвердить выбранное изменение доверенных устройств?"}else{"Confirm the selected trusted-device change?"}.into()}),
+            Request::RevokeSession {session_id,confirmed:true}=>Some(format!("{}\n{}",if ru{"Завершить эту сессию?"}else{"Revoke this session?"},session_id)),
+            Request::Retention {group_id,apply:true,confirmed:true}=>Some(format!("{}\n{}",if ru{"Применить проверенную политику хранения этой группы?"}else{"Apply the reviewed retention policy to this group?"},group_id)),
+            Request::ObjectAction {object_id,action,confirmed:true,..}=>Some(format!("{}\n{}: {}",if ru{"Применить действие к этой записи?"}else{"Apply this action to this object?"},action,object_id)),
+            _=>None,
         };
         if let Some(description) = consent {
             let _modal = state.modal();
@@ -138,8 +139,11 @@ async fn product(
             }
         }
 
+        if let (Some(preview),Request::Device{value,..})=(revoke,&mut request){
+            *value=Some(json!({"targets":preview["targets"],"head":preview["head"]}));
+        }
         let result = host.execute(&b, generation, request);
-        if closing {
+        if closing || host.current() != generation {
             state.mask();
         }
         result.map_err(|e| e.0.into())
@@ -288,19 +292,19 @@ async fn file_job(
     let app = window.app_handle().clone();
     let request: FileCommand = serde_json::from_value(request).map_err(|_| "INVALID_REQUEST")?;
     tauri::async_runtime::spawn_blocking(move||{host.capability(generation).map_err(|e|e.0)?;match request{
-  FileCommand::Upload{group_id,resume}=>{let _modal=state.modal();let selected=rfd::FileDialog::new().set_parent(&window).pick_file().ok_or("CANCELLED")?;let source=Source::open(&selected,1000000000).map_err(|e|e.0)?;let job=host.start_upload(generation,group_id,source,resume).map_err(|e|e.0)?;Ok(json!({"job_id":job}))},
-  FileCommand::Download{group_id,file_version_id,offline}=>{let _modal=state.modal();let selected=rfd::FileDialog::new().set_parent(&window).set_file_name("AnyNote-file.bin").save_file().ok_or("CANCELLED")?;let job=host.start_download(generation,group_id,file_version_id,&selected,offline).map_err(|e|e.0)?;Ok(json!({"job_id":job}))},
-  FileCommand::Export{group_ids,history,trash,kib_per_second}=>{let plan=host.prepare_export(generation,&group_ids,history,trash,kib_per_second).map_err(|e|e.0)?;let _modal=state.modal();let selected=rfd::FileDialog::new().set_parent(&window).set_file_name("AnyNote-export.age").save_file().ok_or("CANCELLED")?;let(node,script,manifest)=assets(&app)?;let job=host.jobs.start(generation).map_err(|e|e.0)?;let id=job.id.clone();std::thread::spawn(move||{let a=Assets{node:&node,script:&script,node_sha:manifest["node_sha256"].as_str().unwrap_or(""),script_sha:manifest["script_sha256"].as_str().unwrap_or("")};let r=host.export_archive(generation,plan,&selected,&a,job.clone());job.finish(r);});Ok(json!({"job_id":id}))},
-  FileCommand::RecoverExport{export_id}=>{let _modal=state.modal();let selected=rfd::FileDialog::new().set_parent(&window).set_file_name("AnyNote-recovered-export.age").save_file().ok_or("CANCELLED")?;host.recover_export(generation,&export_id,&selected).map_err(|e|e.0.into())},
-  FileCommand::SaveKit{export_id}=>{let _modal=state.modal();let selected=rfd::FileDialog::new().set_parent(&window).set_file_name("AnyNote-recovery-kit.json").save_file().ok_or("CANCELLED")?;host.save_kit(generation,&export_id,&selected).map_err(|e|e.0.into())},
-  FileCommand::InspectImport{destination,resume}=>{let _modal=state.modal();let selected=rfd::FileDialog::new().set_parent(&window).add_filter("Encrypted archive",&["age"]).pick_file().ok_or("CANCELLED")?;let source=Source::open(&selected,116010000000).map_err(|e|e.0)?;let selected=rfd::FileDialog::new().set_parent(&window).add_filter("Separate recovery kit",&["json"]).pick_file().ok_or("CANCELLED")?;let mut selected=Source::open(&selected,65536).map_err(|e|e.0)?;let mut kit=anynote_crypto_core::codec::strict(&selected.small(65536).map_err(|e|e.0)?,65536).map_err(|e|e.0)?;let(node,script,manifest)=assets(&app)?;let a=Assets{node:&node,script:&script,node_sha:manifest["node_sha256"].as_str().unwrap_or(""),script_sha:manifest["script_sha256"].as_str().unwrap_or("")};let result=host.inspect_import(generation,source,kit.take(),destination.as_deref(),resume.as_deref(),&a);result.map_err(|e|e.0.into())},
+  FileCommand::Upload{group_id,resume}=>{let selected={let _modal=state.modal();rfd::FileDialog::new().set_parent(&window).pick_file().ok_or("CANCELLED")?};let source=Source::open(&selected,1000000000).map_err(|e|e.0)?;let job=host.start_upload(generation,group_id,source,resume).map_err(|e|e.0)?;Ok(json!({"job_id":job}))},
+  FileCommand::Download{group_id,file_version_id,offline}=>{let selected={let _modal=state.modal();rfd::FileDialog::new().set_parent(&window).set_file_name("AnyNote-file.bin").save_file().ok_or("CANCELLED")?};let job=host.start_download(generation,group_id,file_version_id,&selected,offline).map_err(|e|e.0)?;Ok(json!({"job_id":job}))},
+  FileCommand::Export{group_ids,history,trash,kib_per_second}=>{let plan=host.prepare_export(generation,&group_ids,history,trash,kib_per_second).map_err(|e|e.0)?;let selected={let _modal=state.modal();rfd::FileDialog::new().set_parent(&window).set_file_name("AnyNote-export.age").save_file().ok_or("CANCELLED")?};let(node,script,manifest)=assets(&app)?;let job=host.jobs.start(generation).map_err(|e|e.0)?;let id=job.id.clone();std::thread::spawn(move||{let a=Assets{node:&node,script:&script,node_sha:manifest["node_sha256"].as_str().unwrap_or(""),script_sha:manifest["script_sha256"].as_str().unwrap_or("")};let r=host.export_archive(generation,plan,&selected,&a,job.clone());job.finish(r);});Ok(json!({"job_id":id}))},
+  FileCommand::RecoverExport{export_id}=>{let selected={let _modal=state.modal();rfd::FileDialog::new().set_parent(&window).set_file_name("AnyNote-recovered-export.age").save_file().ok_or("CANCELLED")?};host.recover_export(generation,&export_id,&selected).map_err(|e|e.0.into())},
+  FileCommand::SaveKit{export_id}=>{let selected={let _modal=state.modal();rfd::FileDialog::new().set_parent(&window).set_file_name("AnyNote-recovery-kit.json").save_file().ok_or("CANCELLED")?};host.save_kit(generation,&export_id,&selected).map_err(|e|e.0.into())},
+  FileCommand::InspectImport{destination,resume}=>{let selected={let _modal=state.modal();rfd::FileDialog::new().set_parent(&window).add_filter("Encrypted archive",&["age"]).pick_file().ok_or("CANCELLED")?};let source=Source::open(&selected,116010000000).map_err(|e|e.0)?;let selected={let _modal=state.modal();rfd::FileDialog::new().set_parent(&window).add_filter("Separate recovery kit",&["json"]).pick_file().ok_or("CANCELLED")?};let mut selected=Source::open(&selected,65536).map_err(|e|e.0)?;let mut kit=anynote_crypto_core::codec::strict(&selected.small(65536).map_err(|e|e.0)?,65536).map_err(|e|e.0)?;let(node,script,manifest)=assets(&app)?;let a=Assets{node:&node,script:&script,node_sha:manifest["node_sha256"].as_str().unwrap_or(""),script_sha:manifest["script_sha256"].as_str().unwrap_or("")};let result=host.inspect_import(generation,source,kit.take(),destination.as_deref(),resume.as_deref(),&a);result.map_err(|e|e.0.into())},
   FileCommand::ConfirmImport{import_id,audience_digest}=>Ok(json!({"job_id":host.start_import(generation,&import_id,&audience_digest).map_err(|e|e.0)?})),
   FileCommand::Preview{group_id,file_version_id}=>{
    let bytes=zeroize::Zeroizing::new(host.read_preview(generation,&group_id,&file_version_id).map_err(|e|e.0)?);host.capability(generation).map_err(|e|e.0)?;
    let payload=serde_json::to_string(&json!({"bytes":anynote_crypto_core::crypto::b64(&bytes)})).map_err(|_|"PREVIEW_UNAVAILABLE")?;
    let data=Arc::new(Mutex::new(Some(payload)));let label=format!("preview-{}",anynote_crypto_core::crypto::b64(&anynote_crypto_core::crypto::random_key().map_err(|e|e.0)?[..16]));
    let preview_host=host.clone();let window_state=state.clone();
-   let preview=tauri::WebviewWindowBuilder::new(&app,&label,tauri::WebviewUrl::App("auth/preview.html".into())).title("AnyNote file preview").parent(&window).map_err(|_|"PREVIEW_UNAVAILABLE")?.devtools(false)
+   let preview=tauri::WebviewWindowBuilder::new(&app,&label,tauri::WebviewUrl::App("auth/preview.html".into())).title("AnyNote file preview").parent(&window).map_err(|_|"PREVIEW_UNAVAILABLE")?.devtools(false).incognito(true)
     .on_navigation(|url|url.path()=="/auth/preview.html"&&url.query().is_none()&&url.fragment().is_none())
     .on_new_window(|_,_|tauri::webview::NewWindowResponse::Deny)
     .on_page_load(move|view,page|{if page.event()==tauri::webview::PageLoadEvent::Finished{if preview_host.current()!=generation{let _=view.close();return;}if let Ok(mut data)=data.lock()&&let Some(payload)=data.take(){let _=view.eval(format!("window.dispatchEvent(new CustomEvent('anynote-preview',{{detail:{payload}}}))"));}}})
@@ -311,6 +315,18 @@ async fn file_job(
  }}).await.map_err(|_|"HOST_UNAVAILABLE")?
 }
 fn main() {
+    // WebView2 honors debugging environment overrides independently of its UI setting.
+    // Only the explicitly built CI harness may enable local CDP; the owner installer
+    // removes those overrides before any WebView or worker thread exists.
+    #[cfg(not(feature = "integration-harness"))]
+    for name in [
+        "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS",
+        "WEBVIEW2_PIPE_FOR_SCRIPT_DEBUGGER",
+    ] {
+        unsafe {
+            std::env::remove_var(name);
+        }
+    }
     tauri::Builder::default()
         .plugin(
             tauri::plugin::Builder::<tauri::Wry, ()>::new("navigation-boundary")
@@ -426,7 +442,7 @@ async fn update(
     };
     let claims = policy
         .signed_claims(
-            env!("CARGO_PKG_VERSION"),
+            &window.app_handle().package_info().version.to_string(),
             &next.version,
             next.download_url.as_str(),
             &next.raw_json["anynote_claims"],
@@ -443,6 +459,28 @@ async fn update(
     if !confirmed {
         return Err("CONFIRMATION_REQUIRED".into());
     }
+    let dialog_window = window.clone();
+    let dialog_state = state.inner().clone();
+    let description = format!(
+        "Install AnyNote {} from the operator-configured {} channel? Local encrypted drafts and recovery journals are retained.",
+        claims.version, claims.channel
+    );
+    let approved = tauri::async_runtime::spawn_blocking(move || {
+        let _modal = dialog_state.modal();
+        rfd::MessageDialog::new()
+            .set_parent(&dialog_window)
+            .set_title("AnyNote update")
+            .set_description(description)
+            .set_buttons(rfd::MessageButtons::YesNo)
+            .show()
+            == rfd::MessageDialogResult::Yes
+    })
+    .await
+    .map_err(|_| "HOST_UNAVAILABLE")?;
+    if !approved {
+        return Err("CANCELLED".into());
+    }
+    host.capability(generation).map_err(|e| e.0)?;
     let (abort, registration) = futures_util::future::AbortHandle::new_pair();
     let cancel = abort.clone();
     let owned = host.clone();

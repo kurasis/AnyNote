@@ -12,7 +12,7 @@ concurrency:
 jobs:
   host-windows-build:
     runs-on: windows-2025
-    timeout-minutes: 60
+    timeout-minutes: 90
     defaults:
       run:
         shell: pwsh
@@ -20,6 +20,7 @@ jobs:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
           persist-credentials: false
+          fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
         with:
@@ -40,7 +41,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           rustup override set 1.99.0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          foreach ($package in @('packages/protocol','packages/content-browser','apps/desktop')) {
+          foreach ($package in @('packages/protocol','packages/content-browser','experiments/p01','packages/api-client','apps/devices-web','apps/notes-web','apps/desktop')) {
             npm --prefix $package ci --no-audit --no-fund
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
@@ -48,6 +49,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python apps/desktop/prepare-runtime.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Unchanged baseline and closed native capability audit
+        run: python scripts/check-p14.py
       - name: Native host and maintained WebView2 single installer
         id: desktop-build
         run: |
@@ -80,10 +83,23 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node scripts/p14-http.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build separately instrumented real WebView2 host
+        run: |
+          npm --prefix apps/desktop run tauri -- build --ci --no-bundle --features integration-harness -- --locked -j 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Actual installed Windows and WebView2 dialogs lifecycle SQL and 1 GB workflows
+        run: |
+          python scripts/p14-windows-services.py trust
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node scripts/p14-webview.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Stop only owned Windows services
         if: always()
         run: |
-          if (Test-Path .local/p14-windows-services/owner.json) { python scripts/p14-windows-services.py stop }
+          if (Test-Path .local/p14-windows-services/owner.json) {
+            python scripts/p14-windows-services.py untrust
+            python scripts/p14-windows-services.py stop
+          }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

@@ -17,7 +17,8 @@
         "minWidth": 800,
         "minHeight": 550,
         "devtools": false,
-        "dragDropEnabled": false
+        "dragDropEnabled": false,
+        "incognito": true
       }
     ],
     "security": {

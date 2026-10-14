@@ -5,6 +5,156 @@ use anynote_auth_native::control::Route;
 use anynote_local_vault::Capability;
 use serde_json::json;
 impl Host {
+    pub fn catch_up(&self, cap: &Capability) -> Result<Value> {
+        let mut state = self.notes(cap, json!({"action":"sync","request":{"action":"status"}}))?;
+        check(state["state"] != "RESTORE_QUARANTINE", "RESTORE_QUARANTINE")?;
+        check(state["state"] != "QUARANTINED", "SYNC_QUARANTINE")?;
+        if state["cursor"].is_null() || !state["stage"].is_null() {
+            state = self.resync(cap)?;
+        }
+        for _ in 0..100 {
+            let cursor = &state["cursor"];
+            let page = if state["pending"].is_null() {
+                match self.api(
+                    cap,
+                    Route::Sync,
+                    None,
+                    None,
+                    &[
+                        ("generation", string(cursor, "generation")?),
+                        ("sequence", string(cursor, "sequence")?),
+                    ],
+                    None,
+                ) {
+                    Ok(page) => page,
+                    Err(Error("SYNC_CURSOR_EXPIRED")) => return self.resync(cap),
+                    Err(e) => return Err(e),
+                }
+            } else {
+                state["pending"]["page"].clone()
+            };
+            let events = page["events"].as_array().ok_or(Error("INVALID_PAGE"))?;
+            // Security/file changes require a complete captured inventory and refreshed signed
+            // authority. An unsigned event is only a hint to refresh, never a new permission.
+            if events
+                .iter()
+                .any(|e| e["revision_id"].is_null() || e["kind"] == "file")
+            {
+                self.notes(
+                    cap,
+                    json!({"action":"sync","request":{"action":"delta-cancel"}}),
+                )?;
+                state = self.resync(cap)?;
+                continue;
+            }
+            self.notes(
+                cap,
+                json!({"action":"sync","request":{"action":"delta-start","page":page}}),
+            )?;
+            for event in events {
+                let group = string(event, "group_id")?;
+                let object = string(event, "object_id")?;
+                let revision = string(event, "revision_id")?;
+                self.group(cap, group)?;
+                let reference = self.api(cap, Route::Object, Some(object), None, &[], None)?;
+                let result = self.api(
+                    cap,
+                    Route::Revision,
+                    Some(object),
+                    Some(revision),
+                    &[],
+                    None,
+                )?;
+                let context = &result["bundle"]["envelope"]["header"]["context"];
+                let item = json!({"group_id":group,"object_id":object,"object_kind":context["object_kind"],"revision_id":revision,"envelope_digest":event["digest"],"payload_status":if context["action"]=="soft-delete"{"tombstone"}else{"retained"}});
+                self.notes(cap,json!({"action":"sync","request":{"action":"delta-item","result":{"version":1,"item":item,"reference":reference["object"],"bundle":result["bundle"]}}}))?;
+            }
+            state = self.notes(
+                cap,
+                json!({"action":"sync","request":{"action":"delta-finish"}}),
+            )?;
+            self.api(cap,Route::SyncAck,None,None,&[],Some(&json!({"version":1,"cursor":state["cursor"],"group_id":state["scope"]["group_id"]})))?;
+            if page["complete"] == true {
+                return Ok(state);
+            }
+        }
+        state["catch_up_pending"] = json!(true);
+        Ok(state)
+    }
+    pub fn local_objects(
+        &self,
+        cap: &Capability,
+        group: &str,
+        thread: Option<&str>,
+        after: Option<&str>,
+    ) -> Result<Value> {
+        id(group)?;
+        if let Some(t) = thread {
+            id(t)?;
+        }
+        if let Some(a) = after {
+            id(a)?;
+        }
+        let state = self.notes(cap, json!({"action":"sync","request":{"action":"status"}}))?;
+        check(!state["cursor"].is_null(), "OFFLINE_UNAVAILABLE")?;
+        let projection = state["projection"]
+            .as_array()
+            .ok_or(Error("INTEGRITY_FAILURE"))?;
+        let mut references = projection
+            .iter()
+            .filter(|p| {
+                p["group_id"] == group
+                    && p["reference"]["object_kind"]
+                        == if thread.is_some() { "entry" } else { "thread" }
+                    && (thread.is_none() || p["reference"]["thread_id"] == thread.unwrap())
+            })
+            .map(|p| &p["reference"])
+            .collect::<Vec<_>>();
+        references.sort_by_key(|r| r["object_id"].as_str().unwrap_or(""));
+        let eligible = references
+            .into_iter()
+            .filter(|r| after.is_none_or(|a| r["object_id"].as_str().is_some_and(|v| v > a)))
+            .take(51)
+            .collect::<Vec<_>>();
+        let mut items = Vec::new();
+        for object in eligible.iter().take(50) {
+            let head = object["heads"]
+                .as_array()
+                .and_then(|h| h.first())
+                .ok_or(Error("PAYLOAD_UNAVAILABLE"))?;
+            let opened = self.notes(
+                cap,
+                json!({"action":"cached","revision_id":string(head,"revision_id")?}),
+            )?;
+            items.push(json!({"object":object,"payload":opened["payload"],"offline":true}));
+        }
+        Ok(
+            json!({"items":items,"next":if eligible.len()>50{eligible[49]["object_id"].clone()}else{Value::Null},"state":"OFFLINE","freshness":"last-authenticated-local-view"}),
+        )
+    }
+    pub fn local_groups(&self, cap: &Capability) -> Result<Value> {
+        self.notes(cap, json!({"action":"sync","request":{"action":"offline"}}))?;
+        let summary = self.notes(cap, json!({"action":"summary"}))?;
+        let mut items = Vec::new();
+        for reference in summary["groups"]
+            .as_array()
+            .ok_or(Error("INTEGRITY_FAILURE"))?
+        {
+            let status = &reference["status"];
+            if status.is_null() {
+                continue;
+            }
+            let group = string(reference, "group_id")?;
+            let title=self.notes(cap,json!({"action":"sync","request":{"action":"status"}}))?["projection"].as_array().and_then(|rows|rows.iter().find(|p|p["group_id"]==group && p["reference"]["object_kind"]=="group-metadata")).and_then(|p|p["reference"]["heads"].as_array()).and_then(|h|h.first()).and_then(|h|h["revision_id"].as_str()).map(str::to_owned);
+            let title = if let Some(revision) = title {
+                self.notes(cap,json!({"action":"cached","revision_id":revision}))?["payload"]["title"].clone()
+            } else {
+                json!("Untitled")
+            };
+            items.push(json!({"group":status,"title":title,"offline":true}));
+        }
+        Ok(json!({"items":items,"state":"OFFLINE","freshness":"last-authenticated-local-view"}))
+    }
     pub fn resync(&self, cap: &Capability) -> Result<Value> {
         let start = self.api(
             cap,

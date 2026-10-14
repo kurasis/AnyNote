@@ -824,6 +824,15 @@ impl Vault {
         targets: &[String],
         user_confirmed: bool,
     ) -> Result<Value> {
+        self.device_revoke_bound(cap, targets, user_confirmed, None)
+    }
+    pub fn device_revoke_bound(
+        &self,
+        cap: &Capability,
+        targets: &[String],
+        user_confirmed: bool,
+        expected_head: Option<&Value>,
+    ) -> Result<Value> {
         check(
             user_confirmed && !targets.is_empty(),
             "USER_CONFIRMATION_REQUIRED",
@@ -833,6 +842,10 @@ impl Vault {
         let s = self.authorize(&mut i, cap)?;
         let (mut control, roster) = self.device_saved(&mut i, &s)?;
         let roster = roster.ok_or(Error("ROSTER_PROOF_REQUIRED"))?;
+        check(
+            expected_head.is_none_or(|head| *head == roster.head),
+            "ROSTER_CHANGED",
+        )?;
         roster.active(&self.scope.device_id, Some("delegate-device"))?;
         let mut targets = targets.to_vec();
         targets.sort();

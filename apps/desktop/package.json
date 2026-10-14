@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc --noEmit && vite build && node build-preview.mjs && node build-bridge.mjs",
     "tauri": "tauri",
-    "test": "node --test test/*.mjs"
+    "audit:capabilities": "python ../../scripts/check-p14.py"
   },
   "dependencies": {
     "react": "19.3.1",

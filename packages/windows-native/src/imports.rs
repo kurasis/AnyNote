@@ -11,7 +11,7 @@ use anynote_crypto_core::{
     codec::{canonical, strict},
     crypto::hash,
 };
-use anynote_local_vault::Capability;
+use anynote_local_vault::{Capability, Record};
 use serde_json::json;
 use std::{
     io::{Read, Seek, SeekFrom},
@@ -24,6 +24,7 @@ pub struct ValidatedImport {
     state: Value,
     generation: u64,
 }
+
 impl Drop for ValidatedImport {
     fn drop(&mut self) {
         wipe(&mut self.state);
@@ -55,6 +56,73 @@ fn feed(source: &mut Source, bridge: &mut Bridge, data: &[u8]) -> Result<()> {
     }
 }
 impl Host {
+    /// Each selected note has an independently protected payload. The small root journal
+    /// contains aliases and receipts only, so total archive plaintext is never materialized.
+    fn import_payload_id(import: &str, revision: &str) -> Result<String> {
+        let mut bytes = b"AnyNote/P14/import-note\0".to_vec();
+        bytes.extend(canonical(&json!([id(import)?, id(revision)?]))?);
+        Ok(anynote_crypto_core::crypto::b64(
+            &anynote_crypto_core::crypto::un64(&hash(&bytes))?[..16],
+        ))
+    }
+    fn store_import_payload(
+        &self,
+        cap: &Capability,
+        import: &str,
+        revision: &str,
+        payload: &Value,
+    ) -> Result<String> {
+        let record_id = Self::import_payload_id(import, revision)?;
+        let data = json!({"purpose":"p14-import-note","version":1,"import_id":import,"source_revision":revision,"payload":payload});
+        for _ in 0..16 {
+            let previous = self.vault.content_read(cap, &record_id, "import-state")?;
+            if let Some(mut stored) = previous.data {
+                let same = stored == data;
+                wipe(&mut stored);
+                check(same, "IDEMPOTENCY_MISMATCH")?;
+                return Ok(record_id);
+            }
+            let result = self.vault.content_commit(
+                cap,
+                previous.revision,
+                &[Record {
+                    id: record_id.clone(),
+                    kind: "import-state".into(),
+                    data: data.clone(),
+                }],
+                &[],
+            );
+            match result {
+                Ok(()) => return Ok(record_id),
+                Err(Error("STALE_WRITER")) => (),
+                Err(e) => return Err(e),
+            }
+        }
+        Err(Error("STALE_WRITER"))
+    }
+    fn load_import_payload(&self, cap: &Capability, import: &str, note: &Value) -> Result<Value> {
+        // Read older in-progress development journals without replacing their stable aliases.
+        if note["payload"].is_object() {
+            return Ok(note["payload"].clone());
+        }
+        let revision = string(note, "source_revision")?;
+        let record_id = Self::import_payload_id(import, revision)?;
+        check(note["payload_id"] == record_id, "INTEGRITY_FAILURE")?;
+        let mut record = self
+            .vault
+            .content_read(cap, &record_id, "import-state")?
+            .data
+            .ok_or(Error("INTEGRITY_FAILURE"))?;
+        check(
+            record["purpose"] == "p14-import-note"
+                && record["import_id"] == import
+                && record["source_revision"] == revision,
+            "INTEGRITY_FAILURE",
+        )?;
+        let payload = record["payload"].take();
+        wipe(&mut record);
+        Ok(payload)
+    }
     pub fn inspect_import(
         self: &Arc<Self>,
         g: u64,
@@ -244,7 +312,9 @@ impl Host {
                             .iter()
                             .any(|n| n["source_revision"] == revision)
                     {
-                        input.state["notes"].as_array_mut().unwrap().push(json!({"source_revision":revision,"source_context":event["payload"]["context"],"payload":event["payload"],"object_id":random_id(),"draft_id":null,"complete":false}));
+                        let payload_id =
+                            self.store_import_payload(cap, &iid, &revision, &event["payload"])?;
+                        input.state["notes"].as_array_mut().unwrap().push(json!({"source_revision":revision,"source_context":event["payload"]["context"],"payload_id":payload_id,"object_id":random_id(),"draft_id":null,"complete":false}));
                         self.save_native_job(cap, &iid, &input.state)?;
                     }
                     wipe(&mut event);
@@ -407,21 +477,35 @@ impl Host {
                     String::new()
                 };
                 if note["draft_id"].is_null() {
-                    let mut content = note["payload"].clone();
-                    content["summary_entry_id"] = Value::Null;
-                    content["preferences"] = json!([]);
-                    let edit = Self::edit(
-                        &group,
-                        kind,
-                        note["object_id"].as_str(),
-                        if kind == "entry" { Some(&thread) } else { None },
-                        &content,
-                        json!([]),
-                        "create",
-                    );
-                    let saved = self.notes(cap, json!({"action":"save","edit":edit}))?;
-                    input.state["notes"][n]["draft_id"] = saved["draft_id"].clone();
-                    self.save_native_job(cap, &iid, &input.state)?;
+                    // A saved draft may precede its journal acknowledgement after a crash.
+                    // Reuse its immutable object alias instead of creating a second draft.
+                    let drafts = self.notes(cap, json!({"action":"summary"}))?;
+                    if let Some(existing) = drafts["drafts"]
+                        .as_array()
+                        .ok_or(Error("INTEGRITY_FAILURE"))?
+                        .iter()
+                        .find(|d| d["object_id"] == note["object_id"] && d["group_id"] == group)
+                    {
+                        input.state["notes"][n]["draft_id"] = existing["draft_id"].clone();
+                        self.save_native_job(cap, &iid, &input.state)?;
+                    } else {
+                        let mut content = self.load_import_payload(cap, &iid, &note)?;
+                        content["summary_entry_id"] = Value::Null;
+                        content["preferences"] = json!([]);
+                        let edit = Self::edit(
+                            &group,
+                            kind,
+                            note["object_id"].as_str(),
+                            if kind == "entry" { Some(&thread) } else { None },
+                            &content,
+                            json!([]),
+                            "create",
+                        );
+                        let saved = self.notes(cap, json!({"action":"save","edit":edit}))?;
+                        input.state["notes"][n]["draft_id"] = saved["draft_id"].clone();
+                        self.save_native_job(cap, &iid, &input.state)?;
+                        wipe(&mut content);
+                    }
                 }
                 self.publish(cap, string(&input.state["notes"][n], "draft_id")?)?;
                 input.state["notes"][n]["complete"] = json!(true);
@@ -439,5 +523,89 @@ impl Host {
                 .file_http(cap, &self.profile.credential_id, &self.adapter, operation)?;
         check((200..300).contains(&response.status), "API_DENIED")?;
         strict(&response.bytes, 1048576)
+    }
+}
+
+#[cfg(test)]
+#[allow(dead_code)]
+mod payload_tests {
+    include!("../../vault-native/tests/common/notes_fixture.rs");
+    use crate::host::{Host, Profile, Service};
+    #[test]
+    fn archive_notes_exceed_one_record_without_plaintext_staging_or_cross_job_reuse() {
+        let f = Fixture::new();
+        let cap = f.vault.unlock_phrase(PHRASE).unwrap();
+        let h = Host::from_parts(
+            f.vault.path().parent().unwrap(),
+            Profile {
+                version: 1,
+                scope: f.scope.clone(),
+                credential_id: id(),
+                service: Service {
+                    issuer: "https://synthetic.example".into(),
+                    app: "https://synthetic-app.example".into(),
+                    pins: f.pins.clone(),
+                },
+            },
+            f.vault.clone(),
+            anynote_auth_native::Adapter::new(
+                "https://synthetic.example",
+                "https://synthetic-app.example",
+            )
+            .unwrap(),
+        );
+        let job = id();
+        let mut root = json!({"notes":[]});
+        for n in 0..12 {
+            let revision = id();
+            let payload = json!({"title":format!("SYNTHETIC private imported note {n}"),"markdown":"x".repeat(1500000)});
+            let record = h
+                .store_import_payload(&cap, &job, &revision, &payload)
+                .unwrap();
+            assert_eq!(
+                h.store_import_payload(&cap, &job, &revision, &payload)
+                    .unwrap(),
+                record
+            );
+            root["notes"]
+                .as_array_mut()
+                .unwrap()
+                .push(json!({"source_revision":revision,"payload_id":record}));
+            assert_eq!(
+                h.load_import_payload(&cap, &job, &root["notes"][n])
+                    .unwrap(),
+                payload
+            );
+        }
+        assert!(canonical(&root).unwrap().len() < 4096);
+        assert_eq!(
+            h.load_import_payload(&cap, &id(), &root["notes"][0])
+                .unwrap_err()
+                .0,
+            "INTEGRITY_FAILURE"
+        );
+        let row = &root["notes"][0];
+        assert_eq!(
+            h.store_import_payload(
+                &cap,
+                &job,
+                row["source_revision"].as_str().unwrap(),
+                &json!({"markdown":"tampered"})
+            )
+            .unwrap_err()
+            .0,
+            "IDEMPOTENCY_MISMATCH"
+        );
+        f.vault.lock_all().unwrap();
+        for suffix in ["", "-wal", "-shm"] {
+            let path = std::path::PathBuf::from(format!("{}{}", f.vault.path().display(), suffix));
+            if let Ok(bytes) = std::fs::read(path) {
+                assert!(
+                    !bytes
+                        .windows(31)
+                        .any(|w| w == b"SYNTHETIC private imported note ")
+                );
+            }
+        }
     }
 }

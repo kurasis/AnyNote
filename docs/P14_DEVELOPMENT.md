@@ -24,3 +24,34 @@ incompressible 1 GB round trips; all 24 inherited gates and exact-source evidenc
 P15 handoff, preserved-data install/start, normal guarded merge and final
 configuration save/readback. No physical, production signing or audit result is
 implied by this development branch.
+
+## Current development verification
+
+The native HTTP development harness now passes 36 checks against the actual owned
+HTTPS/Laravel/MariaDB stack: maintained PKCE loopback, signed notes, delta/offline
+projection, private preferences, exact receipt recovery, archive/trash/restore,
+verified device roster, shared history/epoch changes, and a small-file complete
+portable recovery/import round trip. This is dirty-development evidence, not the
+final exact-source or Windows acceptance receipt. The earlier real native 1 GB
+round trip remains separately recorded; the expanded final gigabyte run is pending.
+
+The native test suite also verifies more than 16 MiB of recovered note payloads in
+separate encrypted records, immutable source/alias recovery, kit/output recovery,
+protected profile trust and pending setup, cache preservation, and maintained
+update signatures. The static capability audit preserves 179 original specification,
+P02 fixture and pre-P14 lock files and grants only five typed main-window commands
+plus event subscription. Static results do not prove actual runtime denial.
+
+Windows commit 01b6bc6 built the single NSIS installer successfully. Its backend
+setup failed because the static test site's esbuild dependencies were not installed;
+PHP/MariaDB were running. The next workflow installs those frozen dependencies and
+adds installed-release startup/debug denial, an explicitly instrumented real WebView2
+host, actual native dialogs, software HWND lifecycle, encrypted SQL and full 1 GB
+upload/download/export/offline recovery/fresh import. These added scenarios have not
+yet passed Windows. Physical session/Hello/TPM and independent review remain open.
+
+The owner installer clears WebView2 remote-debug overrides before starting threads.
+Only the separate integration-harness executable permits local CI CDP observation;
+its report identifies that distinction and both executable hashes. Authentication,
+TLS validation, native custody and per-window permissions remain active in the
+instrumented software test. No sandbox or signature bypass is introduced.

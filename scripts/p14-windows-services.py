@@ -137,10 +137,37 @@ def stop():
         command='$p=Get-Process -Id '+str(record['pid'])+' -ErrorAction SilentlyContinue;if($p -and $p.Path -eq '+"'"+record['executable'].replace("'","''")+"'){Stop-Process -Id $p.Id}"
         checked(['powershell','-NoProfile','-Command',command])
     path.unlink()
+def trust():
+    require_ci();marker()
+    hosts=Path(os.environ['SystemRoot'])/'System32/drivers/etc/hosts'
+    original=hosts.read_bytes()
+    if b'app.anynote.test' in original or b'api.anynote.test' in original:raise RuntimeError('Refusing existing test hostname mapping')
+    expected=original+b'\r\n127.0.0.1 app.anynote.test api.anynote.test # AnyNote P14 owned CI\r\n'
+    (STATE/'hosts.before').write_bytes(original);(STATE/'hosts.after.sha256').write_text(hashlib.sha256(expected).hexdigest())
+    hosts.write_bytes(expected)
+    certificate=str(P06/'tls/ca.crt').replace("'","''")
+    thumb=checked(['powershell','-NoProfile','-Command',"$c=Import-Certificate -FilePath '"+certificate+"' -CertStoreLocation Cert:\\CurrentUser\\Root; $c.Thumbprint"]).decode().strip()
+    if not re.fullmatch('[A-Fa-f0-9]{40}',thumb):raise RuntimeError('Synthetic CA installation receipt missing')
+    (STATE/'trust-thumbprint').write_text(thumb)
+    print('PASS: synthetic test CA trusted through current-user Windows store and owned hostname mapping')
+def untrust():
+    require_ci();marker()
+    thumb=STATE/'trust-thumbprint'
+    if thumb.exists():
+        value=thumb.read_text().strip()
+        if not re.fullmatch('[A-Fa-f0-9]{40}',value):raise RuntimeError('Invalid owned synthetic CA receipt')
+        checked(['powershell','-NoProfile','-Command',"Remove-Item -LiteralPath 'Cert:\\CurrentUser\\Root\\"+value+"' -ErrorAction SilentlyContinue"]);thumb.unlink()
+    before=STATE/'hosts.before'
+    if before.exists():
+        hosts=Path(os.environ['SystemRoot'])/'System32/drivers/etc/hosts'
+        if hashlib.sha256(hosts.read_bytes()).hexdigest()!=(STATE/'hosts.after.sha256').read_text():raise RuntimeError('Hosts changed independently; refusing to overwrite')
+        hosts.write_bytes(before.read_bytes());before.unlink();(STATE/'hosts.after.sha256').unlink()
 def main():
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('operation',choices=['up','control','stop']);parser.add_argument('arguments',nargs='*');a=parser.parse_args()
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('operation',choices=['up','control','stop','trust','untrust']);parser.add_argument('arguments',nargs='*');a=parser.parse_args()
     if a.operation=='up':up()
     elif a.operation=='control':print(control(a.arguments))
+    elif a.operation=='trust':trust()
+    elif a.operation=='untrust':untrust()
     else:stop()
 if __name__=='__main__':
     try:main()

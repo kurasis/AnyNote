@@ -85,6 +85,18 @@ pub enum Request {
     Draft {
         draft_id: String,
     },
+    ObjectAction {
+        group_id: String,
+        object_id: String,
+        revision_id: String,
+        action: String,
+        confirmed: bool,
+    },
+    Preferences {
+        key: Option<String>,
+        target_id: Option<String>,
+        value: Option<String>,
+    },
     Versions {
         group_id: String,
         object_id: String,
@@ -132,6 +144,13 @@ pub enum Request {
     },
     Devices {},
     Sessions {},
+    RevokeSession {
+        session_id: String,
+        confirmed: bool,
+    },
+    AccessPoll {
+        group_id: Option<String>,
+    },
     Members {
         group_id: String,
     },
@@ -148,6 +167,11 @@ pub enum Request {
         confirmed: bool,
     },
     Offline {},
+    LocalObjects {
+        group_id: String,
+        thread_id: Option<String>,
+        after: Option<String>,
+    },
     Diagnostics {},
 }
 impl Drop for Request {
@@ -555,13 +579,13 @@ impl Host {
         Ok(status)
     }
     pub fn shared_proof(&self, cap: &Capability, group: &str) -> Result<Value> {
-        let mut proof = self.notes(cap, json!({"action":"group-evidence","group_id":group}))?;
-        if proof["proof"].is_object() {
-            proof = proof["proof"].clone();
-        }
-        if proof["pin"].is_null() {
-            proof = self.notes(cap, json!({"action":"upgrade-private","group_id":group}))?;
-        }
+        let mut proof = match self.notes(cap, json!({"action":"shared-proof","group_id":group})) {
+            Ok(proof) => proof,
+            Err(Error("GROUP_PROOF_REQUIRED")) => {
+                self.notes(cap, json!({"action":"upgrade-private","group_id":group}))?
+            }
+            Err(e) => return Err(e),
+        };
         let journal = self.api(cap, Route::Journal, Some(group), None, &[], None)?;
         let accounts = proof["accounts"]
             .as_array_mut()
@@ -638,7 +662,11 @@ impl Host {
         let sent = self.notes(cap, json!({"action":"send","attempt_id":attempt}))?;
         let request = &sent["request"];
         let c = &request["bundle"]["envelope"]["header"]["context"];
-        let route = if c["action"] == "create" && c["object_kind"] == "thread" {
+        let route = if c["action"] == "soft-delete" {
+            Route::Tombstone
+        } else if c["action"] == "restore" {
+            Route::Restore
+        } else if c["action"] == "create" && c["object_kind"] == "thread" {
             Route::CreateThread
         } else if c["action"] == "create" && c["object_kind"] == "entry" {
             Route::CreateEntry
@@ -733,6 +761,7 @@ impl Host {
                 )?;
                 self.vault
                     .store_credentials(&cap, &self.profile.credential_id, &credentials)?;
+                self.sync_devices(&cap)?;
                 Ok(json!({"state":credentials.state}))
             }
             Request::Login {} => {
@@ -764,10 +793,12 @@ impl Host {
                 self.prove(&cap)?;
                 self.refresh(&cap)
             }
-            Request::Offline {} => self.notes(
-                &cap,
-                json!({"action":"sync","request":{"action":"offline"}}),
-            ),
+            Request::Offline {} => self.local_groups(&cap),
+            Request::LocalObjects {
+                group_id,
+                thread_id,
+                after,
+            } => self.local_objects(&cap, group_id, thread_id.as_deref(), after.as_deref()),
             Request::Threads { group_id, after } => {
                 self.group(&cap, group_id)?;
                 self.list_open(&cap, Route::Threads, group_id, group_id, after.as_deref())
@@ -804,6 +835,51 @@ impl Host {
             Request::Draft { draft_id } => {
                 self.notes(&cap, json!({"action":"draft","draft_id":draft_id}))
             }
+            Request::ObjectAction {
+                group_id,
+                object_id,
+                revision_id,
+                action,
+                confirmed,
+            } => {
+                check(*confirmed, "CONFIRMATION_REQUIRED")?;
+                check(
+                    ["archive", "unarchive", "soft-delete"].contains(&action.as_str()),
+                    "INVALID_REQUEST",
+                )?;
+                let opened = self.open_revision(&cap, group_id, object_id, revision_id)?;
+                let object = &opened["object"];
+                check(
+                    object["heads"]
+                        .as_array()
+                        .is_some_and(|h| h.len() == 1 && h[0]["revision_id"] == *revision_id),
+                    "CONFLICT_CONFIRMATION_REQUIRED",
+                )?;
+                let mut content = opened["payload"].clone();
+                let deleting = action == "soft-delete";
+                if deleting {
+                    content = json!({"title":"","markdown":"","metadata_kind":"content","tags":[],"checklist":[],"summary_entry_id":null,"preferences":[]});
+                }
+                let mut edit = Self::edit(
+                    group_id,
+                    string(object, "object_kind")?,
+                    Some(object_id),
+                    object["thread_id"].as_str(),
+                    &content,
+                    object["heads"].clone(),
+                    if deleting { "soft-delete" } else { "update" },
+                );
+                edit["archived"] = json!(action == "archive");
+                let result = self.notes(&cap, json!({"action":"save","edit":edit}));
+                wipe(&mut content);
+                let saved = result?;
+                self.publish(&cap, string(&saved, "draft_id")?)
+            }
+            Request::Preferences {
+                key,
+                target_id,
+                value,
+            } => self.preferences(&cap, key.as_deref(), target_id.as_deref(), value.as_deref()),
             Request::CreateGroup { title, shared } => {
                 check(title.len() <= 4096, "RESOURCE_LIMIT")?;
                 self.prove(&cap)?;
@@ -877,11 +953,46 @@ impl Host {
                 self.group(&cap, group_id)?;
                 self.list_files(&cap, group_id, after.as_deref())
             }
-            Request::Devices {} => self.api(&cap, Route::Devices, None, None, &[], None),
+            Request::Devices {} => self.sync_devices(&cap),
             Request::Sessions {} => self.api(&cap, Route::Sessions, None, None, &[], None),
+            Request::RevokeSession {
+                session_id,
+                confirmed,
+            } => {
+                check(*confirmed, "CONFIRMATION_REQUIRED")?;
+                self.api(
+                    &cap,
+                    Route::RevokeSession,
+                    Some(id(session_id)?),
+                    None,
+                    &[],
+                    Some(&json!({"version":1})),
+                )
+            }
+            Request::AccessPoll { group_id } => {
+                let checked = self.prove(&cap).and_then(|_| {
+                    if let Some(group) = group_id {
+                        self.group(&cap, group)
+                    } else {
+                        Ok(json!({"state":"ACTIVE"}))
+                    }
+                });
+                match checked {
+                    Err(Error(
+                        "DEVICE_REVOKED" | "DEVICE_NOT_TRUSTED" | "REAUTH_REQUIRED" | "NOT_FOUND",
+                    )) => {
+                        self.lock();
+                        return Err(Error("STALE_CAPABILITY"));
+                    }
+                    result => result,
+                }
+            }
             Request::Members { group_id } => {
                 self.shared_proof(&cap, group_id)?;
-                self.api(&cap, Route::Members, Some(group_id), None, &[], None)
+                self.notes(
+                    &cap,
+                    json!({"action":"shared","request":{"action":"details","group_id":group_id}}),
+                )
             }
             Request::Retention {
                 group_id,
@@ -1004,7 +1115,7 @@ impl Host {
         Ok(json!({"items":items,"next":page["next"]}))
     }
     fn refresh(&self, cap: &Capability) -> Result<Value> {
-        self.resync(cap)?;
+        self.catch_up(cap)?;
         let mut items = Vec::new();
         let mut after = None::<String>;
         loop {
@@ -1047,6 +1158,77 @@ impl Host {
         }
         Ok(json!({"items":items,"next":null,"local":self.notes(cap,json!({"action":"summary"}))?}))
     }
+    fn preferences(
+        &self,
+        cap: &Capability,
+        key: Option<&str>,
+        target: Option<&str>,
+        value: Option<&str>,
+    ) -> Result<Value> {
+        self.prove(cap)?;
+        let summary = self.notes(cap, json!({"action":"summary"}))?;
+        let settings = summary["groups"]
+            .as_array()
+            .ok_or(Error("INTEGRITY_FAILURE"))?
+            .iter()
+            .find(|g| g["status"]["settings"] == true)
+            .ok_or(Error("SETTINGS_REQUIRED"))?;
+        let group = string(settings, "group_id")?;
+        self.group(cap, group)?;
+        let object = match self.api(cap, Route::Object, Some(group), None, &[], None) {
+            Ok(v) => v["object"].clone(),
+            Err(Error("NOT_FOUND")) => Value::Null,
+            Err(e) => return Err(e),
+        };
+        let heads = object["heads"].as_array().cloned().unwrap_or_default();
+        check(heads.len() <= 1, "CONFLICT_CONFIRMATION_REQUIRED")?;
+        let mut preferences = if let Some(head) = heads.first() {
+            self.open_revision(cap,group,group,string(head,"revision_id")?)?["payload"]["preferences"].clone()
+        } else {
+            json!([])
+        };
+        if let Some(key) = key {
+            check(
+                ["favorite", "group-order", "thread-order", "read-marker"].contains(&key),
+                "INVALID_REQUEST",
+            )?;
+            let target = id(target.ok_or(Error("INVALID_REQUEST"))?)?;
+            let value = value.ok_or(Error("INVALID_REQUEST"))?;
+            check(
+                value.len() <= 20
+                    && value.parse::<u64>().is_ok()
+                    && (key != "favorite" || ["0", "1"].contains(&value)),
+                "INVALID_REQUEST",
+            )?;
+            let rows = preferences
+                .as_array_mut()
+                .ok_or(Error("INTEGRITY_FAILURE"))?;
+            rows.retain(|p| !(p["key"] == key && p["target_id"] == target));
+            rows.push(json!({"key":key,"target_id":target,"value":value}));
+            rows.sort_by_key(|p| {
+                format!(
+                    "{}/{}",
+                    p["key"].as_str().unwrap_or(""),
+                    p["target_id"].as_str().unwrap_or("")
+                )
+            });
+            let content = json!({"title":"","markdown":"","metadata_kind":"account-preferences","tags":[],"checklist":[],"summary_entry_id":null,"preferences":preferences});
+            let edit = Self::edit(
+                group,
+                "group-metadata",
+                Some(group),
+                None,
+                &content,
+                json!(heads),
+                if object.is_null() { "create" } else { "update" },
+            );
+            let saved = self.notes(cap, json!({"action":"save","edit":edit}))?;
+            self.publish(cap, string(&saved, "draft_id")?)?;
+        } else {
+            check(target.is_none() && value.is_none(), "INVALID_REQUEST")?;
+        }
+        Ok(json!({"preferences":preferences}))
+    }
     fn shared_change(
         &self,
         cap: &Capability,
@@ -1059,6 +1241,7 @@ impl Host {
         check(confirmed, "CONFIRMATION_REQUIRED")?;
         self.shared_proof(cap, group)?;
         let request = match action {
+            "retry" => json!({"action":"retry","group_id":group}),
             "history" => json!({"action":"history","group_id":group}),
             "optional" | "roster-maintenance" | "member-removal" | "admission" => {
                 json!({"action":"epoch","group_id":group,"reason":action,"confirmed":true})
@@ -1069,40 +1252,133 @@ impl Host {
             _ => return Err(Error("INVALID_REQUEST")),
         };
         let prepared = self.notes(cap, json!({"action":"shared","request":request}))?;
-        let family = string(&prepared, "family")?;
-        let route = match family {
-            "history" => Route::History,
-            "policy" => Route::Policy,
-            "epoch" => Route::EpochBegin,
-            _ => return Err(Error("INVALID_REQUEST")),
-        };
-        let mut result = self.api(cap, route, Some(group), None, &[], Some(&prepared["body"]))?;
-        if family == "epoch" {
-            for page in prepared["pages"]
-                .as_array()
-                .ok_or(Error("INVALID_REQUEST"))?
-            {
-                self.api(
-                    cap,
-                    Route::EpochPage,
-                    Some(group),
-                    None,
-                    &[("index", string(page, "page_index")?)],
-                    Some(page),
-                )?;
+        self.send_shared(cap, group, &prepared)
+    }
+    pub fn send_shared(&self, cap: &Capability, group: &str, prepared: &Value) -> Result<Value> {
+        let family = string(prepared, "family")?;
+        let body = &prepared["body"];
+        let record = [
+            "invitation",
+            "acceptance",
+            "policy",
+            "intent",
+            "commit",
+            "history",
+        ]
+        .iter()
+        .find_map(|key| body.get(*key).filter(|v| !v.is_null()));
+        let operation = record
+            .map(|r| &r["body"]["operation_id"])
+            .unwrap_or(&body["operation_id"]);
+        let operation = operation.as_str().ok_or(Error("INVALID_REQUEST"))?;
+        let receipt_family = if family == "epoch" { "commit" } else { family };
+        let receipt = self.api(
+            cap,
+            Route::SecurityReceipt,
+            Some(operation),
+            None,
+            &[("family", receipt_family)],
+            None,
+        );
+        let result = match receipt {
+            Ok(result) => result,
+            Err(Error("NOT_FOUND")) => {
+                let route = match family {
+                    "history" => Route::History,
+                    "policy" => Route::Policy,
+                    "invite" => Route::Invite,
+                    "accept" => Route::Accept,
+                    "consent" => Route::OwnerConsent,
+                    "cancel" => Route::CancelShared,
+                    "epoch" => Route::EpochBegin,
+                    _ => return Err(Error("INVALID_REQUEST")),
+                };
+                let mut result = self.api(cap, route, Some(group), None, &[], Some(body))?;
+                if family == "epoch" {
+                    for page in prepared["pages"]
+                        .as_array()
+                        .ok_or(Error("INVALID_REQUEST"))?
+                    {
+                        self.api(
+                            cap,
+                            Route::EpochPage,
+                            Some(group),
+                            None,
+                            &[],
+                            Some(&json!({"version":1,"page":page})),
+                        )?;
+                    }
+                    result = self.api(
+                        cap,
+                        Route::EpochCommit,
+                        Some(group),
+                        None,
+                        &[],
+                        Some(&json!({"version":1,"commit":prepared["commit"]})),
+                    )?;
+                }
+                result
             }
-            result = self.api(
-                cap,
-                Route::EpochCommit,
-                Some(group),
-                None,
-                &[],
-                Some(&json!({"version":1,"commit":prepared["commit"]})),
-            )?;
-        }
+            Err(e) => return Err(e),
+        };
         self.notes(cap,json!({"action":"shared","request":{"action":"complete","group_id":group,"result":result}}))?;
         Ok(result)
     }
+    pub fn sync_devices(&self, cap: &Capability) -> Result<Value> {
+        let snapshot = self.roster(
+            cap,
+            &self.profile.scope.account_id,
+            string(&self.profile.service.pins, "root_fingerprint")?,
+        )?;
+        self.vault.record_device_snapshot(cap, &snapshot)
+    }
+    pub fn revoke_preview(&self, g: u64, targets: &Value) -> Result<Value> {
+        let cap = self.capability(g)?;
+        let summary = self.sync_devices(&cap)?;
+        let mut affected = targets
+            .as_array()
+            .ok_or(Error("INVALID_REQUEST"))?
+            .iter()
+            .map(|v| {
+                v.as_str()
+                    .map(str::to_owned)
+                    .ok_or(Error("INVALID_REQUEST"))
+            })
+            .collect::<Result<std::collections::BTreeSet<_>>>()?;
+        check(!affected.is_empty(), "INVALID_REQUEST")?;
+        let devices = summary["devices"]
+            .as_array()
+            .ok_or(Error("INTEGRITY_FAILURE"))?;
+        check(
+            affected.iter().all(|target| {
+                devices
+                    .iter()
+                    .any(|d| d["device_id"] == *target && d["status"] == "ACTIVE")
+            }),
+            "INVALID_REQUEST",
+        )?;
+        loop {
+            let before = affected.len();
+            for device in devices {
+                if device["status"] == "ACTIVE"
+                    && device["parent_device_id"]
+                        .as_str()
+                        .is_some_and(|p| affected.contains(p))
+                {
+                    affected.insert(string(device, "device_id")?.into());
+                }
+            }
+            if affected.len() == before {
+                break;
+            }
+        }
+        check(
+            !affected.contains(&self.profile.scope.device_id),
+            "REVOKER_IN_CLOSURE",
+        )?;
+        Ok(json!({"head":summary["head"],"affected":affected,"targets":targets}))
+    }
+
     fn device(
         &self,
         cap: &Capability,
@@ -1111,6 +1387,9 @@ impl Host {
         confirmed: bool,
     ) -> Result<Value> {
         let v = value.unwrap_or(&Value::Null);
+        if action != "public" {
+            self.sync_devices(cap)?;
+        }
         match action {
             "public" => self.vault.device_public(cap),
             "invitation" => self.vault.device_invitation(cap),
@@ -1134,7 +1413,7 @@ impl Host {
             }
             "revoke" => {
                 check(confirmed, "CONFIRMATION_REQUIRED")?;
-                let targets = v
+                let targets = v["targets"]
                     .as_array()
                     .ok_or(Error("INVALID_REQUEST"))?
                     .iter()
@@ -1144,14 +1423,17 @@ impl Host {
                             .ok_or(Error("INVALID_REQUEST"))
                     })
                     .collect::<Result<Vec<_>>>()?;
-                let prepared = self.vault.device_revoke(cap, &targets, true)?;
+                check(v["head"].is_object(), "CONFIRMATION_REQUIRED")?;
+                let prepared =
+                    self.vault
+                        .device_revoke_bound(cap, &targets, true, Some(&v["head"]))?;
                 let result = self.api(
                     cap,
                     Route::RevokeDevice,
                     targets.first().map(String::as_str),
                     None,
                     &[],
-                    Some(&prepared["request"]),
+                    Some(&json!({"version":1,"event":prepared})),
                 )?;
                 Ok(result)
             }

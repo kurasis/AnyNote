@@ -12,6 +12,7 @@ pub enum Route {
     Roster,
     Devices,
     Sessions,
+    RevokeSession,
     GroupList,
     Group,
     Genesis,
@@ -26,8 +27,11 @@ pub enum Route {
     CreateThread,
     CreateEntry,
     Commit,
+    Tombstone,
+    Restore,
     Receipt,
     Sync,
+    SyncAck,
     Snapshot,
     SnapshotCatalog,
     SnapshotPage,
@@ -55,6 +59,8 @@ pub enum Route {
     Invitations,
     SecurityReceipt,
     Policy,
+    OwnerConsent,
+    CancelShared,
     Invite,
     Accept,
     History,
@@ -94,11 +100,12 @@ impl Route {
             Roster => (get, format!("accounts/{}/roster", id(a)?)),
             Devices => (get, "me/devices".into()),
             Sessions => (get, "me/sessions".into()),
+            RevokeSession => (reqwest::Method::DELETE, format!("me/sessions/{}", id(a)?)),
             GroupList => (get, "groups".into()),
             Group => (get, format!("groups/{}", id(a)?)),
             Genesis => (get, format!("groups/{}/genesis", id(a)?)),
             Journal => (get, format!("groups/{}/journal", id(a)?)),
-            Members => (get, format!("groups/{}/members", id(a)?)),
+            Members => (get, format!("groups/{}/journal", id(a)?)),
             Envelopes => (get, format!("groups/{}/key-envelopes", id(a)?)),
             CreateGroup => (post, "groups".into()),
             Threads => (get, format!("groups/{}/threads", id(a)?)),
@@ -109,8 +116,11 @@ impl Route {
             CreateThread => (post, format!("groups/{}/threads", id(a)?)),
             CreateEntry => (post, format!("threads/{}/entries", id(a)?)),
             Commit => (post, format!("objects/{}/revisions", id(a)?)),
+            Tombstone => (post, format!("objects/{}/tombstone", id(a)?)),
+            Restore => (post, format!("objects/{}/restore", id(a)?)),
             Receipt => (get, format!("mutations/{}", id(a)?)),
             Sync => (get, "sync".into()),
+            SyncAck => (post, "sync/ack".into()),
             Snapshot => (post, "snapshots".into()),
             SnapshotCatalog => (get, format!("snapshots/{}/catalog", id(a)?)),
             SnapshotPage => (get, format!("snapshots/{}/pages", id(a)?)),
@@ -136,12 +146,14 @@ impl Route {
             Thumbnail => (post, format!("files/{}/thumbnail", id(a)?)),
             Invitations => (get, "me/group-invitations".into()),
             SecurityReceipt => (get, format!("me/group-receipts/{}", id(a)?)),
-            Policy => (post, format!("groups/{}/policy-events", id(a)?)),
-            Invite => (post, format!("groups/{}/invitations", id(a)?)),
-            Accept => (post, format!("group-invitations/{}/accept", id(a)?)),
+            Policy => (post, format!("groups/{}/policy", id(a)?)),
+            OwnerConsent => (post, format!("groups/{}/owner-consent", id(a)?)),
+            CancelShared => (post, format!("groups/{}/cancel", id(a)?)),
+            Invite => (post, format!("groups/{}/invites", id(a)?)),
+            Accept => (post, format!("groups/{}/accept", id(a)?)),
             History => (post, format!("groups/{}/history", id(a)?)),
             EpochBegin => (post, format!("groups/{}/epoch/begin", id(a)?)),
-            EpochPage => (Method::PUT, format!("groups/{}/epoch/pages", id(a)?)),
+            EpochPage => (post, format!("groups/{}/epoch/page", id(a)?)),
             EpochCommit => (post, format!("groups/{}/epoch/commit", id(a)?)),
             Enrollment => (post, "me/enrollments".into()),
             Relay => (post, format!("me/enrollments/{}/relay", id(a)?)),
@@ -181,7 +193,17 @@ impl Adapter {
             || query.iter().any(|(k, v)| {
                 !matches!(
                     *k,
-                    "after" | "head" | "root" | "cursor" | "start" | "index" | "family" | "limit"
+                    "after"
+                        | "head"
+                        | "root"
+                        | "cursor"
+                        | "start"
+                        | "index"
+                        | "family"
+                        | "limit"
+                        | "generation"
+                        | "sequence"
+                        | "group"
                 ) || v.len() > 4096
                     || !v.is_ascii()
             })

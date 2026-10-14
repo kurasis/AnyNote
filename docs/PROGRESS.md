@@ -799,3 +799,12 @@ or reviewer outreach occurred.
 Final documentation-head CI, ordinary guarded PR26 merge and configuration
 persistence require their separate recorded outcomes. Code acceptance does not
 claim Publish or independently observed fresh-task restoration.
+
+## P14 development in progress
+
+The Windows application branch now has typed native custody/UI coordinators,
+actual native HTTP development coverage, protected crash/recovery journals,
+isolated bounded previews, cache controls, signed updater policy and a single
+NSIS build. The installer builds on Windows; complete installed-host/WebView2,
+expanded gigabyte/update/restart acceptance and final exact-source evidence are
+still pending. See P14_DEVELOPMENT.md. P14 is not complete and main remains P13.
