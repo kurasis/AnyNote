@@ -790,7 +790,7 @@ revoked access are covered by the actually executed suites.
 
 Frozen specification/P02 corpora/signatures and all prior dependency locks are
 unchanged. New dependencies have separate exact inventories/licenses. See
-[content/format guide](../../P13_CONTENT.md). Complete Windows host/dialog/native
+[content/format guide](P13_CONTENT.md). Complete Windows host/dialog/native
 integration is P14; iPhone acceptance is P15; deployment/physical reconciliation
 and restore are P16. Physical G1/U11/U12/Hello/TPM/WebView2/iPhone memory and
 qualified G2/G3 remain OPEN/NOT_RUN. No owner trial, release, production operation
