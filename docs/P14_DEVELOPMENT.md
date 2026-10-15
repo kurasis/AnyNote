@@ -307,3 +307,19 @@ installer work, using its valid PR cache. It kills only the owned process tree
 and removes only the verified empty synthetic profile directory. Its separate
 source-bound report is required in the final receipt; the complete installed
 1 GB/upgrade suite remains mandatory and unchanged.
+
+
+At 3841045 the early real WebView2/React/typed-IPC preflight passes, but native
+sharing stops at the first OAuth loopback completion after its unchanged
+five-minute deadline. A real Windows Rust 1.99 TCP diagnostic reproduces the
+accepted socket inheriting nonblocking mode: reading before delayed headers
+returns WouldBlock immediately, while explicitly restoring blocking waits 250 ms
+and reads successfully. Its raw ZIP digest was verified.
+
+The production loopback listener now explicitly restores blocking mode on each
+accepted loopback stream before its existing bounded timeouts. Global deadline,
+request parsing, Host/state/issuer/PKCE and one-use checks remain intact. A real
+delayed-header IPv4/IPv6 regression covers the race. The synthetic driver/helper
+adds fixed failure categories and HTTP/network status only; no callback URL,
+OAuth code, state, verifier or credentials enter logs. Full Windows integration
+still needs to pass at the corrected source.
