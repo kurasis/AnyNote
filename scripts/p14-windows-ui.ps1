@@ -26,7 +26,13 @@ public static class AnyNoteTestWindow {
 if($Operation -eq 'memory'){
  $all=Get-CimInstance Win32_Process;$ids=[Collections.Generic.HashSet[int]]::new();[void]$ids.Add($ProcessId)
  do{$changed=$false;foreach($p in $all){if($ids.Contains([int]$p.ParentProcessId) -and !$ids.Contains([int]$p.ProcessId)){[void]$ids.Add([int]$p.ProcessId);$changed=$true}}}while($changed)
- $rows=@();foreach($id in $ids){$p=Get-Process -Id $id -ErrorAction SilentlyContinue;if($p){$rows+=@{pid=$id;kind=$(if($id -eq $ProcessId){'native'}elseif($p.ProcessName -eq 'msedgewebview2'){'webview2'}elseif($p.ProcessName -eq 'node'){'helper'}else{'other'});peak_working_set_bytes=$p.PeakWorkingSet64;working_set_bytes=$p.WorkingSet64}}
+ $rows=@()
+ foreach($id in $ids){
+  $p=Get-Process -Id $id -ErrorAction SilentlyContinue
+  if($p){
+   $rows+=@{pid=$id;kind=$(if($id -eq $ProcessId){'native'}elseif($p.ProcessName -eq 'msedgewebview2'){'webview2'}elseif($p.ProcessName -eq 'node'){'helper'}else{'other'});peak_working_set_bytes=$p.PeakWorkingSet64;working_set_bytes=$p.WorkingSet64}
+  }
+ }
  $rows|ConvertTo-Json -Compress;exit
 }
 $p=Get-Process -Id $ProcessId

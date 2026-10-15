@@ -1,61 +1,62 @@
-name: P14 isolated Windows test-root diagnosis
+name: P14 isolated Windows automation diagnosis
 on:
   push:
     branches: [ci/p14-root-trust-probe-20261015]
 permissions:
   contents: read
 jobs:
-  trust-probe:
+  ui-automation-probe:
     runs-on: windows-2025
-    timeout-minutes: 5
+    timeout-minutes: 7
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
           persist-credentials: false
+          fetch-depth: 2
       - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
         with:
           python-version: '3.14.8'
-      - name: Exact owned machine root operation with a bounded process lifetime
-        shell: pwsh
+      - name: Old parser rejection and corrected actual Windows automation
+        shell: python
         run: |
-          New-Item -ItemType Directory -Force .local | Out-Null
-          $probe = @'
-          import hashlib,json,os,runpy,subprocess,sys,time
+          import hashlib,json,os,subprocess,time
           from pathlib import Path
           assert os.name=='nt' and os.environ.get('GITHUB_ACTIONS')=='true'
-          root=Path.cwd();helper=root/'scripts/p14-windows-services.py'
-          m=runpy.run_path(str(helper),run_name='p14_owned_root_probe')
-          m['marker']();tls=root/'.local/p06/tls';tls.mkdir(parents=True)
-          m['openssl']('req','-x509','-newkey','rsa:3072','-nodes','-keyout',tls/'ca.key','-out',tls/'ca.crt','-days','1','-subj','/CN=AnyNote P14 disposable Windows test CA','-addext','basicConstraints=critical,CA:TRUE','-addext','keyUsage=critical,keyCertSign,cRLSign')
-          report={'purpose':'P14 isolated actual Windows root-store diagnostic, not application acceptance','source_commit':os.environ['GITHUB_SHA'],'helper_sha256':hashlib.sha256(helper.read_bytes()).hexdigest(),'physical_acceptance':False}
-          command=[sys.executable,str(helper),'trust'];started=time.monotonic()
-          process=subprocess.Popen(command,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+          helper=Path('scripts/p14-windows-ui.ps1').resolve()
+          report={'purpose':'P14 Windows automation infrastructure; synthetic WinForms window, not Tauri/app/physical acceptance','source_commit':os.environ['GITHUB_SHA'],'helper_sha256':hashlib.sha256(helper.read_bytes()).hexdigest(),'physical_acceptance':False,'steps':{}}
+          form=None
+          def ps(command,timeout=20):
+              return subprocess.run(['powershell','-NoProfile','-NonInteractive','-Command',command],stdin=subprocess.DEVNULL,capture_output=True,timeout=timeout)
+          def ui(operation,pid):
+              r=subprocess.run(['powershell','-NoProfile','-NonInteractive','-File',str(helper),'-Operation',operation,'-ProcessId',str(pid),'-Value',''],stdin=subprocess.DEVNULL,capture_output=True,timeout=20)
+              return r
           try:
-              out,err=process.communicate(timeout=45)
-              report.update(status='PASS' if process.returncode==0 else 'FAIL',exit_code=process.returncode,stdout=out.decode(errors='replace')[-2000:],stderr=err.decode(errors='replace')[-2000:])
-          except subprocess.TimeoutExpired:
-              if process.poll() is None:subprocess.run(['taskkill','/PID',str(process.pid),'/T','/F'],capture_output=True,timeout=15)
-              out,err=process.communicate(timeout=15)
-              report.update(status='TIMEOUT',stdout=out.decode(errors='replace')[-2000:],stderr=err.decode(errors='replace')[-2000:])
+              parser="$tokens=$null;$errors=$null;[void][System.Management.Automation.Language.Parser]::ParseFile('"+str(helper).replace("'","''")+"',[ref]$tokens,[ref]$errors);if($errors.Count){$errors|%{[Console]::Error.WriteLine($_.Message)};exit 1}"
+              parsed=ps(parser);report['steps']['corrected_parser']={'exit_code':parsed.returncode,'stderr':parsed.stderr.decode(errors='replace')[-2500:]};assert parsed.returncode==0,'Corrected native PowerShell parser rejected the helper'
+              original=subprocess.check_output(['git','show','HEAD^:scripts/p14-windows-ui.ps1']);old=Path('.local/p14-original-ui.ps1');old.parent.mkdir(exist_ok=True);old.write_bytes(original)
+              rejected=ps(parser.replace(str(helper),str(old.resolve())));report['steps']['original_parser']={'exit_code':rejected.returncode,'stderr':rejected.stderr.decode(errors='replace')[-2500:]};assert rejected.returncode!=0,'Original missing-brace regression did not fail'
+              measured=ui('memory',os.getpid());report['steps']['memory']={'exit_code':measured.returncode,'stderr':measured.stderr.decode(errors='replace')[-2500:]};assert measured.returncode==0,'Actual helper compilation/memory operation failed';rows=json.loads(measured.stdout);rows=rows if isinstance(rows,list) else [rows];assert any(r['pid']==os.getpid() and r['working_set_bytes']>0 for r in rows)
+              form_command="Add-Type -AssemblyName System.Windows.Forms;$f=[Windows.Forms.Form]::new();$f.Text='AnyNote P14 owned synthetic preflight';$f.Width=440;$f.Height=220;$f.StartPosition='CenterScreen';$f.TopMost=$true;[void]$f.ShowDialog()"
+              form=subprocess.Popen(['powershell','-NoProfile','-NonInteractive','-Command',form_command],stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
+              deadline=time.monotonic()+30;last=None
+              while time.monotonic()<deadline:
+                  last=ui('foreground',form.pid)
+                  if last.returncode==0:break
+                  assert form.poll() is None,'Owned synthetic form exited'
+                  time.sleep(.2)
+              report['steps']['foreground']={'exit_code':last.returncode,'stderr':last.stderr.decode(errors='replace')[-2500:]};assert last.returncode==0,'Owned real HWND unavailable'
+              typed=ui('input',form.pid);report['steps']['real_owned_input']={'exit_code':typed.returncode,'stderr':typed.stderr.decode(errors='replace')[-2500:]};assert typed.returncode==0,'Actual owned neutral SendInput failed'
+              report['status']='PASS'
+          except Exception as error:
+              report['status']='FAIL';report['failure']=str(error)[:1000]
           finally:
-              report['elapsed_ms']=int((time.monotonic()-started)*1000)
-              try:
-                  cleanup=subprocess.run([sys.executable,str(helper),'untrust'],capture_output=True,timeout=30)
-                  report['cleanup_exit_code']=cleanup.returncode
-                  report['cleanup_diagnostic']=(cleanup.stdout+cleanup.stderr).decode(errors='replace')[-2000:]
-              except subprocess.TimeoutExpired:report['cleanup_exit_code']='TIMEOUT'
-              folder=root/'artifacts/p14-root-trust-probe';folder.mkdir(parents=True)
-              (folder/'report.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
-              print(json.dumps(report))
-          assert report['status']=='PASS' and report['cleanup_exit_code']==0,'Actual root trust/cleanup diagnostic failed'
-          '@
-          [IO.File]::WriteAllText((Join-Path (Get-Location) '.local/p14-root-probe.py'),$probe,[Text.UTF8Encoding]::new($false))
-          python .local/p14-root-probe.py
-          exit $LASTEXITCODE
+              if form and form.poll() is None:form.kill();form.communicate(timeout=10)
+              folder=Path('artifacts/p14-ui-automation-probe');folder.mkdir(parents=True);(folder/'report.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8');print(json.dumps(report))
+          assert report['status']=='PASS','Windows automation diagnostic failed'
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: p14-owned-root-trust-diagnostic
-          path: artifacts/p14-root-trust-probe/report.json
+          name: p14-owned-ui-automation-diagnostic
+          path: artifacts/p14-ui-automation-probe/report.json
           retention-days: 3
           if-no-files-found: error
