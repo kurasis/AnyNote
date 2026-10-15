@@ -36,9 +36,8 @@ public static class AnyNoteTestWindow {
  [DllImport("user32.dll",EntryPoint="SendMessageTimeoutW",ExactSpelling=true,CharSet=CharSet.Unicode,SetLastError=true)] public static extern IntPtr SendText(IntPtr h,uint m,IntPtr w,string text,uint flags,uint timeout,out UIntPtr result);
  [DllImport("user32.dll",EntryPoint="SendMessageTimeoutW",ExactSpelling=true,CharSet=CharSet.Unicode,SetLastError=true)] public static extern IntPtr ReadText(IntPtr h,uint m,IntPtr w,StringBuilder text,uint flags,uint timeout,out UIntPtr result);
  public static IntPtr[] OwnedChildren(IntPtr root,uint pid){var a=new List<IntPtr>();EnumChildWindows(root,(h,l)=>{uint p;GetWindowThreadProcessId(h,out p);if(p==pid)a.Add(h);return true;},IntPtr.Zero);return a.ToArray();}
- public static bool FileNameEdit(IntPtr h,IntPtr root){
-  if(ClassOf(h)!="Edit")return false;int id=GetDlgCtrlID(h);if(id==1148||id==1152)return true;if(id!=1001)return false;
-  var p=GetParent(h);for(int n=0;n<8&&p!=IntPtr.Zero&&p!=root;n++,p=GetParent(p)){if(GetDlgCtrlID(p)==1148||ClassOf(p)=="AppControlHost")return true;}return false;
+ public static bool FileNameEdit(IntPtr h){
+  if(ClassOf(h)!="Edit")return false;int id=GetDlgCtrlID(h);return id==1148||id==1152||id==1001;
  }
  public static bool SetFileName(IntPtr h,string text){
   if(text.Length==0||text.Length>32766)return false;UIntPtr result;
@@ -80,13 +79,15 @@ do{
  if($Operation -eq 'file'){
   foreach($dialog in [AnyNoteTestWindow]::OwnedWindows([uint32]$ProcessId)){
    if([AnyNoteTestWindow]::ClassOf($dialog) -ne '#32770' -or ![AnyNoteTestWindow]::IsWindowVisible($dialog)){continue}
-   $fileEdit=[IntPtr]::Zero;$accept=[IntPtr]::Zero
+   $fileEdits=@();$accept=[IntPtr]::Zero
    foreach($child in [AnyNoteTestWindow]::OwnedChildren($dialog,[uint32]$ProcessId)){
     if(![AnyNoteTestWindow]::IsWindowVisible($child) -or ![AnyNoteTestWindow]::IsWindowEnabled($child)){continue}
-    if([AnyNoteTestWindow]::FileNameEdit($child,$dialog)){$fileEdit=$child}
+    if([AnyNoteTestWindow]::FileNameEdit($child)){$fileEdits+=@($child)}
     if([AnyNoteTestWindow]::ClassOf($child) -eq 'Button' -and [AnyNoteTestWindow]::GetDlgCtrlID($child) -eq 1){$accept=$child}
    }
-   if($fileEdit -ne [IntPtr]::Zero -and $accept -ne [IntPtr]::Zero){
+   if($fileEdits.Count -gt 1 -and $accept -ne [IntPtr]::Zero){throw 'Ambiguous owned native filename edit'}
+   if($fileEdits.Count -eq 1 -and $accept -ne [IntPtr]::Zero){
+    $fileEdit=$fileEdits[0]
     if(![AnyNoteTestWindow]::SetFileName($fileEdit,$Value)){throw 'Owned native filename edit failed'}
     [UIntPtr]$fileResult=[UIntPtr]::Zero
     if([AnyNoteTestWindow]::SendMessageTimeout($accept,0xF5,[IntPtr]::Zero,[IntPtr]::Zero,2,5000,[ref]$fileResult) -eq [IntPtr]::Zero){throw 'Owned native file button did not respond'}
@@ -133,6 +134,16 @@ do{
  }
  Start-Sleep -Milliseconds 200
 }while((Get-Date) -lt $deadline)
+$nativeEdits=@()
+foreach($dialog in [AnyNoteTestWindow]::OwnedWindows([uint32]$ProcessId)){
+ if([AnyNoteTestWindow]::ClassOf($dialog) -ne '#32770' -or ![AnyNoteTestWindow]::IsWindowVisible($dialog)){continue}
+ foreach($child in [AnyNoteTestWindow]::OwnedChildren($dialog,[uint32]$ProcessId)){
+  if([AnyNoteTestWindow]::ClassOf($child) -eq 'Edit' -and [AnyNoteTestWindow]::IsWindowVisible($child)){
+   $parent=[AnyNoteTestWindow]::GetParent($child);$nativeEdits+=@{id=[AnyNoteTestWindow]::GetDlgCtrlID($child);parent_id=[AnyNoteTestWindow]::GetDlgCtrlID($parent);parent_class=[AnyNoteTestWindow]::ClassOf($parent);enabled=[AnyNoteTestWindow]::IsWindowEnabled($child)}
+  }
+ }
+}
+[Console]::Error.WriteLine(('OWNED_NATIVE_FILENAME_EDITS '+($nativeEdits|ConvertTo-Json -Compress)))
 $dialogControls=@()
 foreach($candidate in $windows){
  if($candidate.Current.ClassName -eq '#32770'){
