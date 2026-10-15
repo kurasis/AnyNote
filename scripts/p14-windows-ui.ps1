@@ -81,15 +81,33 @@ do{
   $controls=$candidate.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.Condition]::TrueCondition)
   if($Operation -eq 'file'){
    $edit=$null;$button=$null
-   foreach($control in $controls){if($control.Current.ControlType -eq [Windows.Automation.ControlType]::Edit -and $control.Current.AutomationId -in @('1148','1001')){$edit=$control};if($control.Current.ControlType -eq [Windows.Automation.ControlType]::Button -and $control.Current.AutomationId -eq '1'){$button=$control}}
-   if($edit -and $button){$pattern=$edit.GetCurrentPattern([Windows.Automation.ValuePattern]::Pattern);$pattern.SetValue($Value);$button.GetCurrentPattern([Windows.Automation.InvokePattern]::Pattern).Invoke();exit}
+   foreach($control in $controls){
+    if($control.Current.ControlType -in @([Windows.Automation.ControlType]::Edit,[Windows.Automation.ControlType]::ComboBox) -and $control.Current.AutomationId -in @('1148','1001')){
+     $valuePattern=$null;if($control.TryGetCurrentPattern([Windows.Automation.ValuePattern]::Pattern,[ref]$valuePattern) -and (!$edit -or $control.Current.AutomationId -eq '1148')){$edit=$control}
+    }
+    if($control.Current.ControlType -in @([Windows.Automation.ControlType]::Button,[Windows.Automation.ControlType]::SplitButton) -and $control.Current.AutomationId -eq '1'){$button=$control}
+   }
+   if($edit -and $button){$pattern=$edit.GetCurrentPattern([Windows.Automation.ValuePattern]::Pattern);$pattern.SetValue($Value);$button.GetCurrentPattern([Windows.Automation.InvokePattern]::Pattern).Invoke();
+    $dialogHandle=[IntPtr]$candidate.Current.NativeWindowHandle;$closeDeadline=(Get-Date).AddSeconds(5)
+    while([AnyNoteTestWindow]::IsWindowVisible($dialogHandle) -and (Get-Date) -lt $closeDeadline){Start-Sleep -Milliseconds 100}
+    if([AnyNoteTestWindow]::IsWindowVisible($dialogHandle)){throw 'Owned file selection did not close its native dialog'}
+    exit}
   }else{
    foreach($control in $controls){if($control.Current.ControlType -eq [Windows.Automation.ControlType]::Button -and ($control.Current.AutomationId -eq '6' -or $control.Current.Name -in @('Yes','&Yes','Да','&Да'))){$control.GetCurrentPattern([Windows.Automation.InvokePattern]::Pattern).Invoke();exit}}
   }
  }
  Start-Sleep -Milliseconds 200
 }while((Get-Date) -lt $deadline)
+$dialogControls=@()
+foreach($candidate in $windows){
+ if($candidate.Current.ClassName -eq '#32770'){
+  foreach($control in $candidate.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.Condition]::TrueCondition)){
+   if($control.Current.AutomationId -in @('1','1001','1148','1152','FileNameControlHost')){$dialogControls+=@{id=$control.Current.AutomationId;type=$control.Current.ControlType.ProgrammaticName;class=$control.Current.ClassName;enabled=$control.Current.IsEnabled}}
+  }
+ }
+}
+[Console]::Error.WriteLine(('OWNED_FILE_CONTROL_TYPES '+($dialogControls|ConvertTo-Json -Compress)))
 $native=@()
-foreach($h in [AnyNoteTestWindow]::OwnedWindows([uint32]$ProcessId)){$native+=@{class=[AnyNoteTestWindow]::ClassOf($h);visible=[AnyNoteTestWindow]::IsWindowVisible($h);enabled=[AnyNoteTestWindow]::IsWindowEnabled($h);yes=([AnyNoteTestWindow]::GetDlgItem($h,6) -ne [IntPtr]::Zero);no=([AnyNoteTestWindow]::GetDlgItem($h,7) -ne [IntPtr]::Zero)}}
+foreach($h in [AnyNoteTestWindow]::OwnedWindows([uint32]$ProcessId)){if(![AnyNoteTestWindow]::IsWindowVisible($h)){continue};$native+=@{class=[AnyNoteTestWindow]::ClassOf($h);visible=[AnyNoteTestWindow]::IsWindowVisible($h);enabled=[AnyNoteTestWindow]::IsWindowEnabled($h);yes=([AnyNoteTestWindow]::GetDlgItem($h,6) -ne [IntPtr]::Zero);no=([AnyNoteTestWindow]::GetDlgItem($h,7) -ne [IntPtr]::Zero)}}
 [Console]::Error.WriteLine(('OWNED_WIN32_WINDOWS '+($native|ConvertTo-Json -Compress)))
 throw 'Real native dialog not found'
