@@ -62,6 +62,17 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Unchanged baseline and closed native capability audit
         run: python scripts/check-p14.py
+      - name: Early real WebView2 and typed IPC before backend and installer work
+        timeout-minutes: 12
+        run: |
+          python scripts/p14-dependencies.py --stage
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm --prefix apps/desktop run tauri -- build --ci --no-bundle --features integration-harness -- --locked -j 4
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          New-Item -ItemType Directory -Force .local/p14-tools | Out-Null
+          Copy-Item apps/desktop/src-tauri/target/release/anynote-desktop.exe .local/p14-tools/instrumented-host.exe
+          node scripts/p14-host-preflight.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Native custody tests and release acceptance driver
         id: native-core
         run: |
