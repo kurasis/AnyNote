@@ -272,3 +272,20 @@ before connecting CDP. This is a pending runtime correction, not acceptance.
 After GitHub reconnection the isolated helper diagnostic raw report, ZIP digest
 and exact helper Git bytes were verified successfully; see retained development
 receipts at closure. The diagnostic remains separate from Tauri acceptance.
+
+
+The db8658f run still has no CDP endpoint. A short source-bound binary diagnostic
+on the hosted Windows runtime confirms a real HWND, active renderer/browser
+processes and the intended isolated directory, but no remote-debugging argument
+in the actual browser process command line. Explicit environment user-data
+selection works; environment debugging arguments are absent in both trials.
+The CI-only builder now passes fixed loopback CDP flags through the maintained
+native additional_browser_args option for both main and preview windows. This
+retains Wry defaults and does not add owner-release debugging or native rights.
+The new actual runtime result is still required.
+
+A complete local setup attempt stops on a P09 storage-abort test with
+STALE_WRITER after unusually long scheduling delays. The unmodified isolated
+suite then passes all eight tests. The failed setup receipt is not accepted;
+the complete preserved-data scenario must pass before closure. No writer lease,
+authorization timeout or assertion is extended or disabled.
