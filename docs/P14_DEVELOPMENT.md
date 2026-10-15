@@ -233,3 +233,12 @@ then retains the full tamper/install/restart/outbox checks after those workflows
 Failed ephemeral signer commands discard process output and throw a generic
 error instead of exposing Node's retained stdout/stderr. The full Windows GUI,
 gigabyte and actual upgrade acceptance remain pending; P14 is still active.
+
+The early full-host step at a350118 times out while reading the machine root
+store through a child Windows PowerShell process, before any store mutation or
+WebView2 run. A diagnostic matching its PowerShell parent and Python3.14.8 passes
+with explicit closed stdin and noninteractive child commands. Its raw ZIP digest
+and exact helper bytes were independently verified. Service commands now close
+unused stdin and add -NonInteractive to PowerShell; explicit PHP/SQL control
+request bodies still use their intended input pipe. TLS and exact root checks
+remain enabled. Complete Windows GUI acceptance is still pending.
