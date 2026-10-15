@@ -30,6 +30,21 @@ public static class AnyNoteTestWindow {
  public static IntPtr[] OwnedWindows(uint pid){var a=new List<IntPtr>();EnumWindows((h,l)=>{uint p;GetWindowThreadProcessId(h,out p);if(p==pid)a.Add(h);return true;},IntPtr.Zero);return a.ToArray();}
  public static string ClassOf(IntPtr h){var b=new StringBuilder(256);GetClassName(h,b,256);return b.ToString();}
  public static string TitleOf(IntPtr h){var b=new StringBuilder(256);GetWindowText(h,b,256);return b.ToString();}
+ [DllImport("user32.dll")] public static extern bool EnumChildWindows(IntPtr h,EnumWindow cb,IntPtr l);
+ [DllImport("user32.dll")] public static extern int GetDlgCtrlID(IntPtr h);
+ [DllImport("user32.dll")] public static extern IntPtr GetParent(IntPtr h);
+ [DllImport("user32.dll",EntryPoint="SendMessageTimeoutW",ExactSpelling=true,CharSet=CharSet.Unicode,SetLastError=true)] public static extern IntPtr SendText(IntPtr h,uint m,IntPtr w,string text,uint flags,uint timeout,out UIntPtr result);
+ [DllImport("user32.dll",EntryPoint="SendMessageTimeoutW",ExactSpelling=true,CharSet=CharSet.Unicode,SetLastError=true)] public static extern IntPtr ReadText(IntPtr h,uint m,IntPtr w,StringBuilder text,uint flags,uint timeout,out UIntPtr result);
+ public static IntPtr[] OwnedChildren(IntPtr root,uint pid){var a=new List<IntPtr>();EnumChildWindows(root,(h,l)=>{uint p;GetWindowThreadProcessId(h,out p);if(p==pid)a.Add(h);return true;},IntPtr.Zero);return a.ToArray();}
+ public static bool FileNameEdit(IntPtr h,IntPtr root){
+  if(ClassOf(h)!="Edit")return false;int id=GetDlgCtrlID(h);if(id==1148||id==1152)return true;if(id!=1001)return false;
+  var p=GetParent(h);for(int n=0;n<8&&p!=IntPtr.Zero&&p!=root;n++,p=GetParent(p)){if(GetDlgCtrlID(p)==1148)return true;}return false;
+ }
+ public static bool SetFileName(IntPtr h,string text){
+  if(text.Length==0||text.Length>32766)return false;UIntPtr result;
+  if(SendText(h,0xC,IntPtr.Zero,text,2,5000,out result)==IntPtr.Zero||result==UIntPtr.Zero)return false;
+  var b=new StringBuilder(text.Length+1);return ReadText(h,0xD,(IntPtr)b.Capacity,b,2,5000,out result)!=IntPtr.Zero&&b.ToString()==text;
+ }
  public static bool NeutralInput(){var a=new INPUT[2];a[0].type=a[1].type=1;a[0].data.keyboard.key=a[1].data.keyboard.key=0x10;a[1].data.keyboard.flags=2;return SendInput(2,a,Marshal.SizeOf(typeof(INPUT)))==2;}
 
 }
@@ -62,6 +77,26 @@ if($Operation -eq 'wts-lock'){[void][AnyNoteTestWindow]::SendMessage($window,0x2
 if($Operation -eq 'wts-unlock'){[void][AnyNoteTestWindow]::SendMessage($window,0x2B1,[IntPtr]8,[IntPtr]0);exit}
 $deadline=(Get-Date).AddSeconds(45)
 do{
+ if($Operation -eq 'file'){
+  foreach($dialog in [AnyNoteTestWindow]::OwnedWindows([uint32]$ProcessId)){
+   if([AnyNoteTestWindow]::ClassOf($dialog) -ne '#32770' -or ![AnyNoteTestWindow]::IsWindowVisible($dialog)){continue}
+   $fileEdit=[IntPtr]::Zero;$accept=[IntPtr]::Zero
+   foreach($child in [AnyNoteTestWindow]::OwnedChildren($dialog,[uint32]$ProcessId)){
+    if(![AnyNoteTestWindow]::IsWindowVisible($child) -or ![AnyNoteTestWindow]::IsWindowEnabled($child)){continue}
+    if([AnyNoteTestWindow]::FileNameEdit($child,$dialog)){$fileEdit=$child}
+    if([AnyNoteTestWindow]::ClassOf($child) -eq 'Button' -and [AnyNoteTestWindow]::GetDlgCtrlID($child) -eq 1){$accept=$child}
+   }
+   if($fileEdit -ne [IntPtr]::Zero -and $accept -ne [IntPtr]::Zero){
+    if(![AnyNoteTestWindow]::SetFileName($fileEdit,$Value)){throw 'Owned native filename edit failed'}
+    [UIntPtr]$fileResult=[UIntPtr]::Zero
+    if([AnyNoteTestWindow]::SendMessageTimeout($accept,0xF5,[IntPtr]::Zero,[IntPtr]::Zero,2,5000,[ref]$fileResult) -eq [IntPtr]::Zero){throw 'Owned native file button did not respond'}
+    $closeDeadline=(Get-Date).AddSeconds(5)
+    while([AnyNoteTestWindow]::IsWindowVisible($dialog) -and (Get-Date) -lt $closeDeadline){Start-Sleep -Milliseconds 100}
+    if([AnyNoteTestWindow]::IsWindowVisible($dialog)){throw 'Owned file selection did not close its native dialog'}
+    exit
+   }
+  }
+ }
  if($Operation -eq 'consent'){
   foreach($dialog in [AnyNoteTestWindow]::OwnedWindows([uint32]$ProcessId)){
    $yes=[AnyNoteTestWindow]::GetDlgItem($dialog,6);$no=[AnyNoteTestWindow]::GetDlgItem($dialog,7)
