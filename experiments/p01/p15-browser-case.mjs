@@ -271,6 +271,7 @@ export async function pwaCase({page, action, check, scratch, readyWriter, commit
       source_sha256: sourceHash, recovered_sha256: recoveredHash, imported_bytes: importedBytes,
       imported_sha256: importedDigest, mobile_viewport: '390x844; keyboard 390x420',
       updated_attempt_id:updateAttempt,original_update_request_sha256:updateRequestHash,old_receipt_verified_after_update:true,
+      retained_update_draft_id:draft,
       retained_outbox_records:outboxBefore.length,outbox_before_after_sha256:createHash('sha256').update(JSON.stringify(outboxBefore)).digest('hex'),
       memory: memory.finish(), process_memory: processes.finish(), v8_memory: await heap.finish(), physical_acceptance: false,
       scope: 'Actual production API/Worker/IndexedDB/OPFS and streaming service-worker download in sandboxed hosted desktop Chromium; not iPhone Files/storage/PRF evidence',

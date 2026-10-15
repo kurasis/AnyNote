@@ -1,4 +1,5 @@
 import {pwaCase} from './p15-browser-case.mjs';
+import {quotaCase} from './p15-quota.mjs';
 import {contentCase} from './p13-browser-case.mjs';
 import {filesCase} from './p12-browser-case.mjs';
 // Mandatory hosted sandboxed Chromium: genuine WebAuthn through the shipped strict-CSP UI.
@@ -106,6 +107,9 @@ try{
       const passed=[];report.p15_pwa={status:'PENDING',checks:passed};
       Object.assign(report.p15_pwa,await pwaCase({page:p,action,scratch,control,readyWriter,commitBeforeLosingResponse,
         check:(value,name)=>{check(value,name);passed.push(name);}}));
+      const quotaChecks=[];report.p15_storage={status:'PENDING',checks:quotaChecks};
+      Object.assign(report.p15_storage,await quotaCase({page:p,action,readyWriter,draft:report.p15_pwa.retained_update_draft_id,
+        check:(value,name)=>{check(value,name);quotaChecks.push(name);}}));
     }
     if(process.argv.includes('--p13-content'))report.p13_content=await contentCase({page:p,action,check,scratch,control});
     check(errors.length===0,'NO_RUNTIME_OR_CSP_ERRORS');report.status='PASS';report.checks=checks;report.custody_diagnostics=await Promise.all([owner,...peers].map(async(d,i)=>({role:['owner','editor','reader'][i],events:await d.p.evaluate(()=>globalThis.__custodyDiagnostics)})));report.chromium_sandbox=true;report.request_pacing='Genuine roster/group requests paced below unchanged production limits; no mocked API responses';report.tls_verification='Real trusted disposable CA and hostname validation';report.source_tree_dirty=!!spawnSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}).stdout.trim();writeFileSync(root+'/artifacts/p10/browser-report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));

@@ -1962,3 +1962,12 @@ token is rejected, the new one works, and a later destination change still
 cannot publish or replace the retained job. The read-only P13 suite now passes
 19 tests, and the seven PWA tests/build/frozen179 checks pass. This small state
 regression supplements the unchanged genuine1GB browser/API scenario.
+
+P15 final storage-fault acceptance is prepared in the same full1GB Chromium job:
+CDP sets the actual origin quota to zero, the shipped Worker attempts an encrypted
+IndexedDB transaction, typed storage failure must prevent a new-save acknowledgement,
+and ciphertext records/last acknowledged text must survive lock/reload/fresh
+authorization. The quota override is restored in finally, without deleting data.
+This prepared check is NOT_RUN locally because the cloud browser sandbox is
+unavailable; its exact-source hosted result is required. It does not assert
+physical iPhone storage, disk filling or immunity from OS eviction.

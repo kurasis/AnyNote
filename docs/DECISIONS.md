@@ -1133,3 +1133,9 @@ but the previous token described new-private/null. Refreshing only the token
 fixes resume; the stored destination and immutable requests remain unchanged,
 and confirm still rechecks the exact destination. A changed audience cannot use
 that resume path to rebind prepared ciphertext.
+
+Final checked-head raw reports can be archived on an evidence-only Git branch
+after the guarded merge. Each retains its actual source SHA and verified Git
+inputs. This preserves the checked main tree and avoids a report/commit
+self-reference cycle; the branch is a public evidence archive, not a software
+release or another implementation checkout.
