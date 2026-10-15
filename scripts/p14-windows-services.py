@@ -149,7 +149,7 @@ def trust():
     # DER bytes and an independent fingerprint bind the OS-store receipt. No private key.
     certificate=STATE/'test-root.der';certificate.write_bytes(der)
     certificate_argument=str(certificate).replace("'","''")
-    prefix="$ErrorActionPreference='Stop';$store=[System.Security.Cryptography.X509Certificates.X509Store]::new('Root','CurrentUser');"
+    prefix="$ErrorActionPreference='Stop';$store=[System.Security.Cryptography.X509Certificates.X509Store]::new('Root','LocalMachine');"
     find="$store.Certificates.Find([System.Security.Cryptography.X509Certificates.X509FindType]::FindByThumbprint,'"+thumb+"',$false)"
     existing=checked(['powershell','-NoProfile','-Command',prefix+"$store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadOnly);try{[Console]::Write(("+find+").Count)}finally{$store.Close()}"]).decode('ascii').strip()
     if existing!='0':raise RuntimeError('Refusing pre-existing or unverifiable synthetic root certificate')
@@ -161,14 +161,14 @@ def trust():
     command=prefix+"$certificate=[System.Security.Cryptography.X509Certificates.X509Certificate2]::new([IO.File]::ReadAllBytes('"+certificate_argument+"'));if($certificate.Thumbprint -ne '"+thumb+"'){throw 'Synthetic DER fingerprint mismatch'};$store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadWrite);try{$store.Add($certificate);$found="+find+";if($found.Count -ne 1 -or [Convert]::ToBase64String($found[0].RawData) -cne [Convert]::ToBase64String($certificate.RawData)){throw 'Synthetic root store verification failed'};[Console]::Write($certificate.Thumbprint)}finally{$store.Close();$certificate.Reset()}"
     installed=checked(['powershell','-NoProfile','-Command',command]).decode('ascii').strip()
     if installed!=thumb:raise RuntimeError('Synthetic CA installation receipt missing')
-    print('PASS: exact synthetic DER root verified in current-user Windows store and owned hostname mapping')
+    print('PASS: exact synthetic DER root verified in machine Windows CI store and owned hostname mapping')
 def untrust():
     require_ci();marker()
     thumb=STATE/'trust-thumbprint'
     if thumb.exists():
         value=thumb.read_text(encoding='ascii').strip()
         if not re.fullmatch('[A-Fa-f0-9]{40}',value):raise RuntimeError('Invalid owned synthetic CA receipt')
-        path="Cert:\\CurrentUser\\Root\\"+value
+        path="Cert:\\LocalMachine\\Root\\"+value
         command="$ErrorActionPreference='Stop';$path='"+path+"';if(Test-Path -LiteralPath $path){Remove-Item -LiteralPath $path};if(Test-Path -LiteralPath $path){throw 'Owned synthetic root removal failed'}"
         checked(['powershell','-NoProfile','-Command',command]);thumb.unlink()
     before=STATE/'hosts.before'
