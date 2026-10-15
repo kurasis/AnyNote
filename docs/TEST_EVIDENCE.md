@@ -1952,3 +1952,13 @@ browser regression requires denial before any download, then uses the existing
 owner history-confirmation API/UI and repeats the complete genuine1GB recovery
 and import. This is not reader relaxation or a smaller substitute. Full P15
 acceptance remains pending at the corrected source.
+
+A focused state regression reproduced a second import issue before the full
+large-file resume: after new-private group creation, begin returned a fresh
+audience token but retained the initial token. The pre-fix test failed because
+the old token was still accepted. Resume now persists its freshly displayed
+token; two tests with the real frozen authenticated archive prove that the old
+token is rejected, the new one works, and a later destination change still
+cannot publish or replace the retained job. The read-only P13 suite now passes
+19 tests, and the seven PWA tests/build/frozen179 checks pass. This small state
+regression supplements the unchanged genuine1GB browser/API scenario.

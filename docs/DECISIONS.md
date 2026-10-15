@@ -1126,3 +1126,10 @@ existing Confirm verified history action and prepare a fresh snapshot. EN/RU
 guidance explains that step. The reader, signatures, independent pins and frozen
 formats stay strict and unchanged; no server or export-footer claim substitutes
 for historical inclusion.
+
+P15 import resume binds its confirmation token to the freshly displayed preview.
+After a new private group is created, the stored destination has its resolved ID
+but the previous token described new-private/null. Refreshing only the token
+fixes resume; the stored destination and immutable requests remain unchanged,
+and confirm still rechecks the exact destination. A changed audience cannot use
+that resume path to rebind prepared ciphertext.
