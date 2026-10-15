@@ -1,4 +1,4 @@
-name: P14 reused multipart import diagnosis only
+name: P14 public full duplex Windows pipe probe
 on:
   push:
     branches: [ci/p14-root-trust-probe-20261015]
@@ -6,98 +6,23 @@ permissions:
   contents: read
   actions: read
 jobs:
-  reused-host-diagnosis:
+  bridge-startup-probe:
     runs-on: windows-2025
-    timeout-minutes: 35
+    timeout-minutes: 10
     env:
       PYTHONUTF8: '1'
-    defaults:
-      run:
-        shell: pwsh
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
           persist-credentials: false
-          fetch-depth: 0
       - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
         with:
           python-version: '3.14.8'
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
-        with:
-          node-version: '24.21.0'
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           github-token: ${{ github.token }}
-          run-id: '38736291441'
-          name: p14-ci-harness-diagnosis-not-owner-installer
-          path: .
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
-        with:
-          github-token: ${{ github.token }}
-          run-id: '38736291441'
+          run-id: '38719871883'
           name: p14-windows-development-installer
           path: .
-      - name: Verify all four binary hashes and clean runtime source
-        shell: python
-        run: |
-          import json,hashlib,subprocess
-          from pathlib import Path
-          manifest=json.loads(Path('artifacts/p14/ui-diagnostic-binaries.json').read_text())
-          assert manifest['source_commit']=='f904aedd754aa6261d88017f96730b5b49b774bf'
-          for v in manifest['binaries'].values():
-            p=Path(v['path']);assert p.stat().st_size==v['bytes'] and hashlib.sha256(p.read_bytes()).hexdigest()==v['sha256']
-          for directory in ['apps','packages','backend','experiments']:
-            subprocess.run(['git','diff','--exit-code',manifest['source_commit'],'HEAD','--',directory],check=True)
-      - name: Runtime JS dependencies only, no application rebuild
-        run: |
-          foreach ($package in @('packages/protocol','packages/content-browser','experiments/p01','packages/api-client','apps/devices-web','apps/notes-web','apps/desktop')) {
-            npm --prefix $package ci --no-audit --no-fund
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          }
-          "ANYNOTE_WEBVIEW_TEST_EXE=$((Resolve-Path .local/p14-tools/instrumented-host.exe).Path)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      - name: Actual owned Windows TLS, PHP and MariaDB
-        run: |
-          $env:ANYNOTE_TEST_PYTHON = (Get-Command python).Source
-          "ANYNOTE_TEST_PYTHON=$env:ANYNOTE_TEST_PYTHON" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          New-Item -ItemType Directory -Force .local/p14-tools | Out-Null
-          rustc scripts/p14-python3-shim.rs -o .local/p14-tools/python3.exe
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          rustc scripts/p14-windows-flush.rs -o .local/p14-tools/flush-volume.exe
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          (Get-FileHash .local/p14-tools/flush-volume.exe -Algorithm SHA256).Hash.ToLowerInvariant() | Set-Content -Encoding ascii .local/p14-tools/flush-volume.sha256
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          (Resolve-Path .local/p14-tools).Path | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          python scripts/p14-windows-services.py up
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python scripts/p14-windows-services.py diagnose
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          $sourceChanges = git status --porcelain
-          if ($sourceChanges) { $sourceChanges; throw 'Windows backend setup changed the source tree' }
-      - name: Verify exact owned Windows CI root before expensive host acceptance
-        timeout-minutes: 3
-        run: |
-          python scripts/p14-windows-services.py trust
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Complete installed host diagnosis with exact prior compiled binaries
-        run: node scripts/p14-webview.mjs
-      - name: Stop only owned Windows services
-        if: always()
-        timeout-minutes: 5
-        run: |
-          if (Test-Path .local/p14-windows-services/owner.json) {
-            $cleanupCode = 0
-            python scripts/p14-windows-services.py diagnose
-            if ($LASTEXITCODE -ne 0) { $cleanupCode = $LASTEXITCODE }
-            python scripts/p14-windows-services.py untrust
-            if ($LASTEXITCODE -ne 0) { $cleanupCode = $LASTEXITCODE }
-            python scripts/p14-windows-services.py stop
-            if ($LASTEXITCODE -ne 0) { $cleanupCode = $LASTEXITCODE }
-            exit $cleanupCode
-          }
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
-        with:
-          name: p14-multipart-import-observation
-          path: artifacts/p14/*.json
-          retention-days: 3
-          if-no-files-found: warn
+      - name: No secret public startup frames with exact packaged helper
+        run: python scripts/p14-public-bridge-probe.py
