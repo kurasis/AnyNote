@@ -142,6 +142,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $sourceChanges = git status --porcelain
           if ($sourceChanges) { $sourceChanges; throw 'Candidate build changed the source tree' }
+      - name: Bind compiled CI binaries for source-specific failure diagnosis
+        run: python scripts/p14-ui-binaries.py
       - uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830
         if: always() && steps.native-cache.outputs.cache-hit != 'true' && steps.desktop-build.outcome == 'success'
         with:
@@ -190,6 +192,11 @@ jobs:
         if: failure()
         with:
           name: p14-ci-harness-diagnosis-not-owner-installer
-          path: .local/p14-tools/instrumented-host.exe
+          path: |
+            .local/p14-tools/instrumented-host.exe
+            packages/windows-native/target/release/p14-integration.exe
+            .local/p14-candidate/*.exe
+            artifacts/p14/ui-diagnostic-binaries.json
+          include-hidden-files: true
           retention-days: 3
           if-no-files-found: ignore

@@ -140,10 +140,15 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                         .map_err(|_| anynote_crypto_core::Error("AUTH_BEGIN_FAILED"))?;
                     emit(&json!({"consent_url":pending.consent_url()}))
                         .map_err(|_| anynote_crypto_core::Error("PIPE_FAILED"))?;
-                    let credentials = host
-                        .adapter
-                        .complete(pending)
-                        .map_err(|_| anynote_crypto_core::Error("AUTH_COMPLETE_FAILED"))?;
+                    let credentials = host.adapter.complete(pending).map_err(|error| {
+                        anynote_crypto_core::Error(match error {
+                            anynote_auth_native::Error::Timeout => "AUTH_CALLBACK_TIMEOUT",
+                            anynote_auth_native::Error::Callback => "AUTH_CALLBACK_INVALID",
+                            anynote_auth_native::Error::Transport => "AUTH_TOKEN_TRANSPORT_FAILED",
+                            anynote_auth_native::Error::Denied => "AUTH_TOKEN_DENIED",
+                            _ => "AUTH_COMPLETE_FAILED",
+                        })
+                    })?;
                     host.vault.store_credentials(
                         &cap,
                         &host.profile.credential_id,
