@@ -9,7 +9,7 @@ const labels = {
     update: 'Check for app update', waiting: 'Update downloaded. Save your work and close every AnyNote window, then reopen. Pending encrypted work is retained.',
     current: 'App update check complete', failed: 'Could not check this operation. Existing encrypted work is retained.',
     offline: 'Offline; only verified local content is available', online: 'Connection available; account, device and group access are checked separately after unlock',
-    groups: 'Groups', threads: 'Threads', editor: 'Note', back: 'Back', export: 'Saving plaintext to Files or sharing it gives the operating system access to that copy. A PWA cannot withdraw it or guarantee completion in the background.',
+    groups: 'Groups', threads: 'Threads', editor: 'Note', back: 'Back', workspace: 'Workspace', export: 'Saving plaintext to Files or sharing it gives the operating system access to that copy. A PWA cannot withdraw it or guarantee completion in the background.',
   },
   ru: {
     help: 'Установка и хранилище', install: 'На iPhone откройте сайт в Safari, выберите «Поделиться» → «На экран Домой», затем запустите AnyNote с его значка. Храните комплект восстановления отдельно.',
@@ -19,7 +19,7 @@ const labels = {
     update: 'Проверить обновление', waiting: 'Обновление загружено. Сохраните работу, закройте все окна AnyNote и откройте приложение снова. Защищённые незавершённые операции сохраняются.',
     current: 'Проверка обновления завершена', failed: 'Не удалось выполнить проверку. Существующая зашифрованная работа сохранена.',
     offline: 'Нет сети; доступно только проверенное локальное содержимое', online: 'Сеть доступна; после разблокировки вход, устройство и доступ к группе проверяются отдельно',
-    groups: 'Группы', threads: 'Разделы', editor: 'Заметка', back: 'Назад', export: 'Сохранение открытого файла в «Файлы» или передача через системное меню даёт ОС доступ к этой копии. PWA не может отозвать её или гарантировать завершение в фоне.',
+    groups: 'Группы', threads: 'Разделы', editor: 'Заметка', back: 'Назад', workspace: 'Рабочая область', export: 'Сохранение открытого файла в «Файлы» или передача через системное меню даёт ОС доступ к этой копии. PWA не может отозвать её или гарантировать завершение в фоне.',
   },
 };
 
@@ -92,6 +92,7 @@ export function mountPwa({language, prepareUpdate}) {
     tabs.append(button); buttons.push(button);
   }
   back.onclick = () => select(Math.max(0, active - 1)); tabs.append(back);
+  const saveState=document.createElement('p');saveState.id='pwa-save-state';saveState.setAttribute('aria-hidden','true');tabs.append(saveState);
   document.querySelector('.panes').before(tabs); select(0);
   const connection = () => { network.textContent = text()[navigator.onLine ? 'online' : 'offline']; };
   addEventListener('online', connection); addEventListener('offline', connection);
@@ -100,7 +101,7 @@ export function mountPwa({language, prepareUpdate}) {
     mode.textContent = text()[matchMedia('(display-mode: standalone)').matches || navigator.standalone ? 'installed' : 'browser'];
     checkStorage.textContent = text().storage; persist.textContent = text().persist; update.textContent = text().update;
     buttons.forEach(button => { button.textContent = text()[button.dataset.label]; });
-    back.textContent = text().back;
+    back.textContent = text().back; tabs.setAttribute('aria-label',text().workspace);
     connection(); showUpdate();
   };
   translate();

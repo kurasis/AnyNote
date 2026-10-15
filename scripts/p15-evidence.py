@@ -23,8 +23,11 @@ assert browser['p12_files']['gigabyte_bytes'] == 1000000000
 pwa = browser['p15_pwa']
 assert pwa['status'] == 'PASS' and pwa['physical_acceptance'] is False
 assert pwa['plaintext_bytes'] == pwa['recovered_bytes'] == 1000000000
+assert pwa['imported_bytes'] == 1000000000
 assert len(pwa['source_sha256']) == 64
+assert pwa['source_sha256'] == pwa['recovered_sha256'] == pwa['imported_sha256']
 assert pwa['memory']['samples'] > 1
+assert pwa['process_memory']['samples'] > 1 and pwa['process_memory']['processes']
 assert any(agent['role'] == 'dedicated-worker' and agent['samples'] > 1
            for agent in pwa['v8_memory']['agents'])
 paths = sorted(p for p in git('ls-files', '-z').decode().split('\0')

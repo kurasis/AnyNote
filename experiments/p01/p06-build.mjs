@@ -38,6 +38,7 @@ const staticFiles=['style.css','vault.html','vault.js','vault-worker.js','vault-
 const staticDigest=createHash('sha256');
 for(const name of staticFiles)staticDigest.update(name).update(readFileSync(resolve(dir,name)));
 for(const name of ['sw.mjs','export-worker.mjs'])staticDigest.update(name).update(readFileSync(resolve(root,'apps/vault-web',name)));
+staticDigest.update(readFileSync(resolve(root,'infra/dev/p06-nginx.conf')));
 const revision=staticDigest.digest('hex');
 await build({entryPoints:[resolve(root,'apps/vault-web/sw.mjs')],outfile:resolve(dir,'sw.js'),bundle:true,format:'esm',platform:'browser',target:['safari18','chrome120'],define:{ANYNOTE_STATIC_REVISION:JSON.stringify(revision)},logLevel:'silent'});
 console.log('PASS: static authentication bundle, offline maintained validators, strict CSP');

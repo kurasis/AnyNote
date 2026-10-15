@@ -20,3 +20,8 @@
 .pane{overflow-wrap:anywhere}
 
 fieldset{min-inline-size:0}pre{white-space:pre-wrap;overflow-wrap:anywhere}button{max-inline-size:100%}
+
+summary{min-height:44px;padding-block:.5rem;cursor:pointer}
+#pwa-save-state{margin:.2rem 0;flex-basis:100%;font-weight:600;overflow-wrap:anywhere}
+#workspace:has(#editor[hidden]) #pwa-save-state{display:none}
+@media(max-width:850px){#pwa-panes{flex-wrap:wrap}}

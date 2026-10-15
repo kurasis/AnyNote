@@ -70,3 +70,6 @@ Object.assign(words.ru,{file_pause:'Приостановить передачу'
 
 Object.assign(words.en,{resume_import_job:'Resume this import',import_reselect:'Select the same encrypted archive and separate kit, inspect them, then confirm the current destination again.',pause_before_resume:'Pause the current job before choosing another recovery job.',import_job_pending:'Unfinished import',import_job_complete:'Completed import'});
 Object.assign(words.ru,{resume_import_job:'Продолжить этот импорт',import_reselect:'Выберите тот же зашифрованный архив и отдельный комплект, проверьте их и снова подтвердите текущее назначение.',pause_before_resume:'Сначала приостановите текущее задание восстановления.',import_job_pending:'Незавершённый импорт',import_job_complete:'Завершённый импорт'});
+
+Object.assign(words.en,{language:'Language',groups:'Groups',threads:'Threads',group_audience:'Group audience',member_role:'Member role',checklist_item:'Checklist item',destination_audience:'Destination audience',note_preview:'Verified note preview'});
+Object.assign(words.ru,{language:'Язык',groups:'Группы',threads:'Разделы',group_audience:'Кому доступна группа',member_role:'Роль участника',checklist_item:'Пункт списка',destination_audience:'Кому будет доступна копия',note_preview:'Проверенный предпросмотр заметки'});

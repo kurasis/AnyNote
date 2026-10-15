@@ -9,12 +9,27 @@ import {PortableReader} from '../../packages/protocol/content/portable.mjs';
 import {phrase} from '../../packages/protocol/notes/test-fixture.mjs';
 import {browserMemory} from './p12-browser-memory.mjs';
 import {browserHeap} from './p15-heap.mjs';
+import {processMemory} from './p15-process-memory.mjs';
 
 export async function pwaCase({page, action, check, scratch, readyWriter}) {
-  const memory = browserMemory(), heap = await browserHeap(page);
+  // The inherited P12 case deliberately finishes locked. Resume through the
+  // shipped unlock/proof/group flow before touching mobile content controls.
+  await page.bringToFront();
+  if (await page.locator('#workspace').isHidden()) {
+    await readyWriter(page);
+    await page.locator('#phrase').fill(phrase); await action(page, 'unlock');
+  }
+  await page.locator('#groups button').filter({hasText: 'PUBLIC browser shared group'}).click();
+  await page.waitForFunction(() => !document.getElementById('status').dataset.busy);
+  await page.locator('#threads button').filter({hasText: 'PUBLIC browser shared thread'}).click();
+  await page.waitForFunction(() => !document.getElementById('status').dataset.busy);
+  await page.locator('#entries button').filter({hasText: 'PUBLIC P12 attached entry'}).click();
+  await page.waitForFunction(() => !document.getElementById('status').dataset.busy);
   const workerPath = fileURLToPath(new URL('../../.local/p06/static/auth/sw.js', import.meta.url));
   const originalWorker = readFileSync(workerPath, 'utf8');
+  const memory = browserMemory(), processes = processMemory(); let heap;
   try {
+    heap = await browserHeap(page);
     const source = join(scratch, 'P12_PUBLIC_SELECTED_FILE.bin');
     let sourceBytes = 0;
     const expected = createHash('sha256');
@@ -27,6 +42,8 @@ export async function pwaCase({page, action, check, scratch, readyWriter}) {
     check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'P15_NO_HORIZONTAL_MOBILE_OVERFLOW');
     await page.setViewportSize({width: 390, height: 420});
     check(await page.locator('#note-body').evaluate(e => parseFloat(getComputedStyle(e).fontSize) >= 16), 'P15_KEYBOARD_VIEWPORT_READABLE_INPUT');
+    await page.locator('#note-body').scrollIntoViewIfNeeded();
+    check(await page.locator('#pwa-save-state').isVisible() && await page.locator('#pwa-panes').evaluate(e=>{const r=e.getBoundingClientRect();return r.top>=0&&r.bottom<innerHeight;}),'P15_KEYBOARD_VIEWPORT_VISIBLE_SAVE_STATE');
     await page.setViewportSize({width: 390, height: 844});
     await page.locator('#language').selectOption('ru');
     check(await page.locator('#pwa-help summary').textContent() === 'Установка и хранилище', 'P15_RUSSIAN_INSTALL_GUIDANCE');
@@ -40,9 +57,10 @@ export async function pwaCase({page, action, check, scratch, readyWriter}) {
       const names = (await caches.keys()).filter(n => n.startsWith('anynote-p07-static-'));
       const paths = [];
       for (const name of names) for (const request of await (await caches.open(name)).keys()) paths.push(new URL(request.url).pathname);
-      return {scope: registration.scope, paths};
+      return {scope: registration.scope, paths, manifestType: (await caches.match('/auth/manifest.webmanifest'))?.headers.get('content-type')};
     });
     check(cached.scope.endsWith('/auth/') && cached.paths.includes('/auth/icon-192.png') && cached.paths.includes('/auth/manifest.webmanifest'), 'P15_INSTALLED_STATIC_ASSETS_CACHED');
+    check(cached.manifestType?.startsWith('application/manifest+json'), 'P15_REAL_MANIFEST_MEDIA_TYPE');
     check(cached.paths.every(p => /^\/auth\/[a-z0-9.-]+$/.test(p)), 'P15_NO_API_OR_EXPORT_CACHE_ENTRIES');
 
     // The group still contains the actual P12 file attached to its signed entry.
@@ -72,7 +90,15 @@ export async function pwaCase({page, action, check, scratch, readyWriter}) {
         finish() {}, abort() { throw Error('P15_OFFLINE_RECOVERY_ABORTED'); },
       });
     } finally { reader.close(); }
-    check(recoveredBytes === 1000000000 && recovered.digest('hex') === sourceHash, 'P15_INDEPENDENT_FULL_PLAINTEXT_HASH');
+    const recoveredHash = recovered.digest('hex');
+    check(recoveredBytes === 1000000000 && recoveredHash === sourceHash, 'P15_INDEPENDENT_FULL_PLAINTEXT_HASH');
+
+    // The independent offline reader is outside the app. If its real elapsed
+    // time triggered the unchanged idle fence, resume through actual unlock.
+    if (await page.locator('#workspace').isHidden()) {
+      await page.locator('#phrase').fill(phrase); await action(page, 'unlock');
+      check(await page.locator('#workspace').isVisible(), 'P15_OFFLINE_READER_IDLE_REQUIRES_FRESH_UNLOCK');
+    }
 
     await page.locator('#import-archive').setInputFiles(archivePath);
     await page.locator('#import-kit').setInputFiles(kitPath);
@@ -134,7 +160,8 @@ export async function pwaCase({page, action, check, scratch, readyWriter}) {
     await (await importedDownload).saveAs(importedPath);
     const importedHash = createHash('sha256'); let importedBytes = 0;
     for await (const bytes of createReadStream(importedPath)) { importedBytes += bytes.length; importedHash.update(bytes); }
-    check(importedBytes === sourceBytes && importedHash.digest('hex') === sourceHash, 'P15_IMPORTED_DESTINATION_FULL_DOWNLOAD_HASH');
+    const importedDigest = importedHash.digest('hex');
+    check(importedBytes === sourceBytes && importedDigest === sourceHash, 'P15_IMPORTED_DESTINATION_FULL_DOWNLOAD_HASH');
     await page.waitForFunction(() => !document.getElementById('status').dataset.busy);
 
     // Deliver a new build revision through the real static server. Only its
@@ -156,6 +183,7 @@ export async function pwaCase({page, action, check, scratch, readyWriter}) {
     const nextWorker = await incoming;
     await page.waitForFunction(() => document.getElementById('workspace').hidden);
     check(await page.locator('#note-body').inputValue() === '', 'P15_UPDATE_MASKS_PLAINTEXT');
+    check(await page.locator('#copy-destination option').count() === 0 && await page.locator('#draft-recovery-target option').count() === 0, 'P15_LOCK_CLEARS_DECRYPTED_DESTINATION_TITLES');
     await page.waitForFunction(async () => Boolean((await navigator.serviceWorker.getRegistration('/auth/')).waiting));
     check(await page.evaluate(async () => {
       const r = await navigator.serviceWorker.getRegistration('/auth/');
@@ -172,6 +200,7 @@ export async function pwaCase({page, action, check, scratch, readyWriter}) {
     check(activated, 'P15_ACTUAL_ACTIVATION_AFTER_LAST_WINDOW_CLOSES');
     await page.goto('https://app.anynote.test:18443/auth/notes.html');
     await page.waitForFunction(() => document.getElementById('status').dataset.state === 'ready');
+    await readyWriter(page);
     await page.locator('#phrase').fill(phrase); await action(page, 'unlock');
     check(await page.locator('#workspace').isVisible(), 'P15_POST_UPDATE_FRESH_UNLOCK_AND_AUTHORIZATION');
     await page.locator('#drafts li[data-id="' + draft + '"] button').click();
@@ -180,9 +209,10 @@ export async function pwaCase({page, action, check, scratch, readyWriter}) {
     await page.setViewportSize({width: 1280, height: 900});
     return {
       status: 'PASS', plaintext_bytes: sourceBytes, recovered_bytes: recoveredBytes,
-      source_sha256: sourceHash, mobile_viewport: '390x844; keyboard 390x420',
-      memory: memory.finish(), v8_memory: await heap.finish(), physical_acceptance: false,
+      source_sha256: sourceHash, recovered_sha256: recoveredHash, imported_bytes: importedBytes,
+      imported_sha256: importedDigest, mobile_viewport: '390x844; keyboard 390x420',
+      memory: memory.finish(), process_memory: processes.finish(), v8_memory: await heap.finish(), physical_acceptance: false,
       scope: 'Actual production API/Worker/IndexedDB/OPFS and streaming service-worker download in sandboxed hosted desktop Chromium; not iPhone Files/storage/PRF evidence',
     };
-  } finally { writeFileSync(workerPath, originalWorker); memory.abort(); await heap.abort(); }
+  } finally { memory.abort(); processes.abort(); await heap?.abort(); writeFileSync(workerPath, originalWorker); }
 }

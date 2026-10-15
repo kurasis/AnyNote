@@ -531,3 +531,11 @@ Files/PRF/storage/memory and the historical Save-to-Files reload remain unverifi
 Update waits for all windows to close; the existing autosave delay cannot promise
 survival of a last edit that never received encrypted local-save acknowledgement.
 Optional neutral push handling does not establish subscription or actual delivery.
+
+Development a3706f4 P12 sampling observed 4,606,652,416-byte aggregate Chromium
+RSS baseline and 5,783,552,000-byte peak (1,176,899,584-byte increase). This sum
+includes multiple peer browsers/shared mappings and does not establish mobile
+working memory or a physical 64MiB target pass. Per-process anonymous/file/shared/
+PSS and per-agent V8 counters are added for attribution; missing counters remain
+unknown. The overall a3706f4 PWA cohort failed after its completed P12 subcase,
+so these observations are development evidence, not final P15 acceptance.

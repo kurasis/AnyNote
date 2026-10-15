@@ -1885,3 +1885,17 @@ Its clean source receipt binds tree49e97603ea2bfd3d83a7976dddbf19dd18f9ad73;
 all 869 input hashes were compared with actual Git blobs, all seven declared raw
 report hashes/statuses and the installer digest verified. This read-only audit
 neither reran physical tests nor closed the retained signing/memory limits.
+
+At a3706f4 the P12 browser subcase completed all 14 assertions, actual protected
+1GB upload/reselection, service-worker full-hash download and OPFS/offline export.
+The following P15 case timed out on a hidden mobile tab because P12 intentionally
+ends locked. Its precondition now uses the real unlock/proof/group flow and actual
+writer readiness before proceeding; lock and timeout boundaries are unchanged.
+The full cohort remains failed until the corrected P15 scenario executes.
+
+A direct trusted-TLS request found manifest delivered as text/plain. Nginx now
+sets application/manifest+json explicitly, delivery policy participates in the
+static revision, and both browser gates assert the actual response media type.
+P15 revision also clears decrypted destination titles and stale preference
+references at lock, keeps the save state visible at a keyboard-sized viewport,
+and records source/recovered/imported full digests and per-process memory counters.

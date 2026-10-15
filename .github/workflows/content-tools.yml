@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      p15_only:
+        description: Run the focused P15 PWA acceptance without unrelated content/native jobs
+        type: boolean
+        default: false
 permissions:
   contents: read
 concurrency:
@@ -11,6 +16,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   content-linux-http-browser:
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.p15_only }}
     runs-on: ubuntu-24.04
     timeout-minutes: 55
     env:
@@ -76,6 +82,7 @@ jobs:
           python3 scripts/p06-stack.py stop
           python3 scripts/dev-stack.py stop
   content-windows-native:
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.p15_only }}
     runs-on: windows-2025
     timeout-minutes: 55
     defaults:
@@ -130,3 +137,6 @@ jobs:
             artifacts/p13/gigabyte-development.json
           retention-days: 14
           if-no-files-found: error
+  pwa-targeted:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.p15_only }}
+    uses: ./.github/workflows/iphone-pwa.yml

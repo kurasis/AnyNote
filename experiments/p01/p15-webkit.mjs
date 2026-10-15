@@ -37,6 +37,7 @@ try {
     return paths;
   });
   check(entries.length === 14 && entries.includes('/auth/manifest.webmanifest'), 'EXACT_STATIC_INSTALL_IN_WEBKIT');
+  check(await page.evaluate(async () => (await caches.match('/auth/manifest.webmanifest'))?.headers.get('content-type')?.startsWith('application/manifest+json')), 'REAL_MANIFEST_MEDIA_TYPE');
   await context.setOffline(true);
   await page.reload();
   await page.locator('#empty').waitFor({state: 'visible'});

@@ -2,6 +2,7 @@
 // not establish WebKit/iPhone memory use or a hard upper bound between samples.
 export async function browserHeap(page) {
   const cdp = await page.context().newCDPSession(page);
+  const started = performance.now();
   const workers = new Map(), pending = new Map(), records = new Map();
   let sequence = 0, rendererEpoch = 0, busy = false, stopped = false;
   cdp.on('Runtime.executionContextsCleared', () => { rendererEpoch++; });
@@ -24,10 +25,13 @@ export async function browserHeap(page) {
       backing_storage: value.backingStorageSize ?? null, embedder_heap: value.embedderHeapUsedSize ?? null};
     let current = records.get(key);
     if (!current) {
-      current = {role: key.startsWith('renderer:') ? 'renderer' : 'dedicated-worker', baseline_bytes: bytes, observed_peak_bytes: {...bytes}, samples: 0};
+      current = {role: key.startsWith('renderer:') ? 'renderer' : 'dedicated-worker', baseline_bytes: bytes, observed_peak_bytes: {...bytes}, samples: 0,
+        first_observed_ms: Math.round(performance.now() - started), last_observed_ms: null, largest_observed_gap_ms: 0};
       records.set(key, current);
     }
-    current.samples++;
+    const observed = Math.round(performance.now() - started);
+    if (current.last_observed_ms !== null) current.largest_observed_gap_ms = Math.max(current.largest_observed_gap_ms, observed - current.last_observed_ms);
+    current.last_observed_ms = observed; current.samples++;
     for (const name of Object.keys(bytes)) if (bytes[name] !== null) current.observed_peak_bytes[name] = Math.max(current.observed_peak_bytes[name] ?? 0, bytes[name]);
   };
   const workerSample = sessionId => new Promise((resolve, reject) => {
@@ -60,7 +64,7 @@ export async function browserHeap(page) {
       }));
       if (!agents.some(a => a.role === 'dedicated-worker' && a.samples > 1)) throw Error('WORKER_HEAP_NOT_MEASURED');
       return {requested_sample_interval_ms: 1000, agents,
-        scope: 'V8 Runtime.getHeapUsage for this hosted Chromium renderer and related dedicated Workers; samples can be delayed, agents restart after lock, shared/external/native memory and between-sample peaks are not bounded; not iPhone/WebKit memory evidence'};
+        scope: 'V8 Runtime.getHeapUsage for this hosted Chromium renderer and related dedicated Workers; receipt times record observed cadence, agents restart after lock/navigation, shared/external/WASM/native memory and between-sample peaks may lie outside these counters; not iPhone/WebKit memory evidence'};
     },
     async abort() {
       clearInterval(timer); stopped = true;

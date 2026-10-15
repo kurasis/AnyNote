@@ -92,3 +92,9 @@ PRF, storage, lifecycle or iPhone memory evidence. The prior physical Files-save
 reload observation is not closed by hosted downloads. G1/U11/U12 and qualified
 G2/G3 remain OPEN/NOT_RUN, as do production operations/signing and arbitrary
 100GB capacity. The existing optional PRF wrapper/strong phrase fallback remain.
+
+For focused development acceptance without repeating unrelated Windows jobs, the
+existing content workflow accepts `p15_only=true` on an explicitly selected ref
+and calls the same PWA workflow. Ordinary PR/push runs still execute every
+inherited content/native gate plus both PWA gates; focused dispatch is not the
+full required merge cohort.
