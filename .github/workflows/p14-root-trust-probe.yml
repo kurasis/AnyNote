@@ -1,4 +1,4 @@
-name: P14 public packaged bridge startup probe
+name: P14 canonical runtime path red green regression
 on:
   push:
     branches: [ci/p14-root-trust-probe-20261015]
@@ -8,7 +8,7 @@ permissions:
 jobs:
   bridge-startup-probe:
     runs-on: windows-2025
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
@@ -22,5 +22,18 @@ jobs:
           run-id: '38719871883'
           name: p14-windows-development-installer
           path: .
-      - name: No secret public startup frames with exact packaged helper
-        run: python scripts/p14-public-bridge-probe.py
+      - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: |
+            ~/.cargo/registry
+            packages/windows-native/target
+          key: windows-p14-bridge-path-diagnostic
+          restore-keys: windows-p14-rust199-
+      - name: Real bundled helper and canonical path regression before and after fix
+        shell: pwsh
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal
+          rustup override set 1.99.0
+          python scripts/p14-public-bridge-probe.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+

@@ -24,7 +24,10 @@ fn trusted_native_pipe_reads_frozen_archive_offline_and_recovers_authenticated_b
     let node = std::env::var_os("ANYNOTE_NATIVE_NODE")
         .map(PathBuf::from)
         .unwrap_or_else(|| root.join("apps/desktop/src-tauri/resources/node.exe"));
-    let script = root.join("apps/desktop/src-tauri/resources/custody.mjs");
+    // Installed Tauri resource paths are canonicalized. On Windows this uses
+    // the verbatim prefix that previously prevented the helper from loading.
+    let script =
+        std::fs::canonicalize(root.join("apps/desktop/src-tauri/resources/custody.mjs")).unwrap();
     let node_sha = sha(&node);
     let script_sha = sha(&script);
     let assets = Assets {
