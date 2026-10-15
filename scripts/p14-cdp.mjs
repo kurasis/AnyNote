@@ -14,4 +14,4 @@ export class CDP {
  close(){this.socket.close();}
 }
 export async function targets(){const response=await fetch('http://127.0.0.1:9223/json/list');if(!response.ok)throw Error('WEBVIEW_CDP_UNAVAILABLE');return response.json();}
-export async function mainWindow(){const target=await until(async()=>(await targets()).find(t=>t.type==='page'&&t.url.startsWith('http://tauri.localhost/')&&!t.url.includes('/auth/preview.html')),'Real main WebView2 target');const cdp=await CDP.connect(target.webSocketDebuggerUrl);await cdp.command('Page.enable');return cdp;}
+export async function mainWindow(process){const target=await until(async()=>{if(process&&process.exitCode!==null)throw Error('INSTRUMENTED_PROCESS_EXITED:'+process.exitCode);return (await targets()).find(t=>t.type==='page'&&t.url.startsWith('http://tauri.localhost/')&&!t.url.includes('/auth/preview.html'));},'Real main WebView2 target');const cdp=await CDP.connect(target.webSocketDebuggerUrl);await cdp.command('Page.enable');return cdp;}

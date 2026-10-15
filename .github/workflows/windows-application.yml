@@ -173,3 +173,12 @@ jobs:
             artifacts/p14/*.json
           retention-days: 14
           if-no-files-found: warn
+
+      - name: Preserve only the compiled CI harness for failed runtime diagnosis
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: p14-ci-harness-diagnosis-not-owner-installer
+          path: .local/p14-tools/instrumented-host.exe
+          retention-days: 3
+          if-no-files-found: ignore

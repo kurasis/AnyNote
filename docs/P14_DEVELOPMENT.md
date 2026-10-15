@@ -258,3 +258,17 @@ before compilation. HWND waits preserve helper errors and process-exit status;
 legacy PowerShell is explicitly noninteractive. The complete Tauri/1GB/upgrade
 acceptance remains pending. No assertion, sandbox, authority or TLS check was
 removed to accept a failed runtime.
+
+
+At 000d815 the real owner installer starts its HWND and rejects debugging
+injection, then the separately instrumented binary cannot expose CDP. The pinned
+Tauri builder documents that different browser arguments require different data
+directories; both binaries were using the same WebView2 data scope. The explicit
+integration feature now uses a per-process temporary browser directory shared by
+its main and preview windows. Native encrypted profile paths remain normal and
+unchanged. The harness checks its real HWND and retains process-exit diagnostics
+before connecting CDP. This is a pending runtime correction, not acceptance.
+
+After GitHub reconnection the isolated helper diagnostic raw report, ZIP digest
+and exact helper Git bytes were verified successfully; see retained development
+receipts at closure. The diagnostic remains separate from Tauri acceptance.
