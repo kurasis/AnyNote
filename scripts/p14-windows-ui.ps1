@@ -38,7 +38,7 @@ public static class AnyNoteTestWindow {
  public static IntPtr[] OwnedChildren(IntPtr root,uint pid){var a=new List<IntPtr>();EnumChildWindows(root,(h,l)=>{uint p;GetWindowThreadProcessId(h,out p);if(p==pid)a.Add(h);return true;},IntPtr.Zero);return a.ToArray();}
  public static bool FileNameEdit(IntPtr h,IntPtr root){
   if(ClassOf(h)!="Edit")return false;int id=GetDlgCtrlID(h);if(id==1148||id==1152)return true;if(id!=1001)return false;
-  var p=GetParent(h);for(int n=0;n<8&&p!=IntPtr.Zero&&p!=root;n++,p=GetParent(p)){if(GetDlgCtrlID(p)==1148)return true;}return false;
+  var p=GetParent(h);for(int n=0;n<8&&p!=IntPtr.Zero&&p!=root;n++,p=GetParent(p)){if(GetDlgCtrlID(p)==1148||ClassOf(p)=="AppControlHost")return true;}return false;
  }
  public static bool SetFileName(IntPtr h,string text){
   if(text.Length==0||text.Length>32766)return false;UIntPtr result;
