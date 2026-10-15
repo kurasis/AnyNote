@@ -523,3 +523,26 @@ frame refusals. Its public peer receives no vault/archive keys or path capabilit
 There are now fourteen native tests. Existing full gigabyte bytes/hash assertions,
 resource limits and the completion deadline are unchanged; full Windows acceptance
 remains pending.
+
+
+## Actual gigabyte/idle completion and updater restart readiness
+
+Fresh run38749347031 at 72daa1e completed the unchanged genuine gigabyte
+upload/download/export/offline-validation/fresh-import/download hashes, real
+five-minute idle/preview closure and installer rerun/fresh-process draft read.
+Its first metadata-tamper assertion was blocked by WRITER_BUSY after a deliberately
+killed process. Focused run38755429870 identified that code. The test now waits
+for an ordinary typed native diagnostic to acquire its lease after restart,
+retrying only WRITER_BUSY for at most fifteen seconds. The existing ten-second
+lease, generation/fence rules and exact tamper assertions are unchanged.
+
+With readiness restored, focused run38756424699 passed bad claims, wrong version
+and altered-payload refusals, but the signed candidate did not replace the
+registered installed application. Public exact-installer control run38758156134
+showed passive mode waiting on an owned Installer Language dialog, while quiet
+mode completed with exit0, a changed installed executable and version0.14.1.
+The maintained updater now uses quiet Windows install mode after the existing
+explicit native confirmation. Signing/version/hash/scope checks remain mandatory.
+The normal current-user installer retains its EN/RU language selector. Complete
+fresh-source app updater/retained outbox/profile scan/native gigabyte/all25 closure
+remains pending; these development observations do not claim that acceptance.
