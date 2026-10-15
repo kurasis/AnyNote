@@ -505,3 +505,21 @@ then verifies concurrent frame order, lengths and complete SHA. It runs before
 native compilation on Windows and during cloud setup. The actual frozen archive
 also recovers successfully with the new bundled helper on Linux. Fresh full
 Windows multipart/gigabyte/import/idle/update acceptance remains required.
+
+## Prefetch requests while receiving a recovered part
+
+Fresh run38744944190 at 4abd1c3 completed real gigabyte upload/download/hash,
+export/kit and offline inspection. Fresh import then refused INVALID_BRIDGE_FRAME
+promptly instead of hanging. The recovered-part handler assumed the next helper
+frame must be plaintext. A validated reader may issue its bounded archive-prefetch
+request while its visitor is emitting part data. The handler now services only
+that same checked selected-source request while awaiting the part, rechecks job
+cancellation/generation each iteration, and still requires the exact plaintext
+frame type and declared length. All other frame types and invalid offsets fail.
+
+A real inherited-pipe regression reproduced INVALID_BRIDGE_FRAME before this
+change and passes afterwards, including invalid-offset, wrong-length and foreign
+frame refusals. Its public peer receives no vault/archive keys or path capability.
+There are now fourteen native tests. Existing full gigabyte bytes/hash assertions,
+resource limits and the completion deadline are unchanged; full Windows acceptance
+remains pending.
