@@ -39,7 +39,9 @@ jobs:
             packages/windows-native/target
             apps/desktop/src-tauri/target
           key: windows-p14-rust199-${{ hashFiles('packages/windows-native/Cargo.lock', 'apps/desktop/src-tauri/Cargo.lock') }}-release4
-          restore-keys: windows-p14-rust199-${{ hashFiles('packages/windows-native/Cargo.lock', 'apps/desktop/src-tauri/Cargo.lock') }}
+          restore-keys: |
+            windows-p14-rust199-${{ hashFiles('packages/windows-native/Cargo.lock', 'apps/desktop/src-tauri/Cargo.lock') }}
+            windows-p14-rust199-
       - name: Parse native Windows automation before compilation
         run: |
           $parseTokens = $null

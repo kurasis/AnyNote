@@ -458,3 +458,20 @@ not gigabyte/export acceptance. Terminal native job failures are now asserted
 outside the generic retrying condition, so a finished failure is reported
 immediately instead of being swallowed until the 20-minute polling timeout.
 The complete original gigabyte workflow and its assertions are unchanged.
+
+## Canonical installed resource path and restricted helper
+
+Public-only startup diagnosis run38735436373 isolated a Windows runtime path
+failure. The pinned packaged helper answers normally with CREATE_NO_WINDOW and
+read-only asset handles, but a verbatim `\\?\D:\...` script path causes Node
+24.21's exact-file permission matcher to terminate with ERR_ACCESS_DENIED before
+any protocol frame. Tauri 2.12's resource directory comes from its canonicalized
+starting executable, so installed resources use this spelling. The bridge now
+uses pinned dunce 1.0.5 to simplify only paths with identical DOS semantics before
+passing the script argument and exact same read allowlist to Node. Runtime/script
+hash verification, held read-only handles, cleared environment, no-addons,
+permission mode and the filesystem/network boundary remain unchanged. No vault
+keys entered the public startup probe; its captured stderr is from synthetic
+public input only. The existing actual frozen-archive bridge recovery test now
+canonicalizes the resource path, covering installed Windows path semantics.
+Fresh exact-source/full installed-host acceptance remains required.

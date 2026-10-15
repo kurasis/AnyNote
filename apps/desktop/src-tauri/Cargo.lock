@@ -291,6 +291,7 @@ dependencies = [
  "anynote-crypto-core",
  "anynote-local-vault",
  "base64 0.22.1",
+ "dunce",
  "libc",
  "libsodium-rs",
  "minisign-verify 0.3.0",
