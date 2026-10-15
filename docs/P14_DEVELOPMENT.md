@@ -450,3 +450,11 @@ heartbeat pauses only during dialog interaction; native idle policy stays intact
 The same exact requested output and full hash assertions remain required. The test actor
 also drains any in-flight neutral input before filename typing or process stop,
 so its own heartbeat cannot redirect focus during text entry.
+
+The real Unicode-input diagnosis run38731280193 completed the additional native
+4096-byte upload/download with the requested destination and exact SHA, then
+failed at small export with BRIDGE_CLOSED. This remains a development failure,
+not gigabyte/export acceptance. Terminal native job failures are now asserted
+outside the generic retrying condition, so a finished failure is reported
+immediately instead of being swallowed until the 20-minute polling timeout.
+The complete original gigabyte workflow and its assertions are unchanged.
