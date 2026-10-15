@@ -210,3 +210,26 @@ CI caches the public Cargo registry plus native and complete desktop build outpu
 after successful compilation, including when later acceptance fails. Candidate
 preparation no longer overwrites Cargo's executable with instrumented bytes; the
 separate explicit harness path is passed only to the owned GUI runner.
+
+The hosted CurrentUser certificate-store operation was independently bounded and
+reproduced a45-second timeout; cleanup succeeded. The main run's cancellation
+trace confirms it was still inside trust's installed=checked call, before the
+WebView2 runner started. An isolated hosted LocalMachine operation verifies the
+same exact DER bytes and removes the certificate in3.9 seconds. Its hosted-only,
+bounded variant also passes in2.1 seconds. Both GitHub ZIP digests and actual helper
+source bytes were independently verified. This is CI infrastructure evidence,
+not an owner application privilege, physical-platform result or TLS exception.
+
+The test helper now requires a GitHub-hosted Windows runner, uses that confirmed
+machine root store, records cleanup intent, verifies exact bytes and bounds OS
+calls. A distinct early workflow step checks trust before the installer, and
+cleanup preserves every failure while still attempting stop. Complete compiler
+caches are saved before GUI acceptance. The main cancelled run saved the warmed
+registry/desktop cache successfully; all24 inherited jobs passed at bdda809.
+
+The GUI runner emits only fixed phase labels and bounds stalled CDP calls. It
+checks the real signed HTTPS updater metadata before expensive gigabyte workflows,
+then retains the full tamper/install/restart/outbox checks after those workflows.
+Failed ephemeral signer commands discard process output and throw a generic
+error instead of exposing Node's retained stdout/stderr. The full Windows GUI,
+gigabyte and actual upgrade acceptance remain pending; P14 is still active.
