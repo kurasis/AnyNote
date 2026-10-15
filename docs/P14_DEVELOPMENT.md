@@ -242,3 +242,19 @@ and exact helper bytes were independently verified. Service commands now close
 unused stdin and add -NonInteractive to PowerShell; explicit PHP/SQL control
 request bodies still use their intended input pipe. TLS and exact root checks
 remain enabled. Complete Windows GUI acceptance is still pending.
+
+The first real GUI attempt at ba68828 reaches owner installation but times out
+on its HWND check. Inspection finds an unclosed foreach block in the PowerShell
+memory helper; the entire helper fails parsing, including foreground operations.
+An isolated Windows diagnostic exercises original-parser rejection, corrected
+parser/compilation, real process memory, and an owned WinForms HWND with neutral
+SendInput. Its test step completed successfully, but retrieval of the final raw
+report and verification of its source bytes and ZIP digest remain pending:
+GitHub API and ordinary Git authentication stopped working. This diagnostic
+cannot establish Tauri acceptance.
+
+The missing brace is fixed and formatted. The full workflow now parses the helper
+before compilation. HWND waits preserve helper errors and process-exit status;
+legacy PowerShell is explicitly noninteractive. The complete Tauri/1GB/upgrade
+acceptance remains pending. No assertion, sandbox, authority or TLS check was
+removed to accept a failed runtime.

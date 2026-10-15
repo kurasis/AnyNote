@@ -20,7 +20,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P11 | VERIFIED | Ten portable suites, 112 actual sync HTTP/SQL checks, 418 membership/lease checks, 45 sandboxed PWA checks, seven native notes and nine new interop checks/platform; all twenty final code jobs PASS; Worker masking and background idle guards verified |
 | P12 | VERIFIED | Twelve portable file tests, 368 actual file HTTPS/SQL checks, 452 shared-authority checks, 60 sandboxed PWA checks, native 1 GB/cache/atomic export on Linux/MSVC; all twenty-two software gates PASS; physical G1/U11/U12 and qualified G2/G3 remain open |
 | P13 | VERIFIED | Protected content UX, safe previews/thumbnails, reference-safe retention, independent age recovery and fresh standard import; 401 HTTP/SQL, 427 authority, 59 sandboxed UI checks, actual Linux/Windows 1 GB archive and all 24 software gates PASS; physical/review gates remain open |
-| P14 | NOT STARTED | P07–P13 and actual Windows evidence |
+| P14 | IN PROGRESS | Native Windows host, packaged NSIS and protected integrations implemented; full installed WebView2/1 GB/update acceptance is pending; physical/review gates remain open |
 | P15 | NOT STARTED | P01/P07–P13 and actual iPhone evidence |
 | P16 | NOT STARTED | P04/P08/P11–P13 and appropriately sized synthetic host |
 | P17 | NOT STARTED | P02/P08–P16; independent review |
