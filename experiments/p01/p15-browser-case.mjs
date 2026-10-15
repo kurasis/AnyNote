@@ -201,8 +201,7 @@ export async function pwaCase({page, action, check, scratch, readyWriter, commit
       await page.waitForFunction(()=>!document.getElementById('status').dataset.busy&&!!document.getElementById('status').dataset.error,null,{timeout:300000});
       check(/^[A-Za-z0-9_-]{22}$/.test(updateAttempt)&&await page.locator('#save-state').getAttribute('data-state')==='SENT_UNKNOWN','P15_UPDATE_STARTS_WITH_REAL_UNKNOWN_IMMUTABLE_ATTEMPT');
     }finally{await page.unroute(noteRoute);}
-    const outboxBefore=await encryptedOutboxHashes();
-    check(outboxBefore.length>0,'P15_UNKNOWN_ATTEMPT_HAS_PROTECTED_OUTBOX_RECORD');
+    let outboxBefore;
     await page.locator('#note-body').fill('PUBLIC P15 latest update draft');
     let updateReceipt;
     const updateReceipts=[];
@@ -220,6 +219,8 @@ export async function pwaCase({page, action, check, scratch, readyWriter, commit
     await page.locator('#pwa-update').click();
     const nextWorker = await incoming;
     await page.waitForFunction(() => document.getElementById('workspace').hidden);
+    outboxBefore=await encryptedOutboxHashes();
+    check(outboxBefore.length>0,'P15_UNKNOWN_ATTEMPT_HAS_PROTECTED_OUTBOX_RECORD');
     check(await page.locator('#note-body').inputValue() === '', 'P15_UPDATE_MASKS_PLAINTEXT');
     check(await page.locator('#copy-destination option').count() === 0 && await page.locator('#draft-recovery-target option').count() === 0, 'P15_LOCK_CLEARS_DECRYPTED_DESTINATION_TITLES');
     await page.waitForFunction(async () => Boolean((await navigator.serviceWorker.getRegistration('/auth/')).waiting));
