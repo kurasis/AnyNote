@@ -475,3 +475,33 @@ keys entered the public startup probe; its captured stderr is from synthetic
 public input only. The existing actual frozen-archive bridge recovery test now
 canonicalizes the resource path, covering installed Windows path semantics.
 Fresh exact-source/full installed-host acceptance remains required.
+
+
+Fresh source f904aed passed all 24 inherited gates, 13 Windows native tests,
+pairing/sharing and the complete additional small installed recovery preflight.
+Run38736291441 then completed actual keyboard/clipboard/previews and real
+1,000,000,000-byte upload/download/hash/export/separate-kit/offline inspection,
+but the confirmed large fresh-import job did not yield a completed result before
+the unchanged 20-minute deadline; its last state/counters were not recorded. Full host/native-HTTP/idle/update acceptance is
+still pending. The polling actor now records only fixed state/error codes and
+decimal byte/time counters, excluding IDs, paths, names, content and keys, so
+a future refusal or stall identifies its last public progress.
+
+## Windows full-duplex pipe backpressure
+
+Public-only run38744494720 reproduced a Windows transport deadlock mechanism
+with the exact pinned packaged Node runtime: an 8 MiB process.stdout write blocks
+the event loop from consuming the parent's pending input while the parent has not
+yet read output. Maintained asynchronous fs.write on inherited descriptor 1
+consumes input under output backpressure and produces the exact same 8 MiB SHA.
+Both variants retain no-addons, permission mode, exact script read access and a
+cleared environment; neither receives vault/archive/device keys.
+
+The trusted helper now serializes bounded asynchronous descriptor writes, handles
+short writes, caps pending frames and wipes completed owned frame buffers. The
+frame format, read-only script allowlist and runtime/script pins are unchanged.
+A real child-process regression holds stdout back while sending 8 MiB stdin,
+then verifies concurrent frame order, lengths and complete SHA. It runs before
+native compilation on Windows and during cloud setup. The actual frozen archive
+also recovers successfully with the new bundled helper on Linux. Fresh full
+Windows multipart/gigabyte/import/idle/update acceptance remains required.

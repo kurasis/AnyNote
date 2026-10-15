@@ -68,7 +68,7 @@ jobs:
           python apps/desktop/prepare-runtime.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Real V8 Runtime exception contract before native compilation
-        run: node --test --test-concurrency=1 scripts/p14-cdp.test.mjs
+        run: node --test --test-concurrency=1 scripts/p14-cdp.test.mjs scripts/p14-bridge-io.test.mjs
       - name: Unchanged baseline and closed native capability audit
         run: python scripts/check-p14.py
       - name: Early real WebView2 and typed IPC before backend and installer work
