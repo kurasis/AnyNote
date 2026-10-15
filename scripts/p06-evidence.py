@@ -12,10 +12,12 @@ inputs=[{'path':p,'sha256':hashlib.sha256((ROOT/p).read_bytes()).hexdigest()} fo
 role=sys.argv[1]
 assert role in ['linux','windows']
 assert (role=='windows')==(sys.platform=='win32')
-tests=subprocess.run(['cargo','test','--manifest-path',str(ROOT/'packages/auth-native/Cargo.toml'),'--locked','-j','4'],cwd=ROOT,text=True,capture_output=True,check=True)
-assert 'test result: ok. 4 passed; 0 failed; 0 ignored' in tests.stdout, 'Native tests did not execute'
-print('PASS: four executed native adapter tests')
-result={'purpose':'P06 exact-source and executed adapter verification receipt','role':role,'status':'PASS','source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'source_tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=ROOT,text=True).strip(),'source_tree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),'timestamp':datetime.now(timezone.utc).isoformat(),'python_version':sys.version.split()[0],'platform':sys.platform,'native_adapter_tests':4,'inputs':inputs,'physical_acceptance':False,'independent_review':'NOT_RUN'}
+tests=subprocess.run(['cargo','test','--manifest-path',str(ROOT/'packages/auth-native/Cargo.toml'),'--locked','-j','4','--','--test-threads=1'],cwd=ROOT,text=True,capture_output=True,check=True)
+required_tests=['actual_ipv4_and_ipv6_one_use_callback','accepted_connection_waits_for_delayed_callback_headers','callback_attack_matrix','maintained_pkce_and_state','trusted_origin_and_deadline']
+assert 'test result: ok. 5 passed; 0 failed; 0 ignored' in tests.stdout, 'Native tests did not execute'
+assert all('test tests::'+name+' ... ok' in tests.stdout for name in required_tests), 'Required native callback/attack tests did not all pass'
+print('PASS: five executed native adapter tests, including delayed IPv4/IPv6 callbacks')
+result={'purpose':'P06 exact-source and executed adapter verification receipt','role':role,'status':'PASS','source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'source_tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=ROOT,text=True).strip(),'source_tree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),'timestamp':datetime.now(timezone.utc).isoformat(),'python_version':sys.version.split()[0],'platform':sys.platform,'native_adapter_tests':5,'inputs':inputs,'physical_acceptance':False,'independent_review':'NOT_RUN'}
 if role=='linux':
  for name in ['http','browser']:
   p=json.loads((ROOT/f'artifacts/p06/{name}-report.json').read_text());assert p['status']=='PASS' and p['source_commit']==result['source_commit']

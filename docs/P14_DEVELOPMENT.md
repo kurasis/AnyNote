@@ -323,3 +323,27 @@ delayed-header IPv4/IPv6 regression covers the race. The synthetic driver/helper
 adds fixed failure categories and HTTP/network status only; no callback URL,
 OAuth code, state, verifier or credentials enter logs. Full Windows integration
 still needs to pass at the corrected source.
+
+
+At 17c60f0 the Windows native test command succeeds with the new delayed-callback
+case, then the P06 evidence producer rejects its old exact four-test expectation.
+The producer is updated to require all five named tests and the exact five-pass
+summary, runs them serially and records the new count. This retains strict
+execution evidence rather than accepting a missing or skipped regression.
+
+
+The corrected Windows OAuth flow then passes pairing and sharing. The first
+installed GUI unlock attempt stops on an absent button: its generic onboarding
+button/password predicates also match the previous Create screen while profile
+loading/selection is asynchronous. The harness now waits for the exact saved
+account button and then the actual Unlock button, verifies the persisted profile
+scope through the existing read-only typed command, and retains full publication,
+lock and file assertions. It does not mutate React state or bypass native unlock.
+
+
+Failed GUI runs now preserve only their compiled CI harness, native fixture
+driver, synthetic next-version installer and a source/binary-digest manifest.
+The normal owner artifact still has one NSIS setup. No vault, credentials,
+private key, runtime profile or source data enters the diagnostic bundle. The
+manifest explicitly says BUILT_UNVERIFIED: binary reuse can diagnose a test but
+cannot substitute for fresh exact-source all-25 application acceptance.
