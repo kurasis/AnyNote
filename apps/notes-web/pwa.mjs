@@ -4,7 +4,7 @@ const labels = {
   en: {
     help: 'Install and storage', install: 'On iPhone, open this site in Safari, choose Share → Add to Home Screen, then open AnyNote from its icon. Keep your recovery kit separately.',
     installed: 'Home Screen app', browser: 'Browser mode', storage: 'Check local storage', persist: 'Request persistent storage',
-    estimate: 'Estimated local usage / quota', unknown: 'Unavailable', granted: 'Persistent storage granted', denied: 'Persistence not granted; keep an independent recovery copy',
+    estimate: 'Estimated local usage / quota', bytes: 'bytes', unknown: 'Unavailable', granted: 'Persistent storage granted', denied: 'Persistence not granted; keep an independent recovery copy',
     limits: 'Estimates are not guaranteed free space. iOS may stop background work, forget selected files or remove site storage. Transfers pause on lock; unlock and reselect the same source to resume. Removing site data can remove unsent work.',
     update: 'Check for app update', waiting: 'Update downloaded. Save your work and close every AnyNote window, then reopen. Pending encrypted work is retained.',
     current: 'App update check complete', failed: 'Could not check this operation. Existing encrypted work is retained.',
@@ -14,7 +14,7 @@ const labels = {
   ru: {
     help: 'Установка и хранилище', install: 'На iPhone откройте сайт в Safari, выберите «Поделиться» → «На экран Домой», затем запустите AnyNote с его значка. Храните комплект восстановления отдельно.',
     installed: 'Приложение с экрана Домой', browser: 'Режим браузера', storage: 'Проверить хранилище', persist: 'Запросить постоянное хранение',
-    estimate: 'Примерный объём данных / квота', unknown: 'Недоступно', granted: 'Постоянное хранение разрешено', denied: 'Постоянное хранение не разрешено; сохраняйте независимую резервную копию',
+    estimate: 'Примерный объём данных / квота', bytes: 'байт', unknown: 'Недоступно', granted: 'Постоянное хранение разрешено', denied: 'Постоянное хранение не разрешено; сохраняйте независимую резервную копию',
     limits: 'Оценка не гарантирует свободное место. iOS может остановить фоновую работу, забыть выбранные файлы или удалить данные сайта. Передача приостанавливается при блокировке: разблокируйте приложение и выберите тот же исходный файл. Очистка сайта может удалить неотправленную работу.',
     update: 'Проверить обновление', waiting: 'Обновление загружено. Сохраните работу, закройте все окна AnyNote и откройте приложение снова. Защищённые незавершённые операции сохраняются.',
     current: 'Проверка обновления завершена', failed: 'Не удалось выполнить проверку. Существующая зашифрованная работа сохранена.',
@@ -25,7 +25,7 @@ const labels = {
 
 export function storageDescription(estimate, text) {
   const number = value => Number.isSafeInteger(value) && value >= 0 ? String(value) : text.unknown;
-  return `${text.estimate}: ${number(estimate?.usage)} / ${number(estimate?.quota)} bytes`;
+  return `${text.estimate}: ${number(estimate?.usage)} / ${number(estimate?.quota)} ${text.bytes ?? 'bytes'}`;
 }
 
 export function mountPwa({language, prepareUpdate}) {

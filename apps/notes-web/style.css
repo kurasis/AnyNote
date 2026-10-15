@@ -18,3 +18,5 @@
  }
 
 .pane{overflow-wrap:anywhere}
+
+fieldset{min-inline-size:0}pre{white-space:pre-wrap;overflow-wrap:anywhere}button{max-inline-size:100%}

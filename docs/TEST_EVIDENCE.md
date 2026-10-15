@@ -1860,3 +1860,28 @@ and generated contracts compare read-only (325 structures/111 operations).
 Cloud Chromium failed before startup due to its sandbox-helper ownership; no
 browser/physical acceptance is claimed. The new CI gigabyte/update/V8-memory
 case and source-receipt collector are prepared and NOT_RUN at this source.
+
+P15 local follow-up: seven executable tests pass (six worker policy tests plus
+translation isolation for runtime/recovery text and prototype-shaped strings).
+The first remote P07 browser run failed NO_AUTH_API_KIT_OR_DYNAMIC_CACHE because
+its exact allowlist did not yet include the new manifest and two icons. The test
+is updated to exactly 14 static resources and explicitly rejects query strings;
+no API/cache security assertion or prior lifecycle test is disabled. New Chromium
+gigabyte/update and hosted WebKit checks remain pending for the updated source.
+
+The initial P15 browser run stopped after actual 1GB protected upload/reselection
+at P12_UNATTACHED_RECOVERY_VISIBLE: the UI now intentionally displays a localized
+human label instead of the raw UNATTACHED enum. The exact workflow state/version
+is retained in DOM data attributes; the regression now requires an UNATTACHED row
+with an available Attach action. No upload, cryptographic, full-hash, receipt or
+size assertion is removed. This initial run does not establish the later download,
+portable export/import, update or memory results.
+
+The final P14 head b30dc74bd2e97b3c46a6cacd51ee02ffc9568e70 was independently
+checked through GitHub: all 25 mandatory jobs succeed. Downloaded artifact
+11996283176 has SHA-256
+793dc5dca37591b1f65dcdf9666981e5228ffddeb3c246af25a3e17e9349a9ec.
+Its clean source receipt binds tree49e97603ea2bfd3d83a7976dddbf19dd18f9ad73;
+all 869 input hashes were compared with actual Git blobs, all seven declared raw
+report hashes/statuses and the installer digest verified. This read-only audit
+neither reran physical tests nor closed the retained signing/memory limits.

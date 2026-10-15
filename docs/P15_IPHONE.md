@@ -52,17 +52,25 @@ subscription are not configured by this development work.
 
 ## Validation
 
+Account, Devices and the local-vault shell also expose EN/RU controls and
+actionable errors. Translation captures only initial UI text nodes and preserves
+all runtime identifiers, fingerprints and recovery values. It writes no ordinary
+local/session storage. Dates use the user locale.
+
 Run `source scripts/runtime-env.sh && python3 scripts/check-p15.py` from the
-checkout. It checks manifest/icons, preserves the 179-file baseline, executes six
-worker policy tests and builds the actual UI. This does not run a browser.
+checkout. It checks manifest/icons, preserves the 179-file baseline, executes seven
+worker-policy/translation-safety tests and builds the actual UI. This does not run a browser.
 
 The new mandatory `pwa-linux-http-browser` job supplements the original 25 gates.
 It uses genuine multi-account production API/crypto, trusted TLS, strict CSP,
 sandboxed Chromium, WebAuthn and Worker/IndexedDB/OPFS. P12 generates an actual
 incompressible 1,000,000,000-byte source, uploads, locks/reselects, downloads and
 compares full hashes. P15 adds mobile/keyboard viewports, encrypted portable
-export, independent offline full-hash recovery, private import and a real
-waiting-worker update retaining a newer draft. These browser steps are prepared;
+export, independent offline full-hash recovery, private import with pause/page destruction/reselection and complete imported
+destination download hash, and a real waiting-worker update retaining a newer
+draft. The separate `pwa-webkit-shell` gate tests actual hosted WebKit TLS,
+localized shells and offline static installation. Both supplement the original
+25 gates; the full required software cohort is 27 jobs. These browser steps are prepared;
 they have not yet passed at this source.
 
 Memory separates sampled aggregate Chromium RSS from renderer/dedicated-Worker

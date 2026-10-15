@@ -4,3 +4,8 @@
 #video { max-width: 100%; }
 
 #qr svg { width: min(100%, 480px); height: auto; display: block; }
+
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+button,input,select,summary{font:inherit;min-height:44px}input,select{font-size:max(16px,1em);max-width:100%}
+#shell-language{margin-inline-start:.6rem}a{overflow-wrap:anywhere}
+@media(max-width:600px){main{padding:16px}button{max-width:100%}input:not([type=checkbox]),select{width:100%}}

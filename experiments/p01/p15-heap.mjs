@@ -3,7 +3,9 @@
 export async function browserHeap(page) {
   const cdp = await page.context().newCDPSession(page);
   const workers = new Map(), pending = new Map(), records = new Map();
-  let sequence = 0, busy = false, stopped = false;
+  let sequence = 0, rendererEpoch = 0, busy = false, stopped = false;
+  cdp.on('Runtime.executionContextsCleared', () => { rendererEpoch++; });
+  await cdp.send('Runtime.enable');
   cdp.on('Target.attachedToTarget', ({sessionId, targetInfo}) => {
     if (targetInfo.type === 'worker') workers.set(sessionId, true);
   });
@@ -22,7 +24,7 @@ export async function browserHeap(page) {
       backing_storage: value.backingStorageSize ?? null, embedder_heap: value.embedderHeapUsedSize ?? null};
     let current = records.get(key);
     if (!current) {
-      current = {role: key === 'renderer' ? 'renderer' : 'dedicated-worker', baseline_bytes: bytes, observed_peak_bytes: {...bytes}, samples: 0};
+      current = {role: key.startsWith('renderer:') ? 'renderer' : 'dedicated-worker', baseline_bytes: bytes, observed_peak_bytes: {...bytes}, samples: 0};
       records.set(key, current);
     }
     current.samples++;
@@ -41,7 +43,7 @@ export async function browserHeap(page) {
     busy = true;
     try {
       await Promise.all([
-        cdp.send('Runtime.getHeapUsage').then(value => record('renderer', value)).catch(() => {}),
+        cdp.send('Runtime.getHeapUsage').then(value => record('renderer:' + rendererEpoch, value)).catch(() => {}),
         ...[...workers.keys()].map(id => workerSample(id).then(value => record(id, value)).catch(() => {})),
       ]);
     } finally { busy = false; }

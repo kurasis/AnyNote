@@ -1093,3 +1093,13 @@ Optional receipt displays only neutral local text; delivery is not configured.
 No dependency or frozen format changes are required. Hosted mobile viewports,
 process RSS and per-agent V8 samples retain their exact software/memory scope;
 physical iPhone Files, PRF, storage and memory acceptance remain separate.
+
+P15 shell localization captures initial UI text nodes, never watches arbitrary
+runtime plaintext. Tagged display templates preserve parameter bytes, while only
+closed UI vocabulary is translated. No local/sessionStorage token or preference
+is introduced. Update pauses owned transfers before serializing its save/lock;
+the editor is inert during that save so a later keystroke cannot be silently
+masked by the update. Manual pause and page destruction retain the encrypted
+import job; its selection UI requires the same archive/kit and fresh audience
+confirmation before resuming. The exact P07 cache regression assertion expands
+only for the manifest and two original local icons; it does not admit API routes.

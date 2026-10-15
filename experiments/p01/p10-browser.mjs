@@ -99,7 +99,7 @@ try{
       report.p11_staged_sync_checks=4;
     }
     if(process.argv.includes('--p12-files'))report.p12_files=await filesCase({page:p,action,check,scratch,control});
-    if(process.argv.includes('--p15-pwa')){if(!process.argv.includes('--p12-files'))throw Error('P15_REQUIRES_REAL_GIGABYTE_CASE');report.p15_pwa=await pwaCase({page:p,action,check,scratch,control});}
+    if(process.argv.includes('--p15-pwa')){if(!process.argv.includes('--p12-files'))throw Error('P15_REQUIRES_REAL_GIGABYTE_CASE');report.p15_pwa=await pwaCase({page:p,action,check,scratch,control,readyWriter});}
     if(process.argv.includes('--p13-content'))report.p13_content=await contentCase({page:p,action,check,scratch,control});
     check(errors.length===0,'NO_RUNTIME_OR_CSP_ERRORS');report.status='PASS';report.checks=checks;report.custody_diagnostics=await Promise.all([owner,...peers].map(async(d,i)=>({role:['owner','editor','reader'][i],events:await d.p.evaluate(()=>globalThis.__custodyDiagnostics)})));report.chromium_sandbox=true;report.request_pacing='Genuine roster/group requests paced below unchanged production limits; no mocked API responses';report.tls_verification='Real trusted disposable CA and hostname validation';report.source_tree_dirty=!!spawnSync('git',['status','--porcelain'],{cwd:root,encoding:'utf8'}).stdout.trim();writeFileSync(root+'/artifacts/p10/browser-report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
   }

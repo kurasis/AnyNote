@@ -1,6 +1,6 @@
 // Runs after the inherited actual incompressible P12 upload/download/resume case.
 // Mobile viewport is desktop Chromium evidence, never physical iPhone evidence.
-import {readFileSync, writeFileSync, createReadStream} from 'node:fs';
+import {readFileSync, writeFileSync, createReadStream, mkdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {Readable} from 'node:stream';
 import {join} from 'node:path';
@@ -10,7 +10,7 @@ import {phrase} from '../../packages/protocol/notes/test-fixture.mjs';
 import {browserMemory} from './p12-browser-memory.mjs';
 import {browserHeap} from './p15-heap.mjs';
 
-export async function pwaCase({page, action, check, scratch}) {
+export async function pwaCase({page, action, check, scratch, readyWriter}) {
   const memory = browserMemory(), heap = await browserHeap(page);
   const workerPath = fileURLToPath(new URL('../../.local/p06/static/auth/sw.js', import.meta.url));
   const originalWorker = readFileSync(workerPath, 'utf8');
@@ -31,6 +31,8 @@ export async function pwaCase({page, action, check, scratch}) {
     await page.locator('#language').selectOption('ru');
     check(await page.locator('#pwa-help summary').textContent() === 'Установка и хранилище', 'P15_RUSSIAN_INSTALL_GUIDANCE');
     await page.locator('#language').selectOption('en');
+    const imageDirectory=fileURLToPath(new URL('../../artifacts/p15/',import.meta.url));mkdirSync(imageDirectory,{recursive:true});
+    await page.screenshot({path:join(imageDirectory,'mobile-notes.png'),fullPage:true});
     const href = await page.locator('link[rel=manifest]').getAttribute('href');
     check(href === '/auth/manifest.webmanifest', 'P15_STABLE_INSTALL_MANIFEST');
     const cached = await page.evaluate(async () => {
@@ -75,9 +77,65 @@ export async function pwaCase({page, action, check, scratch}) {
     await page.locator('#import-archive').setInputFiles(archivePath);
     await page.locator('#import-kit').setInputFiles(kitPath);
     await action(page, 'inspect-import');
+    const importId=await page.locator('#resume-import-id').inputValue();
+    let releasePart, partStarted, holdTimer;
+    const heldPart = new Promise(resolve => { partStarted = resolve; });
+    const releasedPart = new Promise(resolve => { releasePart = resolve; });
+    const partRoute = '**/api/v1/uploads/*/parts/0';
+    let holdOnce = true;
+    await page.route(partRoute, async route => {
+      if (holdOnce) { holdOnce = false; partStarted(); await releasedPart; }
+      await route.continue();
+    });
+    await page.locator('#import-confirm').check();
+    await page.locator('#copy-import').click();
+    try {
+      await Promise.race([heldPart, new Promise((_, reject) => { holdTimer = setTimeout(() => reject(Error('P15_IMPORT_PART_NOT_STARTED')), 300000); })]);
+      await page.locator('#portable-pause').click();
+    } finally { clearTimeout(holdTimer); releasePart(); }
+    await page.waitForFunction(() => !document.getElementById('status').dataset.busy, null, {timeout: 300000});
+    await page.unroute(partRoute);
+    check((await page.locator('#portable-state').textContent()).includes('Paused'), 'P15_IMPORT_PAUSE_PRESERVES_PROTECTED_PROGRESS');
+    await page.reload();
+    await page.waitForFunction(()=>document.getElementById('status').dataset.state==='ready');
+    await readyWriter(page);
+    await page.locator('#phrase').fill(phrase);await action(page,'unlock');
+    await action(page,'completed-content-jobs');
+    await page.locator('#content-job-list li[data-job-id="'+importId+'"] button').filter({hasText:'Resume this import'}).click();
+    await page.waitForFunction(()=>!document.getElementById('status').dataset.busy);
+    check(await page.locator('#resume-import-id').inputValue()===importId,'P15_PAGE_DESTRUCTION_RETAINS_EXACT_IMPORT_JOB');
+    await page.locator('#import-archive').setInputFiles(archivePath);
+    await page.locator('#import-kit').setInputFiles(kitPath);
+    await action(page, 'inspect-import');
+    const commitPending = [];
+    let importedReceipt;
+    const receiptObserver = response => {
+      const url = new URL(response.url());
+      if (url.origin === 'https://api.anynote.test:18443' && /^\/api\/v1\/uploads\/[A-Za-z0-9_-]{22}\/commit$/.test(url.pathname) && response.ok()) {
+        commitPending.push(response.json().then(value => { importedReceipt = value; }));
+      }
+    };
+    page.on('response', receiptObserver);
     await page.locator('#import-confirm').check();
     await action(page, 'copy-import');
+    await Promise.all(commitPending); page.off('response', receiptObserver);
     check((await page.locator('#portable-state').textContent()).includes('Import complete'), 'P15_REAL_GIGABYTE_PRIVATE_IMPORT_RECEIPTS');
+    check(importedReceipt?.state === 'COMMITTED' && /^[A-Za-z0-9_-]{22}$/.test(importedReceipt.group_id), 'P15_IMPORTED_FILE_HAS_REAL_IMMUTABLE_RECEIPT');
+    await action(page, 'refresh');
+    await page.locator('#pwa-panes button').nth(0).click();
+    await page.locator('#groups li[data-id="' + importedReceipt.group_id + '"] button').click();
+    await page.waitForFunction(() => !document.getElementById('status').dataset.busy);
+    await page.locator('#threads button').first().click();
+    await page.waitForFunction(() => !document.getElementById('status').dataset.busy);
+    await action(page, 'file-refresh');
+    const importedDownload = page.waitForEvent('download', {timeout: 300000});
+    await page.locator('#file-items li').filter({hasText: importedReceipt.file_version_id}).locator('button').filter({hasText: 'Export file'}).click();
+    const importedPath = join(scratch, 'p15-imported-roundtrip.bin');
+    await (await importedDownload).saveAs(importedPath);
+    const importedHash = createHash('sha256'); let importedBytes = 0;
+    for await (const bytes of createReadStream(importedPath)) { importedBytes += bytes.length; importedHash.update(bytes); }
+    check(importedBytes === sourceBytes && importedHash.digest('hex') === sourceHash, 'P15_IMPORTED_DESTINATION_FULL_DOWNLOAD_HASH');
+    await page.waitForFunction(() => !document.getElementById('status').dataset.busy);
 
     // Deliver a new build revision through the real static server. Only its
     // cache identity changes; API/crypto/Worker assertions remain untouched.

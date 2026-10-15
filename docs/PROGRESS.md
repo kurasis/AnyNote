@@ -870,3 +870,18 @@ Six executed worker policy tests and the actual static build pass locally; the
 179 frozen files and generated contracts remain unchanged. Local Chromium cannot
 start its required sandbox helper. The new hosted gigabyte/update/memory case is
 prepared but NOT_RUN at this source. See P15_IPHONE.md. P15 is not complete.
+
+P15 follow-up adds EN/RU Account/Devices/vault shells without ordinary storage or
+rewriting runtime recovery/identity text, actionable pause/resume selection and a
+real hosted WebKit shell gate. Seven local executable tests and the static build
+pass. The first draft CI cohort has one diagnosed cache-allowlist regression:
+P07's exact 11-file assertion must include exactly three new public manifest/icon
+resources. The corrected assertion still rejects API, export, foreign-origin and
+query-bearing responses. No failed check is bypassed or marked passing. Browser
+source acceptance remains pending, including complete gigabyte import/download
+hash, forced page destruction/reselection, waiting update and separate V8 agents.
+
+Initial P15 hosted execution reached actual 1GB protected upload/resume but stopped
+on P12's legacy visible-enum assertion. The source now retains exact machine state
+in data attributes and the check still requires UNATTACHED plus its Attach action.
+Both initial failures remain development observations, not passing acceptance.

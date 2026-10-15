@@ -19,7 +19,7 @@ for size, icon in zip((192, 512), manifest['icons']):
 for command in [
     ['python3', 'scripts/check_baseline.py'],
     ['python3', 'scripts/check-p14.py'],
-    ['node', '--test', 'apps/notes-web/test-pwa.mjs'],
+    ['node', '--test', 'apps/notes-web/test-pwa.mjs', 'apps/shared/test-localize.mjs'],
     ['node', 'experiments/p01/p06-build.mjs'],
 ]:
     subprocess.run(command, cwd=ROOT, check=True)
