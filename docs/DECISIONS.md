@@ -1113,3 +1113,16 @@ old plaintext title map would violate masking. Only the current server page or
 retained selected-thread references are opened through the existing verified
 Worker/cached-payload path. A generation check fences each returned label before
 DOM insertion. Entry bodies remain outside the rendered list.
+
+## P15 portable history preflight
+
+The independent reader correctly refused a shared-group archive containing live
+records newer than its exported confirmed history. Protected local witnesses
+were sufficient for the live client, but did not travel in that public journal.
+The exporter now runs the existing historical object/file checks against the
+exact replayed proof that will travel before creating the age stream or sink.
+Missing inclusion fails closed; no footer/kit is issued. The owner can use the
+existing Confirm verified history action and prepare a fresh snapshot. EN/RU
+guidance explains that step. The reader, signatures, independent pins and frozen
+formats stay strict and unchanged; no server or export-footer claim substitutes
+for historical inclusion.

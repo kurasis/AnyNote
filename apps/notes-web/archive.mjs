@@ -40,6 +40,7 @@ export function archiveUI({vault,plaintext,auth,files,getGroup,authorize,run,tex
   clear(documentKit);documentKit=undefined;kitSave.hidden=true;
   try{const begun=await vault.notes('portable',['begin',{confirm:true,result:lease}]);sink=await encryptedBrowserSink('anynote-'+begun.export_id+'.age');
    for(;;){if(seen!==generation||document.hidden)throw Error('RESUME_REQUIRED');const frame=await vault.notes('portable',['next',{}]);if(seen!==generation||document.hidden){frame.ciphertext?.fill(0);clear(frame.kit);throw Error('RESUME_REQUIRED');}if(frame.done){await sink.finish();if(seen!==generation||document.hidden){clear(frame.kit);throw Error('RESUME_REQUIRED');}documentKit=frame.kit;kitSave.hidden=false;state.textContent=text('encrypted_export_complete')+' '+frame.archive_bytes;complete=true;break;}try{await sink.write(frame.ciphertext);state.textContent=text('encrypted_export_progress')+' '+frame.archive_bytes;}finally{frame.ciphertext.fill(0);}}
+  }catch(error){if(seen===generation&&error.message==='UNANCHORED_HISTORY')state.textContent=text('export_history_required');throw error;
   }finally{if(!complete){await sink?.abort().catch(()=>{});if(seen===generation)await vault.notes('portable',['cancel',{}]).catch(()=>{});}await client.call('/exports/'+lease.descriptor.snapshot_id,'cancel-result',undefined,'DELETE').catch(()=>{});}
  });
  inspect.onclick=()=>run(async()=>{

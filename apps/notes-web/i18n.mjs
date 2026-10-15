@@ -73,3 +73,5 @@ Object.assign(words.ru,{resume_import_job:'Продолжить этот имп�
 
 Object.assign(words.en,{language:'Language',groups:'Groups',threads:'Threads',group_audience:'Group audience',member_role:'Member role',checklist_item:'Checklist item',destination_audience:'Destination audience',note_preview:'Verified note preview'});
 Object.assign(words.ru,{language:'Язык',groups:'Группы',threads:'Разделы',group_audience:'Кому доступна группа',member_role:'Роль участника',checklist_item:'Пункт списка',destination_audience:'Кому будет доступна копия',note_preview:'Проверенный предпросмотр заметки'});
+Object.assign(words.en,{export_history_required:'The selected content needs updated verified history. A group owner must confirm retained history in Members and access, then prepare this export again. Your encrypted work is retained.'});
+Object.assign(words.ru,{export_history_required:'Для выбранного содержимого нужно обновить проверенную историю. Владелец группы должен подтвердить сохранённую историю в разделе «Участники и доступ», затем подготовьте экспорт заново. Зашифрованная работа сохранена.'});

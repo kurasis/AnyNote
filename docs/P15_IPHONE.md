@@ -32,6 +32,12 @@ import; a new export uses a fresh identity. Files/share outputs are explicit
 plaintext copies outside the vault. System sheets may suspend or reload iOS.
 No giant plaintext Blob or server decryption fallback is added.
 
+Portable export requires confirmed history covering every selected revision. If
+new shared content is outside that history, export stops before producing a file
+or kit. A group owner must use Members and access → Confirm verified history,
+then prepare a fresh export. Local witnesses alone cannot make an offline archive
+independently verifiable.
+
 Storage estimates and persistence decisions are not capacity/eviction guarantees.
 Persistence is requested only by a user gesture. Zero quota differs from an
 unavailable estimate. Keep an independent recovery copy and separate kit.

@@ -76,6 +76,21 @@ export async function pwaCase({page, action, check, scratch, readyWriter, commit
     await page.locator('#export-this-group').check();
     await action(page, 'prepare-export');
     await page.locator('#export-estimate-confirm').check();
+    let prematureDownloads=0;const prematureDownload=()=>prematureDownloads++;
+    page.on('download',prematureDownload);
+    try{
+      await page.locator('#portable-export').click();
+      await page.waitForFunction(()=>!document.getElementById('status').dataset.busy&&!!document.getElementById('status').dataset.error,null,{timeout:300000});
+      check(await page.locator('#status').getAttribute('data-error')==='UNANCHORED_HISTORY'&&prematureDownloads===0&&await page.locator('#save-export-kit').isHidden(),'P15_UNANCHORED_EXPORT_DENIED_BEFORE_DOWNLOAD');
+    }finally{page.off('download',prematureDownload);}
+    // Use the existing owner-confirmed history publication. Never bypass the
+    // independent reader's historical inclusion check for a fresh live object.
+    await page.locator('#pwa-panes button').nth(1).click();
+    if(!await page.locator('#members-panel').evaluate(e=>e.open))await page.locator('#members-panel > summary').click();
+    await action(page,'close-history');
+    await page.locator('#pwa-panes button').nth(2).click();
+    await action(page,'prepare-export');
+    await page.locator('#export-estimate-confirm').check();
     const downloading = page.waitForEvent('download', {timeout: 600000});
     await page.locator('#portable-export').click();
     const archive = await downloading, archivePath = join(scratch, 'p15-gigabyte.age');

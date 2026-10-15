@@ -539,3 +539,9 @@ working memory or a physical 64MiB target pass. Per-process anonymous/file/share
 PSS and per-agent V8 counters are added for attribution; missing counters remain
 unknown. The overall a3706f4 PWA cohort failed after its completed P12 subcase,
 so these observations are development evidence, not final P15 acceptance.
+
+Portable shared-group export needs confirmed history covering the selected
+revisions. New live work beyond the exported checkpoint is blocked before output;
+a group owner must confirm retained history and prepare a fresh snapshot. This
+does not block ordinary authenticated individual-file download, and never
+substitutes a live local witness for the offline reader's historical inclusion.

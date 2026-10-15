@@ -1941,3 +1941,14 @@ locked. Fresh unlock must reconcile that exact old operation receipt, retain the
 newer local text and leave it locally saved. Only ciphertext record hashes and
 opaque identifiers enter the report. This expanded scenario remains pending
 until its exact-source browser receipt passes.
+
+The af01b02 focused browser run passes the reopened-title, mobile/keyboard,
+manifest/cache and actual1GB archive EOF/kit-release assertions, then its
+independent reader rejects UNANCHORED_HISTORY. ZIP12011298739 SHA256
+a0b7aa25425c199787225353f9c15f8f0d50626586e4ef32ec93e68fc3591518 verifies.
+The exported shared journal lacked inclusion of newer live records. Production
+export now checks its portable journal before creating an outer stream; the
+browser regression requires denial before any download, then uses the existing
+owner history-confirmation API/UI and repeats the complete genuine1GB recovery
+and import. This is not reader relaxation or a smaller substitute. Full P15
+acceptance remains pending at the corrected source.
