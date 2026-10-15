@@ -1971,3 +1971,16 @@ authorization. The quota override is restored in finally, without deleting data.
 This prepared check is NOT_RUN locally because the cloud browser sandbox is
 unavailable; its exact-source hosted result is required. It does not assert
 physical iPhone storage, disk filling or immunity from OS eviction.
+
+The cf1c631 ordinary PWA job (38822277539 / 116721420311) completed the
+full genuine gigabyte export, independent offline hash, protected import resume
+and imported-destination full hash, then failed
+`P15_NEW_WORKER_WAITS_FOR_CONTROLLED_WINDOW`. Artifact 12015111858 ZIP SHA-256 is
+`67941f76955dd2613112bf5f0c1f56d7e27a9d6d978c4b3ce36886dd1491285f`.
+Its receipt did not capture the individual registration states; the cause is
+not established. The follow-up requires an actually controlled active window
+before update and waits for all active/waiting/controller conditions together
+within the unchanged 30-second bound, recording closed lifecycle states if it
+fails. A non-null waiting slot is no longer used as the transition barrier.
+No early activation, runtime cache policy or timeout is changed. This diagnostic
+follow-up is not a passing update or quota result until actually exercised.

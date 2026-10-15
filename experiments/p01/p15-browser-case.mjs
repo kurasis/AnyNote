@@ -228,6 +228,14 @@ export async function pwaCase({page, action, check, scratch, readyWriter, commit
     const match = originalWorker.match(/anynote-p07-static-([a-f0-9]{64})/);
     if (!match) throw Error('P15_BUILD_REVISION_NOT_FOUND');
     const nextRevision = createHash('sha256').update(match[1] + 'public-p15-update').digest('hex');
+    const updateState = () => page.evaluate(async () => {
+      const r = await navigator.serviceWorker.getRegistration('/auth/');
+      return {active:r?.active?.state??null,waiting:r?.waiting?.state??null,
+        installing:r?.installing?.state??null,controlled:Boolean(navigator.serviceWorker.controller),
+        controlledByActive:!!r?.active&&navigator.serviceWorker.controller===r.active};
+    });
+    const updateBefore = await updateState();
+    check(updateBefore.active==='activated'&&updateBefore.controlledByActive,'P15_UPDATE_STARTS_WITH_ACTUAL_CONTROLLED_WINDOW');
     writeFileSync(workerPath, originalWorker.replace(match[0], 'anynote-p07-static-' + nextRevision));
     const incoming = page.context().waitForEvent('serviceworker');
     await page.locator('#pwa-help summary').click();
@@ -238,11 +246,16 @@ export async function pwaCase({page, action, check, scratch, readyWriter, commit
     check(outboxBefore.length>0,'P15_UNKNOWN_ATTEMPT_HAS_PROTECTED_OUTBOX_RECORD');
     check(await page.locator('#note-body').inputValue() === '', 'P15_UPDATE_MASKS_PLAINTEXT');
     check(await page.locator('#copy-destination option').count() === 0 && await page.locator('#draft-recovery-target option').count() === 0, 'P15_LOCK_CLEARS_DECRYPTED_DESTINATION_TITLES');
-    await page.waitForFunction(async () => Boolean((await navigator.serviceWorker.getRegistration('/auth/')).waiting));
-    check(await page.evaluate(async () => {
+    // Registration slots and each ServiceWorker state arrive as separate browser
+    // messages. Require the complete stable condition within the existing 30s
+    // bound; a non-null waiting slot alone is not a state-transition barrier.
+    try{await page.waitForFunction(async () => {
       const r = await navigator.serviceWorker.getRegistration('/auth/');
-      return r.active?.state === 'activated' && r.waiting?.state === 'installed';
-    }), 'P15_NEW_WORKER_WAITS_FOR_CONTROLLED_WINDOW');
+      return r?.active?.state === 'activated' && r.waiting?.state === 'installed'
+        && navigator.serviceWorker.controller===r.active;
+    },null,{timeout:30000});}catch{throw Error('P15_UPDATE_WAIT:'+JSON.stringify({before:updateBefore,observed:await updateState()}));}
+    const updateWaiting=await updateState();
+    check(updateWaiting.active==='activated'&&updateWaiting.waiting==='installed'&&updateWaiting.controlledByActive,'P15_NEW_WORKER_WAITS_FOR_CONTROLLED_WINDOW');
     await page.goto('about:blank');
     const activationDeadline = Date.now() + 30000;
     let activated = false;
@@ -272,6 +285,7 @@ export async function pwaCase({page, action, check, scratch, readyWriter, commit
       imported_sha256: importedDigest, mobile_viewport: '390x844; keyboard 390x420',
       updated_attempt_id:updateAttempt,original_update_request_sha256:updateRequestHash,old_receipt_verified_after_update:true,
       retained_update_draft_id:draft,
+      update_lifecycle:{before:updateBefore,waiting:updateWaiting},
       retained_outbox_records:outboxBefore.length,outbox_before_after_sha256:createHash('sha256').update(JSON.stringify(outboxBefore)).digest('hex'),
       memory: memory.finish(), process_memory: processes.finish(), v8_memory: await heap.finish(), physical_acceptance: false,
       scope: 'Actual production API/Worker/IndexedDB/OPFS and streaming service-worker download in sandboxed hosted desktop Chromium; not iPhone Files/storage/PRF evidence',
