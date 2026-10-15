@@ -1,10 +1,10 @@
-import json,struct,subprocess,os,hashlib
+import json,struct,subprocess,os,hashlib,base64
 from pathlib import Path
 out=Path('.local/p14-bridge-probe');out.mkdir(parents=True,exist_ok=False)
 setups=list(Path('apps/desktop/src-tauri/target/release/bundle/nsis').glob('*.exe'));assert len(setups)==1
 subprocess.run([str(setups[0].resolve()),'/S','/D='+str(out.resolve())],check=True,timeout=180)
 resources=out/'resources';manifest=json.loads((resources/'runtime-manifest.json').read_text());node=resources/'node.exe';script=resources/'custody.mjs'
-assert hashlib.sha256(script.read_bytes()).hexdigest()==manifest['script_sha256']
+assert base64.urlsafe_b64encode(hashlib.sha256(script.read_bytes()).digest()).decode().rstrip('=')==manifest['script_sha256']
 reports=[]
 for message in [{'mode':'public-startup-probe'},{'mode':'export','header':{},'signer':{},'kit':{}}]:
  b=json.dumps(message).encode();command=[str(node.resolve()),'--no-addons','--disable-proto=throw','--permission','--allow-fs-read='+str(script.resolve()),str(script.resolve())]
