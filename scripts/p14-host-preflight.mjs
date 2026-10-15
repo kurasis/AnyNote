@@ -12,7 +12,7 @@ assert(!existsSync(appRoot)&&!existsSync(work),'Refusing existing private/fixtur
 const app=spawn(join(root,'apps/desktop/src-tauri/target/release/anynote-desktop.exe'),[],{stdio:'ignore'});let cdp,checks=0,failure;
 const report={purpose:'P14 real empty-profile WebView2 and typed IPC preflight; complete installed workflows are separate',physical_acceptance:false};
 try{
- cdp=await mainWindow(app);assert(await cdp.evaluate("!!document.querySelector('.onboarding')"),'Actual React onboarding');checks++;
+ cdp=await mainWindow(app);assert(await until(()=>cdp.evaluate("!!document.querySelector('.onboarding')"),'Actual React onboarding'));checks++;
  const profiles=await cdp.evaluate("window.__TAURI_INTERNALS__.invoke('profile',{request:{operation:'list'}})");assert.deepEqual(profiles,{items:[]});checks++;
  assert((await targets()).some(t=>t.type==='page'&&t.url.startsWith('http://tauri.localhost/')),'Actual native WebView2 page');checks++;
  report.status='PASS';
