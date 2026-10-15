@@ -1899,3 +1899,26 @@ static revision, and both browser gates assert the actual response media type.
 P15 revision also clears decrypted destination titles and stale preference
 references at lock, keeps the save state visible at a keyboard-sized viewport,
 and records source/recovered/imported full digests and per-process memory counters.
+
+The a3706f4 inherited Windows host job116677705874 stopped with exit1 during
+signed-test-upgrade, after two logged writer-readiness waits. No sanitized error
+or final WebView PASS receipt was produced; the cause is NOT_ESTABLISHED. Its
+installer/report ZIP12009129806 digest is
+ce9fa74f963b89958d1eb8bee8e6b44b4c97982f4f63fd677dc4b43ede6ae693.
+Pairing/sharing/preflight receipts pass, but they do not establish the unfinished
+host acceptance. The earlier 6d47151 Windows host job passed. The final P15 head
+still requires its own complete passing mandatory cohort; no retry or timeout
+weakening is used to relabel this observation.
+
+At d68be7e, actual hosted WebKit27.2 passes16 shell checks including the delivered
+manifest media type. ZIP12009034586 SHA256
+8afe19697e0343960e5237209f14a3f0721670e542985fb9ca68026b4abb0175 and all885
+Git input blobs independently verify. The focused PWA run is separate from full
+27-job merge acceptance and physical iPhone tests.
+
+The cloud's full owned development foundation check now passes, including actual
+Composer locked advisory audit (no known vulnerabilities),102 formatted PHP files,
+11 PHPUnit tests/217 assertions, transactional SQL and database-outage recovery.
+Trusted P06 HTTPS/session/CSRF/origin readiness passes afterwards. Local protocol
+306 tests and4 hostile-preview tests pass. These observations supersede the
+earlier cloud Packagist access blocker; they are not production deployment.

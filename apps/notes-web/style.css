@@ -8,7 +8,7 @@
 #pwa-panes{display:none}
 @media(max-width:850px){
  html{scroll-padding-block:1rem}input,textarea,select{font-size:16px}
- #pwa-panes{display:flex;position:sticky;top:0;z-index:2;gap:.4rem;padding:.5rem;background:Canvas;border-bottom:1px solid var(--line)}
+ #pwa-panes{display:flex;position:sticky;top:env(safe-area-inset-top);z-index:2;gap:.4rem;padding:.5rem;background:Canvas;border-bottom:1px solid var(--line)}
  #pwa-panes button{flex:1;min-width:0}
  #pwa-panes button[aria-pressed=true]{outline:2px solid Highlight;outline-offset:-2px;font-weight:700}
  .panes>.pane[data-mobile-active=false]{display:none}
