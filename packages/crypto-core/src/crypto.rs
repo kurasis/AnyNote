@@ -36,12 +36,8 @@ pub(crate) fn encrypt(plain: &[u8], aad: &[u8], nonce: &[u8], key: &[u8]) -> Res
     let nonce = aead::Nonce::try_from(nonce).map_err(|_| Error("INVALID_NONCE"))?;
     aead::encrypt(plain, Some(aad), &nonce, &key).map_err(|_| Error("CRYPTO_FAILURE"))
 }
-pub(crate) fn decrypt(
-    cipher: &[u8],
-    aad: &[u8],
-    nonce: &[u8],
-    key: &[u8],
-) -> Result<Zeroizing<Vec<u8>>> {
+/// Trusted native AEAD primitive; no renderer/IPC route exposes this function.
+pub fn decrypt(cipher: &[u8], aad: &[u8], nonce: &[u8], key: &[u8]) -> Result<Zeroizing<Vec<u8>>> {
     libsodium_rs::ensure_init().map_err(|_| Error("CRYPTO_UNAVAILABLE"))?;
     require(
         (16..=8_388_624).contains(&cipher.len()) && aad.len() <= 1_048_576,

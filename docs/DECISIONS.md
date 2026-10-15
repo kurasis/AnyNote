@@ -1021,3 +1021,60 @@ a locked Worker whose typed refusal locked again, preventing subsequent unlock.
 Scope/access changes while unlocked still cancel normally, and stale export
 finally blocks cannot cancel a later generation. A host lifecycle regression
 and the original real P12 lock/resume/1 GB scenario cover this behavior.
+
+## P14 immutable receipt reconciliation and native boundaries
+
+The Windows host reuses the maintained native vault/protocol implementations.
+A renderer receives typed content/results, never private device/group/root keys,
+native bearer credentials or a generic path/SQL/HTTP/signing facility. A bundled
+standard-age helper has bounded anonymous frames, pinned runtime/script bytes
+and no network/addon permission; four queued frames plus one fixed frame buffer
+replace growing-buffer copies. Exact-byte sources and protected journals survive
+lock, unknown receipt and reselect. All original specification/P02 and earlier
+dependency locks remain frozen.
+
+An already queued attempt is immutable even if its source draft has newer text.
+The host reconciles the old receipt first; ACK retires only the exact acknowledged
+source. The UI retains a newer draft and its rewritten known parent after ACK.
+Definitive refusal classifications retain source/attempt records and require a
+fresh operation for later publication. Network uncertainty is never treated as
+a definitive denial. Actual API tests include the server-commit/lost-receipt/new
+edit sequence. Existing receipts can be acknowledged after a role downgrade,
+without attempting a new writer action.
+
+Production Linux retains strict file and directory fsync. Windows PHP cannot open
+a directory through its stream API. Only the marked disposable Windows Actions
+backend uses a pinned helper performing actual FlushFileBuffers on its own volume
+in addition to per-file fsync. That privileged CI helper is not installed in the
+current-user owner application and does not change the required production stack.
+
+Windows updater trust comes only from an operator-installed public policy. Signed
+canonical application/platform/channel/version/URL/digest claims and maintained
+Tauri payload signatures are independently verified. HTTPS-only clients, bounded
+requests/download size, a single-operation permit and generation cancellation
+cover stalled transfers as well as arriving chunks. Ephemeral CI signatures are
+software test material, never production signing identity or release approval.
+
+## P14 native access-token lifetime and synthetic Windows input
+
+The actual Windows gigabyte run exposed a missing production integration: access
+tokens expire after fifteen minutes, but the host had not called the existing
+durable refresh mechanism. Both native control and file requests now check only
+protected expiry metadata before opening their bearer and refresh proactively.
+One native transport gate serializes refresh and in-flight requests, preventing
+concurrent reuse of a one-use refresh token or a race with a revoked old bearer.
+Unknown refresh responses preserve the durable marker and require fresh login.
+No token lifetime, signature, TLS or custody boundary is relaxed.
+
+Long GUI tests simulate an active operator with real OS input scoped to their
+owned disposable foreground app. They then stop input and observe the real
+five-minute idle/generation/preview boundary. Hosted synthetic input and WTS
+messages remain distinct from physical owner Win+L/suspend/Hello/TPM acceptance.
+
+P14 software closure at `e32fdc623997de1e47608dbf3b8791d294e9c391` retains the existing frozen formats and
+trusted native key/credential boundary. Actual installed Windows/1GB/upgrade
+receipts and all 25 gates establish the recorded software flows. The measured
+initial memory-target observation is `OBSERVED_ABOVE_INITIAL_TARGET`;
+it is not silently promoted to an unsampled budget or physical-platform pass.
+Keep memory/resource follow-up and production signing/physical/independent-review
+gates explicit before release. P15 proceeds with the complete iPhone PWA work.

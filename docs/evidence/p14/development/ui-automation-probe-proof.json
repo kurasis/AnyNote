@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "run_id": 38666079720,
+  "source_commit": "a54a042eec2c4163325f06f6ffe0408fe00bcb2a",
+  "artifact_id": 11940589578,
+  "artifact_zip_sha256": "849c37bcce622df484227f107547a0f359a625c380f09f7250eb44349e84291a",
+  "helper_git_bytes_verified": true,
+  "helper_raw_sha256": "9f60d038e75fe841e390def2038adfd373bb9eff0e843b96a68819db1f0f7dd2",
+  "physical_acceptance": false,
+  "scope": "Owned WinForms helper diagnostic, not Tauri application acceptance"
+}

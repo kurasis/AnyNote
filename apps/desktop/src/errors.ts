@@ -1,0 +1,31 @@
+// Actionable, content-free errors. Detailed protocol codes remain available for diagnostics.
+const messages:Record<string,[string,string]>={
+ STALE_CAPABILITY:['The app locked or changed profile. Unlock explicitly and retry the saved operation.','Приложение заблокировано или профиль изменён. Разблокируйте его и повторите сохранённую операцию.'],
+ VAULT_LOCKED:['Unlock this local profile first.','Сначала разблокируйте локальный профиль.'],
+ REAUTH_REQUIRED:['Sign in through the system browser again. Your encrypted local work remains available.','Снова войдите через системный браузер. Зашифрованные локальные данные сохранены.'],
+ LOGIN_REQUIRED:['Sign in through the system browser, unlock, then finish sign-in.','Войдите через системный браузер, разблокируйте профиль и завершите вход.'],
+ KEYS_PENDING:['Ask a trusted device to send this group’s keys from Devices.','Попросите доверенное устройство передать ключи этой группы через раздел «Устройства».'],
+ KEY_REPAIR_REQUIRED:['This group needs current keys. Synchronize and request key delivery from a trusted device.','Для группы нужны актуальные ключи. Синхронизируйтесь и запросите их у доверенного устройства.'],
+ GROUP_PROOF_REQUIRED:['Import the independently verified group card before opening this shared group.','Перед открытием общей группы импортируйте её независимо проверенную карточку.'],
+ INDEPENDENT_HISTORY_REQUIRED:['The group owner must close history and supply an independently trusted group card.','Владелец группы должен закрыть историю и передать доверенную карточку группы.'],
+ UNANCHORED_HISTORY:['Independent history proof is missing. Keep the original archive and compare a group card with a trusted member.','Не хватает независимого подтверждения истории. Сохраните исходный архив и сверьте карточку группы с доверенным участником.'],
+ ROOT_PIN_MISMATCH:['The identity differs from saved trust. Stop and compare the complete fingerprint through an independent channel.','Идентичность отличается от сохранённой. Остановитесь и сверьте полный отпечаток по независимому каналу.'],
+ RESTORE_QUARANTINE:['A restored or regressed history was detected. Preserve local data and reconcile with a trusted device before writing.','Обнаружено восстановление или откат истории. Сохраните локальные данные и согласуйте историю с доверенным устройством перед записью.'],
+ WRITER_BUSY:['Another app instance owns this profile. Close or lock it, then unlock again.','Этот профиль открыт другим экземпляром приложения. Закройте или заблокируйте его, затем разблокируйте профиль снова.'],
+ WRITER_MAINTENANCE_REQUIRED:['Use the maintenance action matching the current group change. Close history before rotating keys.','Выберите обслуживание, соответствующее изменению группы. Перед ротацией ключей закройте историю.'],
+ REKEY_REQUIRED:['A writer must finish group key maintenance. Pending drafts are retained.','Участник с правом записи должен завершить обновление ключей группы. Черновики сохранены.'],
+ HISTORY_CLOSURE_REQUIRED:['Close the group’s history before continuing this change.','Перед продолжением закройте историю группы.'],
+ ROLE_FORBIDDEN:['Your current role does not permit this action. Keep the draft or recover your own unsent work into a private group.','Текущая роль не разрешает действие. Сохраните черновик или восстановите свою неотправленную работу в личную группу.'],
+ SOURCE_CHANGED:['Select the exact original file. A changed file needs a new encrypted transfer.','Выберите точный исходный файл. Для изменённого файла нужна новая зашифрованная передача.'],
+ SOURCE_RESELECT_REQUIRED:['Select the original source again to continue its saved transfer.','Снова выберите исходный файл для продолжения сохранённой передачи.'],
+ STORAGE_UNAVAILABLE:['Storage did not complete the write. Keep the original source and retry the prepared operation.','Хранилище не завершило запись. Сохраните исходный файл и повторите подготовленную операцию.'],
+ INSUFFICIENT_STORAGE:['Free space is insufficient. Review downloaded cache; keep original sources and unsynced work.','Недостаточно свободного места. Проверьте загруженный кэш; сохраните исходные файлы и неотправленные данные.'],
+ QUOTA_EXCEEDED:['The service quota is full. Review storage and retention before retrying.','Квота сервиса заполнена. Проверьте хранилище и политику хранения перед повтором.'],
+ CONFLICT_CONFIRMATION_REQUIRED:['Inspect every conflict branch, then explicitly publish a reviewed resolution.','Проверьте все конфликтующие ветки, затем явно опубликуйте проверенный результат объединения.'],
+ UPDATE_TRUST_NOT_CONFIGURED:['This installation has no operator-configured signed update channel.','Для этой установки оператор ещё не настроил подписанный канал обновлений.'],
+ UPDATE_INTEGRITY_FAILURE:['The update failed signature or integrity checks. Keep the current installation.','Подпись или целостность обновления не прошла проверку. Сохраните текущую установку.'],
+ PAIRING_RESTART_REQUIRED:['The pairing channel closed. Retry a prepared request first; a fresh pairing needs a new local profile.','Канал подключения закрыт. Сначала повторите подготовленный запрос; для нового подключения нужен новый локальный профиль.'],
+ PAIRING_PNG_REQUIRED:['Choose a PNG QR image no larger than 2048 × 2048 pixels and 4 MiB.','Выберите PNG с QR-кодом размером не более 2048 × 2048 и 4 МиБ.'],
+ CANCELLED:['The action was cancelled.','Действие отменено.']
+};
+export function humanError(error:string,language:'en'|'ru'):string{const code=Object.keys(messages).find(code=>error.includes(code));return code?messages[code][language==='ru'?1:0]:language==='ru'?'Действие не завершено. Проверьте состояние и повторите подготовленную операцию.':'The action did not complete. Check its state and retry the prepared operation.';}

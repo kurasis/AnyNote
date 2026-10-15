@@ -1,0 +1,46 @@
+name: P14 Windows accepted socket blocking diagnosis
+on:
+  push:
+    branches: [ci/p14-root-trust-probe-20261015]
+permissions:
+  contents: read
+jobs:
+  loopback-probe:
+    runs-on: windows-2025
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - name: Exact Rust and real delayed loopback TCP bytes
+        shell: pwsh
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          @'
+          use std::{net::{TcpListener,TcpStream},io::{Read,Write},time::{Duration,Instant},thread};
+          fn attempt(reset: bool)->(bool,String,u128){
+            let l=TcpListener::bind("127.0.0.1:0").unwrap();l.set_nonblocking(true).unwrap();
+            let mut client=TcpStream::connect(l.local_addr().unwrap()).unwrap();
+            let (mut stream,_)=l.accept().unwrap();
+            if reset{stream.set_nonblocking(false).unwrap();}
+            stream.set_read_timeout(Some(Duration::from_secs(2))).unwrap();
+            let t=thread::spawn(move||{thread::sleep(Duration::from_millis(250));client.write_all(b"GET /callback HTTP/1.1\r\n\r\n").unwrap();});
+            let start=Instant::now();let mut b=[0u8;1];let result=stream.read(&mut b);let elapsed=start.elapsed().as_millis();
+            let v=match result{Ok(1)=>(b[0]==b'G',"OK".into(),elapsed),Ok(_)=>(false,"EOF".into(),elapsed),Err(e)=>(false,format!("{:?}",e.kind()),elapsed)};
+            t.join().unwrap();v
+          }
+          fn main(){assert!(cfg!(windows));let old=attempt(false);let fixed=attempt(true);println!("{{\"purpose\":\"P14 actual Windows accepted TCP mode, no OAuth or keys\",\"old\":{{\"read_ok\":{},\"outcome\":\"{}\",\"elapsed_ms\":{}}},\"explicit_blocking\":{{\"read_ok\":{},\"outcome\":\"{}\",\"elapsed_ms\":{}}},\"physical_acceptance\":false}}",old.0,old.1,old.2,fixed.0,fixed.1,fixed.2);assert!(!old.0&&old.1=="WouldBlock","Original accepted stream was not nonblocking");assert!(fixed.0&&fixed.2>=200,"Explicit blocking did not await real delayed bytes");}
+          '@ | Set-Content -Encoding utf8 .local-loopback-probe.rs
+          rustup run 1.99.0 rustc --crate-name p14_loopback_probe .local-loopback-probe.rs -o .local-loopback-probe.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          New-Item -ItemType Directory -Force artifacts/p14-loopback-probe | Out-Null
+          & ./.local-loopback-probe.exe | Tee-Object -FilePath artifacts/p14-loopback-probe/report.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: p14-real-loopback-blocking-diagnostic
+          path: artifacts/p14-loopback-probe/report.json
+          retention-days: 3
+          if-no-files-found: error

@@ -1,0 +1,73 @@
+{
+  "status": "PASS",
+  "source_commit": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+  "commands": [
+    [
+      "python3",
+      "scripts/dev-stack.py",
+      "up"
+    ],
+    [
+      "python3",
+      "scripts/dev-stack.py",
+      "check"
+    ],
+    [
+      "python3",
+      "scripts/p06-stack.py",
+      "up"
+    ],
+    [
+      "python3",
+      "scripts/p06-stack.py",
+      "check"
+    ],
+    [
+      "python3",
+      "scripts/check_baseline.py"
+    ],
+    [
+      "python3",
+      "scripts/check-p10.py"
+    ],
+    [
+      "python3",
+      "scripts/check-p11.py"
+    ],
+    [
+      "python3",
+      "scripts/check-p12.py"
+    ],
+    [
+      "python3",
+      "scripts/check-p13.py"
+    ],
+    [
+      "python3",
+      "scripts/check-p14.py"
+    ],
+    [
+      "python3",
+      "scripts/p14-dependencies.py",
+      "--stage"
+    ],
+    [
+      "python3",
+      "scripts/p07-native-inventory.py"
+    ],
+    [
+      "python3",
+      "scripts/p13-native-inventory.py"
+    ],
+    [
+      "python3",
+      "scripts/p13-browser-inventory.py"
+    ],
+    [
+      "python3",
+      "scripts/p03-contracts.py"
+    ]
+  ],
+  "tracked_sources_preserved": 1023,
+  "scope": "Actual owned service/read-only start readiness, not Publish or independently observed restoration"
+}

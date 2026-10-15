@@ -1,0 +1,31 @@
+name: P14 actual Windows clipboard sequence probe
+on:
+  push:
+    branches: [ci/p14-root-trust-probe-20261015]
+permissions:
+  contents: read
+jobs:
+  clipboard-sequence:
+    runs-on: windows-2025
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - name: Real Win32 clipboard sequence and unchanged Unicode bytes
+        shell: pwsh
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          rustup run 1.99.0 rustc --edition 2024 scripts/p14-clipboard-sequence-probe.rs -o .local-clipboard-sequence.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          New-Item -ItemType Directory -Force artifacts/p14-clipboard-sequence | Out-Null
+          & ./.local-clipboard-sequence.exe | Tee-Object -FilePath artifacts/p14-clipboard-sequence/report.jsonl
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: p14-real-clipboard-sequence-observation
+          path: artifacts/p14-clipboard-sequence/report.jsonl
+          retention-days: 3
+          if-no-files-found: error

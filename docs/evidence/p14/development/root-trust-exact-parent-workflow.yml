@@ -1,0 +1,61 @@
+name: P14 isolated Windows test-root diagnosis
+on:
+  push:
+    branches: [ci/p14-root-trust-probe-20261015]
+permissions:
+  contents: read
+jobs:
+  trust-probe:
+    runs-on: windows-2025
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.14.8'
+      - name: Exact owned machine root operation with a bounded process lifetime
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force .local | Out-Null
+          $probe = @'
+          import hashlib,json,os,runpy,subprocess,sys,time
+          from pathlib import Path
+          assert os.name=='nt' and os.environ.get('GITHUB_ACTIONS')=='true'
+          root=Path.cwd();helper=root/'scripts/p14-windows-services.py'
+          m=runpy.run_path(str(helper),run_name='p14_owned_root_probe')
+          m['marker']();tls=root/'.local/p06/tls';tls.mkdir(parents=True)
+          m['openssl']('req','-x509','-newkey','rsa:3072','-nodes','-keyout',tls/'ca.key','-out',tls/'ca.crt','-days','1','-subj','/CN=AnyNote P14 disposable Windows test CA','-addext','basicConstraints=critical,CA:TRUE','-addext','keyUsage=critical,keyCertSign,cRLSign')
+          report={'purpose':'P14 isolated actual Windows root-store diagnostic, not application acceptance','source_commit':os.environ['GITHUB_SHA'],'helper_sha256':hashlib.sha256(helper.read_bytes()).hexdigest(),'physical_acceptance':False}
+          command=[sys.executable,str(helper),'trust'];started=time.monotonic()
+          process=subprocess.Popen(command,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+          try:
+              out,err=process.communicate(timeout=45)
+              report.update(status='PASS' if process.returncode==0 else 'FAIL',exit_code=process.returncode,stdout=out.decode(errors='replace')[-2000:],stderr=err.decode(errors='replace')[-2000:])
+          except subprocess.TimeoutExpired:
+              if process.poll() is None:subprocess.run(['taskkill','/PID',str(process.pid),'/T','/F'],capture_output=True,timeout=15)
+              out,err=process.communicate(timeout=15)
+              report.update(status='TIMEOUT',stdout=out.decode(errors='replace')[-2000:],stderr=err.decode(errors='replace')[-2000:])
+          finally:
+              report['elapsed_ms']=int((time.monotonic()-started)*1000)
+              try:
+                  cleanup=subprocess.run([sys.executable,str(helper),'untrust'],capture_output=True,timeout=30)
+                  report['cleanup_exit_code']=cleanup.returncode
+                  report['cleanup_diagnostic']=(cleanup.stdout+cleanup.stderr).decode(errors='replace')[-2000:]
+              except subprocess.TimeoutExpired:report['cleanup_exit_code']='TIMEOUT'
+              folder=root/'artifacts/p14-root-trust-probe';folder.mkdir(parents=True)
+              (folder/'report.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
+              print(json.dumps(report))
+          assert report['status']=='PASS' and report['cleanup_exit_code']==0,'Actual root trust/cleanup diagnostic failed'
+          '@
+          [IO.File]::WriteAllText((Join-Path (Get-Location) '.local/p14-root-probe.py'),$probe,[Text.UTF8Encoding]::new($false))
+          python .local/p14-root-probe.py
+          exit $LASTEXITCODE
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: p14-owned-root-trust-diagnostic
+          path: artifacts/p14-root-trust-probe/report.json
+          retention-days: 3
+          if-no-files-found: error

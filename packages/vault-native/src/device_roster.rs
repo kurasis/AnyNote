@@ -141,21 +141,12 @@ impl Roster {
         }
         Ok(all.into_iter().collect())
     }
-    pub fn approval(
-        &self,
-        codec: &Codec,
-        transcript: &Value,
-        approval: &Value,
-        clock: Option<u64>,
-    ) -> Result<()> {
+    pub fn transcript(&self, codec: &Codec, transcript: &Value, clock: Option<u64>) -> Result<()> {
         codec.validate("p02-state-c1", "transcript", transcript)?;
-        codec.validate("p02-state-c1", "approval", approval)?;
         let o = &transcript["offer"]["body"];
         let r = &transcript["response"]["body"];
-        let a = &approval["body"];
         self.current(o)?;
         self.current(r)?;
-        self.current(a)?;
         self.fresh(codec, &o["device"])?;
         if let Some(t) = clock {
             let expires: u64 = text(&o["expires_at"])?
@@ -209,6 +200,22 @@ impl Roster {
                 text(&actor.certificate["body"]["device_signing_key"])?,
             )?;
         }
+        Ok(())
+    }
+    pub fn approval(
+        &self,
+        codec: &Codec,
+        transcript: &Value,
+        approval: &Value,
+        clock: Option<u64>,
+    ) -> Result<()> {
+        self.transcript(codec, transcript, clock)?;
+        codec.validate("p02-state-c1", "approval", approval)?;
+        let o = &transcript["offer"]["body"];
+        let r = &transcript["response"]["body"];
+        let a = &approval["body"];
+        self.current(a)?;
+        let actor = self.active(text(&r["approver"]["device_id"])?, Some("delegate-device"))?;
         let transcript_digest = digest("p02-state-c1", "transcript", transcript)?;
         check(
             a["operation_id"] == o["operation_id"]

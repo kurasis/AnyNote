@@ -17,7 +17,7 @@ for(const d of documents)ajv.addSchema(d);
 const refs={},map={};let i=0;
 for(const d of documents)for(const k of Object.keys(d.$defs)){const name='v'+i++;refs[name]=d.$id+'#/$defs/'+k;map[refs[name]]=name;}
 const generated=resolve(root,'.local/p06/validators.mjs');
-writeFileSync(generated,`import {formats} from '${resolve(root,'packages/protocol/auth-formats.mjs')}';\n`+standalone(ajv,refs));
+writeFileSync(generated,`import {formats} from ${JSON.stringify(resolve(root,'packages/protocol/auth-formats.mjs').replaceAll('\\','/'))};\n`+standalone(ajv,refs));
 const shim=resolve(root,'.local/p06/ajv.mjs');
 writeFileSync(shim,`import * as validators from './validators.mjs';\nconst map=${JSON.stringify(map)};\nexport default class {addSchema(){} addFormat(){} compile({$ref}){if(!map[$ref])throw Error('UNCOMPILED_SCHEMA');return validators[map[$ref]];}}\n`);
 for(const [name,entry] of Object.entries({'app.js':'apps/auth-web/app.mjs','client.js':'packages/protocol/auth-client.mjs','vault-worker.js':'packages/protocol/vault/worker.mjs','vault-client.js':'packages/protocol/vault/client.mjs','vault-store.js':'packages/protocol/vault/store.mjs','vault.js':'apps/vault-web/app.mjs','devices.js':'apps/devices-web/app.mjs','notes.js':'apps/notes-web/app.mjs'}))await build({entryPoints:[resolve(root,entry)],outfile:resolve(dir,name),bundle:true,format:'esm',platform:'browser',nodePaths:[resolve(root,'packages/protocol/node_modules')],target:['safari18','chrome120'],minify:true,plugins:[{name:'compiled-validators',setup(b){b.onResolve({filter:/^ajv\/dist\/2020.js$/},()=>({path:shim}));}}],define:{ANYNOTE_AUTH_ISSUER:JSON.stringify(process.env.ANYNOTE_API_ISSUER??'https://api.anynote.test:18443')},logLevel:'silent'});

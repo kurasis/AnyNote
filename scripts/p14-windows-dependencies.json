@@ -1,0 +1,21 @@
+{
+  "purpose": "Pinned official Windows CI backend runtimes; not product installer components",
+  "php": {
+    "version": "8.4.26",
+    "url": "https://windows.php.net/downloads/releases/php-8.4.26-Win32-vs17-x64.zip",
+    "sha256": "6e56f0e932e92bfdce208d3a7e6068f6e2f7a19fc2922a5f856fb085f61673f3",
+    "provenance": "https://windows.php.net/downloads/releases/releases.json"
+  },
+  "mariadb": {
+    "version": "11.8.9",
+    "url": "https://archive.mariadb.org/mariadb-11.8.9/winx64-packages/mariadb-11.8.9-winx64.zip",
+    "sha256": "830c46727d9278eae212ae3eca44eeb9e71b2a68704e95f344a64fba7b1963f5",
+    "provenance": "https://archive.mariadb.org/mariadb-11.8.9/winx64-packages/sha256sums.txt"
+  },
+  "composer": {
+    "version": "2.10.3",
+    "url": "https://getcomposer.org/download/2.10.3/composer.phar",
+    "sha256": "7a2d379d5b8ffdaa028580ef26494c36d2feef4b178d3dd1473a4dbc5e17c8d6",
+    "provenance": "https://getcomposer.org/download/2.10.3/composer.phar.sha256sum"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "status": "OBSERVED",
+  "purpose": "Historical local setup refusal and unchanged isolated retry, not complete setup acceptance",
+  "source_commit": "af53a1946816b566140016c06feb62a22b4f29a2",
+  "initial_result": "FAIL: native gigabyte file_part STALE_WRITER",
+  "failed_console_sha256": "3900d473188e368c219f41726e6b252b3438fa72e7fbed223f6c2ebdd9ac82d6",
+  "unchanged_retry_result": "PASS",
+  "retry_console_sha256": "93beeef72f1b0185bf730598f564685d813379344428924100dc9705b9285eeb",
+  "vault_sources_unchanged_from_prior_passing_setup": true,
+  "plaintext_bytes": 1000000000,
+  "lease_clock_or_test_size_changed": false,
+  "complete_setup": "PENDING",
+  "physical_acceptance": false
+}

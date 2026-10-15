@@ -1,6 +1,7 @@
 //! Current account-private content authority, encrypted SQLite journal and closed native commands.
 pub mod file_cache;
 pub mod files;
+pub mod portable;
 pub mod sync;
 use super::*;
 use crate::device_groups::{create_private_genesis, historical, verify_genesis};
@@ -50,6 +51,12 @@ pub enum NotesRequest {
         group_id: String,
     },
     GroupEvidence {
+        group_id: String,
+    },
+    SharedProof {
+        group_id: String,
+    },
+    SharedAttempt {
         group_id: String,
     },
     Group {
@@ -1234,6 +1241,32 @@ impl Vault {
                 Ok(
                     json!({"groups":c["groups"],"drafts":drafts,"witnessed":values(&c,"witnesses")?.len(),"witnesses":c["witnesses"]}),
                 )
+            }
+            NotesRequest::SharedProof { group_id } => {
+                let reference = find(&c, "groups", "group_id", group_id)?;
+                let data = self.note_read(
+                    &mut i,
+                    &s,
+                    &c,
+                    text(&reference["record_id"])?,
+                    "group-evidence",
+                )?;
+                check(data["purpose"] == "p10-group-proof", "GROUP_PROOF_REQUIRED")?;
+                let (proof, _) = self.note_shared_proof(&mut i, &s, &c, &snapshot, &data)?;
+                Ok(proof)
+            }
+            NotesRequest::SharedAttempt { group_id } => {
+                let reference = find(&c, "groups", "group_id", group_id)?;
+                let data = self.note_read(
+                    &mut i,
+                    &s,
+                    &c,
+                    text(&reference["record_id"])?,
+                    "group-evidence",
+                )?;
+                check(data["purpose"] == "p10-group-proof", "GROUP_PROOF_REQUIRED")?;
+                self.note_shared_proof(&mut i, &s, &c, &snapshot, &data)?;
+                Ok(data["attempt"].clone())
             }
             NotesRequest::ObserveFile { .. }
             | NotesRequest::CopyPreview { .. }

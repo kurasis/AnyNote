@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "purpose": "Actual Windows inherited-pipe prefetch framing regression provenance",
+  "source_commit": "f096e0fb176406ef00f3522ccc46384ad9fa5a57",
+  "application_source_commit": "72daa1ec25f94738b4b4479aa36983a3fa41010d",
+  "run_id": 38749648491,
+  "job_id": 116472372262,
+  "artifact_id": 11980871921,
+  "artifact_sha256": "dda92253a19e1eb42cfb86780d02d315c99d46b5f9bac955d7f81c4c9751d9ce",
+  "report_sha256": "9a48908d1a31963b6536878312d66b258afe8b2982ecd47f3f57008447ddcb91",
+  "job_log_sha256": "e7ed1e7e378ed0fa641582cd0b0b8f35c71eb975f53582023acb8c793ed1ec61",
+  "git_inputs": {
+    ".github/workflows/p14-root-trust-probe.yml": {
+      "git_blob": "94309357493cd8f0d0f32a911424a1c0d9781ae3",
+      "sha256": "051eca24dfabd0c974decce4947ad9fd151562463d8261a2a595edc3040819fb"
+    },
+    "scripts/p14-prefetch-regression.py": {
+      "git_blob": "2d529a4c3575113cce26b419fde8289607538fbd",
+      "sha256": "5d70a5b86621b0a35d5c6b65a6f4715fd88239df02cabba69b38872eabf5c649"
+    },
+    "packages/windows-native/src/imports.rs": {
+      "git_blob": "dd3b933df793b3eabc1542b52326e8431f07526d",
+      "sha256": "1026eee2a8577d33a5b3e8d0c2096a4d371c0a6e18153d025ce9c639c1462fff"
+    }
+  },
+  "before_and_fixed_source_bytes_verified": true,
+  "node_sha256_base64url": "uk5tEQ6MFZKh7NOQ9rBfPaEksThxpb5is0GgeoU8bDI",
+  "physical_acceptance": false,
+  "scope": "Public real pipe framing counterexample and strict repaired handler only; not whole installed application/gigabyte acceptance"
+}

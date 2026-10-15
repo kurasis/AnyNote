@@ -118,6 +118,18 @@ impl Vault {
             json!({"device_id":self.scope.device_id,"signing_key":b64(signing.public_key.as_ref()),"encryption_key":b64(encryption.public_key.as_ref()),"capabilities":["delegate-device","distribute-group-key","receive-group-key","sign-content"]}),
         )
     }
+    pub fn initialize_device_hello(&self, hwnd: usize, pins: Value) -> Result<Value> {
+        let signing = libsodium_rs::crypto_sign::KeyPair::generate()
+            .map_err(|_| Error("CRYPTO_UNAVAILABLE"))?;
+        let encryption = libsodium_rs::crypto_box::KeyPair::generate();
+        let mut data = json!({"device_signing_secret":b64(signing.secret_key.as_ref()),"device_encryption_secret":b64(encryption.secret_key.as_ref()),"group_keys":[]});
+        let result = self.initialize_hello(hwnd, &Zeroizing::new(canonical(&data)?), pins);
+        wipe_value(&mut data);
+        result?;
+        Ok(
+            json!({"device_id":self.scope.device_id,"signing_key":b64(signing.public_key.as_ref()),"encryption_key":b64(encryption.public_key.as_ref())}),
+        )
+    }
     pub fn native_pairing_qr(&self, cap: &Capability, record: &Value, mode: &str) -> Result<Value> {
         let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
         let s = self.authorize(&mut i, cap)?;
@@ -266,6 +278,49 @@ impl Vault {
         self.authorize(&mut i, cap)?;
         result
     }
+    pub fn verify_device_pairing(
+        &self,
+        cap: &Capability,
+        transcript: &Value,
+        approval: Option<&Value>,
+    ) -> Result<()> {
+        let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
+        let s = self.authorize(&mut i, cap)?;
+        let (_, roster) = self.device_saved(&mut i, &s)?;
+        let roster = roster.ok_or(Error("ROSTER_PROOF_REQUIRED"))?;
+        if let Some(approval) = approval {
+            roster.approval(&self.codec, transcript, approval, Some(now()?))?;
+        } else {
+            roster.transcript(&self.codec, transcript, Some(now()?))?;
+        }
+        self.authorize(&mut i, cap)?;
+        Ok(())
+    }
+    pub fn device_pairing_state(&self, cap: &Capability) -> Result<Value> {
+        let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
+        let s = self.authorize(&mut i, cap)?;
+        let (control, _) = self.device_saved(&mut i, &s)?;
+        Ok(control["pending"].clone())
+    }
+    pub fn finish_device_pairing(&self, cap: &Capability, operation: &str) -> Result<()> {
+        let fence = self.lease(cap)?;
+        let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
+        let s = self.authorize(&mut i, cap)?;
+        let (mut control, _) = self.device_saved(&mut i, &s)?;
+        let snapshot = self.snapshot_for_groups(&mut i, &s)?;
+        check(
+            snapshot["events"].as_array().is_some_and(|events| {
+                events.iter().any(|e| {
+                    e["body"]["operation_id"] == operation
+                        && matches!(e["body"]["kind"].as_str(), Some("enroll" | "reset"))
+                })
+            }),
+            "ROSTER_CHANGED",
+        )?;
+        control["pending"] = Value::Null;
+        i.device_channels.clear();
+        self.store_device_control(&mut i, cap, &s, fence, &control, None)
+    }
     pub fn device_response(
         &self,
         cap: &Capability,
@@ -335,6 +390,7 @@ impl Vault {
                 == json!({"device_id":self.scope.device_id,"certificate_digest":actor.digest}),
             "ISSUER_CONTEXT_MISMATCH",
         )?;
+        roster.transcript(&self.codec, transcript, Some(now()?))?;
         let offer = &transcript["offer"]["body"];
         let tdigest = digest("p02-state-c1", "transcript", transcript)?;
         let secret = i.secrets.as_ref().unwrap();
@@ -812,6 +868,15 @@ impl Vault {
         targets: &[String],
         user_confirmed: bool,
     ) -> Result<Value> {
+        self.device_revoke_bound(cap, targets, user_confirmed, None)
+    }
+    pub fn device_revoke_bound(
+        &self,
+        cap: &Capability,
+        targets: &[String],
+        user_confirmed: bool,
+        expected_head: Option<&Value>,
+    ) -> Result<Value> {
         check(
             user_confirmed && !targets.is_empty(),
             "USER_CONFIRMATION_REQUIRED",
@@ -821,6 +886,10 @@ impl Vault {
         let s = self.authorize(&mut i, cap)?;
         let (mut control, roster) = self.device_saved(&mut i, &s)?;
         let roster = roster.ok_or(Error("ROSTER_PROOF_REQUIRED"))?;
+        check(
+            expected_head.is_none_or(|head| *head == roster.head),
+            "ROSTER_CHANGED",
+        )?;
         roster.active(&self.scope.device_id, Some("delegate-device"))?;
         let mut targets = targets.to_vec();
         targets.sort();

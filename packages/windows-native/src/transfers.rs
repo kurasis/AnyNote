@@ -1,0 +1,375 @@
+//! Real native selected-handle jobs; only counters cross the renderer boundary.
+use crate::*;
+use crate::{
+    host::Host,
+    selection::{Destination, Source},
+};
+use anynote_local_vault::notes::{
+    file_cache::CipherCache,
+    files::{Network, SelectedSource},
+};
+use std::{path::Path, sync::Arc};
+impl Host {
+    pub fn list_files(
+        &self,
+        cap: &anynote_local_vault::Capability,
+        group: &str,
+        after: Option<&str>,
+    ) -> Result<Value> {
+        use anynote_auth_native::{FileOperation, control::Route};
+        if let Some(after) = after {
+            id(after)?;
+        }
+        let query = after.map(|v| vec![("after", v)]).unwrap_or_default();
+        let page = self.api(cap, Route::FileList, Some(group), None, &query, None)?;
+        let mut files = Vec::new();
+        for item in page["items"].as_array().ok_or(Error("INVALID_PAGE"))? {
+            let version = string(item, "file_version_id")?;
+            let response = self.vault.file_http(
+                cap,
+                &self.profile.credential_id,
+                &self.adapter,
+                FileOperation::Manifest { version },
+            )?;
+            check(response.status == 200, "API_DENIED")?;
+            let record = anynote_crypto_core::codec::strict(&response.bytes, 1048576)?;
+            self.vault.observe_file(cap, group, version, &record)?;
+            let metadata = self.vault.file_metadata(cap, &record)?;
+            files.push(serde_json::json!({"file_id":item["file_id"],"file_version_id":version,"metadata":metadata,"integrity":"METADATA_AUTHENTICATED","complete_file_verified":false,"unattached":item["unattached"]}));
+        }
+        Ok(serde_json::json!({"files":files,"next_after":page["next_after"]}))
+    }
+    /// Stable encrypted intent precedes draft creation; ACK retries use the original native attempt.
+    pub fn attach_uploaded_file(
+        &self,
+        cap: &anynote_local_vault::Capability,
+        group: &str,
+        version: &str,
+        draft: &str,
+        name: &str,
+    ) -> Result<Value> {
+        use anynote_local_vault::{Record, notes::NotesRequest};
+        use serde_json::json;
+        let id = anynote_crypto_core::crypto::b64(
+            &anynote_crypto_core::crypto::un64(&anynote_crypto_core::crypto::hash(
+                &anynote_crypto_core::codec::canonical(
+                    &json!({"purpose":"AnyNote/P14/file-publication","scope":self.profile.scope,"draft_id":draft}),
+                )?,
+            ))?[..16],
+        );
+        let snapshot = self.vault.content_read(cap, &id, "import-state")?;
+        let fresh = snapshot.data.is_none();
+        let mut state=snapshot.data.unwrap_or(json!({"purpose":"p14-file-publication","version":1,"group_id":group,"file_version_id":version,"thread_id":random_id(),"thread_draft":null,"entry_id":random_id(),"entry_draft":null,"state":"READY","title":name}));
+        check(
+            state["purpose"] == "p14-file-publication"
+                && state["version"] == 1
+                && state["group_id"] == group
+                && state["file_version_id"] == version,
+            "LOCAL_CONTEXT_MISMATCH",
+        )?;
+        if state["state"] == "COMPLETE" {
+            return Ok(json!({"state":"COMPLETE","entry_id":state["entry_id"]}));
+        }
+        let save = |value: &Value| {
+            let mut result = Err(Error("STALE_WRITER"));
+            for _ in 0..8 {
+                let revision = self.vault.content_read(cap, &id, "import-state")?.revision;
+                result = self.vault.content_commit(
+                    cap,
+                    revision,
+                    &[Record {
+                        id: id.clone(),
+                        kind: "import-state".into(),
+                        data: value.clone(),
+                    }],
+                    &[],
+                );
+                if !matches!(result, Err(Error("STALE_WRITER"))) {
+                    break;
+                }
+            }
+            result
+        };
+        if fresh {
+            save(&state)?;
+        }
+        let content = json!({"title":state["title"],"markdown":"","metadata_kind":"content","tags":[],"checklist":[],"summary_entry_id":null,"preferences":[]});
+        for kind in ["thread", "entry"] {
+            let object_field = if kind == "thread" {
+                "thread_id"
+            } else {
+                "entry_id"
+            };
+            let draft_field = if kind == "thread" {
+                "thread_draft"
+            } else {
+                "entry_draft"
+            };
+            if state[draft_field].is_null() {
+                let summary = self.vault.notes_command(cap, NotesRequest::Summary {})?;
+                let existing = summary["drafts"]
+                    .as_array()
+                    .ok_or(Error("INTEGRITY_FAILURE"))?
+                    .iter()
+                    .find(|d| {
+                        d["object_id"] == state[object_field]
+                            && d["group_id"] == group
+                            && d["object_kind"] == kind
+                    });
+                let saved = if let Some(existing) = existing {
+                    json!({"draft_id":existing["draft_id"]})
+                } else {
+                    let mut edit = Self::edit(
+                        group,
+                        kind,
+                        Some(string(&state, object_field)?),
+                        if kind == "entry" {
+                            Some(string(&state, "thread_id")?)
+                        } else {
+                            None
+                        },
+                        &content,
+                        json!([]),
+                        "create",
+                    );
+                    if kind == "entry" {
+                        edit["attachments"] = json!([self.file_reference(cap, group, version)?]);
+                    }
+                    self.vault.notes_command(cap, NotesRequest::Save { edit })?
+                };
+                state[draft_field] = saved["draft_id"].clone();
+                save(&state)?;
+            }
+            self.publish(cap, string(&state, draft_field)?)?;
+        }
+        state["state"] = json!("COMPLETE");
+        save(&state)?;
+        Ok(json!({"state":"COMPLETE","entry_id":state["entry_id"]}))
+    }
+    pub fn file_reference(
+        &self,
+        cap: &anynote_local_vault::Capability,
+        group: &str,
+        version: &str,
+    ) -> Result<Value> {
+        use anynote_auth_native::FileOperation;
+        let response = self.vault.file_http(
+            cap,
+            &self.profile.credential_id,
+            &self.adapter,
+            FileOperation::Manifest { version },
+        )?;
+        check(response.status == 200, "API_DENIED")?;
+        let record = anynote_crypto_core::codec::strict(&response.bytes, 1048576)?;
+        self.vault.observe_file(cap, group, version, &record)?;
+        let metadata = self.vault.file_metadata(cap, &record)?;
+        let c = &record["envelope"]["header"]["context"];
+        Ok(
+            serde_json::json!({"file_id":c["file_id"],"file_version_id":version,"envelope_digest":metadata["envelope_digest"]}),
+        )
+    }
+    pub fn selected_file_copy_preview(
+        &self,
+        g: u64,
+        draft: &str,
+        destination: &str,
+    ) -> Result<Value> {
+        let cap = self.capability(g)?;
+        id(draft)?;
+        id(destination)?;
+        self.prove(&cap)?;
+        self.group(&cap, destination)?;
+        self.vault.file_copy_preview(&cap, draft, destination)
+    }
+    /// The original selected handle is verified against its protected source digest.
+    /// A new protected transfer precedes HTTP; normal transfer resume retains it.
+    pub fn start_selected_file_copy(
+        self: &Arc<Self>,
+        g: u64,
+        draft: &str,
+        destination: &str,
+        mut source: Source,
+        preview_digest: &str,
+    ) -> Result<String> {
+        let cap = self.capability(g)?;
+        self.prove(&cap)?;
+        self.group(&cap, destination)?;
+        source.check()?;
+        let prepared = self.vault.copy_selected_file(
+            &cap,
+            draft,
+            destination,
+            &mut source.file,
+            preview_digest,
+            true,
+        )?;
+        source.check()?;
+        self.start_upload(
+            g,
+            destination.to_owned(),
+            source,
+            Some(string(&prepared, "draft_id")?.to_owned()),
+        )
+    }
+    pub fn start_upload(
+        self: &Arc<Self>,
+        g: u64,
+        group: String,
+        source: Source,
+        resume: Option<String>,
+    ) -> Result<String> {
+        id(&group)?;
+        if let Some(ref id) = resume {
+            crate::id(id)?;
+        }
+        let cap = self.capability(g)?;
+        let job = self.jobs.start(g)?;
+        let jid = job.id.clone();
+        let host = self.clone();
+        std::thread::spawn(move || {
+            let mut source = source;
+            let result = (|| {
+                host.prove(&cap)?;
+                host.group(&cap, &group)?;
+                job.check(host.current())?;
+                source.check()?;
+                #[cfg(feature = "integration-harness")]
+                eprintln!("P14 native upload: transfer");
+                let uploaded = host.vault.upload_file_with_progress(
+                    &cap,
+                    Network {
+                        credential_id: &host.profile.credential_id,
+                        adapter: &host.adapter,
+                    },
+                    SelectedSource {
+                        group: &group,
+                        file: &mut source.file,
+                        name: &source.name,
+                        media: "application/octet-stream",
+                        resume: resume.as_deref(),
+                    },
+                    |bytes, total| {
+                        job.check(host.current())?;
+                        job.progress(bytes, total);
+                        Ok(())
+                    },
+                )?;
+                job.check(host.current())?;
+                let receipt = &uploaded["receipt"];
+                #[cfg(feature = "integration-harness")]
+                eprintln!("P14 native upload: attachment");
+                let attachment = host.attach_uploaded_file(
+                    &cap,
+                    &group,
+                    string(receipt, "file_version_id")?,
+                    string(&uploaded, "draft_id")?,
+                    &source.name,
+                )?;
+                Ok(
+                    serde_json::json!({"draft_id":uploaded["draft_id"],"receipt":receipt,"attachment_object_id":attachment["entry_id"]}),
+                )
+            })();
+            job.finish(result);
+        });
+        Ok(jid)
+    }
+    pub fn start_download(
+        self: &Arc<Self>,
+        g: u64,
+        group: String,
+        version: String,
+        path: &Path,
+        offline: bool,
+    ) -> Result<String> {
+        id(&group)?;
+        id(&version)?;
+        let cap = self.capability(g)?;
+        crate::selection::ensure_space(path, 1000000000)?;
+        let mut destination = Destination::create(path)?;
+        let job = self.jobs.start(g)?;
+        let jid = job.id.clone();
+        let host = self.clone();
+        let output = path.to_owned();
+        std::thread::spawn(move || {
+            let result = (|| {
+                job.check(host.current())?;
+                if offline {
+                    drop(destination);
+                    CipherCache::for_vault(&host.vault)?.atomic_export(
+                        &host.vault,
+                        &cap,
+                        &group,
+                        &version,
+                        &output,
+                        false,
+                    )?;
+                } else {
+                    host.prove(&cap)?;
+                    host.group(&cap, &group)?;
+                    let result = host.vault.download_file(
+                        &cap,
+                        Network {
+                            credential_id: &host.profile.credential_id,
+                            adapter: &host.adapter,
+                        },
+                        &group,
+                        &version,
+                        destination.writer()?,
+                    )?;
+                    job.check(host.current())?;
+                    destination.finish()?;
+                    return Ok(result);
+                }
+                Ok(serde_json::json!({"state":"COMPLETE"}))
+            })();
+            job.finish(result);
+        });
+        Ok(jid)
+    }
+    pub fn read_preview(&self, g: u64, group: &str, version: &str) -> Result<Vec<u8>> {
+        use anynote_auth_native::FileOperation;
+        let cap = self.capability(g)?;
+        self.group(&cap, group)?;
+        let response = self.vault.file_http(
+            &cap,
+            &self.profile.credential_id,
+            &self.adapter,
+            FileOperation::Manifest { version },
+        )?;
+        check(response.status == 200, "API_DENIED")?;
+        let record = anynote_crypto_core::codec::strict(&response.bytes, 1048576)?;
+        let metadata = self.vault.file_metadata(&cap, &record)?;
+        let size = record["envelope"]["header"]["framing"]["plaintext_bytes"]
+            .as_str()
+            .and_then(|s| s.parse::<usize>().ok())
+            .ok_or(Error("INVALID_REQUEST"))?;
+        check(size <= 16777216, "SAFE_DOWNLOAD_REQUIRED")?;
+        let mut parts = (0..size.div_ceil(8388608)).map(|i| {
+            self.vault
+                .file_http(
+                    &cap,
+                    &self.profile.credential_id,
+                    &self.adapter,
+                    FileOperation::Chunk {
+                        version,
+                        index: i as u8,
+                    },
+                )
+                .and_then(|r| {
+                    check(r.status == 200, "API_DENIED")?;
+                    Ok(r.bytes)
+                })
+        });
+        let mut sink = Vec::with_capacity(size);
+        let mut reader = self.vault.file_reader(&cap, &record)?;
+        for part in &mut parts {
+            check(self.current() == g, "STALE_CAPABILITY")?;
+            let plain = zeroize::Zeroizing::new(reader.decrypt_next(&part?)?);
+            sink.extend_from_slice(&plain);
+        }
+        reader.finish()?;
+        let _ = metadata;
+        check(self.current() == g, "STALE_CAPABILITY")?;
+        Ok(sink)
+    }
+}

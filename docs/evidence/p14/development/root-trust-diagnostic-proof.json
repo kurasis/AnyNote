@@ -1,0 +1,46 @@
+[
+  {
+    "role": "currentuser",
+    "run_id": 38660689882,
+    "artifact_id": 11939055478,
+    "zip_sha256": "532c121dec36c24b12d0080a174d2e86a5547295863b62c01758fb51b9ac84ba",
+    "source_commit": "c2bf73a51068f19bdf4be15530df6b6718beba26",
+    "helper_source_verified": true,
+    "status": "TIMEOUT",
+    "elapsed_ms": 45077,
+    "cleanup_exit_code": 0
+  },
+  {
+    "role": "machine",
+    "run_id": 38660977835,
+    "artifact_id": 11938916897,
+    "zip_sha256": "3203ac5bd1278a73991186c8e19f13e3d15bd51f4865f74ba823a8ac87db77e9",
+    "source_commit": "2a4ca12a4ef3495734cd689618b5cd7a131e4309",
+    "helper_source_verified": true,
+    "status": "PASS",
+    "elapsed_ms": 3921,
+    "cleanup_exit_code": 0
+  },
+  {
+    "role": "bounded-machine",
+    "run_id": 38661623121,
+    "artifact_id": 11938942578,
+    "zip_sha256": "0e7c60c71b2ec50606d06fc0655a126975e4a63ffdcf38e1c06a2a81233567f3",
+    "source_commit": "374ff80398843af1306e92d59e92ee49dd585620",
+    "helper_source_verified": true,
+    "status": "PASS",
+    "elapsed_ms": 2078,
+    "cleanup_exit_code": 0
+  },
+  {
+    "role": "closed-stdin",
+    "run_id": 38663350338,
+    "artifact_id": 11939897769,
+    "zip_sha256": "62752e0dd7d6d43cd1d040ec6380bff9a34e0979e2bfe3ecae2d3b334686cb6d",
+    "source_commit": "5e8c893449d85ffac23ee066e233ed3141975f78",
+    "helper_source_verified": true,
+    "status": "PASS",
+    "elapsed_ms": 667,
+    "cleanup_exit_code": 0
+  }
+]

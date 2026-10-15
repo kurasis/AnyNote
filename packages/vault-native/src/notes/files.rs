@@ -33,6 +33,10 @@ fn response(value: anynote_auth_native::FileResponse) -> Result<Value> {
             Some("STALE_REVISION") => "STALE_REVISION",
             Some("IDEMPOTENCY_MISMATCH") => "IDEMPOTENCY_MISMATCH",
             Some("INSUFFICIENT_STORAGE") => "INSUFFICIENT_STORAGE",
+            Some("STORAGE_UNAVAILABLE") => "STORAGE_UNAVAILABLE",
+            Some("INTERNAL_ERROR") => "INTERNAL_ERROR",
+            Some("INVALID_REQUEST") => "INVALID_REQUEST",
+            Some("RATE_LIMITED") => "RATE_LIMITED",
             _ => "FILE_TRANSPORT_DENIED",
         }));
     }
@@ -336,6 +340,15 @@ impl Vault {
         network: Network<'_>,
         selected: SelectedSource<'_>,
     ) -> Result<Value> {
+        self.upload_file_with_progress(cap, network, selected, |_, _| Ok(()))
+    }
+    pub fn upload_file_with_progress(
+        &self,
+        cap: &Capability,
+        network: Network<'_>,
+        selected: SelectedSource<'_>,
+        mut progress: impl FnMut(u64, u64) -> Result<()>,
+    ) -> Result<Value> {
         use anynote_auth_native::FileOperation;
         let draft = if let Some(draft) = selected.resume {
             draft.to_owned()
@@ -419,6 +432,12 @@ impl Vault {
                         ciphertext: &cipher,
                     },
                 )?)?);
+                let size = selected
+                    .file
+                    .metadata()
+                    .map_err(|_| Error("SOURCE_CHANGED"))?
+                    .len();
+                progress(((index + 1) * CHUNK as u64).min(size), size)?;
             }
         }
         let finished = self.file_finish(cap, &draft, &acknowledged)?;
@@ -492,6 +511,12 @@ impl Vault {
         operation: anynote_auth_native::FileOperation<'_>,
     ) -> Result<anynote_auth_native::FileResponse> {
         check(valid_id(credential_id), "INVALID_SESSION")?;
+        // Serialize credential rotation with in-flight native requests as well.
+        let _transport = self
+            .credential_refresh
+            .lock()
+            .map_err(|_| Error("VAULT_BUSY"))?;
+        self.refresh_native_credentials(cap, credential_id, adapter)?;
         let credentials = {
             let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
             let s = self.authorize(&mut i, cap)?;
@@ -754,6 +779,41 @@ impl Vault {
             self.file_authority(&mut i, &s, group)?;
         }
         let proof = identity(file, &self.signal, cap.generation)?;
+        self.prepare_recovered_file_bound(cap, group, &proof, name, media, expected_policy)
+    }
+    /// Trusted native importer only, after complete authenticated archive validation.
+    pub fn prepare_recovered_file(
+        &self,
+        cap: &Capability,
+        group: &str,
+        proof: &Value,
+        name: &str,
+        media: &str,
+    ) -> Result<Value> {
+        check(
+            proof["size"].as_u64().is_some_and(|n| n <= 1000000000)
+                && proof["parts"].as_array().is_some_and(|a| {
+                    a.len()
+                        == proof["size"]
+                            .as_u64()
+                            .unwrap_or(u64::MAX)
+                            .div_ceil(CHUNK as u64) as usize
+                        && a.iter().all(|v| v.as_str().is_some_and(|s| s.len() == 43))
+                })
+                && proof["digest"].as_str().is_some_and(|s| s.len() == 43),
+            "SOURCE_MISMATCH",
+        )?;
+        self.prepare_recovered_file_bound(cap, group, proof, name, media, None)
+    }
+    fn prepare_recovered_file_bound(
+        &self,
+        cap: &Capability,
+        group: &str,
+        proof: &Value,
+        name: &str,
+        media: &str,
+        expected_policy: Option<&Value>,
+    ) -> Result<Value> {
         self.lease(cap)?;
         let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
         let s = self.authorize(&mut i, cap)?;
@@ -836,6 +896,74 @@ impl Vault {
             source
                 .read_exact(&mut plain)
                 .map_err(|_| Error("SOURCE_CHANGED"))?;
+            check(
+                hash(&plain) == data["source"]["parts"][index],
+                "SOURCE_CHANGED",
+            )?;
+            let mut checkpoint = data["writer"].clone();
+            checkpoint["next"] = json!(index);
+            checkpoint["parts"]
+                .as_array_mut()
+                .ok_or(Error("INTEGRITY_FAILURE"))?
+                .truncate(index);
+            let mut writer = FileWriter::resume(&self.codec, &checkpoint)?;
+            wipe_value(&mut checkpoint);
+            let cipher = writer.encrypt_next(&plain)?;
+            if index < next {
+                check(
+                    hash(&cipher) == data["writer"]["parts"][index]["ciphertext_digest"],
+                    "INTEGRITY_FAILURE",
+                )?;
+            } else {
+                data["writer"] = writer.checkpoint(text(&data["source"]["digest"])?)?;
+                data["state"] = json!("UPLOADING");
+                reference["state"] = json!("UPLOADING");
+                let position = super::index(&control, "transfers", "draft_id", draft)?;
+                control["transfers"][position] = reference.clone();
+                self.file_write(&mut i, cap, &s, &control, &reference, &data)?;
+            }
+            check(
+                self.signal.generation() == cap.generation,
+                "STALE_CAPABILITY",
+            )?;
+            Ok(cipher)
+        })();
+        wipe_value(&mut data);
+        result
+    }
+    /// No renderer route: plaintext originates in the authenticated bounded offline reader.
+    pub fn recovered_file_part(
+        &self,
+        cap: &Capability,
+        draft: &str,
+        index: usize,
+        input: &[u8],
+    ) -> Result<Vec<u8>> {
+        self.lease(cap)?;
+        let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
+        let s = self.authorize(&mut i, cap)?;
+        let mut control = self.file_control(&i, &s)?;
+        let (mut reference, mut data) = self.file_read(&i, &s, &control, draft)?;
+        let result = (|| {
+            check(data["state"] != "SUPERSEDED", "IMMUTABLE_ATTEMPT")?;
+            let (_, policy, _) = self.file_authority(&mut i, &s, text(&reference["group_id"])?)?;
+            check(
+                policy == data["context"]["policy"],
+                "REKEY_RESTART_REQUIRED",
+            )?;
+            let size = data["source"]["size"]
+                .as_u64()
+                .ok_or(Error("INTEGRITY_FAILURE"))?;
+            let next = data["writer"]["next"]
+                .as_u64()
+                .ok_or(Error("INTEGRITY_FAILURE"))? as usize;
+            check(
+                index <= next && index < (size.div_ceil(CHUNK as u64) as usize),
+                "SOURCE_CHANGED",
+            )?;
+            let n = (size - index as u64 * CHUNK as u64).min(CHUNK as u64) as usize;
+            let plain = Zeroizing::new(input.to_vec());
+            check(plain.len() == n, "SOURCE_CHANGED")?;
             check(
                 hash(&plain) == data["source"]["parts"][index],
                 "SOURCE_CHANGED",
@@ -1034,7 +1162,8 @@ impl Vault {
         )?;
         Ok(data)
     }
-    pub(super) fn file_reader(&self, cap: &Capability, record: &Value) -> Result<FileReader> {
+    /// Trusted native coordinator only; no renderer route returns this reader.
+    pub fn file_reader(&self, cap: &Capability, record: &Value) -> Result<FileReader> {
         self.lease(cap)?;
         let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
         let s = self.authorize(&mut i, cap)?;

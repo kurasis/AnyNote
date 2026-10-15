@@ -1,0 +1,12 @@
+{
+  "purpose": "P14 isolated actual Windows root-store diagnostic, not application acceptance",
+  "source_commit": "c2bf73a51068f19bdf4be15530df6b6718beba26",
+  "helper_sha256": "4ce48d6b4a6c3ca274806fb5b4d09ac6d6d796f1cb5b8f5eb2ab591e7cc89e51",
+  "physical_acceptance": false,
+  "status": "TIMEOUT",
+  "stdout": "",
+  "stderr": "",
+  "elapsed_ms": 45077,
+  "cleanup_exit_code": 0,
+  "cleanup_diagnostic": ""
+}

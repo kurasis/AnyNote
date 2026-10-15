@@ -1,5 +1,6 @@
 //! Fixed HTTPS issuer, maintained OAuth2 PKCE, system browser and ephemeral literal loopback.
 //! Credentials remain in memory. P07 supplies persistent custody. Debug never exposes secrets.
+pub mod control;
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD as B64};
 use oauth2::{
     AuthUrl, AuthorizationCode, ClientId, CsrfToken, EndpointNotSet, EndpointSet, HttpRequest,
@@ -106,6 +107,10 @@ impl Loopback {
             if !peer.ip().is_loopback() {
                 continue;
             }
+            // Winsock accepts inherit the listener's nonblocking mode. Restore
+            // blocking reads before applying bounded per-connection timeouts;
+            // HTTP bytes may arrive after accept without being an invalid request.
+            stream.set_nonblocking(false).map_err(|_| Error::Callback)?;
             let remaining = self
                 .deadline
                 .saturating_duration_since(Instant::now())
@@ -704,6 +709,32 @@ mod tests {
                 Error::Callback
             );
             t.join().unwrap();
+        }
+    }
+    #[test]
+    fn accepted_connection_waits_for_delayed_callback_headers() {
+        for ipv6 in [false, true] {
+            let mut listener = Loopback::bind(ipv6, Duration::from_secs(3)).unwrap();
+            let state = random(32).unwrap();
+            let raw = callback(&listener, &state, "https://api.example.test");
+            // Connect before receive/accept, then withhold bytes. On Windows the
+            // accepted nonblocking socket used to reject this valid connection.
+            let mut client =
+                std::net::TcpStream::connect(listener.listener.local_addr().unwrap()).unwrap();
+            let writer = thread::spawn(move || {
+                thread::sleep(Duration::from_millis(250));
+                client.write_all(raw.as_bytes()).unwrap();
+                let mut response = String::new();
+                client.read_to_string(&mut response).unwrap();
+                assert!(response.starts_with("HTTP/1.1 200"));
+            });
+            assert_eq!(
+                &*listener
+                    .receive(&state, "https://api.example.test")
+                    .unwrap(),
+                "synthetic-public-code"
+            );
+            writer.join().unwrap();
         }
     }
     #[test]

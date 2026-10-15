@@ -1,0 +1,20 @@
+{
+  "purpose": "Public synthetic signature-verification corpus; artifact is not executable, installer, production key or acceptance report",
+  "policy": {
+    "endpoint": "https://updates.synthetic.example/candidate.json",
+    "public_key": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDJFMTRFQzVEOTk5MTY4REQKUldUZGFKR1pYZXdVTHBKS1R5akNOaVlIbktlb2ZrZ2dFbFJXaDd0dnhCZ2t4NWFuN0dwdzFOU3MK",
+    "channel": "candidate"
+  },
+  "claims": {
+    "protocol": "anynote-update-v1",
+    "application_id": "org.anynote.desktop",
+    "version": "0.14.1",
+    "platform": "windows-x86_64",
+    "channel": "candidate",
+    "url": "https://updates.synthetic.example/AnyNote-0.14.1.exe",
+    "artifact_sha256": "Tf9cKhkhmVOApITRvy4auCUQ9VoQU7Sh7eFBlyjvEGM"
+  },
+  "claims_signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVUZGFKR1pYZXdVTGhnYVR2VHV4Rm1CM1ZhUWhWelBrcU8vMCtMZGF6MEVTcG51Ukgyb3p1ZFphelVjdHdIdDVaRVV4Y1NrMElnQ2dQYmdiQVJpaFU3eGMwaW0wZlRwL3dJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzkyMDA5ODg1CWZpbGU6Y2xhaW1zLmpzb24JdmVyc2lvbjowLjE0LjEKYzNQN09VNW5wcWlIQ2Mvcnpwek1DU3lSTEVTYklKUzlNUjJLTU9EWEI5SzdTM2M5Y2VEb2dqcWxKYkpXUFVtT3NmcTQ0TllmL0JzL1R6cEdpd3hHQkE9PQo=",
+  "artifact_base64": "UDE0IFBVQkxJQyBTWU5USEVUSUMgVVBEQVRFUiBTSUdOQVRVUkUgRklYVFVSRQo=",
+  "artifact_signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVUZGFKR1pYZXdVTHVJdDBlNDNMZGd1NklvaGwzWm5BdVJmZU9iOFMwckN1cm5ncC8wWjgrU01ZTE9HeExXeHZLeHNUazV1ZWhCV0lQZlVXbG1XRklQdVlPbW8zcDgzU2dnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzkyMDA5ODg0CWZpbGU6c3ludGhldGljLWFydGlmYWN0LmJpbgl2ZXJzaW9uOjAuMTQuMQpKZzVocENLcEVkNDNUZG1SN2pGZThLOUpjeHpRYllxWDdqSldDTmQ3S3U3azlNaWJCTmFIbjJQZjFVcjB4Q1pxTFpnSncrbFRTNVJCSDFUQUhDNWNEUT09Cg=="
+}

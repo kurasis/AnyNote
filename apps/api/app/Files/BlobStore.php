@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 /** Private ciphertext-only immutable store. No user-controlled path components. */
 final class BlobStore
 {
+    public function __construct(private DirectoryDurability $durability) {}
+
     public function root(): string
     {
         $root = storage_path('app/private/p12-blobs');
@@ -126,12 +128,6 @@ final class BlobStore
 
     private function syncDirectory(): void
     {
-        $directory = fopen($this->root(), 'r');
-        D::require($directory !== false, 'STORAGE_UNAVAILABLE');
-        try {
-            D::require(fsync($directory), 'STORAGE_UNAVAILABLE');
-        } finally {
-            fclose($directory);
-        }
+        $this->durability->sync($this->root());
     }
 }

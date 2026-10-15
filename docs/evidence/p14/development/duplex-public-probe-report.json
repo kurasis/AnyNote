@@ -1,0 +1,25 @@
+{
+  "purpose": "Public synthetic full-duplex Windows pipe probe; no vault or archive keys",
+  "binary_source_commit": "af53a1946816b566140016c06feb62a22b4f29a2",
+  "node_sha256": "uk5tEQ6MFZKh7NOQ9rBfPaEksThxpb5is0GgeoU8bDI",
+  "reports": [
+    {
+      "variant": "stdout",
+      "input_finished_before_output_read": false,
+      "output_bytes": 8388608,
+      "output_sha256": "ad97f87076920684e2ca66fc44e5d322797dc9d64706b174e51b5d0828937043",
+      "exit_code": 0,
+      "writer_errors": [],
+      "stderr": ""
+    },
+    {
+      "variant": "async-fd-write",
+      "input_finished_before_output_read": true,
+      "output_bytes": 8388608,
+      "output_sha256": "ad97f87076920684e2ca66fc44e5d322797dc9d64706b174e51b5d0828937043",
+      "exit_code": 0,
+      "writer_errors": [],
+      "stderr": ""
+    }
+  ]
+}

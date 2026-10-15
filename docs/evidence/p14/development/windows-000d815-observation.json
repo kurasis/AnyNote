@@ -1,0 +1,18 @@
+{
+  "purpose": "P14 source-specific Windows development failure observation; not phase acceptance",
+  "source_commit": "000d815a0184d4d7e1e43e21e1dab1d43fe9ec9a",
+  "run_id": 38697021805,
+  "job_id": 116295887581,
+  "job_conclusion": "failure",
+  "failed_step": "Actual installed Windows and WebView2 dialogs lifecycle SQL and 1 GB workflows",
+  "observed_phases": [
+    "owner-install",
+    "instrumented-unlock"
+  ],
+  "failure": "Real main WebView2 target: TypeError: fetch failed",
+  "owner_main_hwnd_observed": true,
+  "native_pairing_checks": 33,
+  "native_sharing_checks": 20,
+  "full_job_log_sha256": "b171acebeb8352add4dea4230f42c07d8756a150ff8920ec841b273b2349c0eb",
+  "physical_acceptance": false
+}

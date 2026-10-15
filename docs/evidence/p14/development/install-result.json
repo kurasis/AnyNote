@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "source_commit": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+  "tracked_source_files_preserved": 1023,
+  "persistent_tables_preserved": 31,
+  "tls_oauth_files_preserved": true,
+  "complete_installer_executed": true,
+  "installer_sha256": "0aad88089cffbc1097494c9524d3242b8a1d8f8d094b66ad054cd689206374d9"
+}

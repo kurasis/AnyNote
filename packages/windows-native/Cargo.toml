@@ -1,0 +1,33 @@
+[package]
+name = "anynote-windows-native"
+version = "0.14.0"
+edition = "2024"
+rust-version = "1.99"
+license = "GPL-3.0-only"
+publish = false
+[features]
+integration-harness = ["anynote-auth-native/integration-harness", "anynote-local-vault/integration-harness"]
+[[bin]]
+name = "p14-integration"
+path = "src/bin/p14-integration.rs"
+required-features = ["integration-harness"]
+[dependencies]
+anynote-local-vault = { path = "../vault-native" }
+anynote-crypto-core = { path = "../crypto-core" }
+anynote-auth-native = { path = "../auth-native" }
+anynote-content-native = { path = "../content-native" }
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = { version = "=1.0.151", features = ["float_roundtrip"] }
+zeroize = "=1.9.1"
+libsodium-rs = "=0.2.5"
+url = "=2.5.8"
+sha2 = "=0.10.9"
+base64 = "=0.22.1"
+minisign-verify = "=0.3.0"
+[target.'cfg(unix)'.dependencies]
+libc = "=0.2.190"
+[target.'cfg(windows)'.dependencies]
+dunce = "=1.0.5"
+windows-sys = { version = "=0.61.2", features = ["Win32_Foundation", "Win32_Storage_FileSystem", "Win32_System_ProcessStatus", "Win32_System_Threading"] }
+[dev-dependencies]
+tempfile = "=3.27.0"
