@@ -2,6 +2,7 @@
 import {writePortable,PortableReader} from '../../../packages/protocol/content/portable.mjs';
 import {wire} from '../../../packages/protocol/adapters/codecs/identity-codec.mjs';
 import {strictJson} from '../../../packages/protocol/src/strict-json.mjs';
+import {sendFrame as send} from './framed-output.mjs';
 const CAP=16777216,queue=[],waiters=[],pending=Buffer.alloc(CAP+8);let used=0,ended=false;
 // One fixed bounded frame buffer avoids repeatedly copying a growing 8 MiB frame.
 process.stdin.on('data',bytes=>{let offset=0;while(offset<bytes.length){const n=Math.min(bytes.length-offset,pending.length-used);if(n===0){process.exitCode=1;process.stdin.destroy();for(const w of waiters.splice(0))w.reject(Error('RESOURCE_LIMIT'));return;}bytes.copy(pending,used,offset,offset+n);used+=n;offset+=n;pump();}});process.stdin.on('end',()=>{ended=true;pump();});
@@ -12,7 +13,6 @@ function pump(){
  if(queue.length<4)process.stdin.resume();
 }
 async function take(kinds){const index=queue.findIndex(f=>!kinds||kinds.includes(f.kind));if(index>=0){const frame=queue.splice(index,1)[0];pump();return frame;}if(ended)throw Error('BRIDGE_CLOSED');return new Promise((resolve,reject)=>{waiters.push({kinds,resolve,reject});pump();});}
-async function send(kind,bytes=Buffer.alloc(0)){if(bytes.length>CAP)throw Error('RESOURCE_LIMIT');const h=Buffer.alloc(8);h.writeUInt32BE(kind);h.writeUInt32BE(bytes.length,4);await new Promise((resolve,reject)=>process.stdout.write(Buffer.concat([h,bytes]),e=>e?reject(e):resolve()));}
 const json=(v)=>Buffer.from(JSON.stringify(v)),expect=async k=>{const f=await take([k]);if(f.kind!==k)throw Error('INVALID_BRIDGE_FRAME');return f.bytes;},ack=async()=>{const b=await expect(9);if(b.length)throw Error('INVALID_BRIDGE_FRAME');};
 const clear=v=>{if(v&&typeof v==='object')for(const k of Object.keys(v)){clear(v[k]);if(typeof v[k]==='string')v[k]='';}};
 let init,reader;
