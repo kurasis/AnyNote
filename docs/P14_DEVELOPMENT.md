@@ -390,3 +390,36 @@ ownership check fences an intervening other-app copy; later copies change the
 sequence. The existing exact-text and sequence checks still protect another
 application's clipboard value. The original full 30-second and later-copy UI
 assertions remain mandatory; OS diagnosis alone is not application acceptance.
+
+
+## Primitive CDP errors are distinct from successful values
+
+Fresh-source run38719871883 passed real clipboard copy and actual 30-second
+clearing after the sequence fix. The next native-denial assertion failed because
+the test CDP client discarded primitive string rejections: V8 returns their code
+in exception.value, without exception.description. The unchanged client converted
+an actual INVALID_REQUEST-shaped rejection to WEBVIEW_EVALUATION_FAILED. Real
+Node/V8 Inspector reproduced that exact wire response; the original client failed
+the regression, while the corrected client passes four real Runtime cases.
+
+The client now preserves primitive rejection strings as well as Error descriptions.
+Successful error-looking strings remain successful values, so the denial helper
+still requires an actual rejection matching the expected exact code. Early real
+WebView2 preflight now also checks unknown profile operations and extra fields,
+before backend/installer/gigabyte work. Product parsing/permissions, the original
+invalid raw HTTP/path denials and actual 1 GB workflows are unchanged. The CI
+cache generation advances once to retain rebuilt native-auth/host artifacts for
+subsequent documentation-only heads; Cargo fingerprints and every test remain
+required. Reused
+compiled full-host diagnostics remain separate from fresh-source/all-25 acceptance.
+
+
+Reused full-host diagnosis run38724260983 confirmed native dialog edit ID1148
+and Button ID1 were exposed as ControlType.Pane, so ControlType-based selectors
+could not select files. The CI actor now uses visible owned Win32 #32770 dialog
+HWNDs, exact native Edit filename IDs/ancestry and Button ID1. Bounded WM_SETTEXT
+and WM_GETTEXT round-trip the fixture path; the actual Open/Save button is pressed
+and its native dialog must close. Native file selection/handle validation and
+all original gigabyte assertions remain required. Only control classes, IDs and
+state are recorded on failure, never filenames or contents. Full reused diagnosis
+continues separately; fresh-source CI must still execute the entire application.

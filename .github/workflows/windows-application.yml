@@ -38,7 +38,7 @@ jobs:
             ~/.cargo/registry
             packages/windows-native/target
             apps/desktop/src-tauri/target
-          key: windows-p14-rust199-${{ hashFiles('packages/windows-native/Cargo.lock', 'apps/desktop/src-tauri/Cargo.lock') }}-release3
+          key: windows-p14-rust199-${{ hashFiles('packages/windows-native/Cargo.lock', 'apps/desktop/src-tauri/Cargo.lock') }}-release4
           restore-keys: windows-p14-rust199-${{ hashFiles('packages/windows-native/Cargo.lock', 'apps/desktop/src-tauri/Cargo.lock') }}
       - name: Parse native Windows automation before compilation
         run: |
@@ -60,6 +60,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python apps/desktop/prepare-runtime.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Real V8 Runtime exception contract before native compilation
+        run: node --test --test-concurrency=1 scripts/p14-cdp.test.mjs
       - name: Unchanged baseline and closed native capability audit
         run: python scripts/check-p14.py
       - name: Early real WebView2 and typed IPC before backend and installer work

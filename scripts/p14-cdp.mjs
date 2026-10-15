@@ -10,7 +10,7 @@ export class CDP {
   timer.unref();this.#pending.set(id,{resolve:value=>{clearTimeout(timer);resolve(value);},reject:error=>{clearTimeout(timer);reject(error);}});
   try{this.socket.send(JSON.stringify({id,method,params}));}catch(error){this.#pending.delete(id);clearTimeout(timer);reject(error);}
  });}
- async evaluate(expression){const result=await this.command('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true,userGesture:true});if(result.exceptionDetails)throw Error(result.exceptionDetails.exception?.description??'WEBVIEW_EVALUATION_FAILED');return result.result.value;}
+ async evaluate(expression){const result=await this.command('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true,userGesture:true});if(result.exceptionDetails){const remote=result.exceptionDetails.exception;throw Error(remote?.description??(typeof remote?.value==='string'?remote.value:'WEBVIEW_EVALUATION_FAILED'));}return result.result.value;}
  close(){this.socket.close();}
 }
 export async function targets(){const response=await fetch('http://127.0.0.1:9223/json/list');if(!response.ok)throw Error('WEBVIEW_CDP_UNAVAILABLE');return response.json();}

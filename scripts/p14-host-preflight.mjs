@@ -14,6 +14,10 @@ const report={purpose:'P14 real empty-profile WebView2 and typed IPC preflight; 
 try{
  cdp=await mainWindow(app);assert(await until(()=>cdp.evaluate("!!document.querySelector('.onboarding')"),'Actual React onboarding'));checks++;
  const profiles=await cdp.evaluate("window.__TAURI_INTERNALS__.invoke('profile',{request:{operation:'list'}})");assert.deepEqual(profiles,{items:[]});checks++;
+ for(const request of [{operation:'raw-private-key'},{operation:'list',path:'vault.sqlite'}]){
+  await assert.rejects(cdp.evaluate(`window.__TAURI_INTERNALS__.invoke('profile',{request:${JSON.stringify(request)}})`),error=>error instanceof Error&&error.message==='INVALID_REQUEST');checks++;
+ }
+
  assert((await targets()).some(t=>t.type==='page'&&t.url.startsWith('http://tauri.localhost/')),'Actual native WebView2 page');checks++;
  report.status='PASS';
 }catch(error){
