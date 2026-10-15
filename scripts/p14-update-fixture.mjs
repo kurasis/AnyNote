@@ -9,7 +9,14 @@ export function updateFixture(root,appRoot){
  const owned=JSON.parse(readFileSync(join(root,'.local/p14-webview/owner.json')));assert.equal(owned.purpose,'P14 synthetic installed host software acceptance');
  const work=join(root,'.local/p14-update-signing'),site=join(root,'.local/p06/static/p14-update');mkdirSync(work);mkdirSync(site,{recursive:true});
  const cli=join(root,'apps/desktop/node_modules/@tauri-apps/cli/tauri.js'),key=join(work,'ephemeral.key');
- const run=args=>execFileSync(process.execPath,[cli,...args],{cwd:root,env:{...process.env,CI:'true',TAURI_SIGNING_PRIVATE_KEY_PASSWORD:''},stdio:['ignore','pipe','pipe']});
+ const run=args=>{
+  try{return execFileSync(process.execPath,[cli,...args],{cwd:root,env:{...process.env,CI:'true',TAURI_SIGNING_PRIVATE_KEY_PASSWORD:''},stdio:['ignore','pipe','pipe']});}
+  catch(error){
+   // execFileSync errors retain stdout/stderr and may include the ephemeral key.
+   for(const bytes of [error.stdout,error.stderr,...(error.output??[])])if(Buffer.isBuffer(bytes))bytes.fill(0);
+   throw Error('EPHEMERAL_SIGNER_FAILED: private output withheld');
+  }
+ };
  const candidate=join(root,'.local/p14-candidate'),names=readdirSync(candidate).filter(n=>n.endsWith('.exe'));assert.equal(names.length,1);const installer=join(candidate,names[0]);
  try{
   // CLI output includes private key text: capture it in memory, never log it.

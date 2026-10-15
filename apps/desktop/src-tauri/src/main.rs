@@ -474,16 +474,27 @@ async fn file_job(
    let payload=serde_json::to_string(&json!({"bytes":anynote_crypto_core::crypto::b64(&bytes)})).map_err(|_|"PREVIEW_UNAVAILABLE")?;
    let data=Arc::new(Mutex::new(Some(payload)));let label=format!("preview-{}",anynote_crypto_core::crypto::b64(&anynote_crypto_core::crypto::random_key().map_err(|e|e.0)?[..16]));
    let preview_host=host.clone();let window_state=state.clone();
-   let preview=tauri::WebviewWindowBuilder::new(&app,&label,tauri::WebviewUrl::App("auth/preview.html".into())).title("AnyNote file preview").parent(&window).map_err(|_|"PREVIEW_UNAVAILABLE")?.devtools(false).incognito(true)
+   let preview_builder=tauri::WebviewWindowBuilder::new(&app,&label,tauri::WebviewUrl::App("auth/preview.html".into())).title("AnyNote file preview").parent(&window).map_err(|_|"PREVIEW_UNAVAILABLE")?.devtools(false).incognito(true)
     .on_navigation(|url|["http://tauri.localhost","tauri://localhost"].contains(&url.origin().ascii_serialization().as_str())&&url.username().is_empty()&&url.password().is_none()&&url.path()=="/auth/preview.html"&&url.query().is_none()&&url.fragment().is_none())
     .on_new_window(|_,_|tauri::webview::NewWindowResponse::Deny)
     .on_download(|_,_|false)
     .on_page_load(move|view,page|{if page.event()==tauri::webview::PageLoadEvent::Finished{if preview_host.current()!=generation{let _=view.close();return;}if let Ok(mut data)=data.lock()&&let Some(payload)=data.take(){let _=view.eval(format!("window.dispatchEvent(new CustomEvent('anynote-preview',{{detail:{payload}}}))"));}}})
-    .build().map_err(|_|"PREVIEW_UNAVAILABLE")?;
+    ;
+   #[cfg(feature = "integration-harness")]
+   let preview_builder=preview_builder.data_directory(harness_browser_directory());
+   let preview=preview_builder.build().map_err(|_|"PREVIEW_UNAVAILABLE")?;
    preview.on_window_event(move|event|{if matches!(event,tauri::WindowEvent::Focused(false))&&!window_state.owns_foreground(){window_state.lock();if let Some(app)=window_state.app.get(){let _=app.emit("vault-locked",json!({"reason":"background"}));}}});
    Ok(json!({"state":"OPENED","isolation":"separate window, no native IPC permissions, bounded P13 workers"}))
   }
  }}).await.map_err(|_|"HOST_UNAVAILABLE")?
+}
+// WebView2 environments with different browser arguments must not share a data
+// directory (the maintained builder documents this contract). CI-only CDP uses
+// an isolated per-process browser profile; all preview windows share that scope.
+// Native encrypted profiles keep their normal app-local path across restarts.
+#[cfg(feature = "integration-harness")]
+fn harness_browser_directory() -> PathBuf {
+    std::env::temp_dir().join(format!("anynote-p14-webview-{}", std::process::id()))
 }
 fn main() {
     // WebView2 honors debugging environment overrides independently of its UI setting.
@@ -527,11 +538,13 @@ fn main() {
             });
             let _ = state.app.set(app.handle().clone());
             app.manage(state.clone());
-            let window =
+            let window_builder =
                 tauri::WebviewWindowBuilder::from_config(app, &app.config().app.windows[0])?
                     .on_new_window(|_, _| tauri::webview::NewWindowResponse::Deny)
-                    .on_download(|_, _| false)
-                    .build()?;
+                    .on_download(|_, _| false);
+            #[cfg(feature = "integration-harness")]
+            let window_builder = window_builder.data_directory(harness_browser_directory());
+            let window = window_builder.build()?;
             #[cfg(windows)]
             windows::attach(&window, state.clone())?;
             let handle = app.handle().clone();

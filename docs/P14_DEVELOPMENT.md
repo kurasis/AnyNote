@@ -210,3 +210,65 @@ CI caches the public Cargo registry plus native and complete desktop build outpu
 after successful compilation, including when later acceptance fails. Candidate
 preparation no longer overwrites Cargo's executable with instrumented bytes; the
 separate explicit harness path is passed only to the owned GUI runner.
+
+The hosted CurrentUser certificate-store operation was independently bounded and
+reproduced a45-second timeout; cleanup succeeded. The main run's cancellation
+trace confirms it was still inside trust's installed=checked call, before the
+WebView2 runner started. An isolated hosted LocalMachine operation verifies the
+same exact DER bytes and removes the certificate in3.9 seconds. Its hosted-only,
+bounded variant also passes in2.1 seconds. Both GitHub ZIP digests and actual helper
+source bytes were independently verified. This is CI infrastructure evidence,
+not an owner application privilege, physical-platform result or TLS exception.
+
+The test helper now requires a GitHub-hosted Windows runner, uses that confirmed
+machine root store, records cleanup intent, verifies exact bytes and bounds OS
+calls. A distinct early workflow step checks trust before the installer, and
+cleanup preserves every failure while still attempting stop. Complete compiler
+caches are saved before GUI acceptance. The main cancelled run saved the warmed
+registry/desktop cache successfully; all24 inherited jobs passed at bdda809.
+
+The GUI runner emits only fixed phase labels and bounds stalled CDP calls. It
+checks the real signed HTTPS updater metadata before expensive gigabyte workflows,
+then retains the full tamper/install/restart/outbox checks after those workflows.
+Failed ephemeral signer commands discard process output and throw a generic
+error instead of exposing Node's retained stdout/stderr. The full Windows GUI,
+gigabyte and actual upgrade acceptance remain pending; P14 is still active.
+
+The early full-host step at a350118 times out while reading the machine root
+store through a child Windows PowerShell process, before any store mutation or
+WebView2 run. A diagnostic matching its PowerShell parent and Python3.14.8 passes
+with explicit closed stdin and noninteractive child commands. Its raw ZIP digest
+and exact helper bytes were independently verified. Service commands now close
+unused stdin and add -NonInteractive to PowerShell; explicit PHP/SQL control
+request bodies still use their intended input pipe. TLS and exact root checks
+remain enabled. Complete Windows GUI acceptance is still pending.
+
+The first real GUI attempt at ba68828 reaches owner installation but times out
+on its HWND check. Inspection finds an unclosed foreach block in the PowerShell
+memory helper; the entire helper fails parsing, including foreground operations.
+An isolated Windows diagnostic exercises original-parser rejection, corrected
+parser/compilation, real process memory, and an owned WinForms HWND with neutral
+SendInput. Its test step completed successfully, but retrieval of the final raw
+report and verification of its source bytes and ZIP digest remain pending:
+GitHub API and ordinary Git authentication stopped working. This diagnostic
+cannot establish Tauri acceptance.
+
+The missing brace is fixed and formatted. The full workflow now parses the helper
+before compilation. HWND waits preserve helper errors and process-exit status;
+legacy PowerShell is explicitly noninteractive. The complete Tauri/1GB/upgrade
+acceptance remains pending. No assertion, sandbox, authority or TLS check was
+removed to accept a failed runtime.
+
+
+At 000d815 the real owner installer starts its HWND and rejects debugging
+injection, then the separately instrumented binary cannot expose CDP. The pinned
+Tauri builder documents that different browser arguments require different data
+directories; both binaries were using the same WebView2 data scope. The explicit
+integration feature now uses a per-process temporary browser directory shared by
+its main and preview windows. Native encrypted profile paths remain normal and
+unchanged. The harness checks its real HWND and retains process-exit diagnostics
+before connecting CDP. This is a pending runtime correction, not acceptance.
+
+After GitHub reconnection the isolated helper diagnostic raw report, ZIP digest
+and exact helper Git bytes were verified successfully; see retained development
+receipts at closure. The diagnostic remains separate from Tauri acceptance.
