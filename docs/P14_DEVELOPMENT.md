@@ -289,3 +289,11 @@ STALE_WRITER after unusually long scheduling delays. The unmodified isolated
 suite then passes all eight tests. The failed setup receipt is not accepted;
 the complete preserved-data scenario must pass before closure. No writer lease,
 authorization timeout or assertion is extended or disabled.
+
+
+The pure P09 injected-storage-abort unit case now holds its own Date clock using
+Node's scoped mock timers. A host scheduling pause cannot turn its expected
+INSUFFICIENT_STORAGE into unrelated lease expiry before the injected write. Its
+exact error/unchanged-record/key assertions remain intact. The independent vault
+suite still expires the actual stored lease and rejects a stale writer; no
+production timeout, clock, lease or authority check was changed.
