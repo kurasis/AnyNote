@@ -297,3 +297,13 @@ INSUFFICIENT_STORAGE into unrelated lease expiry before the injected write. Its
 exact error/unchanged-record/key assertions remain intact. The independent vault
 suite still expires the actual stored lease and rejects a stale writer; no
 production timeout, clock, lease or authority check was changed.
+
+
+The separate direct-options probe cannot see the PR-scoped Cargo cache and is
+cancelled during cold dependency compilation at its eight-minute budget. No CDP
+result or report exists for that attempt. The main PR workflow now runs an early
+actual empty-profile WebView2/React/typed-IPC preflight before backend, pairing and
+installer work, using its valid PR cache. It kills only the owned process tree
+and removes only the verified empty synthetic profile directory. Its separate
+source-bound report is required in the final receipt; the complete installed
+1 GB/upgrade suite remains mandatory and unchanged.
