@@ -423,3 +423,30 @@ and its native dialog must close. Native file selection/handle validation and
 all original gigabyte assertions remain required. Only control classes, IDs and
 state are recorded on failure, never filenames or contents. Full reused diagnosis
 continues separately; fresh-source CI must still execute the entire application.
+
+
+A later Save dialog exposed its filename Edit as ID1001 with a logical UIA
+FileNameControlHost, while the expected Win32 ancestor was absent. File selection
+now requires one unique visible/enabled native Edit with the known filename IDs
+inside the exact owned #32770 dialog, plus its native accept Button ID1. Ambiguous
+fields fail closed. Native control ID/parent-class metadata is available on failure.
+The CI job compiles its embedded C# automation before expensive native builds.
+
+An additional 4096-byte installed Open/Save/export/separate-kit/complete offline
+validation/fresh-import/download preflight exercises every dialog transition
+before the full gigabyte workflow. The original entire gigabyte block remains
+byte-identical; no 1 GB/hash/memory/idle/update assertion is removed or reduced.
+The short round trip is additional coverage and never substitutes for 1 GB.
+
+
+The added small preflight immediately caught an output-path mismatch: the native
+download job completed after a closed Save dialog, but the requested fixture
+output did not exist. A native WM_SETTEXT/WM_GETTEXT echo alone did not prove
+that the modern Save controller committed that filename. The CI actor now
+focuses the exact owned filename edit, selects/clears it, types Unicode through
+real SendInput, verifies the entered text and commits by focusing the native
+accept button. Every input checks owned foreground/focus. Its synthetic neutral
+heartbeat pauses only during dialog interaction; native idle policy stays intact.
+The same exact requested output and full hash assertions remain required. The test actor
+also drains any in-flight neutral input before filename typing or process stop,
+so its own heartbeat cannot redirect focus during text entry.

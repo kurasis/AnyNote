@@ -36,14 +36,33 @@ public static class AnyNoteTestWindow {
  [DllImport("user32.dll",EntryPoint="SendMessageTimeoutW",ExactSpelling=true,CharSet=CharSet.Unicode,SetLastError=true)] public static extern IntPtr SendText(IntPtr h,uint m,IntPtr w,string text,uint flags,uint timeout,out UIntPtr result);
  [DllImport("user32.dll",EntryPoint="SendMessageTimeoutW",ExactSpelling=true,CharSet=CharSet.Unicode,SetLastError=true)] public static extern IntPtr ReadText(IntPtr h,uint m,IntPtr w,StringBuilder text,uint flags,uint timeout,out UIntPtr result);
  public static IntPtr[] OwnedChildren(IntPtr root,uint pid){var a=new List<IntPtr>();EnumChildWindows(root,(h,l)=>{uint p;GetWindowThreadProcessId(h,out p);if(p==pid)a.Add(h);return true;},IntPtr.Zero);return a.ToArray();}
- public static bool FileNameEdit(IntPtr h,IntPtr root){
-  if(ClassOf(h)!="Edit")return false;int id=GetDlgCtrlID(h);if(id==1148||id==1152)return true;if(id!=1001)return false;
-  var p=GetParent(h);for(int n=0;n<8&&p!=IntPtr.Zero&&p!=root;n++,p=GetParent(p)){if(GetDlgCtrlID(p)==1148)return true;}return false;
+ public static bool FileNameEdit(IntPtr h){
+  if(ClassOf(h)!="Edit")return false;int id=GetDlgCtrlID(h);return id==1148||id==1152||id==1001;
  }
- public static bool SetFileName(IntPtr h,string text){
-  if(text.Length==0||text.Length>32766)return false;UIntPtr result;
-  if(SendText(h,0xC,IntPtr.Zero,text,2,5000,out result)==IntPtr.Zero||result==UIntPtr.Zero)return false;
-  var b=new StringBuilder(text.Length+1);return ReadText(h,0xD,(IntPtr)b.Capacity,b,2,5000,out result)!=IntPtr.Zero&&b.ToString()==text;
+ [StructLayout(LayoutKind.Sequential)] public struct RECT {public int left,top,right,bottom;}
+ [StructLayout(LayoutKind.Sequential)] public struct GUIINFO {public uint cbSize,flags;public IntPtr active,focus,capture,menuOwner,moveSize,caret;public RECT caretRect;}
+ [DllImport("user32.dll")] public static extern bool GetGUIThreadInfo(uint id,ref GUIINFO info);
+ [DllImport("user32.dll")] public static extern bool IsChild(IntPtr parent,IntPtr child);
+ public static string FileInputStage="NOT_STARTED";
+ static INPUT Key(ushort key,ushort scan,uint flags){var p=new INPUT();p.type=1;p.data.keyboard.key=key;p.data.keyboard.scan=scan;p.data.keyboard.flags=flags;return p;}
+ static bool ForegroundOwned(uint pid){uint p;GetWindowThreadProcessId(GetForegroundWindow(),out p);return p==pid;}
+ static bool FocusControl(IntPtr dialog,IntPtr h,uint pid){
+  if(!ForegroundOwned(pid))return false;SetForegroundWindow(dialog);UIntPtr result;
+  if(SendMessageTimeout(dialog,0x28,h,(IntPtr)1,2,5000,out result)==IntPtr.Zero)return false;
+  uint owner;uint tid=GetWindowThreadProcessId(h,out owner);if(owner!=pid)return false;
+  for(int n=0;n<20;n++){var info=new GUIINFO();info.cbSize=(uint)Marshal.SizeOf(typeof(GUIINFO));if(GetGUIThreadInfo(tid,ref info)&&(info.focus==h||IsChild(h,info.focus)))return ForegroundOwned(pid);System.Threading.Thread.Sleep(50);}return false;
+ }
+ static bool WaitText(IntPtr h,string expected){
+  for(int n=0;n<40;n++){var b=new StringBuilder(32768);UIntPtr result;if(ReadText(h,0xD,(IntPtr)b.Capacity,b,2,5000,out result)==IntPtr.Zero)return false;if(b.ToString()==expected)return true;System.Threading.Thread.Sleep(50);}return false;
+ }
+ public static bool SetFileName(IntPtr dialog,IntPtr h,IntPtr accept,string text,uint pid){
+  if(text.Length==0||text.Length>32766||text.IndexOfAny(new char[]{(char)0,(char)10,(char)13})>=0)return false;
+  FileInputStage="FOCUS_FILENAME";if(!FocusControl(dialog,h,pid))return false;UIntPtr result;
+  FileInputStage="CLEAR_FILENAME";if(SendMessageTimeout(h,0xB1,IntPtr.Zero,(IntPtr)(-1),2,5000,out result)==IntPtr.Zero)return false;
+  var erase=new INPUT[]{Key(8,0,0),Key(8,0,2)};if(SendInput(2,erase,Marshal.SizeOf(typeof(INPUT)))!=2||!WaitText(h,""))return false;
+  FileInputStage="TYPE_FILENAME";if(!ForegroundOwned(pid))return false;var input=new List<INPUT>();foreach(char c in text){input.Add(Key(0,c,4));input.Add(Key(0,c,6));}var values=input.ToArray();
+  if(SendInput((uint)values.Length,values,Marshal.SizeOf(typeof(INPUT)))!=(uint)values.Length||!WaitText(h,text))return false;
+  FileInputStage="COMMIT_FILENAME";if(!FocusControl(dialog,accept,pid))return false;FileInputStage="READY";return true;
  }
  public static bool NeutralInput(){var a=new INPUT[2];a[0].type=a[1].type=1;a[0].data.keyboard.key=a[1].data.keyboard.key=0x10;a[1].data.keyboard.flags=2;return SendInput(2,a,Marshal.SizeOf(typeof(INPUT)))==2;}
 
@@ -80,14 +99,16 @@ do{
  if($Operation -eq 'file'){
   foreach($dialog in [AnyNoteTestWindow]::OwnedWindows([uint32]$ProcessId)){
    if([AnyNoteTestWindow]::ClassOf($dialog) -ne '#32770' -or ![AnyNoteTestWindow]::IsWindowVisible($dialog)){continue}
-   $fileEdit=[IntPtr]::Zero;$accept=[IntPtr]::Zero
+   $fileEdits=@();$accept=[IntPtr]::Zero
    foreach($child in [AnyNoteTestWindow]::OwnedChildren($dialog,[uint32]$ProcessId)){
     if(![AnyNoteTestWindow]::IsWindowVisible($child) -or ![AnyNoteTestWindow]::IsWindowEnabled($child)){continue}
-    if([AnyNoteTestWindow]::FileNameEdit($child,$dialog)){$fileEdit=$child}
+    if([AnyNoteTestWindow]::FileNameEdit($child)){$fileEdits+=@($child)}
     if([AnyNoteTestWindow]::ClassOf($child) -eq 'Button' -and [AnyNoteTestWindow]::GetDlgCtrlID($child) -eq 1){$accept=$child}
    }
-   if($fileEdit -ne [IntPtr]::Zero -and $accept -ne [IntPtr]::Zero){
-    if(![AnyNoteTestWindow]::SetFileName($fileEdit,$Value)){throw 'Owned native filename edit failed'}
+   if($fileEdits.Count -gt 1 -and $accept -ne [IntPtr]::Zero){throw 'Ambiguous owned native filename edit'}
+   if($fileEdits.Count -eq 1 -and $accept -ne [IntPtr]::Zero){
+    $fileEdit=$fileEdits[0]
+    if(![AnyNoteTestWindow]::SetFileName($dialog,$fileEdit,$accept,$Value,[uint32]$ProcessId)){throw ('Owned native filename input failed: '+[AnyNoteTestWindow]::FileInputStage)}
     [UIntPtr]$fileResult=[UIntPtr]::Zero
     if([AnyNoteTestWindow]::SendMessageTimeout($accept,0xF5,[IntPtr]::Zero,[IntPtr]::Zero,2,5000,[ref]$fileResult) -eq [IntPtr]::Zero){throw 'Owned native file button did not respond'}
     $closeDeadline=(Get-Date).AddSeconds(5)
@@ -133,6 +154,16 @@ do{
  }
  Start-Sleep -Milliseconds 200
 }while((Get-Date) -lt $deadline)
+$nativeEdits=@()
+foreach($dialog in [AnyNoteTestWindow]::OwnedWindows([uint32]$ProcessId)){
+ if([AnyNoteTestWindow]::ClassOf($dialog) -ne '#32770' -or ![AnyNoteTestWindow]::IsWindowVisible($dialog)){continue}
+ foreach($child in [AnyNoteTestWindow]::OwnedChildren($dialog,[uint32]$ProcessId)){
+  if([AnyNoteTestWindow]::ClassOf($child) -eq 'Edit' -and [AnyNoteTestWindow]::IsWindowVisible($child)){
+   $parent=[AnyNoteTestWindow]::GetParent($child);$nativeEdits+=@{id=[AnyNoteTestWindow]::GetDlgCtrlID($child);parent_id=[AnyNoteTestWindow]::GetDlgCtrlID($parent);parent_class=[AnyNoteTestWindow]::ClassOf($parent);enabled=[AnyNoteTestWindow]::IsWindowEnabled($child)}
+  }
+ }
+}
+[Console]::Error.WriteLine(('OWNED_NATIVE_FILENAME_EDITS '+($nativeEdits|ConvertTo-Json -Compress)))
 $dialogControls=@()
 foreach($candidate in $windows){
  if($candidate.Current.ClassName -eq '#32770'){

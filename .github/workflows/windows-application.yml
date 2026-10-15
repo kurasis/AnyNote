@@ -46,6 +46,11 @@ jobs:
           $parseErrors = $null
           [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path scripts/p14-windows-ui.ps1).Path,[ref]$parseTokens,[ref]$parseErrors)
           if ($parseErrors.Count) { $parseErrors | ForEach-Object { $_.Message }; throw 'Native automation PowerShell syntax failed' }
+          $automationSource = Get-Content -Raw scripts/p14-windows-ui.ps1
+          $nativeType = [regex]::Match($automationSource,"(?s)Add-Type @'\r?\n(.*?)\r?\n'@")
+          if (!$nativeType.Success) { throw 'Native automation C# block missing' }
+          Add-Type -TypeDefinition $nativeType.Groups[1].Value
+
       - name: Frozen maintained dependencies and one-installer runtime
         run: |
           rustup toolchain install 1.99.0 --profile minimal --component clippy,rustfmt
