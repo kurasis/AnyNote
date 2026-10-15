@@ -365,3 +365,28 @@ Protected-generation changes still raise STALE_CAPABILITY and mask/recheck the
 vault. Native authorization, lifecycle fences and custody are unchanged. The
 original real keyboard/publication scenario remains required in fresh-source
 Windows acceptance; the reused-binary observation is not phase acceptance.
+
+
+## Actual Windows clipboard sequence and native consent
+
+Fresh-source run38715520150 passed real keyboard/thread/checklist/tag publication
+with the renderer view fix, then could not locate native clipboard confirmation
+through the original UI Automation tree. Reused-binary run38718567329 found the
+owned Win32 dialog and pressed its real Yes button; copy and actual clipboard
+text checks passed. Automation now recognizes only the exact owned process,
+visible AnyNote #32770 dialog and enabled native Button ID6 with No ID7. A bounded
+SendMessageTimeout presses that real button. Consent and native authorization
+remain required. UI Automation providers for file dialogs are bound to actual visible owned
+HWNDs rather than the incomplete desktop-child PID query. Failure diagnostics
+contain HWND classes/state only.
+
+The next actual 30-second clearing assertion failed. Std-only Windows probe
+run38719329544 established that the sequence was 2 before CloseClipboard but 5
+after it, with exactly unchanged native Unicode and PowerShell text after more
+than 30 seconds. The original marker therefore rejected its own finalized copy.
+The native writer now records the sequence after CloseClipboard and then checks
+that its own HWND remains the clipboard owner. Capturing sequence before the
+ownership check fences an intervening other-app copy; later copies change the
+sequence. The existing exact-text and sequence checks still protect another
+application's clipboard value. The original full 30-second and later-copy UI
+assertions remain mandatory; OS diagnosis alone is not application acceptance.

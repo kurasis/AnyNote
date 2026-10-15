@@ -26,6 +26,7 @@ public static class AnyNoteTestWindow {
  [DllImport("user32.dll",CharSet=CharSet.Unicode)] public static extern int GetClassName(IntPtr h,StringBuilder s,int n);
  [DllImport("user32.dll",CharSet=CharSet.Unicode)] public static extern int GetWindowText(IntPtr h,StringBuilder s,int n);
  [DllImport("user32.dll")] public static extern IntPtr GetDlgItem(IntPtr h,int id);
+ [DllImport("user32.dll", SetLastError=true)] public static extern IntPtr SendMessageTimeout(IntPtr h,uint m,IntPtr w,IntPtr l,uint flags,uint timeout,out UIntPtr result);
  public static IntPtr[] OwnedWindows(uint pid){var a=new List<IntPtr>();EnumWindows((h,l)=>{uint p;GetWindowThreadProcessId(h,out p);if(p==pid)a.Add(h);return true;},IntPtr.Zero);return a.ToArray();}
  public static string ClassOf(IntPtr h){var b=new StringBuilder(256);GetClassName(h,b,256);return b.ToString();}
  public static string TitleOf(IntPtr h){var b=new StringBuilder(256);GetWindowText(h,b,256);return b.ToString();}
@@ -65,12 +66,17 @@ do{
   foreach($dialog in [AnyNoteTestWindow]::OwnedWindows([uint32]$ProcessId)){
    $yes=[AnyNoteTestWindow]::GetDlgItem($dialog,6);$no=[AnyNoteTestWindow]::GetDlgItem($dialog,7)
    if([AnyNoteTestWindow]::ClassOf($dialog) -eq '#32770' -and [AnyNoteTestWindow]::TitleOf($dialog).StartsWith('AnyNote') -and [AnyNoteTestWindow]::IsWindowVisible($dialog) -and $yes -ne [IntPtr]::Zero -and $no -ne [IntPtr]::Zero -and [AnyNoteTestWindow]::ClassOf($yes) -eq 'Button' -and [AnyNoteTestWindow]::IsWindowVisible($yes) -and [AnyNoteTestWindow]::IsWindowEnabled($yes)){
-    [Console]::Error.WriteLine('OWNED_WIN32_YES_BUTTON_INVOKED');[void][AnyNoteTestWindow]::SendMessage($yes,0xF5,[IntPtr]::Zero,[IntPtr]::Zero);exit
+    [UIntPtr]$consentResult=[UIntPtr]::Zero;if([AnyNoteTestWindow]::SendMessageTimeout($yes,0xF5,[IntPtr]::Zero,[IntPtr]::Zero,2,5000,[ref]$consentResult) -eq [IntPtr]::Zero){throw 'Owned native consent did not respond'};exit
    }
   }
  }
- $condition=New-Object Windows.Automation.PropertyCondition([Windows.Automation.AutomationElement]::ProcessIdProperty,$ProcessId)
- $windows=[Windows.Automation.AutomationElement]::RootElement.FindAll([Windows.Automation.TreeScope]::Children,$condition)
+ # UI Automation's desktop-child PID query can omit owned modal dialogs.
+ # Bind providers to actual visible HWNDs from this exact disposable process.
+ $windows=@(foreach($ownedWindow in [AnyNoteTestWindow]::OwnedWindows([uint32]$ProcessId)){
+  if([AnyNoteTestWindow]::IsWindowVisible($ownedWindow)){
+   try{[Windows.Automation.AutomationElement]::FromHandle($ownedWindow)}catch{}
+  }
+ })
  foreach($candidate in $windows){
   $controls=$candidate.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.Condition]::TrueCondition)
   if($Operation -eq 'file'){
@@ -86,13 +92,4 @@ do{
 $native=@()
 foreach($h in [AnyNoteTestWindow]::OwnedWindows([uint32]$ProcessId)){$native+=@{class=[AnyNoteTestWindow]::ClassOf($h);visible=[AnyNoteTestWindow]::IsWindowVisible($h);enabled=[AnyNoteTestWindow]::IsWindowEnabled($h);yes=([AnyNoteTestWindow]::GetDlgItem($h,6) -ne [IntPtr]::Zero);no=([AnyNoteTestWindow]::GetDlgItem($h,7) -ne [IntPtr]::Zero)}}
 [Console]::Error.WriteLine(('OWNED_WIN32_WINDOWS '+($native|ConvertTo-Json -Compress)))
-$observed=@()
-foreach($candidate in $windows){
- if($candidate.Current.ClassName -eq '#32770'){
-  foreach($control in $candidate.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.Condition]::TrueCondition)){
-   if($control.Current.ControlType -eq [Windows.Automation.ControlType]::Button){$observed+=@{id=$control.Current.AutomationId;name=$control.Current.Name;class=$control.Current.ClassName}}
-  }
- }
-}
-[Console]::Error.WriteLine(('OWNED_NATIVE_DIALOG_BUTTONS '+($observed|ConvertTo-Json -Compress)))
-throw 'Real native dialog not found' 
+throw 'Real native dialog not found'

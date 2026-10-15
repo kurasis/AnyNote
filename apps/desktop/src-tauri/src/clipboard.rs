@@ -14,6 +14,7 @@ mod windows {
         fn SetClipboardData(format: u32, memory: *mut c_void) -> *mut c_void;
         fn GetClipboardData(format: u32) -> *mut c_void;
         fn GetClipboardSequenceNumber() -> u32;
+        fn GetClipboardOwner() -> isize;
     }
     #[link(name = "kernel32")]
     unsafe extern "system" {
@@ -110,12 +111,19 @@ mod windows {
                 GlobalFree(memory);
                 return Err("CLIPBOARD_UNAVAILABLE".into());
             }
-            *owned = Some(Marker {
-                sequence: GetClipboardSequenceNumber(),
-                text: encoded,
-            });
         }
-        let sequence = owned.as_ref().ok_or("CLIPBOARD_UNAVAILABLE")?.sequence;
+        // CloseClipboard finalizes synthesized formats and their sequence changes.
+        // Capture the final sequence before checking ownership: a competing copy
+        // before that check is discarded; one afterwards changes the sequence.
+        let sequence = unsafe { GetClipboardSequenceNumber() };
+        if unsafe { GetClipboardOwner() } != window as isize {
+            *owned = None;
+            return Ok(());
+        }
+        *owned = Some(Marker {
+            sequence,
+            text: encoded,
+        });
         drop(owned);
         std::thread::spawn(move || {
             std::thread::sleep(std::time::Duration::from_secs(30));
