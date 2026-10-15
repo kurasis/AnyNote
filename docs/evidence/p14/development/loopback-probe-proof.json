@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "run_id": 38705536253,
+  "job_id": 116323895971,
+  "source_commit": "b3d5428afd814f453486c36bff54e262a0623444",
+  "artifact_id": 11958630915,
+  "artifact_zip_sha256": "6b2021b5510ee84dff908c57a57bc9425c0680e2d005f44531d53e3b17df0d3a",
+  "scope": "Real Windows TCP inheritance, original WouldBlock versus fixed awaited delayed byte; not OAuth/app/physical acceptance",
+  "physical_acceptance": false,
+  "workflow_git_blob_verified": true,
+  "workflow_git_blob": "5b34a62701a5913e3eb90fdd2ef394acbe87f27c",
+  "workflow_sha256": "9fe959c10b87a69d3bc39b9a02b2f68bcc9bf984ff061e23fc2aac99c29b9702"
+}

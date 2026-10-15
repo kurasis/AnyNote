@@ -4,7 +4,9 @@ An invite-only, end-to-end encrypted notes and files service for Windows
 (Tauri 2 / WebView2) and iPhone (installed PWA), backed by Laravel, MariaDB,
 Nginx and PHP-FPM.
 
-**Current state:** P00 and P02–P13 are software verified. P13 adds protected search,
+**Current state:** P00 and P02–P14 are software verified. P14 adds the native Windows client,
+single installer and actual WebView2/dialog/gigabyte/update/restart acceptance.
+P13 adds protected search,
 safe previews/thumbnails, reference-safe retention and independent portable recovery.
 P10 adds shared roles, full-history
 invitations, signed membership, revocation/rekey and owner transfer. P09 includes private
@@ -12,7 +14,7 @@ groups, encrypted notes/preferences, safe Markdown/checklists, protected local
 and server saving, conflicts and cross-device flows. P08 includes independently
 pinned enrollment, signed rosters, cascading revoke and root-signed recovery.
 P01 has scoped Windows/iPhone feasibility evidence; its full physical matrix is
-open. The next phase is P14 Windows application integration. Qualified
+open. The next phase is P15 iPhone PWA completion. Qualified
 independent review and production release gates remain open. Do not store real
 secrets or user data in experimental builds.
 
@@ -45,8 +47,10 @@ specification as **1.1.0**, superseding 1.0.0.
 Developer documentation, source and identifiers are in English. Chat with the
 owner is in Russian. The eventual interface must include English and Russian.
 
-No release license has been chosen for AnyNote. Third-party component licenses
-do not grant a license to this project's own source or the supplied specification.
+The native Windows development candidate is scoped GPL-3.0-only and bundles
+its license, notices and exact corresponding-source commit. No whole-project
+release license has been chosen for the other AnyNote components or supplied
+specification; third-party licenses do not license that separate source.
 
 P01 experiment: [commands and boundaries](experiments/p01/README.md).
 Physical trials: [owner actions and required results](docs/P01_OWNER_TRIALS.md).
@@ -72,3 +76,7 @@ Encrypted files, recovery and quota lifecycle: [P12 implementation and evidence]
 
 Protected content and independent recovery: [P13 guide](docs/P13_CONTENT.md) and
 [exact-source acceptance](docs/evidence/p13/README.md).
+
+Windows application: [operator/build guide](docs/P14_WINDOWS.md),
+[update signing contract](docs/P14_UPDATE_SIGNING.md) and
+[exact-source software acceptance](docs/evidence/p14/README.md).

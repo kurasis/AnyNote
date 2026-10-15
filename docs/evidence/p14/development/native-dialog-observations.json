@@ -1,0 +1,189 @@
+{
+  "status": "VERIFIED_OBSERVATIONS",
+  "purpose": "Historical native dialog test-actor failures, never full app/1GB/physical acceptance",
+  "records": [
+    {
+      "run_id": 38724260983,
+      "diagnostic_source_commit": "25fcf88f056c8a49dd4f87e075f34902d7f80caf",
+      "compiled_binary_source_commit": "af53a1946816b566140016c06feb62a22b4f29a2",
+      "outcome": "UIA native edit/button were Pane",
+      "job_log_sha256": "1e4aa50ab82d740baeb72fa9b5195ce4b5d6908ed9b7976ea752ff576c25a506",
+      "helper_git_blob": "681f3bfd79382af0261d50ca70274e3d47d4c2d1",
+      "helper_sha256": "6c9498d9db20e1060db8443784418ec8a4988ff15bac5c5cc58fa245931d2fea",
+      "helper_git_bytes_verified": true,
+      "control_metadata": [
+        {
+          "class": "UIItem",
+          "id": "1",
+          "type": "ControlType.ListItem",
+          "enabled": true
+        },
+        {
+          "class": "ComboBoxEx32",
+          "id": "1148",
+          "type": "ControlType.Pane",
+          "enabled": true
+        },
+        {
+          "class": "ComboBox",
+          "id": "1148",
+          "type": "ControlType.Pane",
+          "enabled": true
+        },
+        {
+          "class": "Edit",
+          "id": "1148",
+          "type": "ControlType.Pane",
+          "enabled": true
+        },
+        {
+          "class": "Button",
+          "id": "1",
+          "type": "ControlType.Pane",
+          "enabled": true
+        },
+        {
+          "class": "ToolbarWindow32",
+          "id": "1001",
+          "type": "ControlType.Pane",
+          "enabled": true
+        }
+      ],
+      "observed_phase_labels": [
+        "owner-install",
+        "instrumented-unlock",
+        "signed-updater-preflight",
+        "keyboard-notes",
+        "clipboard",
+        "isolated-previews"
+      ],
+      "dialog_operation_labels": []
+    },
+    {
+      "run_id": 38725351930,
+      "diagnostic_source_commit": "b9e4fd73f8e81c1f59e10d026be7d22f835d169e",
+      "compiled_binary_source_commit": "af53a1946816b566140016c06feb62a22b4f29a2",
+      "outcome": "Modern Save Edit1001 not matched by ancestry",
+      "job_log_sha256": "eec429a7903b5803857cc361e574312d3709ad63f16856d4db494573f7d706df",
+      "helper_git_blob": "16f4ccb3dfdd4ef059298dd092033d78e103dde9",
+      "helper_sha256": "637afe2e95f99c23ed92d05acdf08beb897f90c2aaafbc35b4f87d4b7130789b",
+      "helper_git_bytes_verified": true,
+      "control_metadata": [
+        {
+          "class": "UIItem",
+          "id": "1",
+          "type": "ControlType.ListItem",
+          "enabled": true
+        },
+        {
+          "class": "AppControlHost",
+          "id": "FileNameControlHost",
+          "type": "ControlType.Pane",
+          "enabled": true
+        },
+        {
+          "class": "Edit",
+          "id": "1001",
+          "type": "ControlType.Pane",
+          "enabled": true
+        },
+        {
+          "class": "Button",
+          "id": "1",
+          "type": "ControlType.Pane",
+          "enabled": true
+        },
+        {
+          "class": "ToolbarWindow32",
+          "id": "1001",
+          "type": "ControlType.Pane",
+          "enabled": true
+        }
+      ],
+      "observed_phase_labels": [
+        "owner-install",
+        "instrumented-unlock",
+        "signed-updater-preflight",
+        "keyboard-notes",
+        "clipboard",
+        "isolated-previews",
+        "gigabyte-workflow"
+      ],
+      "dialog_operation_labels": []
+    },
+    {
+      "run_id": 38726705612,
+      "diagnostic_source_commit": "987fb58cb88d54686f012ad56a548829915f07f5",
+      "compiled_binary_source_commit": "af53a1946816b566140016c06feb62a22b4f29a2",
+      "outcome": "Logical FileNameControlHost did not satisfy Win32 parent selector",
+      "job_log_sha256": "b27ca4f65bfa0ca4ef0e60d230b86b9a24a23c79de00b8790d74ad700a4f9237",
+      "helper_git_blob": "818f73ab3b96bdd0ad715ade75bda0bb90307d5d",
+      "helper_sha256": "53fe398c351395b11201b74b700b5709413800c9ccf9eca444abe5741460baee",
+      "helper_git_bytes_verified": true,
+      "control_metadata": [
+        {
+          "class": "UIItem",
+          "id": "1",
+          "type": "ControlType.ListItem",
+          "enabled": true
+        },
+        {
+          "class": "AppControlHost",
+          "id": "FileNameControlHost",
+          "type": "ControlType.Pane",
+          "enabled": true
+        },
+        {
+          "class": "Edit",
+          "id": "1001",
+          "type": "ControlType.Pane",
+          "enabled": true
+        },
+        {
+          "class": "Button",
+          "id": "1",
+          "type": "ControlType.Pane",
+          "enabled": true
+        },
+        {
+          "class": "ToolbarWindow32",
+          "id": "1001",
+          "type": "ControlType.Pane",
+          "enabled": true
+        }
+      ],
+      "observed_phase_labels": [
+        "owner-install",
+        "instrumented-unlock",
+        "signed-updater-preflight",
+        "keyboard-notes",
+        "clipboard",
+        "isolated-previews",
+        "gigabyte-workflow"
+      ],
+      "dialog_operation_labels": []
+    },
+    {
+      "run_id": 38729132129,
+      "diagnostic_source_commit": "86fc989eb1db96c2f96ed00b39a9131a1baa9ff9",
+      "compiled_binary_source_commit": "af53a1946816b566140016c06feb62a22b4f29a2",
+      "outcome": "Small download completed but requested output file absent",
+      "job_log_sha256": "fd25750fa618dc0c5c0d220026ce4bdd591263e79cbb31c8866e80c3b788efb9",
+      "helper_git_blob": "54a2c26c6e2612b971f247b1a6474f80518bb9cf",
+      "helper_sha256": "9748c4d960a6ac7276e43b4c2771247300805bd90107abb03ad55b292f7e8fcd",
+      "helper_git_bytes_verified": true,
+      "control_metadata": [],
+      "observed_phase_labels": [
+        "owner-install",
+        "instrumented-unlock",
+        "signed-updater-preflight",
+        "small-dialog-recovery-preflight"
+      ],
+      "dialog_operation_labels": [
+        "upload",
+        "download"
+      ]
+    }
+  ],
+  "physical_acceptance": false
+}

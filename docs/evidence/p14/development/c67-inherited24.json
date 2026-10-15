@@ -1,0 +1,175 @@
+{
+  "status": "PASS",
+  "source_commit": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+  "scope": "24 inherited checks only; Windows application gate failed",
+  "checks": [
+    {
+      "name": "files-windows-native",
+      "id": 116340219435,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404741/job/116340219435"
+    },
+    {
+      "name": "files-linux-http-browser",
+      "id": 116340219030,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404741/job/116340219030"
+    },
+    {
+      "name": "sync-linux-http-browser",
+      "id": 116340215024,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404729/job/116340215024"
+    },
+    {
+      "name": "sync-windows-native",
+      "id": 116340214884,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404729/job/116340214884"
+    },
+    {
+      "name": "foundation",
+      "id": 116340081773,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404832/job/116340081773"
+    },
+    {
+      "name": "crypto-linux-browser-php",
+      "id": 116340081607,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404800/job/116340081607"
+    },
+    {
+      "name": "content-windows-native",
+      "id": 116340081566,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404771/job/116340081566"
+    },
+    {
+      "name": "crypto-windows-native",
+      "id": 116340081238,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404800/job/116340081238"
+    },
+    {
+      "name": "content-linux-http-browser",
+      "id": 116340081186,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404771/job/116340081186"
+    },
+    {
+      "name": "shared-linux-http-browser",
+      "id": 116340081079,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404778/job/116340081079"
+    },
+    {
+      "name": "vault-windows-native",
+      "id": 116340081019,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404674/job/116340081019"
+    },
+    {
+      "name": "shared-windows-native",
+      "id": 116340080987,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404778/job/116340080987"
+    },
+    {
+      "name": "notes-linux-http-browser",
+      "id": 116340080900,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404725/job/116340080900"
+    },
+    {
+      "name": "baseline",
+      "id": 116340080742,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404742/job/116340080742"
+    },
+    {
+      "name": "file-contract",
+      "id": 116340080738,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404753/job/116340080738"
+    },
+    {
+      "name": "vault-linux-http-browser",
+      "id": 116340080671,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404674/job/116340080671"
+    },
+    {
+      "name": "notes-windows-native",
+      "id": 116340080641,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404725/job/116340080641"
+    },
+    {
+      "name": "auth-linux-http-browser",
+      "id": 116340080598,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404685/job/116340080598"
+    },
+    {
+      "name": "windows-provider",
+      "id": 116340080580,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404656/job/116340080580"
+    },
+    {
+      "name": "linux-native-browser",
+      "id": 116340080572,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404656/job/116340080572"
+    },
+    {
+      "name": "devices-windows-native",
+      "id": 116340080478,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404692/job/116340080478"
+    },
+    {
+      "name": "auth-windows-native",
+      "id": 116340080310,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404685/job/116340080310"
+    },
+    {
+      "name": "static-device-kit",
+      "id": 116340080253,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404656/job/116340080253"
+    },
+    {
+      "name": "devices-linux-http-browser",
+      "id": 116340080152,
+      "head_sha": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38710404692/job/116340080152"
+    }
+  ]
+}

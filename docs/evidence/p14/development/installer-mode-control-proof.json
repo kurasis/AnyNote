@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "purpose": "Public exact-installer mode diagnosis provenance",
+  "execution_source_commit": "2c04e445a4be9fa2724f145285b3af1d403a731d",
+  "installer_source_commit": "72daa1ec25f94738b4b4479aa36983a3fa41010d",
+  "report_source_commit_field_scope": "Original installer source, not controller execution source",
+  "run_id": 38758156134,
+  "job_id": 116502011173,
+  "artifact_id": 11983799119,
+  "artifact_sha256": "a371925c7d778a76b19416472dbcbb5bf4c765e49aceb1ffe648c648bf3fb223",
+  "report_sha256": "cc28b0de6d807457b1d13b3486f6caebdb2afad6cb5ad6de9754b5091fd44c44",
+  "job_log_sha256": "4074c29db7faae5a6c26a8aca41dd2becacef61702f1815aebfc1065b2b4d0ec",
+  "git_inputs": {
+    ".github/workflows/p14-root-trust-probe.yml": {
+      "git_blob": "2528684776efb33aad8e46e276d9070c17eec93f",
+      "sha256": "b5bdb68b26c77e03fe09f0431ade74d8b4f21912bf8db2da10f0ba9da00f0988"
+    },
+    "scripts/p14-public-bridge-probe.py": {
+      "git_blob": "3f5cc0d312b85bd4e6be7677ebae9971439c0eb9",
+      "sha256": "60335c061cb8f69189312ca2f7eac03a9825a8e2a6e057d76a96300cc7fe8c49"
+    }
+  },
+  "compiled_binary_artifacts": [
+    {
+      "id": 11983036768,
+      "name": "p14-windows-development-installer",
+      "sha256": "20a0058483e627f67f66741941ccb3529efe18149f8e57047ebf5e30370a48cd"
+    },
+    {
+      "id": 11982209174,
+      "name": "p14-ci-harness-diagnosis-not-owner-installer",
+      "sha256": "674d210231cbc0af713084750734ad65d280a38e782d2bd08021dc07742f11b5"
+    }
+  ],
+  "independently_verified_compiled_binaries": 4,
+  "physical_acceptance": false,
+  "scope": "Installer behavior control from exact verified binaries. Direct candidate execution does not establish application signature policy or full updater/gigabyte acceptance."
+}

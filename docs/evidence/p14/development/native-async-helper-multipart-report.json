@@ -1,0 +1,26 @@
+{
+  "purpose": "P14 prior native binary with new async helper multipart diagnosis only",
+  "binary_source_commit": "f904aedd754aa6261d88017f96730b5b49b774bf",
+  "helper_source_commit": "4abd1c322af55fe1c97ab6a8227ac1b13c7c59b5",
+  "reuse_scope": "DIAGNOSTIC_ONLY; 16777217 bytes is not gigabyte acceptance",
+  "status": "PASS",
+  "checks": 62,
+  "source_commit": "b8f2ca63c764db60f86ef52928ad80be2e9aca17",
+  "source_tree_dirty": false,
+  "native_driver_sha256": "t-tj9t-_7oNWv0C0FtsMpTNXD-Zkp88JOJMqMkcqVyI",
+  "build": "release",
+  "memory": {
+    "native_peak_bytes": 158523392,
+    "helper_peak_bytes": 359370752,
+    "status": "MEASURED_OS_COUNTERS",
+    "scope": "Native process and direct trusted helper; WebView2 NOT_RUN"
+  },
+  "physical_acceptance": false,
+  "webview2": "NOT_RUN",
+  "large_file": {
+    "status": "DEVELOPMENT_SMALL_ONLY",
+    "bytes": 16777217,
+    "source_sha256": "uhnc_SPjOpTxw8nMWLhzbDE8yovKJyteHIG0IPX9b_w",
+    "scope": "Actual native upload/download and standard-age export/offline validation/fresh import/download; WebView2 acceptance remains separate"
+  }
+}

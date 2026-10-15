@@ -1,0 +1,32 @@
+{
+  "purpose": "Actual fresh-source installed Windows gigabyte/idle/restart development observation",
+  "status": "FAILED",
+  "source_commit": "72daa1ec25f94738b4b4479aa36983a3fa41010d",
+  "run_id": 38749347031,
+  "job_id": 116471322820,
+  "completed_observations": [
+    "full actual1000000000-byte upload/download/export/offline-validation/fresh-import/download with complete SHA",
+    "real unchanged five-minute OS idle and preview closure",
+    "installer rerun retained SQLite SHA",
+    "fresh process restart read retained encrypted draft"
+  ],
+  "failed_step": "First signed update metadata denial assertion",
+  "focused_diagnosis": {
+    "run_id": 38755429870,
+    "job_id": 116492469253,
+    "source_commit": "203eb73ce902e0da9bb3b114179f37ce41e574f0",
+    "binary_source_commit": "72daa1ec25f94738b4b4479aa36983a3fa41010d",
+    "observed_error": "WRITER_BUSY",
+    "job_log_sha256": "8bb1a6a578f4910f9d87bb4816d9ca49bb0f881590bb385d41702f6b6bba6d75"
+  },
+  "job_log_sha256": "7fa6e9581bde605d45c7ae069dc01eb5e20986f06f82b54133ea6dee1f6c5bff",
+  "webview_git_source_sha256": "b0a98e1d33fdcbebdaab597bdded8399cec45700480b57524c30f21476cdf22b",
+  "physical_acceptance": false,
+  "remaining": [
+    "complete update-tampering rejection",
+    "actual signed candidate install/restart and exact outbox survival",
+    "final encrypted profile/cache scan",
+    "genuine gigabyte native62 Windows integration",
+    "all25 final-source acceptance"
+  ]
+}

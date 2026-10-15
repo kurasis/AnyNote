@@ -1,0 +1,12 @@
+{
+  "status": "VERIFIED_OBSERVATION",
+  "run_id": 38718567329,
+  "diagnostic_source_commit": "0858852ba5afdd8d61d1903972e66921cecf2588",
+  "binary_source_commit": "5c543ee598d02df25cabd794e158759453836da3",
+  "artifact_id": 11964147356,
+  "artifact_zip_sha256": "066c0c4bf8c6a0cd505bada78764d55cdd8d38261e72d8ae3cac55c490562491",
+  "all_four_compiled_binary_bytes_verified": true,
+  "scope": "Real Win32 consent and clipboard copy succeeded; later 30-second clearing assertion failed. Not application acceptance",
+  "physical_acceptance": false,
+  "workflow_script_helper_git_bytes_verified": true
+}

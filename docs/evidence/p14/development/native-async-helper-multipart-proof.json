@@ -1,0 +1,51 @@
+{
+  "status": "PASS",
+  "purpose": "Source-bound Windows native multipart async-helper development diagnosis",
+  "source_commit": "b8f2ca63c764db60f86ef52928ad80be2e9aca17",
+  "binary_source_commit": "f904aedd754aa6261d88017f96730b5b49b774bf",
+  "helper_source_commit": "4abd1c322af55fe1c97ab6a8227ac1b13c7c59b5",
+  "run_id": 38745222765,
+  "job_id": 116456986839,
+  "artifact_id": 11980165364,
+  "artifact_sha256": "12e55161920ac5f7366a6ac77a4b3b0b94ce625a383d77608b630dc93b0871e9",
+  "report_sha256": "6b8b2e58c27538481b629bc4c3e30e98f3066aed8bb1087418031e73c6d673be",
+  "native_driver_sha256_base64url": "t-tj9t-_7oNWv0C0FtsMpTNXD-Zkp88JOJMqMkcqVyI",
+  "job_log_sha256": "e726d15d02994a695d7fd4081b99de2e1840e0b9c0af85333dadf8fe06acf660",
+  "git_inputs": {
+    ".github/workflows/p14-root-trust-probe.yml": {
+      "git_blob": "c34d7898c7b27754fc1629c6655fe8321ff71e4f",
+      "sha256": "d792425f4cfb8874ac4371b3726c01f1d01f7d696e3fc75467c469e5039db6a4"
+    },
+    "scripts/p14-http.mjs": {
+      "git_blob": "f5f2715f64fa69c15964c26cc243768f45a4bfc0",
+      "sha256": "94666b0941336e376a6b779467cc609551d07478ea9062634a4ec0f6f36a749e"
+    },
+    "apps/desktop/bridge/custody.mjs": {
+      "git_blob": "188a3c2a6de76912a56a61214763218fdb4ef650",
+      "sha256": "9807b82ac92fa923168ce2f30969e7945d57103c985fb8dc24cef7a3cc198f00"
+    },
+    "apps/desktop/bridge/framed-output.mjs": {
+      "git_blob": "aa77a8ffb2f2849e9a4fbfc9801fbd29c65286ea",
+      "sha256": "65517fdc3e8079ef2b2543ce3b5b99df8cf50069034dfc481b34c5ed25282af2"
+    },
+    "scripts/p14-bridge-io.test.mjs": {
+      "git_blob": "453029f49063515abb1792d82357dbe0d3b88274",
+      "sha256": "9ca47b49ea96fc5c5029e082bb2f33d72945afdfe558e707162125c4c181e02e"
+    }
+  },
+  "compiled_binary_artifacts": [
+    {
+      "id": 11977530853,
+      "name": "p14-ci-harness-diagnosis-not-owner-installer",
+      "sha256": "71233484345b903b93f5055a167e3ce49e293f96f123705a14aca6e2f4a76cfc"
+    },
+    {
+      "id": 11977490793,
+      "name": "p14-windows-development-installer",
+      "sha256": "4d30b7f6e5fd08df755291f963edd7cfbe4756411b2ea8feb2f814a3584e9540"
+    }
+  ],
+  "independently_verified_compiled_binaries": 4,
+  "physical_acceptance": false,
+  "scope": "DIAGNOSTIC_ONLY; 62 native API checks and exact 16777217-byte multipart recovery with prior hash-verified native binary and new helper; not fresh full application/gigabyte acceptance"
+}

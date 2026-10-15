@@ -1,0 +1,53 @@
+{
+  "purpose": "P14 exact packaged runtime and actual canonical Windows bridge regression diagnosis",
+  "status": "PASS",
+  "run_id": 38737907729,
+  "job_id": 116431807188,
+  "source_commit": "73f0df3db83954030733a10bfc8d76a0feba0514",
+  "binary_source_commit": "af53a1946816b566140016c06feb62a22b4f29a2",
+  "scope": "DIAGNOSTIC_ONLY; real frozen archive, exact packaged runtime and read/hash-pinned assets; not fresh full application acceptance",
+  "before": "BRIDGE_CLOSED",
+  "after": "original authenticated plaintext recovered",
+  "job_log_sha256": "96fe88405ae3c8c45c8affb16b8a4e6f12c3eae299ef4351c188af610302ca91",
+  "artifact": {
+    "id": 11966522159,
+    "name": "p14-windows-development-installer",
+    "sha256": "a3256f97b63cc7433d02fb916d4b12f6691d31e8e6b00d9cec200ef3d1ccbd5a"
+  },
+  "installer": {
+    "path": "apps/desktop/src-tauri/target/release/bundle/nsis/AnyNote_0.14.0_x64-setup.exe",
+    "sha256": "e729f1b767ab3d943e1aa4b945e6d130f693919fe003828c4f7b6b6bcc4ba0c6",
+    "bytes": 32669568
+  },
+  "git_inputs": {
+    ".github/workflows/p14-root-trust-probe.yml": {
+      "git_blob": "352bd6baf125a5f2784898599d4799a0268e149f",
+      "sha256": "8e994833f8da12c99ea194adc7ef5ab961e41336ae31c029de62b771344eb430"
+    },
+    "scripts/p14-public-bridge-probe.py": {
+      "git_blob": "3cef21f1a488e0445b95b8d6aa06b66cf572a492",
+      "sha256": "2aa4574ed0f0061cc3e6e4e363158402a2d7cf4323e476c91d617f8c4dab31c2"
+    },
+    "scripts/p14-fixed-bridge.rs": {
+      "git_blob": "55b34fdcd5a15f70af3bbc6597f0ff1ef06f77fe",
+      "sha256": "62e83d07ced46ec717a980dd5d60bc4952240e458da70f30569e5c3de8dc55cb"
+    },
+    "packages/windows-native/src/bridge.rs": {
+      "git_blob": "02bd2229dfab62c3f23dd6a9690437c3a4588551",
+      "sha256": "fab7c2d63422c292198e5d327ab52d6b32598e63c8a8c45bbca986e35d2b7682"
+    },
+    "packages/windows-native/tests/bridge.rs": {
+      "git_blob": "662a012e35478db4aa44fb70049394a64b40a680",
+      "sha256": "5eb91b344c716fbd4639c2e07fdaac3b2cee0f623c62d6eaebeed53920ed4cd6"
+    },
+    "packages/windows-native/Cargo.toml": {
+      "git_blob": "5a78bf892b79df22b668398f87a8a75d87f7443e",
+      "sha256": "bca69cad458993fbf9b058edb5326fe63372a2245612fbb3c5ef40a49e68db31"
+    },
+    "packages/windows-native/Cargo.lock": {
+      "git_blob": "b4ab39df6d2448ed53f8b1fe8c8e387689fdf409",
+      "sha256": "0563b1f9d5d9429b86ba2bc945880db2f55a489e4ec60608fb67228a16251fa5"
+    }
+  },
+  "physical_acceptance": false
+}

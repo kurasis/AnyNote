@@ -1,7 +1,9 @@
 # P14 Windows application development
 
 Base: merged P13 `7aaf3b770b739c2bd554bd6feb7e653c00dbe3b9`.
-The phase is in progress; these changes are not phase acceptance evidence.
+Historical development observations. Accepted software results are in
+evidence/p14 and TEST_EVIDENCE.md; earlier pending/failed entries below retain
+their original scope and do not override that final evidence.
 
 The native coordinator and Tauri main window use existing native custody,
 OAuth, signed note/file authority, encrypted journals and P13 portable formats.
@@ -523,3 +525,64 @@ frame refusals. Its public peer receives no vault/archive keys or path capabilit
 There are now fourteen native tests. Existing full gigabyte bytes/hash assertions,
 resource limits and the completion deadline are unchanged; full Windows acceptance
 remains pending.
+
+
+## Actual gigabyte/idle completion and updater restart readiness
+
+Fresh run38749347031 at 72daa1e completed the unchanged genuine gigabyte
+upload/download/export/offline-validation/fresh-import/download hashes, real
+five-minute idle/preview closure and installer rerun/fresh-process draft read.
+Its first metadata-tamper assertion was blocked by WRITER_BUSY after a deliberately
+killed process. Focused run38755429870 identified that code. The test now waits
+for an ordinary typed native diagnostic to acquire its lease after restart,
+retrying only WRITER_BUSY for at most fifteen seconds. The existing ten-second
+lease, generation/fence rules and exact tamper assertions are unchanged.
+
+With readiness restored, focused run38756424699 passed bad claims, wrong version
+and altered-payload refusals, but the signed candidate did not replace the
+registered installed application. Public exact-installer control run38758156134
+showed passive mode waiting on an owned Installer Language dialog, while quiet
+mode completed with exit0, a changed installed executable and version0.14.1.
+The maintained updater now uses quiet Windows install mode after the existing
+explicit native confirmation. Signing/version/hash/scope checks remain mandatory.
+The normal current-user installer retains its EN/RU language selector. Complete
+fresh-source app updater/retained outbox/profile scan/native gigabyte/all25 closure
+remains pending; these development observations do not claim that acceptance.
+
+
+GitHub access was restored before acceptance. Diagnostic run38666079720
+completed PASS; its original-parser failure, corrected parser/compilation, real
+process memory, owned WinForms HWND and neutral SendInput were verified against
+the raw ZIP digest and exact Git helper bytes. The standalone diagnostic retains
+its infrastructure-only scope; full installed acceptance is separately recorded.
+
+
+At af53a19 the first local full setup stopped on native file_part STALE_WRITER.
+The unchanged isolated full gigabyte test then passed; lease, clock, all 120
+chunks, hash and source assertions were retained. The separate historical
+observation records that refusal and retry without claiming full setup success.
+The final complete setup receipt above is its own later actual execution.
+
+
+Historical content-free native control/filename observations and exact Git
+helper blobs are retained in evidence/p14/development/native-dialog-observations.json.
+Additional small native recovery preflight does not replace the unchanged genuine
+1 GB workflow; its original block identity is recorded separately.
+
+
+Canonical Windows helper regression run38737907729 records the real
+BRIDGE_CLOSED before the fix and original authenticated plaintext recovery after
+the fix on the same pinned packaged runtime and frozen archive. The helper and
+workflow Git bytes, raw job-log digest and original installer artifact ZIP digest
+were independently verified; the tested fixed bridge bytes match the accepted
+application source. This historical diagnosis remains separate from complete
+fresh-source installed-host and all-25 acceptance.
+
+
+Windows real-pipe regression run38749648491 reproduced the prior
+next-frame-only refusal and passed with bounded archive-prefetch handling,
+including invalid-offset, wrong-size and unrelated-frame refusals. Its raw
+artifact digest and both executed source hashes were reconstructed from exact
+Git inputs and the recorded counterexample generator. The repaired imports
+module bytes match the accepted application source. This public framing test
+remains separate from final installed-host/gigabyte acceptance.

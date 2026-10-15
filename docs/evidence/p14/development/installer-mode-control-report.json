@@ -1,0 +1,23 @@
+{
+  "purpose": "P14 public exact NSIS passive versus quiet update diagnosis",
+  "source_commit": "72daa1ec25f94738b4b4479aa36983a3fa41010d",
+  "status": "PASS",
+  "passive": {
+    "exited": false,
+    "exit_code": null,
+    "main_changed": false,
+    "visible_owned_installer_windows": [
+      {
+        "title": "Installer Language",
+        "class": "#32770"
+      }
+    ]
+  },
+  "quiet": {
+    "exit_code": 0,
+    "main_changed": true,
+    "file_version": "0.14.1"
+  },
+  "physical_acceptance": false,
+  "scope": "Installer-mode control only; bypasses no signing policy and does not claim full app updater/gigabyte acceptance"
+}

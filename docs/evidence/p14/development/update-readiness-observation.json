@@ -1,0 +1,43 @@
+{
+  "purpose": "Actual reused Windows updater lease-readiness and subsequent installer wait observation",
+  "status": "PARTIAL_DEVELOPMENT",
+  "binary_source_commit": "72daa1ec25f94738b4b4479aa36983a3fa41010d",
+  "before": {
+    "source_commit": "203eb73ce902e0da9bb3b114179f37ce41e574f0",
+    "run_id": 38755429870,
+    "job_id": 116492469253,
+    "outcome": "WRITER_BUSY before signature assertion",
+    "job_log_sha256": "8bb1a6a578f4910f9d87bb4816d9ca49bb0f881590bb385d41702f6b6bba6d75"
+  },
+  "after": {
+    "source_commit": "921d9f416ac60597fce0442d0840391a394e5ca0",
+    "run_id": 38756424699,
+    "job_id": 116495963379,
+    "outcome": "bad claims/version/payload assertions completed; native updater exited; registered installation change wait expired",
+    "job_log_sha256": "d2f88a8366f7f427b1b42ac4361770424da1f3492930a0d4efb54227600951da"
+  },
+  "git_inputs": {
+    "busy:.github/workflows/p14-root-trust-probe.yml": {
+      "source_commit": "203eb73ce902e0da9bb3b114179f37ce41e574f0",
+      "git_blob": "38c7eb360911d89b438c2f698507bdda70190a3b",
+      "sha256": "dc2abcdabc23b008d1e746683ac0efd13650b8d700d9eeca18d2fdf1936328be"
+    },
+    "busy:scripts/p14-webview.mjs": {
+      "source_commit": "203eb73ce902e0da9bb3b114179f37ce41e574f0",
+      "git_blob": "2515ebb8409c86e51bcf007a11df822c9afee1ad",
+      "sha256": "266a0d0033c8c1ec43668f4adc41a5810f0aadb0bcb720848b966dab71eb145d"
+    },
+    "ready:.github/workflows/p14-root-trust-probe.yml": {
+      "source_commit": "921d9f416ac60597fce0442d0840391a394e5ca0",
+      "git_blob": "38c7eb360911d89b438c2f698507bdda70190a3b",
+      "sha256": "dc2abcdabc23b008d1e746683ac0efd13650b8d700d9eeca18d2fdf1936328be"
+    },
+    "ready:scripts/p14-webview.mjs": {
+      "source_commit": "921d9f416ac60597fce0442d0840391a394e5ca0",
+      "git_blob": "0792fafc5dd3aa9419913056049cc5c46e3acf1c",
+      "sha256": "8fa1431ad24fd88dc9f846eb3526ca6307048c39bacb9def6178d8a39c6b311b"
+    }
+  },
+  "physical_acceptance": false,
+  "scope": "Historical partial diagnosis, not updater/full application acceptance; installer control is separate"
+}

@@ -19,6 +19,7 @@ assert config['app']['security']['capabilities']==['main']
 csp=config['app']['security']['csp'];assert "default-src 'none'" in csp and "script-src 'self'" in csp and "object-src 'none'" in csp and "frame-src 'none'" in csp and "frame-ancestors 'none'" in csp and 'unsafe-' not in csp and 'https:' not in csp
 assert config['app']['security']['headers']['Permissions-Policy']=='camera=(), microphone=(), geolocation=(), display-capture=(), fullscreen=(), clipboard-read=(), clipboard-write=()'
 update=config['plugins']['updater'];assert update['requireSignedVersion'] is True and update['allowDowngrades'] is False and update['pubkey']==''
+assert update['windows']=={'installMode':'quiet'}
 assert config['bundle']['targets']==['nsis'] and config['bundle']['windows']['nsis']['installMode']=='currentUser'
 assert config['bundle']['windows']['webviewInstallMode']=={'type':'downloadBootstrapper','silent':True}
 source=(ROOT/'apps/desktop/src-tauri/src/main.rs').read_text(encoding='utf-8');assert 'WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS' in source and '#[cfg(not(feature = "integration-harness"))]' in source

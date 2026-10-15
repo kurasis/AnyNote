@@ -1,0 +1,12 @@
+{
+  "purpose": "P14 actual native pipe framing regression with public synthetic peer",
+  "status": "PASS",
+  "source_commit": "f096e0fb176406ef00f3522ccc46384ad9fa5a57",
+  "before_source_sha256": "5cf74e2d1d2c09d1b13ce648a0b2f97c59abb093bdf2af6317ef04439d9b31c8",
+  "fixed_source_sha256": "1026eee2a8577d33a5b3e8d0c2096a4d371c0a6e18153d025ce9c639c1462fff",
+  "node_sha256_base64url": "uk5tEQ6MFZKh7NOQ9rBfPaEksThxpb5is0GgeoU8bDI",
+  "before": "INVALID_BRIDGE_FRAME",
+  "after": "valid interleaved source read accepted; invalid offset, foreign frame and wrong payload length refused",
+  "scope": "public framing regression, not full installed application/gigabyte or physical acceptance",
+  "physical_acceptance": false
+}

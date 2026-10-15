@@ -1,0 +1,13 @@
+{
+  "status": "VERIFIED_OBSERVATION",
+  "purpose": "Actual Windows CloseClipboard sequence finalization; not application acceptance",
+  "run_id": 38719329544,
+  "source_commit": "fb00c096aa445b8d06b83f3017da98e459784368",
+  "artifact_id": 11964207801,
+  "artifact_zip_sha256": "93e9dd0454d8ca5f4fec87c003c3756444246b97bb06949c3fe4293ae2ce2ec9",
+  "original_marker": 2,
+  "finalized_sequence": 5,
+  "native_text_unchanged": true,
+  "physical_acceptance": false,
+  "workflow_and_probe_git_bytes_verified": true
+}

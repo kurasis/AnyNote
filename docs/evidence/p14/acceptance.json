@@ -1,0 +1,301 @@
+{
+  "status": "PASS",
+  "branch_head": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+  "source_tree": "2beda4cda9d892b7721d8c8cddb6a2e6c812c66d",
+  "mandatory_jobs": 25,
+  "artifact_digests": [
+    {
+      "run_id": 38758578952,
+      "artifact_id": 11988180687,
+      "name": "p12-linux-files-report",
+      "sha256": "10a9e5152839a22103aa34ed7c695db2919542a342c90b623eccd8e88705f159"
+    },
+    {
+      "run_id": 38758578952,
+      "artifact_id": 11986063647,
+      "name": "p12-windows-files-report",
+      "sha256": "6ef52a6ff4312f0de663e7f9a697a045817d79973995f5b3f9d84ced42678bc8"
+    },
+    {
+      "run_id": 38758579728,
+      "artifact_id": 11985278595,
+      "name": "p13-linux-content-report",
+      "sha256": "154df771435b098ecee984aae084ce75f6fb11ea505b5f02e1283aae9b1f0607"
+    },
+    {
+      "run_id": 38758579728,
+      "artifact_id": 11985024642,
+      "name": "p13-windows-content-report",
+      "sha256": "f16c43aa8c01c17815c2b3a9f566b008bb7498a289c041c34f02c57f1cdcabff"
+    },
+    {
+      "run_id": 38758578990,
+      "artifact_id": 11988389068,
+      "name": "p14-windows-development-installer",
+      "sha256": "ad00c1583d953ac5fe6626d4b0a6fdf1117a58f7ae63ea8f6683015aa5fb0669"
+    }
+  ],
+  "checks": [
+    {
+      "name": "content-windows-native",
+      "id": 116503494345,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758579728/job/116503494345"
+    },
+    {
+      "name": "baseline",
+      "id": 116503493717,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758579978/job/116503493717"
+    },
+    {
+      "name": "content-linux-http-browser",
+      "id": 116503493657,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758579728/job/116503493657"
+    },
+    {
+      "name": "files-windows-native",
+      "id": 116503491845,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758578952/job/116503491845"
+    },
+    {
+      "name": "files-linux-http-browser",
+      "id": 116503491699,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758578952/job/116503491699"
+    },
+    {
+      "name": "devices-linux-http-browser",
+      "id": 116503491394,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758579312/job/116503491394"
+    },
+    {
+      "name": "devices-windows-native",
+      "id": 116503490852,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758579312/job/116503490852"
+    },
+    {
+      "name": "foundation",
+      "id": 116503490392,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758578711/job/116503490392"
+    },
+    {
+      "name": "notes-linux-http-browser",
+      "id": 116503490321,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758578997/job/116503490321"
+    },
+    {
+      "name": "host-windows-build",
+      "id": 116503490147,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758578990/job/116503490147"
+    },
+    {
+      "name": "vault-windows-native",
+      "id": 116503490080,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758579005/job/116503490080"
+    },
+    {
+      "name": "sync-windows-native",
+      "id": 116503489985,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758578728/job/116503489985"
+    },
+    {
+      "name": "notes-windows-native",
+      "id": 116503489941,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758578997/job/116503489941"
+    },
+    {
+      "name": "windows-provider",
+      "id": 116503489859,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758578810/job/116503489859"
+    },
+    {
+      "name": "static-device-kit",
+      "id": 116503489789,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758578810/job/116503489789"
+    },
+    {
+      "name": "sync-linux-http-browser",
+      "id": 116503489786,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758578728/job/116503489786"
+    },
+    {
+      "name": "shared-linux-http-browser",
+      "id": 116503489727,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758579095/job/116503489727"
+    },
+    {
+      "name": "file-contract",
+      "id": 116503489524,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758578922/job/116503489524"
+    },
+    {
+      "name": "linux-native-browser",
+      "id": 116503489333,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758578810/job/116503489333"
+    },
+    {
+      "name": "vault-linux-http-browser",
+      "id": 116503489275,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758579005/job/116503489275"
+    },
+    {
+      "name": "auth-linux-http-browser",
+      "id": 116503489271,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758578877/job/116503489271"
+    },
+    {
+      "name": "shared-windows-native",
+      "id": 116503489199,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758579095/job/116503489199"
+    },
+    {
+      "name": "crypto-linux-browser-php",
+      "id": 116503489051,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758578710/job/116503489051"
+    },
+    {
+      "name": "auth-windows-native",
+      "id": 116503488981,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758578877/job/116503488981"
+    },
+    {
+      "name": "crypto-windows-native",
+      "id": 116503488462,
+      "head_sha": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38758578710/job/116503488462"
+    }
+  ],
+  "reports": {
+    "p12-linux-p11-native-interop-report.json": {
+      "checks": 9
+    },
+    "p12-linux-p12-http-report.json": {
+      "checks": 368
+    },
+    "p12-linux-p12-membership-report.json": {
+      "checks": 452
+    },
+    "p12-linux-p10-browser-report.json": {
+      "checks": 60,
+      "chromium_sandbox": true
+    },
+    "p12-linux-p12-source-report.json": {},
+    "p12-linux-p10-native-interop-report.json": {
+      "checks": 89
+    },
+    "p12-windows-p11-native-interop-report.json": {
+      "checks": 9
+    },
+    "p12-windows-p12-source-report.json": {},
+    "p12-windows-p10-native-interop-report.json": {
+      "checks": 89
+    },
+    "p13-linux-p13-authority-report.json": {
+      "checks": 427
+    },
+    "p13-linux-p13-gigabyte-development.json": {
+      "plaintext_bytes": 1000000000,
+      "archive_bytes": "1000542392",
+      "independent_age_reader": "Go age 1.3.2"
+    },
+    "p13-linux-p13-http-development-report.json": {
+      "checks": 401
+    },
+    "p13-linux-p13-preview-probe.json": {
+      "checks": [
+        "LITERAL_TEXT",
+        "ACTUAL_RASTER_AND_THUMBNAIL",
+        "ACTUAL_MAINTAINED_PDF",
+        "ACTIVE_PDF_DENIED",
+        "ACTIVE_IMAGE_DENIED",
+        "LATE_RESULT_CANCELLED",
+        "WRONG_RENDERER_ORIGIN_OR_ROUTE",
+        "WRONG_RENDERER_ORIGIN_OR_ROUTE",
+        "WRONG_RENDERER_ORIGIN_OR_ROUTE"
+      ],
+      "chromium_sandbox": true
+    },
+    "p13-linux-p13-source-report.json": {
+      "native_content_tests": 4
+    },
+    "p13-linux-p10-browser-report.json": {
+      "checks": 59,
+      "chromium_sandbox": true
+    },
+    "p13-windows-source-report.json": {
+      "native_content_tests": 4
+    },
+    "p13-windows-gigabyte-development.json": {
+      "plaintext_bytes": 1000000000,
+      "archive_bytes": "1000542392",
+      "independent_age_reader": "Rust age 0.12.1/MSVC"
+    },
+    "p14-windows-windows-host-preflight.json": {
+      "checks": 5
+    },
+    "p14-windows-native-pairing-development.json": {
+      "checks": 33
+    },
+    "p14-windows-native-sharing-development.json": {
+      "checks": 20
+    },
+    "p14-windows-native-http-development.json": {
+      "checks": 62
+    },
+    "p14-windows-windows-webview-development.json": {
+      "checks": 31196
+    },
+    "p14-windows-backend-filesystem-capability.json": {},
+    "p14-windows-capability-audit.json": {},
+    "p14-windows-source-report.json": {}
+  },
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN"
+}

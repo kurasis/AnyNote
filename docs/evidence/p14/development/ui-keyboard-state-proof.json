@@ -1,0 +1,17 @@
+{
+  "status": "VERIFIED_OBSERVATION",
+  "run_id": 38714510343,
+  "artifact_id": 11961788320,
+  "artifact_zip_sha256": "d446b48b7427a6e51fd5f201d079d2d0292324bcf318e7ef16989338301cef4b",
+  "diagnostic_source_commit": "e787d2fa5c6a107669093cf22c36a9af0557e934",
+  "binary_source_commit": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+  "scope": "Real stale-view UI reset while native vault remained unlocked; not application acceptance",
+  "physical_acceptance": false,
+  "all_four_compiled_binary_bytes_verified": true,
+  "diagnostic_workflow_git_bytes_verified": true,
+  "diagnostic_script_git_bytes_verified": true,
+  "compiled_binary_artifacts": {
+    "binaries_zip_sha256": "b483d522ad03d3b5f430da2c5043bdfccd4be735dfdce31087857442c60c4cc7",
+    "owner_zip_sha256": "bbd5be5f0343d5d65c3e3cf090d877c5ea56a4acc05f61855646421c145de213"
+  }
+}

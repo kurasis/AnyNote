@@ -1,0 +1,11 @@
+use std::{ffi::c_void,ptr,time::Duration,thread,process::Command};
+#[link(name="user32")] unsafe extern "system" {fn OpenClipboard(h:isize)->i32;fn CloseClipboard()->i32;fn EmptyClipboard()->i32;fn SetClipboardData(f:u32,m:*mut c_void)->*mut c_void;fn GetClipboardData(f:u32)->*mut c_void;fn GetClipboardSequenceNumber()->u32;}
+#[link(name="kernel32")] unsafe extern "system" {fn GlobalAlloc(f:u32,n:usize)->*mut c_void;fn GlobalLock(h:*mut c_void)->*mut c_void;fn GlobalUnlock(h:*mut c_void)->i32;fn GlobalSize(h:*mut c_void)->usize;}
+fn main(){unsafe{
+ let text:Vec<u16>="P14 synthetic clipboard marker\n\n\0".encode_utf16().collect();
+ let memory=GlobalAlloc(2,text.len()*2);assert!(!memory.is_null());let data=GlobalLock(memory) as *mut u16;ptr::copy_nonoverlapping(text.as_ptr(),data,text.len());GlobalUnlock(memory);
+ assert_ne!(OpenClipboard(0),0);let before=GetClipboardSequenceNumber();assert_ne!(EmptyClipboard(),0);let empty=GetClipboardSequenceNumber();assert!(!SetClipboardData(13,memory).is_null());let marker=GetClipboardSequenceNumber();assert_ne!(CloseClipboard(),0);let closed=GetClipboardSequenceNumber();
+ println!("{{\"stage\":\"write\",\"before\":{},\"empty\":{},\"original_marker\":{},\"after_close\":{}}}",before,empty,marker,closed);
+ for i in 0..3 {thread::sleep(Duration::from_secs(if i==2{30}else{1}));let read=Command::new("powershell").args(["-NoProfile","-NonInteractive","-Command","[Console]::Write([string](Get-Clipboard -Raw))"]).output().unwrap();assert!(read.status.success());let sequence=GetClipboardSequenceNumber();assert_ne!(OpenClipboard(0),0);let h=GetClipboardData(13);assert!(!h.is_null());let bytes=GlobalSize(h);let p=GlobalLock(h) as *const u16;let matches=bytes>=text.len()*2 && std::slice::from_raw_parts(p,text.len())==text.as_slice();GlobalUnlock(h);assert_ne!(CloseClipboard(),0);println!("{{\"stage\":\"sample\",\"index\":{},\"sequence\":{},\"same_as_original_marker\":{},\"bytes\":{},\"native_text_matches\":{},\"powershell_text_matches\":{}}}",i,sequence,sequence==marker,bytes,matches,read.stdout=="P14 synthetic clipboard marker\n\n".as_bytes());}
+ let before_clear=GetClipboardSequenceNumber();assert_ne!(OpenClipboard(0),0);let result=EmptyClipboard();CloseClipboard();println!("{{\"stage\":\"explicit_cleanup\",\"sequence\":{},\"cleared\":{}}}",before_clear,result!=0);
+}}

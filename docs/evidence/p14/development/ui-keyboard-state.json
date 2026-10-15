@@ -1,0 +1,28 @@
+{
+  "purpose": "Reused binary keyboard diagnosis only; not fresh application acceptance",
+  "binary_source_commit": "c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7",
+  "diagnostic_source_commit": "e787d2fa5c6a107669093cf22c36a9af0557e934",
+  "checks": 15,
+  "physical_acceptance": false,
+  "snapshot": {
+    "known_error_codes": [
+      "STALE_CAPABILITY"
+    ],
+    "header_state": "unlocked · ",
+    "rail_buttons": [
+      {
+        "synthetic_thread": false,
+        "synthetic_group": false,
+        "selected": false,
+        "disabled": false
+      },
+      {
+        "synthetic_thread": false,
+        "synthetic_group": false,
+        "selected": false,
+        "disabled": false
+      }
+    ],
+    "editor_visible": false
+  }
+}

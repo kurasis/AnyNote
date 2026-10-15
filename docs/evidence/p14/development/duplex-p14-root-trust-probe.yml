@@ -1,0 +1,28 @@
+name: P14 public full duplex Windows pipe probe
+on:
+  push:
+    branches: [ci/p14-root-trust-probe-20261015]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  bridge-startup-probe:
+    runs-on: windows-2025
+    timeout-minutes: 10
+    env:
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.14.8'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          github-token: ${{ github.token }}
+          run-id: '38719871883'
+          name: p14-windows-development-installer
+          path: .
+      - name: No secret public startup frames with exact packaged helper
+        run: python scripts/p14-public-bridge-probe.py

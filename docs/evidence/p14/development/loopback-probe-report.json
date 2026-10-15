@@ -1,0 +1,14 @@
+{
+  "purpose": "P14 actual Windows accepted TCP mode, no OAuth or keys",
+  "old": {
+    "read_ok": false,
+    "outcome": "WouldBlock",
+    "elapsed_ms": 0
+  },
+  "explicit_blocking": {
+    "read_ok": true,
+    "outcome": "OK",
+    "elapsed_ms": 250
+  },
+  "physical_acceptance": false
+}

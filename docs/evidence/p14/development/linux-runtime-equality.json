@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "executed_source": "da8362439d5a0a785c1cd56bd059588966bb9663",
+  "current_head": "bdda80922721d813a2c7cf76817bf73e06730c69",
+  "product_runtime_unchanged": true,
+  "changes": [
+    ".github/workflows/windows-application.yml",
+    "docs/P14_DEVELOPMENT.md",
+    "scripts/p14-webview.mjs",
+    "scripts/p14-windows-services.py"
+  ],
+  "raw_report_sha256": "3c9b9f8248563603752981dcc6dba21b0601181eeb8b8d441d6cfbb2b04581a3",
+  "native_driver_digest_verified": true
+}
