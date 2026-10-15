@@ -12,9 +12,14 @@ jobs:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
           persist-credentials: false
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.14.8'
       - name: Exact owned machine root operation with a bounded process lifetime
-        shell: python
+        shell: pwsh
         run: |
+          New-Item -ItemType Directory -Force .local | Out-Null
+          $probe = @'
           import hashlib,json,os,runpy,subprocess,sys,time
           from pathlib import Path
           assert os.name=='nt' and os.environ.get('GITHUB_ACTIONS')=='true'
@@ -43,6 +48,10 @@ jobs:
               (folder/'report.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
               print(json.dumps(report))
           assert report['status']=='PASS' and report['cleanup_exit_code']==0,'Actual root trust/cleanup diagnostic failed'
+          '@
+          [IO.File]::WriteAllText((Join-Path (Get-Location) '.local/p14-root-probe.py'),$probe,[Text.UTF8Encoding]::new($false))
+          python .local/p14-root-probe.py
+          exit $LASTEXITCODE
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

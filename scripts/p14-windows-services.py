@@ -11,7 +11,10 @@ def require_ci():
     if os.name!='nt' or os.getenv('GITHUB_ACTIONS')!='true' or os.getenv('RUNNER_ENVIRONMENT')!='github-hosted':raise RuntimeError('Owned hosted Windows GitHub synthetic runner required')
 def checked(args,**kw):
     expected=kw.pop('expected_failure',False)
-    result=subprocess.run([str(a) for a in args],cwd=kw.pop('cwd',ROOT),capture_output=True,**kw)
+    command=[str(a) for a in args]
+    if Path(command[0]).stem.lower() in ['powershell','pwsh'] and '-NonInteractive' not in command:command.insert(1,'-NonInteractive')
+    if kw.get('input') is None and 'stdin' not in kw:kw['stdin']=subprocess.DEVNULL
+    result=subprocess.run(command,cwd=kw.pop('cwd',ROOT),capture_output=True,**kw)
     if result.returncode and expected:raise RuntimeError('Expected owned readiness probe not yet ready')
     if result.returncode:
         detail=(result.stdout+result.stderr).decode(errors='replace')
