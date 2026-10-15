@@ -50,7 +50,7 @@ jobs:
             subprocess.run(['git','diff','--exit-code',manifest['source_commit'],'HEAD','--',directory],check=True)
       - name: Runtime JS dependencies only, no application rebuild
         run: |
-          foreach ($package in @('packages/protocol','packages/content-browser','experiments/p01','packages/api-client','apps/devices-web','apps/notes-web')) {
+          foreach ($package in @('packages/protocol','packages/content-browser','experiments/p01','packages/api-client','apps/devices-web','apps/notes-web','apps/desktop')) {
             npm --prefix $package ci --no-audit --no-fund
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
