@@ -65,4 +65,13 @@ do{
  }
  Start-Sleep -Milliseconds 200
 }while((Get-Date) -lt $deadline)
-throw 'Real native dialog not found'
+$observed=@()
+foreach($candidate in $windows){
+ if($candidate.Current.ClassName -eq '#32770'){
+  foreach($control in $candidate.FindAll([Windows.Automation.TreeScope]::Descendants,[Windows.Automation.Condition]::TrueCondition)){
+   if($control.Current.ControlType -eq [Windows.Automation.ControlType]::Button){$observed+=@{id=$control.Current.AutomationId;name=$control.Current.Name;class=$control.Current.ClassName}}
+  }
+ }
+}
+[Console]::Error.WriteLine(('OWNED_NATIVE_DIALOG_BUTTONS '+($observed|ConvertTo-Json -Compress)))
+throw 'Real native dialog not found' 

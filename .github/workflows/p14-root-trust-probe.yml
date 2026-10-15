@@ -6,7 +6,7 @@ permissions:
   contents: read
   actions: read
 jobs:
-  keyboard-diagnosis:
+  clipboard-diagnosis:
     runs-on: windows-2025
     timeout-minutes: 20
     env:
@@ -28,13 +28,13 @@ jobs:
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           github-token: ${{ github.token }}
-          run-id: '38710404757'
+          run-id: '38715520150'
           name: p14-ci-harness-diagnosis-not-owner-installer
           path: .
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           github-token: ${{ github.token }}
-          run-id: '38710404757'
+          run-id: '38715520150'
           name: p14-windows-development-installer
           path: .
       - name: Verify all four binary hashes and clean runtime source
@@ -43,7 +43,7 @@ jobs:
           import json,hashlib,subprocess
           from pathlib import Path
           manifest=json.loads(Path('artifacts/p14/ui-diagnostic-binaries.json').read_text())
-          assert manifest['source_commit']=='c67e3b1b4e6f41e06204b8fae57ae18ef690f5c7'
+          assert manifest['source_commit']=='5c543ee598d02df25cabd794e158759453836da3'
           for v in manifest['binaries'].values():
             p=Path(v['path']);assert p.stat().st_size==v['bytes'] and hashlib.sha256(p.read_bytes()).hexdigest()==v['sha256']
           for directory in ['apps','packages','backend','experiments']:
@@ -79,7 +79,7 @@ jobs:
           python scripts/p14-windows-services.py trust
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Observe real installed keyboard publication and UI error categories
-        run: node scripts/p14-keyboard-diagnosis.mjs
+        run: node scripts/p14-clipboard-diagnosis.mjs
       - name: Stop only owned Windows services
         if: always()
         timeout-minutes: 5
@@ -98,6 +98,6 @@ jobs:
         if: always()
         with:
           name: p14-reused-binary-keyboard-observation
-          path: artifacts/p14-ui-diagnosis/*.json
+          path: artifacts/p14-clipboard-diagnosis/*.json
           retention-days: 3
           if-no-files-found: warn

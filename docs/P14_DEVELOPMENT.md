@@ -347,3 +347,21 @@ The normal owner artifact still has one NSIS setup. No vault, credentials,
 private key, runtime profile or source data enters the diagnostic bundle. The
 manifest explicitly says BUILT_UNVERIFIED: binary reuse can diagnose a test but
 cannot substitute for fresh exact-source all-25 application acceptance.
+
+
+## Windows renderer view fence
+
+Full Windows run38710404757 passed actual installation, unlock and updater
+preflight, then published the keyboard-created thread through the real API but
+failed to show it. A source-bound reused-binary diagnostic (run38714510343,
+compiled source c67e3b1) reproduced STALE_CAPABILITY in the renderer while the
+native vault remained unlocked; the UI had cleared the selected group.
+
+The renderer previously used STALE_CAPABILITY for both protected generation
+changes and selection/view changes. A late reply from the previous view could
+therefore clear the current UI, including via background access polling. View
+changes now reject only the stale UI result as STALE_VIEW, which the UI discards.
+Protected-generation changes still raise STALE_CAPABILITY and mask/recheck the
+vault. Native authorization, lifecycle fences and custody are unchanged. The
+original real keyboard/publication scenario remains required in fresh-source
+Windows acceptance; the reused-binary observation is not phase acceptance.
