@@ -1851,3 +1851,12 @@ The complete preserved-data setup passed at the accepted source, retaining
 owned-service startup passed 15 commands at that source. Final documentation-head CI, ordinary guarded PR27 merge and
 configuration persistence have separate outcomes; draft save is not Publish or
 independently observed fresh restoration.
+
+## P15 development observations
+
+Executed locally on the P15 working tree: six real service-worker policy tests
+pass, install assets/build pass, all 179 frozen baseline files compare unchanged,
+and generated contracts compare read-only (325 structures/111 operations).
+Cloud Chromium failed before startup due to its sandbox-helper ownership; no
+browser/physical acceptance is claimed. The new CI gigabyte/update/V8-memory
+case and source-receipt collector are prepared and NOT_RUN at this source.

@@ -26,10 +26,18 @@ copyFileSync(resolve(root,'apps/vault-web/index.html'),resolve(dir,'vault.html')
 copyFileSync(resolve(root,'apps/devices-web/index.html'),resolve(dir,'devices.html'));
 copyFileSync(resolve(root,'apps/notes-web/index.html'),resolve(dir,'notes.html'));
 copyFileSync(resolve(root,'apps/notes-web/style.css'),resolve(dir,'notes.css'));
+for(const name of ['manifest.webmanifest','icon-192.png','icon-512.png'])copyFileSync(resolve(root,'apps/notes-web',name),resolve(dir,name));
 // Public maintained font/CMap bytes are embedded; preview workers cannot fetch URLs.
 const fontData={};for(const [folder,kind]of [['standard_fonts','standardFontDataUrl'],['cmaps','cMapUrl']])for(const name of readdirSync(resolve(root,'packages/content-browser/node_modules/pdfjs-dist',folder)).sort())if(/\.(?:pfb|ttf|bcmap)$/.test(name))fontData[kind+'/'+name]=readFileSync(resolve(root,'packages/content-browser/node_modules/pdfjs-dist',folder,name)).toString('base64');
 const fontModule=resolve(root,'.local/p06/p13-fonts.mjs');writeFileSync(fontModule,'export const fontData='+JSON.stringify(fontData)+';\n');
 await build({entryPoints:[resolve(root,'packages/content-browser/preview-render.mjs')],outfile:resolve(dir,'preview-render.mjs'),bundle:true,format:'esm',platform:'browser',target:['safari18','chrome120'],minify:true,external:['node:*','@napi-rs/canvas'],plugins:[{name:'embedded-public-fonts',setup(b){b.onResolve({filter:/^anynote-p13-fonts$/},()=>({path:fontModule}));}}],logLevel:'silent'});
 await build({entryPoints:[resolve(root,'packages/content-browser/preview-parser.mjs')],outfile:resolve(dir,'preview-parser.mjs'),bundle:true,format:'esm',platform:'browser',target:['safari18','chrome120'],minify:true,external:['node:*'],logLevel:'silent'});
-const revision=createHash('sha256').update(readFileSync(resolve(dir,'vault-worker.js'))).update(readFileSync(resolve(dir,'vault.js'))).update(readFileSync(resolve(dir,'notes.js'))).update(readFileSync(resolve(dir,'notes.css'))).update(readFileSync(resolve(dir,'notes.html'))).update(readFileSync(resolve(dir,'preview-render.mjs'))).update(readFileSync(resolve(dir,'preview-parser.mjs'))).digest('hex');await build({entryPoints:[resolve(root,'apps/vault-web/sw.mjs')],outfile:resolve(dir,'sw.js'),bundle:true,format:'esm',platform:'browser',target:['safari18','chrome120'],define:{ANYNOTE_STATIC_REVISION:JSON.stringify(revision)},logLevel:'silent'});
+// Bind every cached byte plus the worker policy/stream implementation. A new
+// worker must never install into the active revision's cache.
+const staticFiles=['style.css','vault.html','vault.js','vault-worker.js','vault-client.js','vault-store.js','notes.html','notes.js','notes.css','preview-render.mjs','preview-parser.mjs','manifest.webmanifest','icon-192.png','icon-512.png'];
+const staticDigest=createHash('sha256');
+for(const name of staticFiles)staticDigest.update(name).update(readFileSync(resolve(dir,name)));
+for(const name of ['sw.mjs','export-worker.mjs'])staticDigest.update(name).update(readFileSync(resolve(root,'apps/vault-web',name)));
+const revision=staticDigest.digest('hex');
+await build({entryPoints:[resolve(root,'apps/vault-web/sw.mjs')],outfile:resolve(dir,'sw.js'),bundle:true,format:'esm',platform:'browser',target:['safari18','chrome120'],define:{ANYNOTE_STATIC_REVISION:JSON.stringify(revision)},logLevel:'silent'});
 console.log('PASS: static authentication bundle, offline maintained validators, strict CSP');

@@ -523,3 +523,11 @@ The accepted Windows GUI run observed a 339,361,792-byte (323.6 MiB) native-plus
 helper working-set increase, above the initial 128 MiB target. The helper startup
 is included; the separate WebView2 sum counts shared pages. This is an unresolved
 performance target, retained independently of the passing functional workflows.
+
+P15 PWA changes are in development; the new hosted software suite has not passed
+at this source. The cloud Chromium setuid helper is owned by unmapped nobody and
+cannot start its required sandbox; verification is not disabled. Physical iPhone
+Files/PRF/storage/memory and the historical Save-to-Files reload remain unverified.
+Update waits for all windows to close; the existing autosave delay cannot promise
+survival of a last edit that never received encrypted local-save acknowledgement.
+Optional neutral push handling does not establish subscription or actual delivery.

@@ -1,0 +1,25 @@
+{
+  "id": "/auth/notes.html",
+  "name": "AnyNote",
+  "short_name": "AnyNote",
+  "description": "Private encrypted notes and files",
+  "start_url": "/auth/notes.html",
+  "scope": "/auth/",
+  "display": "standalone",
+  "background_color": "#163a45",
+  "theme_color": "#163a45",
+  "icons": [
+    {
+      "src": "/auth/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/auth/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

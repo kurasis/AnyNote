@@ -1078,3 +1078,18 @@ initial memory-target observation is `OBSERVED_ABOVE_INITIAL_TARGET`;
 it is not silently promoted to an unsampled budget or physical-platform pass.
 Keep memory/resource follow-up and production signing/physical/independent-review
 gates explicit before release. P15 proceeds with the complete iPhone PWA work.
+
+## P15 waiting-worker update and evidence scope
+
+Updates preserve the browser's normal waiting lifecycle. Check for update saves
+local work and locks; activation waits for all controlled windows to close.
+There is no skipWaiting message that could replace code while another window
+holds an unsaved editor or transfer. Every cached asset and worker policy byte
+contributes to the revision; failed installation discards only that candidate.
+BFCache return creates a fresh locked document instead of reusing a closed Worker.
+
+Push payloads never supply notification text, URLs, authority or key access.
+Optional receipt displays only neutral local text; delivery is not configured.
+No dependency or frozen format changes are required. Hosted mobile viewports,
+process RSS and per-agent V8 samples retain their exact software/memory scope;
+physical iPhone Files, PRF, storage and memory acceptance remain separate.

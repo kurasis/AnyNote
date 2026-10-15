@@ -1,5 +1,8 @@
 # Development setup
 
+P15 PWA work and its distinct software/physical acceptance are described in
+[the iPhone PWA guide](P15_IPHONE.md).
+
 ## P00 baseline (available now)
 
 Use Git and Python 3.12+ (validated on Git 2.52.0 / Python 3.12.14). Clone the

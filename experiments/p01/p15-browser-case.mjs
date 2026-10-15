@@ -1,0 +1,130 @@
+// Runs after the inherited actual incompressible P12 upload/download/resume case.
+// Mobile viewport is desktop Chromium evidence, never physical iPhone evidence.
+import {readFileSync, writeFileSync, createReadStream} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {Readable} from 'node:stream';
+import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {PortableReader} from '../../packages/protocol/content/portable.mjs';
+import {phrase} from '../../packages/protocol/notes/test-fixture.mjs';
+import {browserMemory} from './p12-browser-memory.mjs';
+import {browserHeap} from './p15-heap.mjs';
+
+export async function pwaCase({page, action, check, scratch}) {
+  const memory = browserMemory(), heap = await browserHeap(page);
+  const workerPath = fileURLToPath(new URL('../../.local/p06/static/auth/sw.js', import.meta.url));
+  const originalWorker = readFileSync(workerPath, 'utf8');
+  try {
+    const source = join(scratch, 'P12_PUBLIC_SELECTED_FILE.bin');
+    let sourceBytes = 0;
+    const expected = createHash('sha256');
+    for await (const bytes of createReadStream(source)) { sourceBytes += bytes.length; expected.update(bytes); }
+    check(sourceBytes === 1000000000, 'P15_REAL_INCOMPRESSIBLE_SOURCE_SIZE');
+    const sourceHash = expected.digest('hex');
+    await page.setViewportSize({width: 390, height: 844});
+    await page.locator('#pwa-panes button').nth(2).click();
+    check(await page.locator('.editor-pane').isVisible(), 'P15_MOBILE_CONTENT_NAVIGATION');
+    check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'P15_NO_HORIZONTAL_MOBILE_OVERFLOW');
+    await page.setViewportSize({width: 390, height: 420});
+    check(await page.locator('#note-body').evaluate(e => parseFloat(getComputedStyle(e).fontSize) >= 16), 'P15_KEYBOARD_VIEWPORT_READABLE_INPUT');
+    await page.setViewportSize({width: 390, height: 844});
+    await page.locator('#language').selectOption('ru');
+    check(await page.locator('#pwa-help summary').textContent() === 'Установка и хранилище', 'P15_RUSSIAN_INSTALL_GUIDANCE');
+    await page.locator('#language').selectOption('en');
+    const href = await page.locator('link[rel=manifest]').getAttribute('href');
+    check(href === '/auth/manifest.webmanifest', 'P15_STABLE_INSTALL_MANIFEST');
+    const cached = await page.evaluate(async () => {
+      const registration = await navigator.serviceWorker.ready;
+      const names = (await caches.keys()).filter(n => n.startsWith('anynote-p07-static-'));
+      const paths = [];
+      for (const name of names) for (const request of await (await caches.open(name)).keys()) paths.push(new URL(request.url).pathname);
+      return {scope: registration.scope, paths};
+    });
+    check(cached.scope.endsWith('/auth/') && cached.paths.includes('/auth/icon-192.png') && cached.paths.includes('/auth/manifest.webmanifest'), 'P15_INSTALLED_STATIC_ASSETS_CACHED');
+    check(cached.paths.every(p => /^\/auth\/[a-z0-9.-]+$/.test(p)), 'P15_NO_API_OR_EXPORT_CACHE_ENTRIES');
+
+    // The group still contains the actual P12 file attached to its signed entry.
+    await page.locator('#export-this-group').check();
+    await action(page, 'prepare-export');
+    await page.locator('#export-estimate-confirm').check();
+    const downloading = page.waitForEvent('download', {timeout: 600000});
+    await page.locator('#portable-export').click();
+    const archive = await downloading, archivePath = join(scratch, 'p15-gigabyte.age');
+    await archive.saveAs(archivePath);
+    await page.waitForFunction(() => !document.getElementById('status').dataset.busy, null, {timeout: 600000});
+    check(!await page.locator('#status').getAttribute('data-error'), 'P15_GIGABYTE_SHIPPED_ARCHIVE_EOF');
+    check(await page.locator('#save-export-kit').isVisible(), 'P15_KIT_RELEASED_ONLY_AFTER_DURABLE_ARCHIVE');
+    const kitDownloading = page.waitForEvent('download');
+    await page.locator('#save-export-kit').click();
+    const kit = await kitDownloading, kitPath = join(scratch, 'p15-gigabyte.kit.json');
+    await kit.saveAs(kitPath);
+    const reader = new PortableReader(() => Readable.toWeb(createReadStream(archivePath)), JSON.parse(readFileSync(kitPath)));
+    let recoveredBytes = 0;
+    const recovered = createHash('sha256');
+    try {
+      const verified = await reader.validate();
+      const file = verified.files.find(f => f.plaintext_bytes === '1000000000');
+      check(verified.status === 'VERIFIED_OFFLINE' && !!file, 'P15_GIGABYTE_ARCHIVE_VERIFIED_WITHOUT_ORIGINAL_API');
+      await reader.file(file.file_version_id, {
+        write(bytes) { recoveredBytes += bytes.length; recovered.update(bytes); },
+        finish() {}, abort() { throw Error('P15_OFFLINE_RECOVERY_ABORTED'); },
+      });
+    } finally { reader.close(); }
+    check(recoveredBytes === 1000000000 && recovered.digest('hex') === sourceHash, 'P15_INDEPENDENT_FULL_PLAINTEXT_HASH');
+
+    await page.locator('#import-archive').setInputFiles(archivePath);
+    await page.locator('#import-kit').setInputFiles(kitPath);
+    await action(page, 'inspect-import');
+    await page.locator('#import-confirm').check();
+    await action(page, 'copy-import');
+    check((await page.locator('#portable-state').textContent()).includes('Import complete'), 'P15_REAL_GIGABYTE_PRIVATE_IMPORT_RECEIPTS');
+
+    // Deliver a new build revision through the real static server. Only its
+    // cache identity changes; API/crypto/Worker assertions remain untouched.
+    // The generated server file is restored byte-for-byte in finally.
+    await action(page, 'new-entry');
+    await page.locator('#note-title').fill('PUBLIC P15 update draft');
+    await page.locator('#note-body').fill('PUBLIC P15 first durable version');
+    await action(page, 'save-local');
+    const draft = await page.locator('#drafts li[data-id]').last().getAttribute('data-id');
+    await page.locator('#note-body').fill('PUBLIC P15 latest update draft');
+    const match = originalWorker.match(/anynote-p07-static-([a-f0-9]{64})/);
+    if (!match) throw Error('P15_BUILD_REVISION_NOT_FOUND');
+    const nextRevision = createHash('sha256').update(match[1] + 'public-p15-update').digest('hex');
+    writeFileSync(workerPath, originalWorker.replace(match[0], 'anynote-p07-static-' + nextRevision));
+    const incoming = page.context().waitForEvent('serviceworker');
+    await page.locator('#pwa-help summary').click();
+    await page.locator('#pwa-update').click();
+    const nextWorker = await incoming;
+    await page.waitForFunction(() => document.getElementById('workspace').hidden);
+    check(await page.locator('#note-body').inputValue() === '', 'P15_UPDATE_MASKS_PLAINTEXT');
+    await page.waitForFunction(async () => Boolean((await navigator.serviceWorker.getRegistration('/auth/')).waiting));
+    check(await page.evaluate(async () => {
+      const r = await navigator.serviceWorker.getRegistration('/auth/');
+      return r.active?.state === 'activated' && r.waiting?.state === 'installed';
+    }), 'P15_NEW_WORKER_WAITS_FOR_CONTROLLED_WINDOW');
+    await page.goto('about:blank');
+    const activationDeadline = Date.now() + 30000;
+    let activated = false;
+    while (Date.now() < activationDeadline) {
+      activated = await nextWorker.evaluate(() => self.registration.active?.state === 'activated' && !self.registration.waiting);
+      if (activated) break;
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    check(activated, 'P15_ACTUAL_ACTIVATION_AFTER_LAST_WINDOW_CLOSES');
+    await page.goto('https://app.anynote.test:18443/auth/notes.html');
+    await page.waitForFunction(() => document.getElementById('status').dataset.state === 'ready');
+    await page.locator('#phrase').fill(phrase); await action(page, 'unlock');
+    check(await page.locator('#workspace').isVisible(), 'P15_POST_UPDATE_FRESH_UNLOCK_AND_AUTHORIZATION');
+    await page.locator('#drafts li[data-id="' + draft + '"] button').click();
+    await page.waitForFunction(() => !document.getElementById('status').dataset.busy);
+    check(await page.locator('#note-body').inputValue() === 'PUBLIC P15 latest update draft', 'P15_UPDATE_RETAINS_LATEST_ENCRYPTED_DRAFT');
+    await page.setViewportSize({width: 1280, height: 900});
+    return {
+      status: 'PASS', plaintext_bytes: sourceBytes, recovered_bytes: recoveredBytes,
+      source_sha256: sourceHash, mobile_viewport: '390x844; keyboard 390x420',
+      memory: memory.finish(), v8_memory: await heap.finish(), physical_acceptance: false,
+      scope: 'Actual production API/Worker/IndexedDB/OPFS and streaming service-worker download in sandboxed hosted desktop Chromium; not iPhone Files/storage/PRF evidence',
+    };
+  } finally { writeFileSync(workerPath, originalWorker); memory.abort(); await heap.abort(); }
+}

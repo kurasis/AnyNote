@@ -226,3 +226,11 @@ license for the separate PWA, backend or supplied specification. The owner NSIS
 bundles required application/helper assets and bootstraps maintained WebView2
 when missing. Production Authenticode/updater credentials and qualified review
 remain separate; no production release or legal-clearance claim is made.
+
+## P15 PWA shell
+
+No dependency declarations or lockfiles change. Browser manifest/storage/cache/
+service-worker APIs, original geometric PNG icons and Node/Python standard-library
+checks implement the shell. Existing pinned Playwright/CDP, production crypto
+and age readers provide software verification; no new remote runtime resources,
+analytics or license assumption are introduced.

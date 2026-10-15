@@ -855,3 +855,18 @@ The complete preserved-data setup passed at the accepted source, retaining
 owned-service startup passed 15 commands at that source. Final documentation-head CI, ordinary guarded PR27 merge and
 configuration persistence have separate outcomes; draft save is not Publish or
 independently observed fresh restoration.
+
+## P15 development: installed PWA shell and preserved-data update
+
+Main/remote tree `49e97603ea2bfd3d83a7976dddbf19dd18f9ad73` and ordinary PR27
+merge at e5fe04d657850189eb956fb802fee9326e486a67 were rechecked before P15.
+All 25 postmerge mandatory checks were observed successful; two optional jobs
+were skipped. No previous phase was reimplemented.
+
+The new PWA shell adds a stable manifest/icons, mobile panes/Back, install and
+storage guidance, explicit pause, neutral push reception and safe waiting-worker
+update. BFCache return recreates locked custody across all three browser shells.
+Six executed worker policy tests and the actual static build pass locally; the
+179 frozen files and generated contracts remain unchanged. Local Chromium cannot
+start its required sandbox helper. The new hosted gigabyte/update/memory case is
+prepared but NOT_RUN at this source. See P15_IPHONE.md. P15 is not complete.

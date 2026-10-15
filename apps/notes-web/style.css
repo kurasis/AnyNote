@@ -1,1 +1,20 @@
 :root{color-scheme:light dark;font-family:system-ui,sans-serif;--line:#8886;--surface:#8881}*{box-sizing:border-box}body{margin:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}header{display:flex;align-items:center;gap:1rem;padding:1rem;border-bottom:1px solid var(--line);flex-wrap:wrap}header>a:first-child{font-weight:700;margin-right:auto}main{padding:1rem}button,input,select,textarea{font:inherit;min-height:44px}button{padding:.5rem .8rem;cursor:pointer}button:disabled{cursor:default;opacity:.6}input,select,textarea{max-width:100%;padding:.5rem}input:not([type=checkbox]),textarea{width:100%}label{display:block;margin:.6rem 0 .25rem}textarea{resize:vertical;line-height:1.5}a{color:LinkText}ul{list-style:none;padding:0}li{margin:.4rem 0}li>button{max-width:100%;text-align:left;overflow-wrap:anywhere}.toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem}.toolbar input{width:auto;flex:1}.panes{display:grid;grid-template-columns:minmax(180px,1fr) minmax(220px,1fr) minmax(300px,2fr);gap:1rem}.pane{padding:1rem;background:var(--surface);border:1px solid var(--line);border-radius:.5rem;min-width:0}#unlock-panel{max-width:560px;margin:2rem auto}#save-state{font-weight:600}#preview{overflow-wrap:anywhere;line-height:1.6}#preview pre,#conflict-remote{white-space:pre-wrap;overflow-wrap:anywhere;max-height:25rem;overflow:auto;background:var(--surface);padding:1rem}#checklist li{display:flex;gap:.5rem;align-items:center}#checklist li label{margin:0;flex:1}details{margin-top:1rem}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #568ae6;outline-offset:2px}[hidden]{display:none!important}@media(max-width:850px){.panes{grid-template-columns:1fr}.pane{padding:.75rem}header{gap:.6rem}.toolbar{align-items:stretch}}@media(prefers-reduced-motion:no-preference){button{transition:background-color .1s}}
+
+/* iPhone keyboard does not zoom 16px inputs. Each mobile pane has a deliberate
+   navigation target; hidden panes do not retain offscreen focusable controls. */
+#pwa-help{max-width:72rem;padding:.8rem;border:1px solid var(--line);border-radius:.5rem}
+#pwa-help summary{min-height:44px;cursor:pointer;padding:.5rem}
+#pwa-help button{margin:.25rem;min-width:44px}
+#pwa-panes{display:none}
+@media(max-width:850px){
+ html{scroll-padding-block:1rem}input,textarea,select{font-size:16px}
+ #pwa-panes{display:flex;position:sticky;top:0;z-index:2;gap:.4rem;padding:.5rem;background:Canvas;border-bottom:1px solid var(--line)}
+ #pwa-panes button{flex:1;min-width:0}
+ #pwa-panes button[aria-pressed=true]{outline:2px solid Highlight;outline-offset:-2px;font-weight:700}
+ .panes>.pane[data-mobile-active=false]{display:none}
+ .panes{display:block}.panes>.pane{margin-top:.75rem}
+ header{padding:.6rem}main{padding:.6rem;padding-bottom:max(1rem,env(safe-area-inset-bottom))}
+ #note-body{min-height:35dvh}#unlock-panel{margin:1rem auto}
+ }
+
+.pane{overflow-wrap:anywhere}
