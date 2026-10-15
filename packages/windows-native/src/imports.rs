@@ -55,6 +55,29 @@ fn feed(source: &mut Source, bridge: &mut Bridge, data: &[u8]) -> Result<()> {
         bridge.send(3, &bytes[..n])
     }
 }
+fn recovered_part_bytes(
+    source: &mut Source,
+    bridge: &mut Bridge,
+    expected: u64,
+    mut authorize: impl FnMut() -> Result<()>,
+) -> Result<zeroize::Zeroizing<Vec<u8>>> {
+    loop {
+        authorize()?;
+        let (kind, bytes) = bridge.receive()?;
+        if kind == 13 {
+            // The authenticated reader may prefetch archive input while its
+            // visitor sends this plaintext part. Service only that bounded
+            // selected-source request; it is not part of the plaintext frame.
+            feed(source, bridge, &bytes)?;
+            continue;
+        }
+        check(
+            kind == 3 && bytes.len() as u64 == expected,
+            "INVALID_BRIDGE_FRAME",
+        )?;
+        return Ok(bytes);
+    }
+}
 impl Host {
     /// Each selected note has an independently protected payload. The small root journal
     /// contains aliases and receipts only, so total archive plaintext is never materialized.
@@ -454,15 +477,13 @@ impl Host {
                         .as_u64()
                         .ok_or(Error("INVALID_BRIDGE_FRAME"))?
                         as usize;
-                    let (k, plain) = input.bridge.receive()?;
-                    check(
-                        k == 3
-                            && plain.len()
-                                == meta["bytes"]
-                                    .as_u64()
-                                    .ok_or(Error("INVALID_BRIDGE_FRAME"))?
-                                    as usize,
-                        "INVALID_BRIDGE_FRAME",
+                    let plain = recovered_part_bytes(
+                        &mut input.source,
+                        &mut input.bridge,
+                        meta["bytes"]
+                            .as_u64()
+                            .ok_or(Error("INVALID_BRIDGE_FRAME"))?,
+                        || job.check(self.current()),
                     )?;
                     job.check(self.current())?;
                     let draft = file.as_deref().ok_or(Error("INCOMPLETE_FILE"))?;
@@ -746,6 +767,62 @@ mod payload_tests {
                         .windows(31)
                         .any(|w| w == b"SYNTHETIC private imported note ")
                 );
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod pipe_tests {
+    use super::*;
+    use sha2::{Digest, Sha256};
+    use std::path::{Path, PathBuf};
+    fn sha(path: &Path) -> String {
+        anynote_crypto_core::crypto::b64(&Sha256::digest(std::fs::read(path).unwrap()))
+    }
+    #[test]
+    fn pending_plaintext_services_only_bounded_archive_prefetch_and_rejects_other_frames() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let node = std::env::var_os("ANYNOTE_NATIVE_NODE")
+            .map(PathBuf::from)
+            .unwrap_or_else(|| root.join("apps/desktop/src-tauri/resources/node.exe"));
+        let work = tempfile::tempdir().unwrap();
+        let source = work.path().join("public-source.bin");
+        let script = work.path().join("public-peer.mjs");
+        std::fs::write(&source, b"PUBLIC_ARCHIVE_BYTES").unwrap();
+        // Public synthetic peer forces a source read between metadata and data.
+        // It never receives vault/archive keys or filesystem paths over the pipe.
+        std::fs::write(&script, r#"import {write} from 'node:fs';
+let buffered=Buffer.alloc(0),wake;process.stdin.on('data',b=>{buffered=Buffer.concat([buffered,b]);wake?.();});
+async function frame(){for(;;){if(buffered.length>=8){const k=buffered.readUInt32BE(0),n=buffered.readUInt32BE(4);if(buffered.length>=n+8){const b=Buffer.from(buffered.subarray(8,8+n));buffered=buffered.subarray(8+n);return {k,b};}}await new Promise(r=>wake=r);}}
+async function send(k,b){const h=Buffer.alloc(8);h.writeUInt32BE(k);h.writeUInt32BE(b.length,4);const v=Buffer.concat([h,b]);await new Promise((r,j)=>write(1,v,e=>e?j(e):r()));}
+const mode=JSON.parse((await frame()).b).mode;
+if(mode==='unexpected'){await send(7,Buffer.from('PUBLIC_OTHER'));}
+else{await send(13,Buffer.from(JSON.stringify({offset:mode==='invalid-offset'?'21':'0',bytes:65536})));const source=await frame();if(source.k!==3||source.b.toString()!=='PUBLIC_ARCHIVE_BYTES')throw Error('PUBLIC_SOURCE_MISMATCH');await send(3,Buffer.from('PUBLIC_PART'));}
+process.stdin.destroy();
+"#).unwrap();
+        let node_sha = sha(&node);
+        let script_sha = sha(&script);
+        let assets = Assets {
+            node: &node,
+            script: &script,
+            node_sha: &node_sha,
+            script_sha: &script_sha,
+        };
+        for (mode, succeeds, expected) in [
+            ("interleave", true, 11),
+            ("invalid-offset", false, 11),
+            ("unexpected", false, 11),
+            ("wrong-size", false, 12),
+        ] {
+            let mut input = Source::open(&source, 65536).unwrap();
+            let mut bridge = Bridge::spawn(&assets, || false).unwrap();
+            bridge.json(1, &json!({"mode":mode})).unwrap();
+            let result = recovered_part_bytes(&mut input, &mut bridge, expected, || Ok(()));
+            if succeeds {
+                assert_eq!(&*result.unwrap(), b"PUBLIC_PART");
+            } else {
+                assert_eq!(result.unwrap_err().0, "INVALID_BRIDGE_FRAME");
             }
         }
     }
