@@ -481,7 +481,7 @@ async fn file_job(
     .on_page_load(move|view,page|{if page.event()==tauri::webview::PageLoadEvent::Finished{if preview_host.current()!=generation{let _=view.close();return;}if let Ok(mut data)=data.lock()&&let Some(payload)=data.take(){let _=view.eval(format!("window.dispatchEvent(new CustomEvent('anynote-preview',{{detail:{payload}}}))"));}}})
     ;
    #[cfg(feature = "integration-harness")]
-   let preview_builder=preview_builder.data_directory(harness_browser_directory());
+   let preview_builder=preview_builder.data_directory(harness_browser_directory()).additional_browser_args(harness_browser_arguments());
    let preview=preview_builder.build().map_err(|_|"PREVIEW_UNAVAILABLE")?;
    preview.on_window_event(move|event|{if matches!(event,tauri::WindowEvent::Focused(false))&&!window_state.owns_foreground(){window_state.lock();if let Some(app)=window_state.app.get(){let _=app.emit("vault-locked",json!({"reason":"background"}));}}});
    Ok(json!({"state":"OPENED","isolation":"separate window, no native IPC permissions, bounded P13 workers"}))
@@ -495,6 +495,12 @@ async fn file_job(
 #[cfg(feature = "integration-harness")]
 fn harness_browser_directory() -> PathBuf {
     std::env::temp_dir().join(format!("anynote-p14-webview-{}", std::process::id()))
+}
+#[cfg(feature = "integration-harness")]
+fn harness_browser_arguments() -> &'static str {
+    // Use the maintained native options: the hosted runtime did not forward the
+    // environment-based arguments. Keep Wry defaults and loopback-only CI CDP.
+    "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --autoplay-policy=no-user-gesture-required --remote-debugging-port=9223 --remote-debugging-address=127.0.0.1"
 }
 fn main() {
     // WebView2 honors debugging environment overrides independently of its UI setting.
@@ -543,7 +549,9 @@ fn main() {
                     .on_new_window(|_, _| tauri::webview::NewWindowResponse::Deny)
                     .on_download(|_, _| false);
             #[cfg(feature = "integration-harness")]
-            let window_builder = window_builder.data_directory(harness_browser_directory());
+            let window_builder = window_builder
+                .data_directory(harness_browser_directory())
+                .additional_browser_args(harness_browser_arguments());
             let window = window_builder.build()?;
             #[cfg(windows)]
             windows::attach(&window, state.clone())?;
