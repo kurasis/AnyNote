@@ -7,11 +7,11 @@ resources=out/'resources';manifest=json.loads((resources/'runtime-manifest.json'
 for name,key in [('node.exe','node_sha256'),('custody.mjs','script_sha256')]:
  p=resources/name;assert base64.urlsafe_b64encode(hashlib.sha256(p.read_bytes()).digest()).decode().rstrip('=')==manifest[key];shutil.copyfile(p,target/name)
 bridge=Path('packages/windows-native/src/bridge.rs');fixed=Path('scripts/p14-fixed-bridge.rs').read_bytes();command=['cargo','test','--manifest-path','packages/windows-native/Cargo.toml','--locked','-j','4','--test','bridge','--','--test-threads=1']
-before=subprocess.run(command,capture_output=True,text=True,timeout=480)
+before=subprocess.run(command,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=480)
 print('BEFORE canonical-path real native pipe regression:',before.stdout,before.stderr,flush=True)
 assert before.returncode!=0 and 'BRIDGE_CLOSED' in before.stdout+before.stderr
 bridge.write_bytes(fixed)
-after=subprocess.run(command,capture_output=True,text=True,timeout=480)
+after=subprocess.run(command,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=480)
 print('AFTER canonical-path real native pipe regression:',after.stdout,after.stderr,flush=True)
 assert after.returncode==0
 print(json.dumps({'status':'PASS','scope':'actual native Bridge with exact packaged runtime and frozen authenticated archive; canonical Windows script path','before':'BRIDGE_CLOSED','after':'verified original plaintext recovered','binary_source_commit':'af53a1946816b566140016c06feb62a22b4f29a2'}))
