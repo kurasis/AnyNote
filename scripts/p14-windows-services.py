@@ -8,7 +8,7 @@ PURPOSE='AnyNote P14 disposable Windows backend'
 OWNER=hashlib.sha256(('AnyNote P06 disposable TLS authentication stack'+str(ROOT)).encode()).hexdigest()
 PINS=json.loads((ROOT/'scripts/p14-windows-dependencies.json').read_text())
 def require_ci():
-    if os.name!='nt' or os.getenv('GITHUB_ACTIONS')!='true':raise RuntimeError('Windows GitHub synthetic runner required')
+    if os.name!='nt' or os.getenv('GITHUB_ACTIONS')!='true' or os.getenv('RUNNER_ENVIRONMENT')!='github-hosted':raise RuntimeError('Owned hosted Windows GitHub synthetic runner required')
 def checked(args,**kw):
     expected=kw.pop('expected_failure',False)
     result=subprocess.run([str(a) for a in args],cwd=kw.pop('cwd',ROOT),capture_output=True,**kw)
@@ -146,12 +146,14 @@ def trust():
     if b'app.anynote.test' in original or b'api.anynote.test' in original:raise RuntimeError('Refusing existing test hostname mapping')
     der=ssl.PEM_cert_to_DER_cert((P06/'tls/ca.crt').read_text(encoding='ascii'))
     thumb=hashlib.sha1(der,usedforsecurity=False).hexdigest().upper()
+    # CI only: CurrentUser root addition can require interactive consent. The hosted
+    # machine store is verified byte-for-byte and cleaned; the owner app never runs this.
     # DER bytes and an independent fingerprint bind the OS-store receipt. No private key.
     certificate=STATE/'test-root.der';certificate.write_bytes(der)
     certificate_argument=str(certificate).replace("'","''")
     prefix="$ErrorActionPreference='Stop';$store=[System.Security.Cryptography.X509Certificates.X509Store]::new('Root','LocalMachine');"
     find="$store.Certificates.Find([System.Security.Cryptography.X509Certificates.X509FindType]::FindByThumbprint,'"+thumb+"',$false)"
-    existing=checked(['powershell','-NoProfile','-Command',prefix+"$store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadOnly);try{[Console]::Write(("+find+").Count)}finally{$store.Close()}"]).decode('ascii').strip()
+    existing=checked(['powershell','-NoProfile','-Command',prefix+"$store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadOnly);try{[Console]::Write(("+find+").Count)}finally{$store.Close()}"],timeout=30).decode('ascii').strip()
     if existing!='0':raise RuntimeError('Refusing pre-existing or unverifiable synthetic root certificate')
     expected=original+b'\r\n127.0.0.1 app.anynote.test api.anynote.test # AnyNote P14 owned CI\r\n'
     # Record cleanup intent before either OS mutation, including uncertain failures.
@@ -159,7 +161,7 @@ def trust():
     (STATE/'trust-thumbprint').write_text(thumb,encoding='ascii')
     hosts.write_bytes(expected)
     command=prefix+"$certificate=[System.Security.Cryptography.X509Certificates.X509Certificate2]::new([IO.File]::ReadAllBytes('"+certificate_argument+"'));if($certificate.Thumbprint -ne '"+thumb+"'){throw 'Synthetic DER fingerprint mismatch'};$store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadWrite);try{$store.Add($certificate);$found="+find+";if($found.Count -ne 1 -or [Convert]::ToBase64String($found[0].RawData) -cne [Convert]::ToBase64String($certificate.RawData)){throw 'Synthetic root store verification failed'};[Console]::Write($certificate.Thumbprint)}finally{$store.Close();$certificate.Reset()}"
-    installed=checked(['powershell','-NoProfile','-Command',command]).decode('ascii').strip()
+    installed=checked(['powershell','-NoProfile','-Command',command],timeout=60).decode('ascii').strip()
     if installed!=thumb:raise RuntimeError('Synthetic CA installation receipt missing')
     print('PASS: exact synthetic DER root verified in machine Windows CI store and owned hostname mapping')
 def untrust():
@@ -170,7 +172,7 @@ def untrust():
         if not re.fullmatch('[A-Fa-f0-9]{40}',value):raise RuntimeError('Invalid owned synthetic CA receipt')
         path="Cert:\\LocalMachine\\Root\\"+value
         command="$ErrorActionPreference='Stop';$path='"+path+"';if(Test-Path -LiteralPath $path){Remove-Item -LiteralPath $path};if(Test-Path -LiteralPath $path){throw 'Owned synthetic root removal failed'}"
-        checked(['powershell','-NoProfile','-Command',command]);thumb.unlink()
+        checked(['powershell','-NoProfile','-Command',command],timeout=30);thumb.unlink()
     before=STATE/'hosts.before'
     if before.exists():
         hosts=Path(os.environ['SystemRoot'])/'System32/drivers/etc/hosts'
