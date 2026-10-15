@@ -1,0 +1,43 @@
+{
+  "purpose": "Prior compiled Windows installed-host multipart import stall observation",
+  "status": "FAILED",
+  "source_commit": "b362673450f4fa2d1457b76f7d81a5ca084dc26f",
+  "binary_source_commit": "f904aedd754aa6261d88017f96730b5b49b774bf",
+  "run_id": 38744003441,
+  "job_id": 116452731259,
+  "plaintext_bytes": 16777217,
+  "observed_failure": "Fresh import did not complete; last public counter remained zero after20min",
+  "last_observation": {
+    "state": "RUNNING",
+    "bytes": "0",
+    "total": "0",
+    "elapsed_ms": "1199991",
+    "error": null
+  },
+  "job_log_sha256": "1264e155cdf8582325fe05ec5097e21695e624e7b81350ddd85bef4ee76f84cf",
+  "git_inputs": {
+    ".github/workflows/p14-root-trust-probe.yml": {
+      "git_blob": "ce9fbbf8f790aef2941fe3dea4d0dd6b19696165",
+      "sha256": "2574fa7754f4424cc2e1811744df00e96f6e7e0515300784215631d370f27906"
+    },
+    "scripts/p14-webview.mjs": {
+      "git_blob": "0206246fb479bff97e9f3f267c45916f6845241b",
+      "sha256": "87d90e4d7bb5deaf9c44623e979070844dd8ac668519e2af19431177c1259998"
+    }
+  },
+  "compiled_binary_artifacts": [
+    {
+      "id": 11977530853,
+      "name": "p14-ci-harness-diagnosis-not-owner-installer",
+      "sha256": "71233484345b903b93f5055a167e3ce49e293f96f123705a14aca6e2f4a76cfc"
+    },
+    {
+      "id": 11977490793,
+      "name": "p14-windows-development-installer",
+      "sha256": "4d30b7f6e5fd08df755291f963edd7cfbe4756411b2ea8feb2f814a3584e9540"
+    }
+  ],
+  "independently_verified_compiled_binaries": 4,
+  "physical_acceptance": false,
+  "scope": "Historical diagnostic failure; no claim of full application acceptance"
+}

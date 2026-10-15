@@ -502,3 +502,24 @@ bounded stream; a complete packaged native Windows host remains P14.
 Hosted browser/native and measured process RSS are not physical iPhone Files,
 full WebView2/Hello/TPM or mobile heap proof. G1/U11/U12 and qualified G2/G3 remain
 OPEN/NOT_RUN. Setup draft, Publish and independent restoration are separate.
+
+P14 installed Windows/WebView2 software acceptance is retained in evidence/p14.
+One development NSIS setup bundles all required app/runtime assets. It is unsigned;
+production Authenticode and updater trust are not configured. Ephemeral test
+signatures prove software tamper rejection and actual upgrade/data preservation,
+not a production signing identity. WebView2 bootstrap-on-missing remains the
+maintained installer path; the hosted acceptance records its actual environment.
+
+The Windows gigabyte receipt reports sampled OS working-set baselines/increases,
+including helper startup and separate WebView2 shared-page sums. Initial target
+observation: `OBSERVED_ABOVE_INITIAL_TARGET`. This does not prove
+unsampled maxima, a mobile heap bound or arbitrary 100 GB capacity. Current memory
+and metadata/selection/resource bounds can require smaller operations. Physical
+Win+L/suspend/Hello/TPM, iPhone U11/U12 and qualified G2/G3 remain OPEN/NOT_RUN.
+The hosted app/CI account is not a physical owner-device or independent review.
+No new trial, release, production operation or reviewer outreach is implied.
+
+The accepted Windows GUI run observed a 339,361,792-byte (323.6 MiB) native-plus-
+helper working-set increase, above the initial 128 MiB target. The helper startup
+is included; the separate WebView2 sum counts shared pages. This is an unresolved
+performance target, retained independently of the passing functional workflows.

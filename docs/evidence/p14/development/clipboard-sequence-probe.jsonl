@@ -1,0 +1,5 @@
+{"stage":"write","before":0,"empty":1,"original_marker":2,"after_close":5}
+{"stage":"sample","index":0,"sequence":5,"same_as_original_marker":false,"bytes":66,"native_text_matches":true,"powershell_text_matches":true}
+{"stage":"sample","index":1,"sequence":5,"same_as_original_marker":false,"bytes":66,"native_text_matches":true,"powershell_text_matches":true}
+{"stage":"sample","index":2,"sequence":5,"same_as_original_marker":false,"bytes":66,"native_text_matches":true,"powershell_text_matches":true}
+{"stage":"explicit_cleanup","sequence":5,"cleared":true}

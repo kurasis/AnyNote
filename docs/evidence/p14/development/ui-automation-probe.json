@@ -1,0 +1,29 @@
+{
+  "purpose": "P14 Windows automation infrastructure; synthetic WinForms window, not Tauri/app/physical acceptance",
+  "source_commit": "a54a042eec2c4163325f06f6ffe0408fe00bcb2a",
+  "helper_sha256": "9f60d038e75fe841e390def2038adfd373bb9eff0e843b96a68819db1f0f7dd2",
+  "physical_acceptance": false,
+  "steps": {
+    "corrected_parser": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "original_parser": {
+      "exit_code": 1,
+      "stderr": "Missing closing '}' in statement block or type definition.\r\n"
+    },
+    "memory": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "foreground": {
+      "exit_code": 0,
+      "stderr": ""
+    },
+    "real_owned_input": {
+      "exit_code": 0,
+      "stderr": ""
+    }
+  },
+  "status": "PASS"
+}

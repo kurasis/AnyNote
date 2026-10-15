@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "purpose": "Bound public Windows full-duplex mechanism diagnosis",
+  "source_commit": "22c9c53704e2ea868a6d6756d72a93a539d2e05e",
+  "run_id": 38744494720,
+  "job_id": 116454451392,
+  "job_log_sha256": "382d889d49c96d1543e30335c7d3404d96887909e316c9961c50676c2cde3e94",
+  "public_report_sha256": "7188a721563cf4150c9a6269fe09bf745290b504fe4b54d48a2a6bb612b8efeb",
+  "git_inputs": {
+    ".github/workflows/p14-root-trust-probe.yml": {
+      "git_blob": "49e79dda1eca9ee0cb49370f5af3f475ec176aef",
+      "sha256": "e4b71ecce42daa6a9ac5f2bcb4cd24de09e76645936a0a92575e73b5d6665d13"
+    },
+    "scripts/p14-public-bridge-probe.py": {
+      "git_blob": "09b1e455f9bf24cb36ddf2913dba659827db9909",
+      "sha256": "50faf202741fa2ffcb4b024d70dc882d38b26282c5d1278cc2fe7261304e932f"
+    }
+  },
+  "packaged_runtime_source_commit": "af53a1946816b566140016c06feb62a22b4f29a2",
+  "artifact_id": 11966522159,
+  "artifact_sha256": "a3256f97b63cc7433d02fb916d4b12f6691d31e8e6b00d9cec200ef3d1ccbd5a",
+  "node_sha256_base64url": "uk5tEQ6MFZKh7NOQ9rBfPaEksThxpb5is0GgeoU8bDI",
+  "physical_acceptance": false,
+  "scope": "Synthetic public pipe mechanism only; not full fresh-source application/gigabyte acceptance"
+}

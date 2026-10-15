@@ -1,0 +1,9 @@
+{
+  "purpose": "P14 independent native cards, admission, current authority, protected draft recovery and joint ownership over actual TLS/API/SQL",
+  "status": "PASS",
+  "checks": 20,
+  "source_commit": "e32fdc623997de1e47608dbf3b8791d294e9c391",
+  "source_tree_dirty": false,
+  "physical_acceptance": false,
+  "native_dialogs": "Separate actual Windows/WebView2 acceptance required"
+}

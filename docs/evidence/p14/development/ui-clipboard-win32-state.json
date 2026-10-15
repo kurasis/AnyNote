@@ -1,0 +1,57 @@
+{
+  "purpose": "Reused binary keyboard diagnosis only; not fresh application acceptance",
+  "binary_source_commit": "5c543ee598d02df25cabd794e158759453836da3",
+  "diagnostic_source_commit": "0858852ba5afdd8d61d1903972e66921cecf2588",
+  "checks": 20,
+  "physical_acceptance": false,
+  "snapshot": {
+    "native_probe": {
+      "state": "RESOLVED",
+      "vault_state": "unlocked"
+    },
+    "clipboard": {
+      "state": "RESOLVED"
+    },
+    "known_error_codes": null,
+    "header_state": "unlocked · SYNCED",
+    "rail_buttons": [
+      {
+        "synthetic_thread": false,
+        "synthetic_group": false,
+        "selected": false,
+        "disabled": false
+      },
+      {
+        "synthetic_thread": false,
+        "synthetic_group": false,
+        "selected": false,
+        "disabled": false
+      },
+      {
+        "synthetic_thread": false,
+        "synthetic_group": false,
+        "selected": false,
+        "disabled": false
+      },
+      {
+        "synthetic_thread": false,
+        "synthetic_group": true,
+        "selected": true,
+        "disabled": false
+      },
+      {
+        "synthetic_thread": false,
+        "synthetic_group": false,
+        "selected": false,
+        "disabled": false
+      },
+      {
+        "synthetic_thread": true,
+        "synthetic_group": false,
+        "selected": false,
+        "disabled": false
+      }
+    ],
+    "editor_visible": true
+  }
+}

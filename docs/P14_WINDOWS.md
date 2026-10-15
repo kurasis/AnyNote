@@ -1,8 +1,9 @@
 # Windows desktop application
 
-P14 is under development. Use P14_DEVELOPMENT.md for current observations and
-TEST_EVIDENCE.md for accepted results. A successful build alone is not native
-platform acceptance. Production Authenticode/updater credentials and physical
+P14 software acceptance is recorded in docs/evidence/p14 and TEST_EVIDENCE.md.
+P14_DEVELOPMENT.md retains earlier development observations. Actual installed
+Windows/WebView2 and gigabyte/update tests passed at the recorded exact source.
+Production Authenticode/updater credentials and physical
 Hello/TPM/session/suspend acceptance remain separate requirements.
 
 ## Installation and local custody

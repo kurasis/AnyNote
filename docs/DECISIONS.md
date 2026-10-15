@@ -1070,3 +1070,11 @@ Long GUI tests simulate an active operator with real OS input scoped to their
 owned disposable foreground app. They then stop input and observe the real
 five-minute idle/generation/preview boundary. Hosted synthetic input and WTS
 messages remain distinct from physical owner Win+L/suspend/Hello/TPM acceptance.
+
+P14 software closure at `e32fdc623997de1e47608dbf3b8791d294e9c391` retains the existing frozen formats and
+trusted native key/credential boundary. Actual installed Windows/1GB/upgrade
+receipts and all 25 gates establish the recorded software flows. The measured
+initial memory-target observation is `OBSERVED_ABOVE_INITIAL_TARGET`;
+it is not silently promoted to an unsampled budget or physical-platform pass.
+Keep memory/resource follow-up and production signing/physical/independent-review
+gates explicit before release. P15 proceeds with the complete iPhone PWA work.

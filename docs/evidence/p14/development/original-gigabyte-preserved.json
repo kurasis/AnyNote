@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "baseline_commit": "e0cfbebbbc3ce81a35c571eef59183b3daaca368",
+  "original_gigabyte_workflow_sha256": "f25a6c6ac720b34864a234b5c981156c17c4b84a12eb11200a3f289c51ca72a4",
+  "original_large_workflow_identical": true,
+  "small_roundtrip_is_additional": true
+}

@@ -1,0 +1,30 @@
+{
+  "purpose": "P14 actual installed Windows fresh-source development observation",
+  "source_commit": "f904aedd754aa6261d88017f96730b5b49b774bf",
+  "run_id": 38736291441,
+  "job_id": 116426317485,
+  "status": "FAILED",
+  "inherited_jobs": 24,
+  "completed_observations": [
+    "additional small upload/download/export/kit/offline validation/fresh import/download",
+    "keyboard notes",
+    "actual clipboard copy and timer",
+    "isolated text/raster/PDF preview",
+    "genuine 1000000000-byte upload/download with full SHA match",
+    "genuine encrypted archive export and separate kit SHA match",
+    "complete offline inspection before live import mutation"
+  ],
+  "failed_step": "confirmed genuine gigabyte fresh-import job completion deadline",
+  "timeout_ms": 1200000,
+  "last_public_job_state": "NOT_RECORDED",
+  "job_log_sha256": "304eedfe55fd14c9dedb8371c384f16b81f2a282f588118b4cb77384a901a87a",
+  "webview_git_source_sha256": "7af1d9a34bf6c23408aa7a45c89d9ddd007ff4951a4114569187f785762729ec",
+  "physical_acceptance": false,
+  "remaining": [
+    "complete large fresh import/download",
+    "real five-minute idle",
+    "signed test upgrade/install/restart",
+    "native 62-check Windows integration",
+    "all-25 exact-source closure"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "purpose": "Actual installed Windows fresh-source interleaved framing refusal observation",
+  "status": "FAILED",
+  "source_commit": "4abd1c322af55fe1c97ab6a8227ac1b13c7c59b5",
+  "run_id": 38744944190,
+  "job_id": 116456025409,
+  "completed_observations": [
+    "small complete installed recovery preflight",
+    "keyboard and clipboard/preview tests",
+    "actual1000000000-byte upload/download/full SHA",
+    "streaming encrypted archive and separate kit SHA",
+    "complete offline validation before destination mutation"
+  ],
+  "failed_step": "Confirmed fresh gigabyte import refused INVALID_BRIDGE_FRAME",
+  "job_log_sha256": "50c84e6d61bb282b038ec554dedb324ea02643ad3fb91bf6aca793ce2129e224",
+  "webview_git_source_sha256": "b0a98e1d33fdcbebdaab597bdded8399cec45700480b57524c30f21476cdf22b",
+  "physical_acceptance": false,
+  "remaining": [
+    "full large fresh import/download",
+    "five-minute idle",
+    "signed test upgrade/restart",
+    "native62 Windows genuine gigabyte integration",
+    "all25 final-source software closure"
+  ]
+}

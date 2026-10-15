@@ -1,0 +1,12 @@
+{
+  "status": "VERIFIED_OBSERVATION",
+  "run_id": 38701255481,
+  "artifact_id": 11955459778,
+  "artifact_zip_sha256": "c0da1d785144e5a78ff1bbb5067454451ad9b81a19d3d8de0a857a513532e1e1",
+  "diagnostic_source_commit": "02f6dade134b22e4e63b5b10541045d6e2607ba9",
+  "binary_source_commit": "db8658f534f8427560a25711653318972a0c963e",
+  "compiled_binary_zip_sha256": "d4a75501a0048fc00f020443f379fe10f9ba8c1e44289845609112d412fc9f6a",
+  "compiled_binary_sha256": "28f5327f5596ec1258d24afde31c0e1df7570b219510d2aef3496c00d8636ef7",
+  "physical_acceptance": false,
+  "scope": "Actual live HWND/browser, environment CDP flag missing; not application acceptance"
+}

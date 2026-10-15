@@ -1,0 +1,13 @@
+{
+  "purpose": "P14 isolated actual Windows root-store diagnostic, not application acceptance",
+  "source_commit": "5e8c893449d85ffac23ee066e233ed3141975f78",
+  "helper_sha256": "42ae2d5638cb375a2aed8685021e03cc25bfc22bdb99c75b04fac4dee057f9fe",
+  "physical_acceptance": false,
+  "status": "PASS",
+  "exit_code": 0,
+  "stdout": "PASS: exact synthetic DER root verified in machine Windows CI store and owned hostname mapping\r\n",
+  "stderr": "",
+  "elapsed_ms": 667,
+  "cleanup_exit_code": 0,
+  "cleanup_diagnostic": ""
+}

@@ -20,7 +20,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P11 | VERIFIED | Ten portable suites, 112 actual sync HTTP/SQL checks, 418 membership/lease checks, 45 sandboxed PWA checks, seven native notes and nine new interop checks/platform; all twenty final code jobs PASS; Worker masking and background idle guards verified |
 | P12 | VERIFIED | Twelve portable file tests, 368 actual file HTTPS/SQL checks, 452 shared-authority checks, 60 sandboxed PWA checks, native 1 GB/cache/atomic export on Linux/MSVC; all twenty-two software gates PASS; physical G1/U11/U12 and qualified G2/G3 remain open |
 | P13 | VERIFIED | Protected content UX, safe previews/thumbnails, reference-safe retention, independent age recovery and fresh standard import; 401 HTTP/SQL, 427 authority, 59 sandboxed UI checks, actual Linux/Windows 1 GB archive and all 24 software gates PASS; physical/review gates remain open |
-| P14 | IN PROGRESS | Native Windows host, packaged NSIS and protected integrations implemented; full installed WebView2/1 GB/update acceptance is pending; physical/review gates remain open |
+| P14 | VERIFIED | Native Windows/WebView2 single installer, actual dialogs/SQL/1GB/recovery/upgrade/restart, all 25 software gates; physical and production signing remain open |
 | P15 | NOT STARTED | P01/P07–P13 and actual iPhone evidence |
 | P16 | NOT STARTED | P04/P08/P11–P13 and appropriately sized synthetic host |
 | P17 | NOT STARTED | P02/P08–P16; independent review |
@@ -800,11 +800,58 @@ Final documentation-head CI, ordinary guarded PR26 merge and configuration
 persistence require their separate recorded outcomes. Code acceptance does not
 claim Publish or independently observed fresh-task restoration.
 
-## P14 development in progress
+## Completed task: P14 native Windows application
 
-The Windows application branch now has typed native custody/UI coordinators,
-actual native HTTP development coverage, protected crash/recovery journals,
-isolated bounded previews, cache controls, signed updater policy and a single
-NSIS build. The installer builds on Windows; complete installed-host/WebView2,
-expanded gigabyte/update/restart acceptance and final exact-source evidence are
-still pending. See P14_DEVELOPMENT.md. P14 is not complete and main remains P13.
+All 25 mandatory software jobs pass at `e32fdc623997de1e47608dbf3b8791d294e9c391`. Exact public raw reports,
+GitHub artifact ZIP digests and Git-input byte verification are retained in
+[evidence/p14](evidence/p14/README.md). This includes all 24 inherited gates.
+
+The client combines native protected SQLite/DPAPI custody, a closed five-command
+IPC boundary and a three-pane EN/RU Tauri2/WebView2 interface. It includes native
+PKCE login, QR/device management, independently pinned sharing/ownership,
+verified note/file/search/preview flows, encrypted drafts and immutable receipt
+recovery, streaming standard-age export and complete offline-first fresh import.
+Unknown refresh responses require fresh login; control and binary transports
+serialize protected one-use refresh before expiry. Windows loopback callbacks
+explicitly restore blocking reads before the existing bounded HTTP checks; five
+native auth tests cover delayed IPv4/IPv6 headers. Renderer view changes discard
+late selection results without misclassifying them as a protected-generation
+change. Real generation changes still mask the UI. Clipboard ownership records
+the final sequence after CloseClipboard and checks its HWND owner before arming
+best-effort clearing, preserving later other-app copies. The bundled Node helper
+uses a safe DOS-equivalent spelling of canonical Windows script paths for its
+exact-file permission allowlist. A real frozen-archive regression records
+BRIDGE_CLOSED before this fix and authenticated plaintext recovery afterwards;
+script/runtime pins and held handles remain enforced. Windows updates use the
+maintained quiet installer mode after explicit native confirmation, avoiding a
+passive language-dialog stall. Crash-restart tests wait for the unchanged short
+writer lease before checking signatures. Helper stdout frames use
+bounded serialized asynchronous descriptor writes so Windows output backpressure
+cannot block the helper from draining native input. A real inherited-pipe test
+checks concurrent frame order and full 8 MiB hashes under the same permission
+boundary. No frozen format changed.
+
+Actual Windows execution covers 5 empty-profile WebView2/typed-denial checks,
+14 native tests, 33 pairing checks, 20 sharing checks, 62 native API checks,
+installed WebView2/dialog/SQL/cache/clipboard/lifecycle tests (31,196 assertions,
+including repeated encrypted-storage scan assertions),
+and incompressible 1,000,000,000-byte upload/download/export/import with complete
+hash verification. A live preview is closed by the actual five-minute idle fence.
+Software HWND WTS messages retain their scope. An ephemeral signed 0.14.1 installer
+rejects metadata/payload tampering, actually installs/restarts and preserves the
+exact protected draft and immutable outbox. The single owner NSIS executable
+bundles runtime/assets/licenses and bootstraps maintained WebView2 if absent.
+
+Memory results retain their OS process, baseline and sampling scope; see the raw
+WebView2 receipt for observed increases and the initial 128 MiB target observation.
+They are not physical iPhone, arbitrary 100 GB or unsampled heap guarantees.
+Production Authenticode/updater keys, physical G1/U11/U12/Hello/TPM and qualified
+G2/G3 remain OPEN/NOT_RUN. No owner trial, release publication, production operation
+or reviewer outreach occurred. P15 is the next implementation batch.
+
+The complete preserved-data setup passed at the accepted source, retaining
+1023 tracked files,
+31 SQL tables and TLS/OAuth bytes. Actual
+owned-service startup passed 15 commands at that source. Final documentation-head CI, ordinary guarded PR27 merge and
+configuration persistence have separate outcomes; draft save is not Publish or
+independently observed fresh restoration.

@@ -208,3 +208,21 @@ OPFS/Web Locks/MessageChannel/service workers are capability-checked; unavailabl
 or failed automatic caching never authorizes plaintext spill. Maintained viewers
 and age portable export integration remain P13, without changing frozen P02 bytes.
 This dependency inventory is not a production SBOM, license clearance or audit.
+
+## P14 Windows application dependencies
+
+The separate desktop Cargo/npm locks and conservative exact inventory contain
+712 records across the native host, UI, portable helper, maintained viewers,
+bundled Node runtime and build/test/optional platform closure. This is not an
+exact linked-code census. apps/desktop/dependency-inventory.json retains resolved
+source/checksum/license declarations; p14-dependencies.py verifies it read-only
+and stages inspected upstream texts, NODE-LICENSE, COPYING-GPL-3.0, notices,
+SOURCE-COMMIT and a conservative SBOM into the single installer. All 179 original
+specification/P02/earlier-lock files stay unchanged.
+
+The Windows candidate and its GPL native adapter have scoped GPL-3.0-only
+metadata and corresponding-source notices. This does not choose a whole-project
+license for the separate PWA, backend or supplied specification. The owner NSIS
+bundles required application/helper assets and bootstraps maintained WebView2
+when missing. Production Authenticode/updater credentials and qualified review
+remain separate; no production release or legal-clearance claim is made.

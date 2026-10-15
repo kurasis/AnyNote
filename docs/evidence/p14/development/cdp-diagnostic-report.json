@@ -1,0 +1,128 @@
+{
+  "purpose": "P14 exact compiled Windows harness infrastructure diagnosis; no API/account/private profile; not app or physical acceptance",
+  "diagnostic_source_commit": "02f6dade134b22e4e63b5b10541045d6e2607ba9",
+  "binary_source_commit": "db8658f534f8427560a25711653318972a0c963e",
+  "harness_sha256": "28f5327f5596ec1258d24afde31c0e1df7570b219510d2aef3496c00d8636ef7",
+  "physical_acceptance": false,
+  "modes": [
+    {
+      "mode": "arguments",
+      "pid": 2188,
+      "cdp": false,
+      "connection_error": "<urlopen error timed out>",
+      "exit_code": null,
+      "process_query_exit": 0,
+      "processes": [
+        {
+          "hwnd": 458828,
+          "parent": 4176,
+          "pid": 2188,
+          "name": "anynote-desktop.exe",
+          "command_line": "D:\\a\\AnyNote\\AnyNote\\.local\\cdp-diagnostic\\installed\\anynote-desktop.exe"
+        },
+        {
+          "hwnd": 0,
+          "parent": 2188,
+          "pid": 7256,
+          "name": "msedgewebview2.exe",
+          "command_line": "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\153.0.4234.48\\msedgewebview2.exe\" --embedded-browser-webview=1 --webview-exe-name=anynote-desktop.exe --webview-exe-version=0.14.0 --user-data-dir=\"C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\anynote-p14-webview-2188\\EBWebView\" --noerrdialogs --embedded-browser-webview-dpi-awareness=2 --autoplay-policy=no-user-gesture-required --disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --lang=en-US --mojo-named-platform-channel-pipe=2188.920.2159558534704356110 /pfhostedapp:79a9354fdab24396eb6f150328a072bec7cb0069"
+        },
+        {
+          "hwnd": 0,
+          "parent": 7256,
+          "pid": 5400,
+          "name": "msedgewebview2.exe",
+          "command_line": "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\153.0.4234.48\\msedgewebview2.exe\" --type=crashpad-handler --user-data-dir=C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\anynote-p14-webview-2188\\EBWebView /prefetch:4 /pfhostedapp:79a9354fdab24396eb6f150328a072bec7cb0069 --monitor-self-annotation=ptype=crashpad-handler --database=C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\anynote-p14-webview-2188\\EBWebView\\Crashpad --annotation=IsOfficialBuild=1 --annotation=channel= --annotation=chromium-version=153.0.8010.53 \"--annotation=exe=C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\153.0.4234.48\\msedgewebview2.exe\" --annotation=plat=Win64 \"--annotation=prod=Edge WebView2\" --annotation=ver=153.0.4234.48 --initial-client-data=0x174,0x178,0x17c,0x150,0x184,0x7ffc9f763360,0x7ffc9f763370,0x7ffc9f763380"
+        },
+        {
+          "hwnd": 0,
+          "parent": 7256,
+          "pid": 5080,
+          "name": "msedgewebview2.exe",
+          "command_line": "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\153.0.4234.48\\msedgewebview2.exe\" --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --noerrdialogs --user-data-dir=\"C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\anynote-p14-webview-2188\\EBWebView\" --webview-exe-name=anynote-desktop.exe --webview-exe-version=0.14.0 --embedded-browser-webview=1 --embedded-browser-webview-dpi-awareness=2 --startup-read-main-dll --metrics-shmem-handle=2060,i,2605914294897825219,15451019598792805379,524288 --field-trial-handle=2000,i,7640517697437688445,17626765042623626492,262144 --disable-features=msPdfOOUI,msSmartScreenProtection,msWebOOUI --variations-seed-version --pseudonymization-salt-handle=2016,i,4368228715381384681,16670418472613972787,4 --trace-process-track-uuid=3190708989122997041 --mojo-platform-channel-handle=2700 /prefetch:11 /pfhostedapp:79a9354fdab24396eb6f150328a072bec7cb0069"
+        },
+        {
+          "hwnd": 0,
+          "parent": 7256,
+          "pid": 10188,
+          "name": "msedgewebview2.exe",
+          "command_line": "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\153.0.4234.48\\msedgewebview2.exe\" --type=gpu-process --noerrdialogs --user-data-dir=\"C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\anynote-p14-webview-2188\\EBWebView\" --webview-exe-name=anynote-desktop.exe --webview-exe-version=0.14.0 --embedded-browser-webview=1 --embedded-browser-webview-dpi-awareness=2 --gpu-preferences=WAAAAAAAAADgAAAEAAAAAAAAAAAAAGAAQAAAAAAAAAADAAAAAAAAADgAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAoAAAAAAAAAAgAAAAAAAAAEAAAAAIAAAABAAAAAAAAAAgAAAAAAAAACAAAAAAAAAA= --startup-read-main-dll --metrics-shmem-handle=1832,i,1249778902677573299,13909087286052435115,262144 --field-trial-handle=2000,i,7640517697437688445,17626765042623626492,262144 --disable-features=msPdfOOUI,msSmartScreenProtection,msWebOOUI --variations-seed-version --pseudonymization-salt-handle=2016,i,4368228715381384681,16670418472613972787,4 --trace-process-track-uuid=3190708988185955192 --mojo-platform-channel-handle=1992 /prefetch:2 /pfhostedapp:79a9354fdab24396eb6f150328a072bec7cb0069"
+        },
+        {
+          "hwnd": 0,
+          "parent": 7256,
+          "pid": 9784,
+          "name": "msedgewebview2.exe",
+          "command_line": "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\153.0.4234.48\\msedgewebview2.exe\" --type=utility --utility-sub-type=storage.mojom.StorageService --lang=en-US --service-sandbox-type=service --noerrdialogs --user-data-dir=\"C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\anynote-p14-webview-2188\\EBWebView\" --webview-exe-name=anynote-desktop.exe --webview-exe-version=0.14.0 --embedded-browser-webview=1 --embedded-browser-webview-dpi-awareness=2 --startup-read-main-dll --metrics-shmem-handle=2408,i,1975106929621090883,1120139893837707763,524288 --field-trial-handle=2000,i,7640517697437688445,17626765042623626492,262144 --disable-features=msPdfOOUI,msSmartScreenProtection,msWebOOUI --variations-seed-version --pseudonymization-salt-handle=2016,i,4368228715381384681,16670418472613972787,4 --trace-process-track-uuid=3190708990060038890 --mojo-platform-channel-handle=2708 /prefetch:13 /pfhostedapp:79a9354fdab24396eb6f150328a072bec7cb0069"
+        },
+        {
+          "hwnd": 0,
+          "parent": 7256,
+          "pid": 5208,
+          "name": "msedgewebview2.exe",
+          "command_line": "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\153.0.4234.48\\msedgewebview2.exe\" --type=renderer --noerrdialogs --user-data-dir=\"C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\anynote-p14-webview-2188\\EBWebView\" --webview-exe-name=anynote-desktop.exe --webview-exe-version=0.14.0 --embedded-browser-webview=1 --embedded-browser-webview-dpi-awareness=2 --autoplay-policy=no-user-gesture-required --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1 --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=5 --launch-time-ticks=264663568 --ssd-no-pressure-read-main-dll --metrics-shmem-handle=4148,i,3790119840099136090,17088803845229021885,1048576 --field-trial-handle=2000,i,7640517697437688445,17626765042623626492,262144 --disable-features=msPdfOOUI,msSmartScreenProtection,msWebOOUI --variations-seed-version --pseudonymization-salt-handle=2016,i,4368228715381384681,16670418472613972787,4 --trace-process-track-uuid=3190708990997080739 --mojo-platform-channel-handle=4152 /pfhostedapp:79a9354fdab24396eb6f150328a072bec7cb0069 /prefetch:1"
+        }
+      ]
+    },
+    {
+      "mode": "arguments-explicit-directory",
+      "pid": 3680,
+      "cdp": false,
+      "connection_error": "<urlopen error timed out>",
+      "exit_code": null,
+      "process_query_exit": 0,
+      "processes": [
+        {
+          "hwnd": 262828,
+          "parent": 4176,
+          "pid": 3680,
+          "name": "anynote-desktop.exe",
+          "command_line": "D:\\a\\AnyNote\\AnyNote\\.local\\cdp-diagnostic\\installed\\anynote-desktop.exe"
+        },
+        {
+          "hwnd": 0,
+          "parent": 3680,
+          "pid": 9600,
+          "name": "msedgewebview2.exe",
+          "command_line": "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\153.0.4234.48\\msedgewebview2.exe\" --embedded-browser-webview=1 --webview-exe-name=anynote-desktop.exe --webview-exe-version=0.14.0 --user-data-dir=\"D:\\a\\AnyNote\\AnyNote\\.local\\cdp-diagnostic\\explicit-browser-data\\EBWebView\" --noerrdialogs --embedded-browser-webview-dpi-awareness=2 --autoplay-policy=no-user-gesture-required --disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --lang=en-US --mojo-named-platform-channel-pipe=3680.4752.15335946529593607307 /pfhostedapp:fab6b53da6d97319454aaf201b57e1c00453d7ed"
+        },
+        {
+          "hwnd": 0,
+          "parent": 9600,
+          "pid": 5028,
+          "name": "msedgewebview2.exe",
+          "command_line": "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\153.0.4234.48\\msedgewebview2.exe\" --type=crashpad-handler --user-data-dir=D:\\a\\AnyNote\\AnyNote\\.local\\cdp-diagnostic\\explicit-browser-data\\EBWebView /prefetch:4 /pfhostedapp:fab6b53da6d97319454aaf201b57e1c00453d7ed --monitor-self-annotation=ptype=crashpad-handler --database=D:\\a\\AnyNote\\AnyNote\\.local\\cdp-diagnostic\\explicit-browser-data\\EBWebView\\Crashpad --annotation=IsOfficialBuild=1 --annotation=channel= --annotation=chromium-version=153.0.8010.53 \"--annotation=exe=C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\153.0.4234.48\\msedgewebview2.exe\" --annotation=plat=Win64 \"--annotation=prod=Edge WebView2\" --annotation=ver=153.0.4234.48 --initial-client-data=0x174,0x178,0x17c,0x150,0x184,0x7ffc9f763360,0x7ffc9f763370,0x7ffc9f763380"
+        },
+        {
+          "hwnd": 0,
+          "parent": 9600,
+          "pid": 7396,
+          "name": "msedgewebview2.exe",
+          "command_line": "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\153.0.4234.48\\msedgewebview2.exe\" --type=gpu-process --noerrdialogs --user-data-dir=\"D:\\a\\AnyNote\\AnyNote\\.local\\cdp-diagnostic\\explicit-browser-data\\EBWebView\" --webview-exe-name=anynote-desktop.exe --webview-exe-version=0.14.0 --embedded-browser-webview=1 --embedded-browser-webview-dpi-awareness=2 --gpu-preferences=WAAAAAAAAADgAAAEAAAAAAAAAAAAAGAAQAAAAAAAAAADAAAAAAAAADgAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAKAAAAAAAAAAoAAAAAAAAAAgAAAAAAAAAEAAAAAIAAAABAAAAAAAAAAgAAAAAAAAACAAAAAAAAAA= --startup-read-main-dll --metrics-shmem-handle=1776,i,12343135962890548944,7205260359526260669,262144 --field-trial-handle=1940,i,11772566269832758154,7971909104994201172,262144 --disable-features=msPdfOOUI,msSmartScreenProtection,msWebOOUI --variations-seed-version --pseudonymization-salt-handle=1916,i,14436185779575259596,10833188921195262440,4 --trace-process-track-uuid=3190708988185955192 --mojo-platform-channel-handle=1928 /prefetch:2 /pfhostedapp:fab6b53da6d97319454aaf201b57e1c00453d7ed"
+        },
+        {
+          "hwnd": 0,
+          "parent": 9600,
+          "pid": 6328,
+          "name": "msedgewebview2.exe",
+          "command_line": "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\153.0.4234.48\\msedgewebview2.exe\" --type=utility --utility-sub-type=network.mojom.NetworkService --lang=en-US --service-sandbox-type=none --noerrdialogs --user-data-dir=\"D:\\a\\AnyNote\\AnyNote\\.local\\cdp-diagnostic\\explicit-browser-data\\EBWebView\" --webview-exe-name=anynote-desktop.exe --webview-exe-version=0.14.0 --embedded-browser-webview=1 --embedded-browser-webview-dpi-awareness=2 --startup-read-main-dll --metrics-shmem-handle=2132,i,11608393603403523696,3072020423893592990,524288 --field-trial-handle=1940,i,11772566269832758154,7971909104994201172,262144 --disable-features=msPdfOOUI,msSmartScreenProtection,msWebOOUI --variations-seed-version --pseudonymization-salt-handle=1916,i,14436185779575259596,10833188921195262440,4 --trace-process-track-uuid=3190708989122997041 --mojo-platform-channel-handle=2128 /prefetch:11 /pfhostedapp:fab6b53da6d97319454aaf201b57e1c00453d7ed"
+        },
+        {
+          "hwnd": 0,
+          "parent": 9600,
+          "pid": 1056,
+          "name": "msedgewebview2.exe",
+          "command_line": "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\153.0.4234.48\\msedgewebview2.exe\" --type=utility --utility-sub-type=storage.mojom.StorageService --lang=en-US --service-sandbox-type=service --noerrdialogs --user-data-dir=\"D:\\a\\AnyNote\\AnyNote\\.local\\cdp-diagnostic\\explicit-browser-data\\EBWebView\" --webview-exe-name=anynote-desktop.exe --webview-exe-version=0.14.0 --embedded-browser-webview=1 --embedded-browser-webview-dpi-awareness=2 --startup-read-main-dll --metrics-shmem-handle=2520,i,7215447454763281893,7540236397415424687,524288 --field-trial-handle=1940,i,11772566269832758154,7971909104994201172,262144 --disable-features=msPdfOOUI,msSmartScreenProtection,msWebOOUI --variations-seed-version --pseudonymization-salt-handle=1916,i,14436185779575259596,10833188921195262440,4 --trace-process-track-uuid=3190708990060038890 --mojo-platform-channel-handle=2584 /prefetch:13 /pfhostedapp:fab6b53da6d97319454aaf201b57e1c00453d7ed"
+        },
+        {
+          "hwnd": 0,
+          "parent": 9600,
+          "pid": 6424,
+          "name": "msedgewebview2.exe",
+          "command_line": "\"C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\153.0.4234.48\\msedgewebview2.exe\" --type=renderer --noerrdialogs --user-data-dir=\"D:\\a\\AnyNote\\AnyNote\\.local\\cdp-diagnostic\\explicit-browser-data\\EBWebView\" --webview-exe-name=anynote-desktop.exe --webview-exe-version=0.14.0 --embedded-browser-webview=1 --embedded-browser-webview-dpi-awareness=2 --autoplay-policy=no-user-gesture-required --video-capture-use-gpu-memory-buffer --lang=en-US --js-flags --device-scale-factor=1 --num-raster-threads=2 --enable-main-frame-before-activation --renderer-client-id=5 --launch-time-ticks=287023101 --ssd-no-pressure-read-main-dll --metrics-shmem-handle=3708,i,15808591404323868956,7691901201414897735,1048576 --field-trial-handle=1940,i,11772566269832758154,7971909104994201172,262144 --disable-features=msPdfOOUI,msSmartScreenProtection,msWebOOUI --variations-seed-version --pseudonymization-salt-handle=1916,i,14436185779575259596,10833188921195262440,4 --trace-process-track-uuid=3190708990997080739 --mojo-platform-channel-handle=3748 /pfhostedapp:fab6b53da6d97319454aaf201b57e1c00453d7ed /prefetch:1"
+        }
+      ]
+    }
+  ],
+  "status": "OBSERVED"
+}
