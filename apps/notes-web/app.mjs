@@ -287,7 +287,13 @@ $('keep-both').onclick=()=>run(async()=>{if(!editor||editor.object_kind!=='entry
 $('send-group-keys').onclick=()=>run(async()=>{if(!groupSelected)throw Error('GROUP_REQUIRED');const target=$('key-target').value;if(!target)throw Error('INVALID_REQUEST');await devices.sync(vault,selected.account_id);let request;if(groups.get(groupSelected)?.kind==='shared'){await sharedProof(groupSelected);request=await shared('ownGrants',{group_id:groupSelected,device_id:target});}else{const evidence=await vault.notes('groupEvidence',[groupSelected]),grant=await vault.devices('distribute',[evidence,target,null,true]);request=grant.request;}await devices.call('/me/device-envelopes','envelope-request','cancel-result',request);$('status').textContent=text('key_done');});
 $('offline').onclick=()=>run(async()=>{if(!navigator.serviceWorker)throw Error('STORAGE_UNAVAILABLE');await navigator.serviceWorker.register('/auth/sw.js',{scope:'/auth/'});await navigator.serviceWorker.ready;$('status').textContent=text('offline_done');});
 async function start(){translate();const list=await profiles();$('profiles').replaceChildren();for(const p of list){const o=document.createElement('option');o.value=JSON.stringify(p);o.textContent=p.account_id.slice(-8)+' · '+p.device_id.slice(-8);$('profiles').append(o);}if(!list.length){$('empty').hidden=false;return;}selected=list[0];await vault.open(selected);$('status').dataset.state='ready';}
-pwa=mountPwa({language:()=>language,prepareUpdate:()=>{transfers?.pause();portableTools?.pause();return run(async()=>{const form=$('editor'),before=form.inert;form.inert=true;try{await flushIfDirty();if(editor&&editVersion>0)throw Error('STORAGE_FAILURE');await vault.lock();}finally{form.inert=before;}});}});
+pwa=mountPwa({language:()=>language,prepareUpdate:async()=>{
+ transfers?.pause();portableTools?.pause();let prepared=false;
+ await run(async()=>{const form=$('editor'),before=form.inert;form.inert=true;try{await flushIfDirty();if(editor&&editVersion>0)throw Error('STORAGE_FAILURE');await vault.lock();prepared=true;}finally{form.inert=before;}});
+ // run reports and consumes ordinary UI errors. An unsuccessful save must also
+ // stop the update action instead of being mistaken for a successful lock.
+ if(!prepared)throw Error('STORAGE_FAILURE');
+}});
 start().catch(reportError);
 
 const shared=(op,x)=>vault.notes('shared',[op,x]);

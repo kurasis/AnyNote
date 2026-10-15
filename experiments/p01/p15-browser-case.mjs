@@ -153,6 +153,8 @@ export async function pwaCase({page, action, check, scratch, readyWriter}) {
     await page.waitForFunction(() => !document.getElementById('status').dataset.busy);
     await page.locator('#threads button').first().click();
     await page.waitForFunction(() => !document.getElementById('status').dataset.busy);
+    const filePanel=page.locator('details').filter({has:page.locator('#file-source')});
+    if(!await filePanel.evaluate(e=>e.open))await filePanel.locator('summary').click();
     await action(page, 'file-refresh');
     const importedDownload = page.waitForEvent('download', {timeout: 300000});
     await page.locator('#file-items li').filter({hasText: importedReceipt.file_version_id}).locator('button').filter({hasText: 'Export file'}).click();

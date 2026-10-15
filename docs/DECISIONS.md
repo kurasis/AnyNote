@@ -1103,3 +1103,7 @@ masked by the update. Manual pause and page destruction retain the encrypted
 import job; its selection UI requires the same archive/kit and fresh audience
 confirmation before resuming. The exact P07 cache regression assertion expands
 only for the manifest and two original local icons; it does not admit API routes.
+
+The update preparation explicitly propagates a failed save through the ordinary
+UI error handler. A reported UI failure cannot be mistaken for a completed
+save/lock and continue the explicit update action.
