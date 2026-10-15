@@ -148,7 +148,7 @@ async function openThread(id){
  pwa?.select(2);
  await flushIfDirty();threadSelected=id;const ref=references.get(id);if(!ref||ref.group_id!==groupSelected||ref.object_kind!=='thread')throw Error('CONTEXT_MISMATCH');
  $('thread-heading').textContent=titles.get(id)??text('untitled');$('entries').replaceChildren();$('editor').hidden=true;entryCursor=null;
- await threadSummary(ref);if(server)await loadEntries();else for(const [object,r]of references)if(r.group_id===groupSelected&&r.thread_id===id&&!r.tombstoned)item($('entries'),titles.get(object)??text('untitled'),()=>openEntry(object),object);
+ await threadSummary(ref);if(server)await loadEntries();else{const g=generation;for(const r of references.values())if(r.group_id===groupSelected&&r.thread_id===id&&!r.tombstoned)await entryLabel(groupSelected,r,g);}
 }
 function preferenceOrder(key,a,b){const order=id=>BigInt(preferences.find(p=>p.key===key&&p.target_id===id)?.value??'9223372036854775807');return order(a)<order(b)?-1:order(a)>order(b)?1:a<b?-1:1;}
 async function threadSummary(ref){
@@ -158,9 +158,16 @@ async function threadSummary(ref){
  if(state.object.tombstoned)return;const entry=await fetchPayload(groupSelected,state.object);$('thread-summary').textContent=entry.payload.title;
 }
 async function loadEntries(more=false){
- if(!threadSelected)throw Error('THREAD_REQUIRED');const page=await api.call('/threads/'+threadSelected+'/entries'+(more&&entryCursor?'?after='+entryCursor:''),null,'objects-page');
+ if(!threadSelected)throw Error('THREAD_REQUIRED');const g=generation,group=groupSelected;const page=await api.call('/threads/'+threadSelected+'/entries'+(more&&entryCursor?'?after='+entryCursor:''),null,'objects-page');checkGeneration(g);
  if(page.group_id!==groupSelected||page.thread_id!==threadSelected)throw Error('CONTEXT_MISMATCH');entryCursor=page.next;$('more-entries').hidden=entryCursor===null;if(!more)$('entries').replaceChildren();
- for(const ref of page.objects){if(ref.object_kind!=='entry'||ref.thread_id!==threadSelected)throw Error('CONTEXT_MISMATCH');references.set(ref.object_id,{group_id:groupSelected,...ref});item($('entries'),titles.get(ref.object_id)??text('untitled'),()=>openEntry(ref.object_id),ref.object_id);}
+ for(const ref of page.objects){if(ref.object_kind!=='entry'||ref.thread_id!==threadSelected)throw Error('CONTEXT_MISMATCH');references.set(ref.object_id,{group_id:group,...ref});await entryLabel(group,ref,g);}
+}
+async function entryLabel(group,ref,g){
+ if(ref.object_kind!=='entry')throw Error('CONTEXT_MISMATCH');
+ // A lock discards all decrypted titles. Reopen this page's verified payloads
+ // rather than relying on a title map populated by a previous editor visit.
+ const opened=await fetchPayload(group,ref);checkGeneration(g);
+ titles.set(ref.object_id,opened.payload.title);item($('entries'),opened.payload.title||text('untitled'),()=>openEntry(ref.object_id),ref.object_id);
 }
 function showEditor(value,state='LOCAL_SAVED'){
  editor=structuredClone(value);editVersion=0;$('editor').hidden=false;$('conflict').hidden=true;$('versions').replaceChildren();$('note-title').value=editor.content.title;$('note-body').value=editor.content.markdown;drawChecklist();renderMarkdown($('preview'),editor.content.markdown);savedState(state);

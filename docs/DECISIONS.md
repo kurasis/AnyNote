@@ -1107,3 +1107,9 @@ only for the manifest and two original local icons; it does not admit API routes
 The update preparation explicitly propagates a failed save through the ordinary
 UI error handler. A reported UI failure cannot be mistaken for a completed
 save/lock and continue the explicit update action.
+
+P15 list navigation reloads authenticated entry titles after a lock; keeping the
+old plaintext title map would violate masking. Only the current server page or
+retained selected-thread references are opened through the existing verified
+Worker/cached-payload path. A generation check fences each returned label before
+DOM insertion. Entry bodies remain outside the rendered list.

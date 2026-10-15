@@ -25,6 +25,7 @@ export async function pwaCase({page, action, check, scratch, readyWriter}) {
   await page.waitForFunction(() => !document.getElementById('status').dataset.busy);
   await page.locator('#entries button').filter({hasText: 'PUBLIC P12 attached entry'}).click();
   await page.waitForFunction(() => !document.getElementById('status').dataset.busy);
+  check(await page.locator('#note-title').inputValue()==='PUBLIC P12 attached entry','P15_VERIFIED_ENTRY_TITLE_AFTER_LOCK');
   const workerPath = fileURLToPath(new URL('../../.local/p06/static/auth/sw.js', import.meta.url));
   const originalWorker = readFileSync(workerPath, 'utf8');
   const memory = browserMemory(), processes = processMemory(); let heap;

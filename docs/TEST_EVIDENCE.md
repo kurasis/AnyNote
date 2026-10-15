@@ -1922,3 +1922,14 @@ Composer locked advisory audit (no known vulnerabilities),102 formatted PHP file
 Trusted P06 HTTPS/session/CSRF/origin readiness passes afterwards. Local protocol
 306 tests and4 hostile-preview tests pass. These observations supersede the
 earlier cloud Packagist access blocker; they are not production deployment.
+
+The focused d68be7e Chromium run completed inherited P12 but stopped before P15
+portable export while selecting the reopened entry by title. The UI cleared its
+title map on lock, then listed entries without decrypting their verified titles;
+the list remained Untitled until opening an entry. P15 now opens authenticated
+payloads for the current list page (or retained offline references), checks the
+current generation and renders only their verified titles. The existing title
+selector is retained and the opened editor title is asserted explicitly. No API
+response, cryptographic check or actual gigabyte is replaced. ZIP12010332975
+digest6fea55c44372f9367482110b420efb57aca44712a8bde5aa7e61b8116b0c0f5b
+was independently checked; it is a failed development receipt, not acceptance.
