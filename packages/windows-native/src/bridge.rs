@@ -49,15 +49,25 @@ impl Bridge {
                 && file_hash(assets.script)? == assets.script_sha,
             "RUNTIME_INTEGRITY_FAILURE",
         )?;
+        // Tauri resolves its installation directory through canonicalize(), which
+        // produces a verbatim Windows path. Node's permission matcher rejects that
+        // spelling even when the exact script is allowlisted. Simplify only paths
+        // that retain identical DOS semantics; keep the exact-file read boundary.
+        #[cfg(windows)]
+        let script_argument = dunce::simplified(assets.script);
+        #[cfg(not(windows))]
+        let script_argument = assets.script;
         let mut cmd = Command::new(assets.node);
         cmd.arg("--no-addons")
             .arg("--disable-proto=throw")
             .arg("--permission")
             .arg(format!(
                 "--allow-fs-read={}",
-                assets.script.to_str().ok_or(Error("RUNTIME_UNAVAILABLE"))?
+                script_argument
+                    .to_str()
+                    .ok_or(Error("RUNTIME_UNAVAILABLE"))?
             ))
-            .arg(assets.script)
+            .arg(script_argument)
             .env_clear()
             .env("NODE_NO_WARNINGS", "1")
             .stdin(Stdio::piped())

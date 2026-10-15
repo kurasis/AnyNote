@@ -2,8 +2,8 @@
   "purpose": "P14 conservative frozen Windows dependency provenance",
   "version": 1,
   "lockfiles": {
-    "apps/desktop/src-tauri/Cargo.lock": "cc538c64fa57a31800d226a9f471b6122877035cdd9e441372bc87d97b2d4771",
-    "packages/windows-native/Cargo.lock": "bfe3095c9de4c82dd825e3fbe823567c46cb0a933c3d53780b36306060f28473",
+    "apps/desktop/src-tauri/Cargo.lock": "befb8a5018952cfd333728898bb6966017b0cff7b0557b7ea47ec72d438df263",
+    "packages/windows-native/Cargo.lock": "0563b1f9d5d9429b86ba2bc945880db2f55a489e4ec60608fb67228a16251fa5",
     "apps/desktop/package-lock.json": "63d38eb8214652f00832b2819da5040a14505dea90d00254ce1b095e6cfd6a70",
     "packages/protocol/package-lock.json": "6e7286286b0fe2797310c57a8fb4d768c4dae2bec53f58f788b8d0c830fafb7f",
     "packages/content-browser/package-lock.json": "362c13896996f5272648ae098f3f8381688ec1fda8f6b35e791c3612d5437293"

@@ -390,3 +390,88 @@ ownership check fences an intervening other-app copy; later copies change the
 sequence. The existing exact-text and sequence checks still protect another
 application's clipboard value. The original full 30-second and later-copy UI
 assertions remain mandatory; OS diagnosis alone is not application acceptance.
+
+
+## Primitive CDP errors are distinct from successful values
+
+Fresh-source run38719871883 passed real clipboard copy and actual 30-second
+clearing after the sequence fix. The next native-denial assertion failed because
+the test CDP client discarded primitive string rejections: V8 returns their code
+in exception.value, without exception.description. The unchanged client converted
+an actual INVALID_REQUEST-shaped rejection to WEBVIEW_EVALUATION_FAILED. Real
+Node/V8 Inspector reproduced that exact wire response; the original client failed
+the regression, while the corrected client passes four real Runtime cases.
+
+The client now preserves primitive rejection strings as well as Error descriptions.
+Successful error-looking strings remain successful values, so the denial helper
+still requires an actual rejection matching the expected exact code. Early real
+WebView2 preflight now also checks unknown profile operations and extra fields,
+before backend/installer/gigabyte work. Product parsing/permissions, the original
+invalid raw HTTP/path denials and actual 1 GB workflows are unchanged. The CI
+cache generation advances once to retain rebuilt native-auth/host artifacts for
+subsequent documentation-only heads; Cargo fingerprints and every test remain
+required. Reused
+compiled full-host diagnostics remain separate from fresh-source/all-25 acceptance.
+
+
+Reused full-host diagnosis run38724260983 confirmed native dialog edit ID1148
+and Button ID1 were exposed as ControlType.Pane, so ControlType-based selectors
+could not select files. The CI actor now uses visible owned Win32 #32770 dialog
+HWNDs, exact native Edit filename IDs/ancestry and Button ID1. Bounded WM_SETTEXT
+and WM_GETTEXT round-trip the fixture path; the actual Open/Save button is pressed
+and its native dialog must close. Native file selection/handle validation and
+all original gigabyte assertions remain required. Only control classes, IDs and
+state are recorded on failure, never filenames or contents. Full reused diagnosis
+continues separately; fresh-source CI must still execute the entire application.
+
+
+A later Save dialog exposed its filename Edit as ID1001 with a logical UIA
+FileNameControlHost, while the expected Win32 ancestor was absent. File selection
+now requires one unique visible/enabled native Edit with the known filename IDs
+inside the exact owned #32770 dialog, plus its native accept Button ID1. Ambiguous
+fields fail closed. Native control ID/parent-class metadata is available on failure.
+The CI job compiles its embedded C# automation before expensive native builds.
+
+An additional 4096-byte installed Open/Save/export/separate-kit/complete offline
+validation/fresh-import/download preflight exercises every dialog transition
+before the full gigabyte workflow. The original entire gigabyte block remains
+byte-identical; no 1 GB/hash/memory/idle/update assertion is removed or reduced.
+The short round trip is additional coverage and never substitutes for 1 GB.
+
+
+The added small preflight immediately caught an output-path mismatch: the native
+download job completed after a closed Save dialog, but the requested fixture
+output did not exist. A native WM_SETTEXT/WM_GETTEXT echo alone did not prove
+that the modern Save controller committed that filename. The CI actor now
+focuses the exact owned filename edit, selects/clears it, types Unicode through
+real SendInput, verifies the entered text and commits by focusing the native
+accept button. Every input checks owned foreground/focus. Its synthetic neutral
+heartbeat pauses only during dialog interaction; native idle policy stays intact.
+The same exact requested output and full hash assertions remain required. The test actor
+also drains any in-flight neutral input before filename typing or process stop,
+so its own heartbeat cannot redirect focus during text entry.
+
+The real Unicode-input diagnosis run38731280193 completed the additional native
+4096-byte upload/download with the requested destination and exact SHA, then
+failed at small export with BRIDGE_CLOSED. This remains a development failure,
+not gigabyte/export acceptance. Terminal native job failures are now asserted
+outside the generic retrying condition, so a finished failure is reported
+immediately instead of being swallowed until the 20-minute polling timeout.
+The complete original gigabyte workflow and its assertions are unchanged.
+
+## Canonical installed resource path and restricted helper
+
+Public-only startup diagnosis run38735436373 isolated a Windows runtime path
+failure. The pinned packaged helper answers normally with CREATE_NO_WINDOW and
+read-only asset handles, but a verbatim `\\?\D:\...` script path causes Node
+24.21's exact-file permission matcher to terminate with ERR_ACCESS_DENIED before
+any protocol frame. Tauri 2.12's resource directory comes from its canonicalized
+starting executable, so installed resources use this spelling. The bridge now
+uses pinned dunce 1.0.5 to simplify only paths with identical DOS semantics before
+passing the script argument and exact same read allowlist to Node. Runtime/script
+hash verification, held read-only handles, cleared environment, no-addons,
+permission mode and the filesystem/network boundary remain unchanged. No vault
+keys entered the public startup probe; its captured stderr is from synthetic
+public input only. The existing actual frozen-archive bridge recovery test now
+canonicalizes the resource path, covering installed Windows path semantics.
+Fresh exact-source/full installed-host acceptance remains required.

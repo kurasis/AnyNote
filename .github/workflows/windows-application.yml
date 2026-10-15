@@ -38,14 +38,21 @@ jobs:
             ~/.cargo/registry
             packages/windows-native/target
             apps/desktop/src-tauri/target
-          key: windows-p14-rust199-${{ hashFiles('packages/windows-native/Cargo.lock', 'apps/desktop/src-tauri/Cargo.lock') }}-release3
-          restore-keys: windows-p14-rust199-${{ hashFiles('packages/windows-native/Cargo.lock', 'apps/desktop/src-tauri/Cargo.lock') }}
+          key: windows-p14-rust199-${{ hashFiles('packages/windows-native/Cargo.lock', 'apps/desktop/src-tauri/Cargo.lock') }}-release4
+          restore-keys: |
+            windows-p14-rust199-${{ hashFiles('packages/windows-native/Cargo.lock', 'apps/desktop/src-tauri/Cargo.lock') }}
+            windows-p14-rust199-
       - name: Parse native Windows automation before compilation
         run: |
           $parseTokens = $null
           $parseErrors = $null
           [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path scripts/p14-windows-ui.ps1).Path,[ref]$parseTokens,[ref]$parseErrors)
           if ($parseErrors.Count) { $parseErrors | ForEach-Object { $_.Message }; throw 'Native automation PowerShell syntax failed' }
+          $automationSource = Get-Content -Raw scripts/p14-windows-ui.ps1
+          $nativeType = [regex]::Match($automationSource,"(?s)Add-Type @'\r?\n(.*?)\r?\n'@")
+          if (!$nativeType.Success) { throw 'Native automation C# block missing' }
+          Add-Type -TypeDefinition $nativeType.Groups[1].Value
+
       - name: Frozen maintained dependencies and one-installer runtime
         run: |
           rustup toolchain install 1.99.0 --profile minimal --component clippy,rustfmt
@@ -60,6 +67,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python apps/desktop/prepare-runtime.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Real V8 Runtime exception contract before native compilation
+        run: node --test --test-concurrency=1 scripts/p14-cdp.test.mjs
       - name: Unchanged baseline and closed native capability audit
         run: python scripts/check-p14.py
       - name: Early real WebView2 and typed IPC before backend and installer work
