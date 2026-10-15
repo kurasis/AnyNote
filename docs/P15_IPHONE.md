@@ -68,7 +68,9 @@ incompressible 1,000,000,000-byte source, uploads, locks/reselects, downloads an
 compares full hashes. P15 adds mobile/keyboard viewports, encrypted portable
 export, independent offline full-hash recovery, private import with pause/page destruction/reselection and complete imported
 destination download hash, and a real waiting-worker update retaining a newer
-draft. The separate `pwa-webkit-shell` gate tests actual hosted WebKit TLS,
+draft and the exact encrypted outbox bytes. A real accepted request with a lost
+response is reconciled after activation without retiring its newer draft.
+The separate `pwa-webkit-shell` gate tests actual hosted WebKit TLS,
 localized shells and offline static installation. Both supplement the original
 25 gates; the full required software cohort is 27 jobs. These browser steps are prepared;
 they have not yet passed at this source.

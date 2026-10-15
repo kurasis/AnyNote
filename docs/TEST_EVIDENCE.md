@@ -1933,3 +1933,11 @@ selector is retained and the opened editor title is asserted explicitly. No API
 response, cryptographic check or actual gigabyte is replaced. ZIP12010332975
 digest6fea55c44372f9367482110b420efb57aca44712a8bde5aa7e61b8116b0c0f5b
 was independently checked; it is a failed development receipt, not acceptance.
+
+The final prepared P15 update scenario also stages a real API-accepted immutable
+attempt with only its response lost, edits a newer local version, and compares
+all encrypted outbox record hashes before/after actual activation while still
+locked. Fresh unlock must reconcile that exact old operation receipt, retain the
+newer local text and leave it locally saved. Only ciphertext record hashes and
+opaque identifiers enter the report. This expanded scenario remains pending
+until its exact-source browser receipt passes.

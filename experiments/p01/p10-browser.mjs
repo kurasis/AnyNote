@@ -104,7 +104,7 @@ try{
     if(process.argv.includes('--p15-pwa')){
       if(!process.argv.includes('--p12-files'))throw Error('P15_REQUIRES_REAL_GIGABYTE_CASE');
       const passed=[];report.p15_pwa={status:'PENDING',checks:passed};
-      Object.assign(report.p15_pwa,await pwaCase({page:p,action,scratch,control,readyWriter,
+      Object.assign(report.p15_pwa,await pwaCase({page:p,action,scratch,control,readyWriter,commitBeforeLosingResponse,
         check:(value,name)=>{check(value,name);passed.push(name);}}));
     }
     if(process.argv.includes('--p13-content'))report.p13_content=await contentCase({page:p,action,check,scratch,control});

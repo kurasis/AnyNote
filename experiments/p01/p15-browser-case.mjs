@@ -11,7 +11,15 @@ import {browserMemory} from './p12-browser-memory.mjs';
 import {browserHeap} from './p15-heap.mjs';
 import {processMemory} from './p15-process-memory.mjs';
 
-export async function pwaCase({page, action, check, scratch, readyWriter}) {
+export async function pwaCase({page, action, check, scratch, readyWriter, commitBeforeLosingResponse}) {
+  const encryptedOutboxHashes=()=>page.evaluate(async()=>{
+    const {IndexedVault}=await import('/auth/vault-store.js');
+    const store=await new IndexedVault(JSON.parse(document.getElementById('profiles').value)).open();
+    let rows;
+    try{rows=await store.transaction(false,async tx=>{const found=[];await tx.each(row=>{if(row.frame?.context?.record_kind==='outbox')found.push({id:row.id,encoded:JSON.stringify(row)});});return found;});}finally{store.close();}
+    rows.sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0);
+    return Promise.all(rows.map(async row=>({id:row.id,sha256:[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(row.encoded)))].map(b=>b.toString(16).padStart(2,'0')).join('')})));
+  });
   // The inherited P12 case deliberately finishes locked. Resume through the
   // shipped unlock/proof/group flow before touching mobile content controls.
   await page.bringToFront();
@@ -175,7 +183,34 @@ export async function pwaCase({page, action, check, scratch, readyWriter}) {
     await page.locator('#note-body').fill('PUBLIC P15 first durable version');
     await action(page, 'save-local');
     const draft = await page.locator('#drafts li[data-id]').last().getAttribute('data-id');
+    // Commit the original immutable request at the real API, then lose only its
+    // response. The newer local version and unknown older attempt must both
+    // survive activation; the old receipt must not retire the newer draft.
+    const noteRoute='https://api.anynote.test:18443/api/v1/threads/*/entries';
+    let updateAttempt,updateRequestHash;
+    await page.route(noteRoute,async route=>{
+      if(route.request().method()==='POST'&&!updateAttempt){
+        const body=route.request().postData();
+        updateAttempt=JSON.parse(body).bundle.envelope.header.context.operation_id;
+        updateRequestHash=createHash('sha256').update(body).digest('hex');
+        await commitBeforeLosingResponse(route.request());await route.abort('failed');
+      }else await route.continue();
+    });
+    try{
+      await page.locator('#save-note').click();
+      await page.waitForFunction(()=>!document.getElementById('status').dataset.busy&&!!document.getElementById('status').dataset.error,null,{timeout:300000});
+      check(/^[A-Za-z0-9_-]{22}$/.test(updateAttempt)&&await page.locator('#save-state').getAttribute('data-state')==='SENT_UNKNOWN','P15_UPDATE_STARTS_WITH_REAL_UNKNOWN_IMMUTABLE_ATTEMPT');
+    }finally{await page.unroute(noteRoute);}
+    const outboxBefore=await encryptedOutboxHashes();
+    check(outboxBefore.length>0,'P15_UNKNOWN_ATTEMPT_HAS_PROTECTED_OUTBOX_RECORD');
     await page.locator('#note-body').fill('PUBLIC P15 latest update draft');
+    let updateReceipt;
+    const updateReceipts=[];
+    const updateReceiptObserver=response=>{
+      const u=new URL(response.url());
+      if(u.origin==='https://api.anynote.test:18443'&&u.pathname==='/api/v1/me/content-receipts/'+updateAttempt&&response.ok())updateReceipts.push(response.json().then(value=>{updateReceipt=value.receipt;}));
+    };
+    page.on('response',updateReceiptObserver);
     const match = originalWorker.match(/anynote-p07-static-([a-f0-9]{64})/);
     if (!match) throw Error('P15_BUILD_REVISION_NOT_FOUND');
     const nextRevision = createHash('sha256').update(match[1] + 'public-p15-update').digest('hex');
@@ -204,16 +239,23 @@ export async function pwaCase({page, action, check, scratch, readyWriter}) {
     await page.goto('https://app.anynote.test:18443/auth/notes.html');
     await page.waitForFunction(() => document.getElementById('status').dataset.state === 'ready');
     await readyWriter(page);
+    const outboxAfter=await encryptedOutboxHashes();
+    check(JSON.stringify(outboxAfter)===JSON.stringify(outboxBefore),'P15_ACTIVATION_PRESERVES_EXACT_ENCRYPTED_OUTBOX_BYTES');
     await page.locator('#phrase').fill(phrase); await action(page, 'unlock');
+    await Promise.all(updateReceipts);page.off('response',updateReceiptObserver);
     check(await page.locator('#workspace').isVisible(), 'P15_POST_UPDATE_FRESH_UNLOCK_AND_AUTHORIZATION');
+    check(updateReceipt?.operation_id===updateAttempt&&updateReceipt?.status==='COMMITTED','P15_POST_UPDATE_RECONCILES_EXACT_OLD_RECEIPT');
     await page.locator('#drafts li[data-id="' + draft + '"] button').click();
     await page.waitForFunction(() => !document.getElementById('status').dataset.busy);
     check(await page.locator('#note-body').inputValue() === 'PUBLIC P15 latest update draft', 'P15_UPDATE_RETAINS_LATEST_ENCRYPTED_DRAFT');
+    check(await page.locator('#save-state').getAttribute('data-state')==='LOCAL_SAVED','P15_OLD_RECEIPT_DOES_NOT_RETIRE_NEWER_DRAFT');
     await page.setViewportSize({width: 1280, height: 900});
     return {
       status: 'PASS', plaintext_bytes: sourceBytes, recovered_bytes: recoveredBytes,
       source_sha256: sourceHash, recovered_sha256: recoveredHash, imported_bytes: importedBytes,
       imported_sha256: importedDigest, mobile_viewport: '390x844; keyboard 390x420',
+      updated_attempt_id:updateAttempt,original_update_request_sha256:updateRequestHash,old_receipt_verified_after_update:true,
+      retained_outbox_records:outboxBefore.length,outbox_before_after_sha256:createHash('sha256').update(JSON.stringify(outboxBefore)).digest('hex'),
       memory: memory.finish(), process_memory: processes.finish(), v8_memory: await heap.finish(), physical_acceptance: false,
       scope: 'Actual production API/Worker/IndexedDB/OPFS and streaming service-worker download in sandboxed hosted desktop Chromium; not iPhone Files/storage/PRF evidence',
     };

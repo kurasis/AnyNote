@@ -26,6 +26,9 @@ assert pwa['plaintext_bytes'] == pwa['recovered_bytes'] == 1000000000
 assert pwa['imported_bytes'] == 1000000000
 assert len(pwa['source_sha256']) == 64
 assert pwa['source_sha256'] == pwa['recovered_sha256'] == pwa['imported_sha256']
+assert pwa['old_receipt_verified_after_update'] is True
+assert len(pwa['updated_attempt_id']) == 22 and len(pwa['original_update_request_sha256']) == 64
+assert pwa['retained_outbox_records'] > 0 and len(pwa['outbox_before_after_sha256']) == 64
 assert pwa['memory']['samples'] > 1
 assert pwa['process_memory']['samples'] > 1 and pwa['process_memory']['processes']
 assert any(agent['role'] == 'dedicated-worker' and agent['samples'] > 1
