@@ -1,0 +1,61 @@
+{
+  "purpose": "P10 actual multi-account shared-group UI and protected persistent storage",
+  "status": "PASS",
+  "source_commit": "8b12c1df0233eba48e5d92540136e0718f1a0a3b",
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "browser_version": "155.0.8059.39",
+  "runtime_platform": "linux",
+  "p11_staged_sync_checks": 4,
+  "checks": 45,
+  "custody_diagnostics": [
+    {
+      "role": "owner",
+      "events": []
+    },
+    {
+      "role": "editor",
+      "events": [
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "PINNED_ACCOUNT_REQUIRED",
+          "ms": 175167
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "PINNED_ACCOUNT_REQUIRED",
+          "ms": 200546
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "PINNED_ACCOUNT_REQUIRED",
+          "ms": 204228
+        }
+      ]
+    },
+    {
+      "role": "reader",
+      "events": [
+        {
+          "event": "custody-error",
+          "operation": "notes.queue",
+          "error": "ROLE_FORBIDDEN",
+          "ms": 283525
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "ROSTER_CHANGED",
+          "ms": 364860
+        }
+      ]
+    }
+  ],
+  "chromium_sandbox": true,
+  "request_pacing": "Genuine roster/group requests paced below unchanged production limits; no mocked API responses",
+  "tls_verification": "Real trusted disposable CA and hostname validation",
+  "source_tree_dirty": false
+}

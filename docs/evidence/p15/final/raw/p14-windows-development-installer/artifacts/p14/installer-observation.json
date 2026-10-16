@@ -1,0 +1,9 @@
+{
+  "purpose": "Read-only real Windows Restart Manager observer regression; no shutdown invoked",
+  "status": "PASS",
+  "source_commit": "8b12c1df0233eba48e5d92540136e0718f1a0a3b",
+  "source_tree_dirty": false,
+  "rm_read_handle_registers_test_process": true,
+  "metadata_polling_registers_test_process": false,
+  "physical_acceptance": false
+}

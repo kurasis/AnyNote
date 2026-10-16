@@ -1,0 +1,21 @@
+{
+  "purpose": "Complete tested scripts and actual merged repository ref saved and read back; publication is a separate owner UI action",
+  "status": "PASS",
+  "source_commit": "8b12c1df0233eba48e5d92540136e0718f1a0a3b",
+  "observed_at": "2026-10-16T07:37:45.823Z",
+  "install_script_bytes": 6715,
+  "install_script_sha256": "0d0c88ca018cb0019f5092e717d635eaa71513e59c2bd38f356d16f42c66e412",
+  "start_skill_bytes": 6934,
+  "start_skill_sha256": "467cd2b08140d72184590b887efdc19088bafbe127c5c2657dc8f6c459a3ee28",
+  "repository": {
+    "name": "kurasis/AnyNote",
+    "host": "github.com",
+    "mount_path": "AnyNote",
+    "commit": "8b12c1df0233eba48e5d92540136e0718f1a0a3b"
+  },
+  "complete_scripts_byte_identical_on_readback": true,
+  "network_secret_runtime_bindings_preserved": true,
+  "requires_publish": true,
+  "publication": "DRAFT_SAVED_AND_READ_BACK; owner Review/Save and Publish pending",
+  "fresh_task_restoration": "NOT_OBSERVED"
+}

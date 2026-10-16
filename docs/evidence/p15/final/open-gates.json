@@ -1,0 +1,22 @@
+{
+  "purpose": "Acceptance scope retained after the bounded P15 postmerge CI follow-up",
+  "source_commit": "8b12c1df0233eba48e5d92540136e0718f1a0a3b",
+  "status": "OPEN_GATES_RETAINED",
+  "physical_G1_U11_U12_PRF_Hello_TPM": "OPEN / new full physical acceptance NOT_RUN",
+  "prior_P01_partial_owner_evidence": "Retained separately; not relabelled or discarded",
+  "qualified_G2_G3_review": "NOT_RUN",
+  "production_signing_release_deployment": "Not performed; production keys/signing gates remain open",
+  "physical_memory_budgets": {
+    "status": "OPEN",
+    "p14_native_helper_sampled_growth_bytes": 339361792,
+    "initial_native_target_bytes": 134217728,
+    "initial_target_observation": "OBSERVED_ABOVE_INITIAL_TARGET",
+    "physical_iPhone_64MiB_budget": "UNVERIFIED",
+    "scope": "Hosted PWA process and V8 samples retain their baselines, peer/shared-memory attribution and missing/external-memory limits; they do not establish physical or unsampled maxima"
+  },
+  "arbitrary_100GB_capacity": "NOT_MEASURED",
+  "historical_iPhone_Files_save_reload": "OPEN pending physical evidence",
+  "P16_operations_implementation": "NOT_STARTED / next independent phase",
+  "original_silent_Windows_exit": "Direct process-death trace NOT_CAPTURED; read-handle Restart Manager hazard separately reproduced read-only",
+  "cloud_configuration": "Current instance, saved draft, owner Publish and fresh-task restoration require separate evidence"
+}

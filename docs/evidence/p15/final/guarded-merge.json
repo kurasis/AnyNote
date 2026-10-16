@@ -1,0 +1,12 @@
+{
+  "purpose": "Expected-head ordinary squash merge after the complete passing exact-head cohort",
+  "status": "MERGED",
+  "pull_request": "https://github.com/kurasis/AnyNote/pull/29",
+  "checked_head": "52396259403ecd47fc6625b0af568b0eb965d686",
+  "checked_tree": "0952e789b3f050e84019723e64fce7470c681fcb",
+  "base_before_merge": "b1832ce0ae98bc7e1ca2bb567cad20b3c7303432",
+  "verified_synthetic_merge_commit": "65415bb5a6c736b68d5788a8988afd272353e3f1",
+  "merge_commit": "8b12c1df0233eba48e5d92540136e0718f1a0a3b",
+  "physical_acceptance": false,
+  "publication": "No production release or deployment"
+}

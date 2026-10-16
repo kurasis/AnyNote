@@ -1,0 +1,38 @@
+{
+  "purpose": "Exact-source ordinary-cohort P15 postmerge lifecycle runtime regression verification",
+  "status": "PASS",
+  "source_commit": "8b12c1df0233eba48e5d92540136e0718f1a0a3b",
+  "source_tree": "0952e789b3f050e84019723e64fce7470c681fcb",
+  "event": "push",
+  "observed_at": "2026-10-16T07:36:52.868013+00:00",
+  "mandatory_jobs_passed": 27,
+  "windows_restart_manager_read_handle_hazard": "REPRODUCED_READ_ONLY",
+  "windows_metadata_observer_registered": false,
+  "windows_actual_signed_update_and_retained_draft_outbox": "PASS",
+  "pwa_genuine_late_network_lock_unlock_scenarios": 2,
+  "pwa_full_gigabyte_bytes": 1000000000,
+  "pwa_full_sha256": "1061428bf2085d543129aa34b776cb59b17251adf172cd29bcac8fc88ca9da1d",
+  "post_activation_old_receipt_and_newer_draft": "PASS",
+  "actual_one_byte_quota_preflight_and_final": "PASS",
+  "raw_reports": {
+    "windows_observer": {
+      "artifact_id": 12031224093,
+      "member": "artifacts/p14/installer-observation.json",
+      "sha256": "d6113e4b2446a5927bf7b644a242c8b1856ac88886b27c30bb0b3afc05386443"
+    },
+    "windows_webview": {
+      "artifact_id": 12031224093,
+      "member": "artifacts/p14/windows-webview-development.json",
+      "sha256": "0a50b33906fb03a659c47697bbe09cc6975f095ff39acc1143e02a6cfcdc0a31"
+    },
+    "pwa_browser": {
+      "artifact_id": 12031360463,
+      "member": "p10/browser-report.json",
+      "sha256": "2db1bbe750e189ce045b7e4bc0452817f8cef9133f360fd39492688587c1ee32"
+    }
+  },
+  "original_windows_process_death_trace": "NOT_CAPTURED",
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "production_signing": false
+}

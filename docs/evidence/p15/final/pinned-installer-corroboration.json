@@ -1,0 +1,14 @@
+{
+  "purpose": "Exact pinned upstream NSIS resource-user behavior corroboration; not an original process-death trace",
+  "source_url": "https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.12.2/crates/tauri-bundler/src/bundle/windows/nsis/utils.nsh",
+  "sha256": "78272bd40b8a783c0ab94e4bcb400fd947ba306a7575f2bbbbccb7478f40447f",
+  "pinned_cli_version": "2.12.2",
+  "macro": "CheckIfAppIsRunning",
+  "calls": [
+    "RmRegisterResources",
+    "RmGetList",
+    "RmShutdown"
+  ],
+  "behavior": "Register installed application executable; force resource-user shutdown when users are found",
+  "original_exit_cause": "NOT_DIRECTLY_TRACED"
+}

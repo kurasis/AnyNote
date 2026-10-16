@@ -1,0 +1,13 @@
+{
+  "purpose": "Actual clean local, tracking and remote main after expected-head ordinary PR29 squash merge",
+  "status": "PASS",
+  "checked_head": "52396259403ecd47fc6625b0af568b0eb965d686",
+  "merge_commit": "8b12c1df0233eba48e5d92540136e0718f1a0a3b",
+  "source_commit": "8b12c1df0233eba48e5d92540136e0718f1a0a3b",
+  "source_tree": "0952e789b3f050e84019723e64fce7470c681fcb",
+  "checked_and_merged_tree_equal": true,
+  "local_origin_remote_main_equal": true,
+  "working_tree_clean": true,
+  "pull_request": "https://github.com/kurasis/AnyNote/pull/29",
+  "physical_acceptance": false
+}

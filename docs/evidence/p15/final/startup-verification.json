@@ -1,0 +1,21 @@
+{
+  "purpose": "Executed saved complete 16-command startup on the actual merged PR29 main, compared to the original unmodified preservation baseline",
+  "status": "PASS",
+  "source_commit": "8b12c1df0233eba48e5d92540136e0718f1a0a3b",
+  "source_tree_dirty": false,
+  "started_at": "2026-10-16T06:31:48.698347+00:00",
+  "completed_at": "2026-10-16T06:35:00.611320+00:00",
+  "commands_executed": 16,
+  "script_sha256": "db0dc19457947a44a6f1421b1235f98c8264a12b0427484ce34f6926108e5dd9",
+  "log_sha256": "fbc6d7e909dbc9dde5c4ad8f111b410ce827df97025243dc65716a8148917ea2",
+  "preservation": {
+    "status": "PASS",
+    "comparison": "Original unmodified P15 baseline checked before and after startup",
+    "files_byte_identical": 11,
+    "sql_table_names": 76,
+    "retained_content_tables": 74,
+    "original_encrypted_session_rows_unchanged": 14,
+    "rate_limit_counters": "Mutable readiness counters; bucket count nondecreasing"
+  },
+  "publication": "Current instance validation; new configuration draft and owner Publish have separate receipts"
+}

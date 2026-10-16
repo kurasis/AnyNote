@@ -1,0 +1,36 @@
+{
+  "status": "PASS",
+  "scope": "P03_ACTUAL_OWNED_LOOPBACK_HTTP_NOT_PRODUCT_AUTH_OR_DEPLOYMENT",
+  "checks": 18,
+  "cases": [
+    "actual-public-capabilities-service-profile-false-features-fresh-request-id",
+    "UNSUPPORTED_SCHEMA:GET",
+    "NOT_FOUND:GET",
+    "TEMPORARY_UNAVAILABLE:GET",
+    "TEMPORARY_UNAVAILABLE:GET",
+    "NOT_FOUND:GET",
+    "NOT_FOUND:GET",
+    "INVALID_REQUEST:POST",
+    "INVALID_REQUEST:POST",
+    "INVALID_REQUEST:POST",
+    "INVALID_REQUEST:POST",
+    "INVALID_REQUEST:POST",
+    "REQUEST_TOO_LARGE:POST",
+    "REQUEST_TOO_LARGE:chunked",
+    "NOT_FOUND:OPTIONS",
+    "exact-credentialed-preflight",
+    "client-cannot-forge-trusted-fastcgi-edge-error",
+    "persisted-content-free-logger-hostile-body-cookie-token-query-denial"
+  ],
+  "source_commit": "8b12c1df0233eba48e5d92540136e0718f1a0a3b",
+  "source_tree_dirty": false,
+  "source_inputs": {
+    "packages/api-client/client.mjs": "fb78d79286774a5e777e6b70bf8183f401559793a6172b597fc4d80d857c8e5d",
+    "packages/api-client/http-check.mjs": "536b01ee8733066eeff0c4b56b292dd00d8362a0105f28c1bdb11ae831dbff86",
+    "packages/contracts/generated/manifest.json": "93188f1211f087d11d20e654d5313c1d399f67f027747e16f333747eec58118f",
+    "infra/dev/nginx.conf": "2fa8c6e93e5514cf630df7954d14f014890b2c42b4e4325973dec98de288c0ed",
+    "infra/dev/php/php.ini": "e45b586dd5b209636886119dcca2ae5664ff18a8091cbef1a0a4eab54190573c",
+    "apps/api/app/Http/Middleware/ApiBoundary.php": "1a03c41acbd2794fb20df4fbb58595da81d6caae328053b87e302847cb3730d3"
+  },
+  "log_records_inspected": 44
+}
