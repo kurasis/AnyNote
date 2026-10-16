@@ -1,6 +1,6 @@
 // Portable P05 codec; frozen predicates preserved by scripts/p05-port-codecs.py.
 import { Buffer, createHash, readFileSync } from '../bytes.mjs';
-import Ajv2020 from 'ajv/dist/2020.js';
+import Ajv2020 from '../schema-validation.mjs';
 import { strictJson, requireCondition as check } from '../../src/strict-json.mjs';
 import { canonicalBytes } from './codec.mjs';
 

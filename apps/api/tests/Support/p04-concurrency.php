@@ -136,6 +136,7 @@ check((int) DB::table('quota_ledgers')->where('scope', 'global')->value('reserve
 check((int) DB::table('quota_ledgers')->where('scope', 'security')->value('reserved_bytes') === 0);
 // Two connected processes contend on the transactional counter. The child declares
 // readiness before its transaction; no product code waits on external I/O.
+$counterObservations = [];
 foreach (['commit', 'rollback'] as $outcome) {
     $before = (int) DB::table('sync_counters')->value('sequence');
     DB::beginTransaction();
@@ -148,7 +149,8 @@ foreach (['commit', 'rollback'] as $outcome) {
     check(stream_select($read, $write, $except, 0, 250000) === 0);
     $configuration = config('database.connections.mariadb');
     $observer = new PDO('mysql:host='.$configuration['host'].';dbname=anynote_p04_tests', $configuration['username'], $configuration['password'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-    check((int) $observer->query('SELECT sequence FROM sync_counters WHERE id=1')->fetchColumn() === $before);
+    $observedWhileBlocked = (int) $observer->query('SELECT sequence FROM sync_counters WHERE id=1')->fetchColumn();
+    check($observedWhileBlocked === $before);
     if ($outcome === 'commit') {
         DB::commit();
     } else {
@@ -158,6 +160,7 @@ foreach (['commit', 'rollback'] as $outcome) {
     check($result['status'] === 'PASS');
     check((int) $result['cursor']['sequence'] === $before + ($outcome === 'commit' ? 2 : 1));
     check((int) DB::table('sync_counters')->value('sequence') === (int) $result['cursor']['sequence']);
+    $counterObservations[] = ['injection' => 'A holds allocated transactional counter; connected B blocked for at least250ms; independent PDO observer polls before A resolves', 'a_outcome' => $outcome, 'before_sequence' => (string) $before, 'a_uncommitted_sequence' => $cursor['sequence'], 'observer_while_b_blocked' => (string) $observedWhileBlocked, 'b_committed_sequence' => $result['cursor']['sequence'], 'after_sequence' => (string) DB::table('sync_counters')->value('sequence')];
 }
 check((int) DB::selectOne('SELECT @@innodb_flush_log_at_trx_commit AS value')->value === 1);
 check((int) DB::selectOne('SELECT @@sync_binlog AS value')->value === 1);
@@ -176,4 +179,4 @@ try {
 }
 $tables = DB::select('SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE()');
 $constraints = DB::select('SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS WHERE CONSTRAINT_SCHEMA=DATABASE()');
-echo json_encode(['status' => 'PASS', 'checks' => $checks, 'tables' => count($tables), 'constraints' => count($constraints), 'parallel_processes' => 8, 'same_body_retry' => 'PASS', 'competing_parent_cas' => 'PASS', 'cross_group_quota_race' => 'PASS', 'counter_commit_order' => 'PASS', 'counter_rollback_reuse' => 'PASS', 'sql_durability_configuration' => 'PASS', 'plaintext_column_inspection' => 'PASS', 'u63_overflow_rejection' => 'PASS'], JSON_THROW_ON_ERROR);
+echo json_encode(['status' => 'PASS', 'checks' => $checks, 'tables' => count($tables), 'constraints' => count($constraints), 'parallel_processes' => 8, 'same_body_retry' => 'PASS', 'competing_parent_cas' => 'PASS', 'cross_group_quota_race' => 'PASS', 'counter_commit_order' => 'PASS', 'counter_rollback_reuse' => 'PASS', 'counter_observations' => $counterObservations, 'sql_durability_configuration' => 'PASS', 'plaintext_column_inspection' => 'PASS', 'u63_overflow_rejection' => 'PASS'], JSON_THROW_ON_ERROR);
