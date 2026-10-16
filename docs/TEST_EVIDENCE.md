@@ -2074,3 +2074,31 @@ exempted. Every one of the 76 candidate raw JSON reports was checked against the
 staged Git bytes, including nested artifact paths otherwise covered by ignore.
 The seven PWA policy/translation tests, actual bundle and frozen 179-file audit
 also passed locally. These dirty precommit checks are not final clean-head CI.
+
+
+## P16 development observations (not final acceptance)
+
+Actual maintained age/OpenSSL negative suite:9 tests PASS, including whole-file
+signature verification, wrong identity, corruption/truncation/authenticated EOF,
+missing/changed/duplicate/unsafe components and no-replace publication.
+
+A separate physical8MiB tmpfs was filled until actual ENOSPC. Production BlobStore
+refused allocation; unavailable-store and actual unsupported directory fsync
+returned typed denials. Prior committed bytes and SQL quota stayed unchanged;
+a65536-byte write passed after capacity recovery. The fixture alone lowers the
+reserve on its bounded tmpfs to reach the real fault; production10GiB/10% admission
+remains intact. PHPUnit foundation:11 tests/217 assertions PASS on actual MariaDB.
+
+An actual1000000000-byte random source uploaded120 encrypted parts successfully.
+That development run subsequently failed because the initial Nginx root-storage
+deny also matched /me/storage; the template was corrected and genuine200/503
+DB-outage behavior confirmed. A smaller8MiB+1 development journey then passed
+consistent signed age backup with concurrent HTTP writes, clean-target DB/blob
+inventory equality, a new generation, signed root-reset revocation after backup,
+newer independent checkpoint refusal and clean-process offline root-kit recovery.
+Its final fresh-host check lacked the required Origin and failed; the adapter was
+corrected. Neither attempt is a final phase PASS or a substitution for exact1GB.
+
+Full ordinary29-job source receipts, genuine full-size restore/fresh copy/download,
+capacity measurements and public artifact/Git-input audit will be recorded after
+executed acceptance. Physical/review/production and100GB gates remain separate.

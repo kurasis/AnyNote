@@ -144,10 +144,10 @@ final class Authorization
         if ($permission === 'write' && (! $actor->contentSigner || ! in_array($membership->role, ['owner', 'editor'], true))) {
             throw new ApiException('ROLE_FORBIDDEN');
         }
+        if ($group->restore_quarantined) {
+            throw new ApiException('RESTORE_QUARANTINE');
+        }
         if ($permission === 'write') {
-            if ($group->restore_quarantined) {
-                throw new ApiException('RESTORE_QUARANTINE');
-            }
             if ($group->state !== 'active') {
                 throw new ApiException('ROLE_FORBIDDEN');
             }

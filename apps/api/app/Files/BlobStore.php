@@ -32,7 +32,9 @@ final class BlobStore
     public function capacity(int $bytes): void
     {
         $available = disk_free_space($this->root());
-        D::require($available !== false && $available >= $bytes + 268435456, 'INSUFFICIENT_STORAGE');
+        $total = disk_total_space($this->root());
+        $reserve = max((int) config('operations.reserve_bytes'), (int) ceil(($total ?: 0) * config('operations.reserve_fraction')));
+        D::require($available !== false && $total !== false && $bytes >= 0 && $available - $bytes >= $reserve, 'INSUFFICIENT_STORAGE');
     }
 
     /** Bounded copy; measured received bytes are authoritative, including chunked HTTP. */
@@ -42,7 +44,7 @@ final class BlobStore
         $this->capacity($expected);
         $id = P::b64(random_bytes(16));
         $path = $this->path($id);
-        $out = fopen($path, 'xb');
+        $out = @fopen($path, 'xb');
         if ($out === false) {
             throw new ApiException('STORAGE_UNAVAILABLE');
         }
@@ -58,13 +60,13 @@ final class BlobStore
                 hash_update($hash, $part);
                 $offset = 0;
                 while ($offset < strlen($part)) {
-                    $written = fwrite($out, substr($part, $offset));
+                    $written = @fwrite($out, substr($part, $offset));
                     D::require($written !== false && $written > 0, 'STORAGE_UNAVAILABLE');
                     $offset += $written;
                 }
             }
             D::require($size === $expected, 'INVALID_CHUNK');
-            D::require(fflush($out) && fsync($out), 'STORAGE_UNAVAILABLE');
+            D::require(@fflush($out) && @fsync($out), 'STORAGE_UNAVAILABLE');
             fclose($out);
             $out = null;
             $this->syncDirectory();

@@ -1211,3 +1211,47 @@ Raw logs retain trailing blank lines because their archived SHA-256 binds exact
 bytes; prose/code whitespace checks exclude only those preserved raw log files.
 Nested public artifact report paths are force-added explicitly so the general
 runtime artifacts ignore cannot silently omit audited public evidence.
+
+
+## P16: conservative restore source, independent custody and bounded delivery
+
+Restore never reinstates old authentication or group membership based only on an
+old backup or new transport generation. A host fence precedes import; a durable
+SQL fence and all-group quarantine survive missing host files. Sessions, refresh
+families, OAuth grants and pending challenges/approvals are invalidated, while
+signed roster/policy/epoch history remains unchanged. There is no convenience
+unquarantine command. Until complete current security history and new epochs can
+be established, choose file12's explicit quarantined-source/fresh-state recovery
+path. Its offline-content and fresh-service RTO are measured separately from an
+unclaimed ordinary in-place online recovery SLA.
+
+Server backup remains distinct from a user root kit and independent portable
+export. A bounded private-genesis helper uses existing maintained client crypto,
+independently witnessed pins/records and the user's separate root kit to open
+restored SQL/blob bytes offline. Shared/rotated/history data retains the full P13
+portable authority path. No new cipher, wire frame, server content key, admin
+decryption authority or silent pin downgrade is introduced. A fresh destination
+re-encrypts selected content under new identity/group/IDs/DEKs.
+
+Backups deliberately pause every owned mutation process and exclude independent
+operator writers under a deployment lock. This makes DB/blob consistency reviewable
+without an unimplemented online watermark/GC protocol. Standard age supplies
+independent operational encryption; a separately held Ed25519/OpenSSL key signs
+the complete ciphertext digest. An encrypted append-chain security checkpoint
+export has independent off-host digest custody; its honest export-lag and
+non-transparency limitations remain explicit. Partial archives never publish.
+
+Production X-Accel delivery needs a stable inode between API authorization and
+Nginx open. Bounded durable hard-link tickets retain that inode through concurrent
+GC; only an internal opaque path can access it. Expired/unregistered links have
+bounded collection/grace, independent physical-space accounting and no external
+URL authority. Expired unpublished grant pages can be collected after grace, but
+burned commitments, committed grants and signed histories survive permanently.
+
+The production image uses an allowlisted context and one root-owned API copy,
+read-only rootfs, narrow writable mounts, pcntl-supervised workers and external
+secret-file injection. Runtime never receives the SQL migration/root secret or
+static deployment mount. Independent deployment credentials are an actual-host
+provisioning responsibility; the synthetic runner is not evidence of two human
+operators or independent providers. New normal operations/capacity jobs supplement
+all27 inherited gates; 100GB is NOT_RUN when the host cannot hold it plus reserves.
