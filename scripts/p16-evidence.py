@@ -14,6 +14,8 @@ path=ROOT/f'artifacts/p16/{role}-report.json';report=json.loads(path.read_text()
 if role=='operations':
     negative_path=ROOT/'artifacts/p16/archive-negative-report.json';negative=json.loads(negative_path.read_text())
     assert negative['status']=='PASS' and negative['source_commit']==head and negative['source_tree_dirty'] is False and negative['tests_run']>=10 and negative['failures']==negative['errors']==negative['skipped']==0
+    health=report['runtime_permissions']['operator_health'];assert health['status']=='ready' and all(health['components'][k] is True for k in ['database','queue','scheduler']) and health['restore_quarantine'] is False
+    assert health['free_bytes']>max(10737418240,health['total_bytes']*.1)
     assert report['plaintext_bytes']==1000000000
     assert report['api_image_source']['source_commit']==head and report['api_image_source']['source_tree_dirty'] is False
     assert len(report['source_sha256'])==64 and report['source_sha256']==report['recovered_sha256']

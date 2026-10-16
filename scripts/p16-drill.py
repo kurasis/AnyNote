@@ -30,6 +30,7 @@ def control(operation):
 
 def prepare():
     source=stack.initialize();env=ops.Environment(source/'environment')
+    if (source/'database/mysql').exists() or env.compose('ps','--all','--quiet').strip():raise ValueError('A clean operations drill requires a fresh owned target; retained state is never reset')
     env.compose('up','-d','--wait','db')
     # Fresh installation must use privileged migration credentials once, then
     # permanently separate runtime DML from operator DDL.
@@ -96,7 +97,10 @@ def action(name):
             except ValueError:return {'status':'PASS','reviewed_signature_and_complete_inventory_verified':verified['status']=='PASS','altered_pwa_release_refused':True,'malicious_script_executed':False}
             raise RuntimeError('Tampered static release was accepted')
     if name=='capacity-prepare':
-        target=stack.initialize('capacity',22443,image=env.values['ANYNOTE_API_IMAGE']);stack.up(target)
+        target=stack.initialize('capacity',22443,image=env.values['ANYNOTE_API_IMAGE'])
+        clean=ops.Environment(target/'environment')
+        if (target/'database/mysql').exists() or clean.compose('ps','--all','--quiet').strip():raise ValueError('Capacity acceptance requires a fresh owned target; never reset retained state')
+        stack.up(target)
         clean=ops.Environment(target/'environment');owner=hashlib.sha256(('P16 owned synthetic database '+str(ROOT)).encode()).hexdigest();clean.sql("CREATE TABLE IF NOT EXISTS p16_test_owner (owner CHAR(64) PRIMARY KEY); INSERT IGNORE INTO p16_test_owner VALUES ('"+owner+"');")
         return {'status':'PASS','port':22443,'target':'capacity'}
     if name=='capacity-load':
@@ -151,6 +155,12 @@ def action(name):
         raise RuntimeError('Supervised worker did not process the real heartbeat')
     if name=='maintain':return json.loads(env.php('operations:maintain'))
     if name=='runtime-permissions':
+        deadline=time.monotonic()+100
+        while True:
+            health=env.health()
+            if health['status']=='ready':break
+            if time.monotonic()>=deadline:raise RuntimeError('Real scheduler/queue/durability/capacity health did not become ready')
+            time.sleep(2)
         grants=env.sql("SHOW GRANTS FOR 'anynote_runtime'@'%';")
         if any(word in grants for word in ['ALL PRIVILEGES','CREATE','ALTER','DROP','SUPER','GRANT OPTION']):raise RuntimeError('Excess runtime grants')
         denied=0
@@ -160,7 +170,7 @@ def action(name):
         if denied!=3:raise RuntimeError('Runtime wrote protected source/static path')
         runtime=json.loads(env.compose('run','--rm','--no-deps','-T','api','php','-r','echo json_encode(["php"=>PHP_VERSION,"pcntl"=>extension_loaded("pcntl")]);').decode())
         if runtime!={'php':'8.4.26','pcntl':True}:raise RuntimeError('Pinned PHP/pcntl worker prerequisite missing')
-        return {'status':'PASS','php':runtime['php'],'pcntl':runtime['pcntl'],'denied_writes':denied,'runtime_ddl_privileges':False,'static_mounted_in_php':False}
+        return {'status':'PASS','php':runtime['php'],'pcntl':runtime['pcntl'],'denied_writes':denied,'runtime_ddl_privileges':False,'static_mounted_in_php':False,'operator_health':health}
     if name=='start-restored-edge':
         restored=json.loads((backups/'restore-receipt.json').read_text());clean=ops.Environment(restored['restore_environment']);clean.compose('up','-d','api','edge');return {'status':'PASS'}
     if name=='fresh-install':

@@ -73,8 +73,16 @@ http {
             alias /delivery/;
             default_type application/octet-stream;
             max_ranges 0;
+            # X-Accel internal redirects discard arbitrary upstream headers.
+            # Carry only values already approved by the API, never reflect Origin.
+            add_header Access-Control-Allow-Origin $upstream_http_access_control_allow_origin always;
+            add_header Access-Control-Allow-Credentials $upstream_http_access_control_allow_credentials always;
+            add_header Access-Control-Expose-Headers $upstream_http_access_control_expose_headers always;
+            add_header X-Request-ID $upstream_http_x_request_id always;
+            add_header Vary Origin always;
             add_header X-Content-Type-Options nosniff always;
             add_header Cache-Control no-store always;
+            add_header Strict-Transport-Security "max-age=31536000" always;
         }
         location /api/ {
             include /etc/nginx/fastcgi_params;

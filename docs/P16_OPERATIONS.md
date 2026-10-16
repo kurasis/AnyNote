@@ -70,7 +70,8 @@ Limit egress at the host/network to reviewed DNS, update, backup and optional
 mail/push destinations. No arbitrary content-supplied fetch facility is introduced.
 
 Authorized downloads use an internal X-Accel location with generated opaque IDs;
-external requests cannot access it. A durable hard link bridges authorization and
+external requests cannot access it. Internal redirects explicitly carry only
+API-approved CORS/request-ID headers and HSTS. A durable hard link bridges authorization and
 Nginx opening the file, preventing GC from breaking an admitted transfer. At most
 1,000 delivery tickets/links exist, with one-hour expiry and bounded collection.
 Orphan links retain a grace period; they never grant external URL access. Range
@@ -262,6 +263,10 @@ python3 scripts/p16-stack.py build
 python3 scripts/p16-drill.py run
 node packages/protocol/p16-capacity.mjs
 ```
+
+Clean acceptance refuses existing source/capacity datadirs or containers; use a
+fresh isolated CI host. It never resets retained local staging. The runtime
+report observes real scheduler/queue/durability/capacity health before the drill.
 
 The fixture derives mount UID/GID from the actual runner; it never assumes UID1000.
 

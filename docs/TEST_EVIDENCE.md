@@ -2137,3 +2137,27 @@ entry point twice and verifies committed pages/burned descriptors survive.
 
 The strengthened real-command regression passes in26 tests/362 assertions;
 full owned SQL concurrency/rollback and supervised kill/restart follow below.
+
+Preservation deviation during local validation: maintenance was inadvertently
+invoked once on retained P06 after its strict before/after proof. It reported18
+expired authentication rows and zero file/invite/enrollment/grant changes. The
+original baseline has only rate-limit buckets in those expiry tables; subsequent
+strict comparison retains every original non-rate table/content/session and
+TLS/OAuth/environment byte. The private explicit deviation receipt permits
+expired admission-counter deletion without rebaselining any protected state.
+
+Candidateb344f08 executed consistent/concurrent and interrupted backups, full
+clean-host SQL/blob checksum restoration, independent offline1GB recovery, newer
+checkpoint refusal, existing-client quarantine with exact retained draft/outbox,
+and fresh-identity1GB re-encryption/full destination hash. It then failed its
+X-Accel CORS assertion: Nginx internal redirects discarded upstream CORS headers.
+The internal location now carries only API-approved CORS/request-ID values and
+repeats HSTS; it never reflects arbitrary request origins. No final PASS is
+claimed for that failed attempt. New acceptance also observes real supervised
+scheduler/queue/durability/capacity health and refuses preexisting source/capacity
+targets rather than labelling reused state a clean installation.
+
+A focused real-TLS/Nginx/FastCGI internal-redirect regression now passes approved
+origin/credentials/request-ID/HSTS preservation, ticket-header hiding, direct
+internal-path404 and absent CORS for a hostile origin. It uses public synthetic
+FastCGI bytes and is not labelled application-authorization/full-phase acceptance.
