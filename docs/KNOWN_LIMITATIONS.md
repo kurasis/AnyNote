@@ -638,3 +638,21 @@ Do not enable it based on disabled-route evidence. Restored-source quarantine,
 bounded private epoch-zero root-kit recovery, independent export kits, static-origin
 trust, physical G1/U11/U12/Hello/TPM/PRF, actual100GB, failed native memory budget and
 production signing/deployment limitations remain unchanged.
+
+
+## P18 review boundary
+
+P18 review packages are unsigned/synthetically tested and do not authorize
+publication. Their source archives contain historical test locks for reproducible
+source, while maintained Windows product/helper executables use the fixed graph.
+PWA review bytes bind the synthetic issuer; real-host rebuilds need new validation.
+Dependency inventories are conservative, not an OS-image census or legal/security
+approval. Repository-wide license selection is still UNSELECTED. Actions binaries/
+images expire after14days; preserve the complete offline set and original ZIPs.
+SHA-256 alongside an archive is not independent publisher authentication.
+The final matrix does not turn related whole-suite PASS into every complete frozen
+criterion PASS; absent case-level/external acceptance stays NOT_RUN. Qualified
+review, physical devices/Hello/PRF/lifecycle, actual100GB, native failed128MiB budget,
+production signing/custody/hosting and named operator/owner acceptance remain open.
+The handoff retention schedule is proposed, not a configured production job.
+No production release, deployment, reviewer outreach or new owner trial occurs.

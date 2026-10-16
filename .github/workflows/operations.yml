@@ -42,11 +42,15 @@ jobs:
           python3 scripts/p16-drill.py run
           python3 scripts/p16-evidence.py operations
           git diff --exit-code
+      - name: Package the exact tested API image and deployment review candidate
+        run: python3 scripts/p18-candidate.py build api
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: p16-operations-report
-          path: artifacts/p16/*.json
+          path: |
+            artifacts/p16/*.json
+            artifacts/p18/*
           retention-days: 14
           if-no-files-found: error
       - name: Stop only owned synthetic projects, retain their state

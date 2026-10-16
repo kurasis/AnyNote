@@ -2256,3 +2256,55 @@ valid adoption56097ms; omitted event92115ms/ROSTER_CHANGED; corrupt signature
 development-source reproduction, not a clean final CI receipt. Both focused
 readiness/CAS and owner/expiry/generation tests passed after the transfer-read
 correction (2/2). Full final ordinary gates remain mandatory.
+
+
+## P18 development and final acceptance evidence
+
+The P18 development candidate archive suite actually passed19 tests (including
+subcase negatives) covering byte tampering, malformed paths, links, duplicates,
+missing members, size limits, source binding, immutable output and forged release
+clearance. Baseline179/P03 contracts remain unchanged. Syntax and documentation
+link checks passed. Development receipts retain dirty-source status and do not
+stand in for clean CI. Final ordinary PR and merged-main runs must separately
+pass all30 jobs; package bytes, actual same-owner journey and full inherited
+assertions are checked by scripts/p18-acceptance.py. The permanent evidence index
+is docs/evidence/p18/README.md; no future CI result is asserted here.
+
+Local journey development first rejected an unsanitized roster proof and a public
+peer-roster request without its pinned-root selector; the fixture was corrected,
+without changing verifier/API authority. A retained synthetic source then refused
+chunk delivery because its restored delivery directory UID65534 differed from
+runtime1000. Ownership of that one marked synthetic directory was repaired to1000,
+with original mode/data retained and a separate receipt. Its old retained image
+also lacks the later pcntl prerequisite, so that instance is not a clean current
+operations acceptance. Full final operations runs use newly built immutable images
+and fresh CI targets; no retained P03/P06 data was reset.
+The linked shared fixture also exposed a stale local history pin after adopting
+an admission card. The existing rollback fence rejected it. The fixture now keeps
+that exact adopted card as its next refresh anchor; no trust checkpoint is lowered.
+After those fixture/setup corrections, the actual owned HTTPS/SQL same-owner
+ENROLL/SHARE/UPLOAD/REVOKE journey passed. Its dirty development receipt records
+both recipient/source hashes and the real policy exclusions. The retained source
+was not reset; the final clean installation/full1GB/recovery assertion remains
+mandatory CI. The current P16 image also rebuilt successfully with dirty provenance;
+that build did not replace the retained source environment's immutable image pin.
+Original76-table/content/session/TLS/OAuth preservation plus exactly3 P16 additive
+migrations/2tables passed separately. Seventeen P18 negatives and ten maintained
+age/OpenSSL archive tests passed locally; zero failures/skips.
+
+P18 parser follow-up: source review found that a generic TAR reader can process
+PAX/GNU extension payloads before application length checks. The candidate reader
+now parses only fixed512-byte USTAR headers, validates checksum/type/size before
+reading any body, hashes bounded1MiB blocks and validates zero padding plus gzip
+EOF/CRC. A new real compressed-header negative covers PAX/global/long-name/sparse
+multi-gigabyte declarations with no body; all18 tests pass. The initial PR source
+is preserved separately as superseded, never claimed as final acceptance.
+
+P18 notice follow-up: the PDF package's bundled fonts/CMaps and optional ICC/WASM
+subassets ship additional upstream license texts below their own directories.
+The old root-only collector omitted those notices. Windows installer staging and
+PWA review packaging now include those exact installed texts under collision-safe
+asset-directory paths. Frozen712-component metadata/locks are unchanged. Local
+staging verified975 notice files, including Foxit/Liberation/CMap/ICC/OpenJPEG
+terms; the new actual-dependency packaging case brings the passing suite to19.
+Both superseded source cohorts remain separate from final acceptance.
