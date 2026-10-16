@@ -1,0 +1,12 @@
+{
+  "purpose": "Lossless UTF-8 development log, not aggregate acceptance",
+  "original_bytes": 109,
+  "original_sha256": "599f85c0d067f572e8313ed8ecf561f70437bdb213651866731f9eff312e39f8",
+  "lines_utf8": [
+    "..........\n",
+    "----------------------------------------------------------------------\n",
+    "Ran 10 tests in 0.213s\n",
+    "\n",
+    "OK\n"
+  ]
+}

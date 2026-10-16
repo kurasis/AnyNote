@@ -1,0 +1,49 @@
+{
+  "status": "PASS",
+  "owner_account_id": "7D8CgA27itOuEOQyoh94rw",
+  "events": [
+    {
+      "stage": "enroll",
+      "evidence": {
+        "device_id": "6ra4mjnuKVRzY0E-mSg_ng",
+        "roster": {
+          "version": "1",
+          "digest": "WyMP8N6j7x7R6KJ3Sr6J2zGH4AI5oIb02Ic8gNK0SYM"
+        }
+      }
+    },
+    {
+      "stage": "share",
+      "evidence": {
+        "group_id": "iXul2X2BSPDUPQN6_PKi2Q",
+        "owner_account_id": "7D8CgA27itOuEOQyoh94rw",
+        "recipient_account_id": "j-DTAyqPxGMPj9vsoeq8Sg",
+        "role": "reader",
+        "accepted_without_grants_denied": true
+      }
+    },
+    {
+      "stage": "upload",
+      "evidence": {
+        "file_version_id": "lPZ1c9l5Ka3GfV_9fbrUIQ",
+        "plaintext_bytes": 72,
+        "plaintext_sha256": "d2a5b9215138f49030d76985024b725954100a9006758ffc5b01493a966433bf",
+        "independent_recipient_hash": "d2a5b9215138f49030d76985024b725954100a9006758ffc5b01493a966433bf"
+      }
+    },
+    {
+      "stage": "revoke",
+      "evidence": {
+        "recipient_account_id": "j-DTAyqPxGMPj9vsoeq8Sg",
+        "manifest_denied": true,
+        "group_denied": true,
+        "removed_recipient_excluded": true,
+        "fresh_epoch_publication": true,
+        "previously_downloaded_copies_remain_readable": true
+      }
+    }
+  ],
+  "recovery_scope": "The same owner subsequently backs up and independently recovers its private epoch-zero file. Shared content requires the separate P13 portable export kit; no root-kit authority over the removed peer is asserted.",
+  "source_tree_dirty": true,
+  "purpose": "Development only; existing owned synthetic P16 installation, no reset and no final clean-install claim"
+}

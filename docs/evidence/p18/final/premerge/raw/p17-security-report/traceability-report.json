@@ -1,0 +1,351 @@
+{
+  "purpose": "P17 threat source/test anchors, not runtime or independent review",
+  "status": "PASS",
+  "source_commit": "af28cebe9e8a873cdd57907cff73c2b8a7adf063",
+  "source_tree_dirty": false,
+  "regressions": 24,
+  "bindings": [
+    {
+      "regression": "R01",
+      "path": "packages/protocol/adapters/files.mjs",
+      "anchor": "export class FileReader",
+      "sha256": "3dd5d685588a6db8f6abddda9ad9da8e8ffc67f19d2ac6b17033dd0d91436cf1"
+    },
+    {
+      "regression": "R01",
+      "path": "packages/protocol/files/test-files.mjs",
+      "anchor": "another enrolled installation attaches a verified file without the original upload journal",
+      "sha256": "d5a8f0c8040a20076166f379fd32c5ef9f7a8da84b9d3345001573c289b7e6ab",
+      "gate": "files-linux-http-browser"
+    },
+    {
+      "regression": "R02",
+      "path": "apps/api/app/Devices/Lifecycle.php",
+      "anchor": "recovery",
+      "sha256": "04c4573dc8e735bc28138f978f2c73d9bc27ffb384215622bf00693afc6a9649"
+    },
+    {
+      "regression": "R02",
+      "path": "packages/protocol/test/state.test.mjs",
+      "anchor": "reset advances generation, revokes all old sessions/pending before recovery recipient access",
+      "sha256": "04ad501613cbf0bb6288627179fa607d023ae949573141bf926d3de5a363b169",
+      "gate": "file-contract"
+    },
+    {
+      "regression": "R02",
+      "path": "packages/protocol/p08-http.mjs",
+      "anchor": "/me/recovery-reset",
+      "sha256": "2c120601cd9c0238ed0cd76afcb54b99430323d2bf67105e0683707b6db0116f",
+      "gate": "devices-linux-http-browser"
+    },
+    {
+      "regression": "R03",
+      "path": "apps/api/app/Backend/SyncWriter.php",
+      "anchor": "lockForUpdate",
+      "sha256": "5a0b7534b6224d1de66ef630bc230eb191e914dcf936f339dbdade4a057b7ffe"
+    },
+    {
+      "regression": "R03",
+      "path": "apps/api/tests/Support/p04-concurrency.php",
+      "anchor": "observer_while_b_blocked",
+      "sha256": "4bf2c2f93a294925da2d28e797e0fb14857135f04b117d637c18b445d94fe6d6",
+      "gate": "foundation"
+    },
+    {
+      "regression": "R04",
+      "path": "apps/api/app/Http/Middleware/ApiBoundary.php",
+      "anchor": "Access-Control-Allow-Origin",
+      "sha256": "8fe6135a014ff79b4f0afade517141c3ef3b92e2380237f48e1e542c362d774b"
+    },
+    {
+      "regression": "R04",
+      "path": "apps/api/tests/Feature/ApiBoundaryTest.php",
+      "anchor": "test_profile_cors_and_preflight_reject_downgrades_and_hostile_origins",
+      "sha256": "fefb1bf3ddcc3012242f9959a83ff877f596d8508062b354501403fad7c436ba",
+      "gate": "foundation"
+    },
+    {
+      "regression": "R05",
+      "path": "apps/api/app/Auth/Proof.php",
+      "anchor": "public function upgrade",
+      "sha256": "98ede3cfabb29f4c36bb90c03e637c8044d0a93f5969f6436e4120ea73620ea4"
+    },
+    {
+      "regression": "R05",
+      "path": "packages/protocol/test/state.test.mjs",
+      "anchor": "one-use normal device proof binds restricted session, current keys and challenge",
+      "sha256": "04ad501613cbf0bb6288627179fa607d023ae949573141bf926d3de5a363b169",
+      "gate": "file-contract"
+    },
+    {
+      "regression": "R06",
+      "path": "apps/api/app/Devices/Lifecycle.php",
+      "anchor": "confirm",
+      "sha256": "04c4573dc8e735bc28138f978f2c73d9bc27ffb384215622bf00693afc6a9649"
+    },
+    {
+      "regression": "R06",
+      "path": "packages/protocol/test/state.test.mjs",
+      "anchor": "head advance invalidates other provisional approvals; no blind reuse",
+      "sha256": "04ad501613cbf0bb6288627179fa607d023ae949573141bf926d3de5a363b169",
+      "gate": "file-contract"
+    },
+    {
+      "regression": "R06",
+      "path": "packages/protocol/p08-http.mjs",
+      "anchor": "/confirm",
+      "sha256": "2c120601cd9c0238ed0cd76afcb54b99430323d2bf67105e0683707b6db0116f",
+      "gate": "devices-linux-http-browser"
+    },
+    {
+      "regression": "R07",
+      "path": "apps/api/app/Devices/Lifecycle.php",
+      "anchor": "revoke",
+      "sha256": "04c4573dc8e735bc28138f978f2c73d9bc27ffb384215622bf00693afc6a9649"
+    },
+    {
+      "regression": "R07",
+      "path": "packages/protocol/test/state.test.mjs",
+      "anchor": "compromise revoke computes transitive closure and invalidates both descendant sessions",
+      "sha256": "04ad501613cbf0bb6288627179fa607d023ae949573141bf926d3de5a363b169",
+      "gate": "file-contract"
+    },
+    {
+      "regression": "R07",
+      "path": "packages/protocol/p08-http.mjs",
+      "anchor": "/revoke",
+      "sha256": "2c120601cd9c0238ed0cd76afcb54b99430323d2bf67105e0683707b6db0116f",
+      "gate": "devices-linux-http-browser"
+    },
+    {
+      "regression": "R08",
+      "path": "apps/api/app/Groups/Service.php",
+      "anchor": "class Service",
+      "sha256": "b92447cca41c8694e87d532529685bbf27521229d50e32a3d380c8727a055cdc"
+    },
+    {
+      "regression": "R08",
+      "path": "packages/protocol/test/group.test.mjs",
+      "anchor": "reader performs mandatory roster maintenance while history remains blocked for writer closure",
+      "sha256": "445f6757511c2b77296d17611af16d054041f350a71293aae988c7ffbd2ca007",
+      "gate": "file-contract"
+    },
+    {
+      "regression": "R09",
+      "path": "packages/protocol/notes/workflow.mjs",
+      "anchor": "SENT_UNKNOWN",
+      "sha256": "eb075f6288cae047d58e9a020f270fe9e6666e2af4dfabb4e9c142750e44a1d3"
+    },
+    {
+      "regression": "R09",
+      "path": "packages/protocol/security/http.mjs",
+      "anchor": "SYNTHETIC_RESPONSE_LOSS",
+      "sha256": "f11a57724cd590e2e94f18ffdcc2ad1e856eb93e30adb45249b6000ccddecbae",
+      "gate": "adversarial-linux"
+    },
+    {
+      "regression": "R10",
+      "path": "apps/api/app/Sync/Service.php",
+      "anchor": "public function start",
+      "sha256": "3a3584457a6135038d6d25b26e233554a91d09bf921ef98f7401a4e9259fbad3"
+    },
+    {
+      "regression": "R10",
+      "path": "packages/protocol/p11-http.mjs",
+      "anchor": "captured heads and ciphertext stay immutable",
+      "sha256": "2e34e34d53df50d65213349aa802cd994266e7f325ebdff3a89178e28660c29e",
+      "gate": "sync-linux-http-browser"
+    },
+    {
+      "regression": "R11",
+      "path": "apps/api/app/Files/Service.php",
+      "anchor": "function commit",
+      "sha256": "fc20bea02b1c11a889abf6ee614953abcfb54e30b8854423819014ccc57ee824"
+    },
+    {
+      "regression": "R11",
+      "path": "packages/protocol/p12-http.mjs",
+      "anchor": "COMMIT_UNKNOWN",
+      "sha256": "1beaff555838cda3c84eb6863f42327c5bde2f3d552bb293783f01f60bba151a",
+      "gate": "files-linux-http-browser"
+    },
+    {
+      "regression": "R12",
+      "path": "apps/api/app/Content/Retainer.php",
+      "anchor": "private function reasons",
+      "sha256": "3acdb3d5ac92d002c83cc305c514314d7f1be714303b79c125c3b19eb50ae269"
+    },
+    {
+      "regression": "R12",
+      "path": "packages/protocol/p13-http.mjs",
+      "anchor": "retention",
+      "sha256": "8ce7813c3168e04fa46ff3b73cc316eaf028ac0ab793e2912512de89e7f845af",
+      "gate": "content-linux-http-browser"
+    },
+    {
+      "regression": "R13",
+      "path": "packages/protocol/files/workflow.mjs",
+      "anchor": "REKEY_RESTART_REQUIRED",
+      "sha256": "6de813882fead93eb89343e0d0e78ee70c9a629b5b4d02b3aa80cbf9da90fbbc"
+    },
+    {
+      "regression": "R13",
+      "path": "packages/protocol/p12-http.mjs",
+      "anchor": "1000001920",
+      "sha256": "1beaff555838cda3c84eb6863f42327c5bde2f3d552bb293783f01f60bba151a",
+      "gate": "files-linux-http-browser"
+    },
+    {
+      "regression": "R14",
+      "path": "packages/protocol/adapters/history.mjs",
+      "anchor": "export class HistoryAnchor",
+      "sha256": "598b5de90a2ad3b9427d7c076b80d2ec0fbb464c0d7a888847ceb262c8ee58f0"
+    },
+    {
+      "regression": "R14",
+      "path": "packages/protocol/test/group.test.mjs",
+      "anchor": "a newly forged backdated signature remains unanchored after writer removal",
+      "sha256": "445f6757511c2b77296d17611af16d054041f350a71293aae988c7ffbd2ca007",
+      "gate": "file-contract"
+    },
+    {
+      "regression": "R14",
+      "path": "packages/protocol/p10-http.mjs",
+      "anchor": "UNANCHORED_HISTORY",
+      "sha256": "5cbe6b0222a0f37a0b654d4fd80c49e9bdad63d6760246524151d16b1f449734",
+      "gate": "shared-linux-http-browser"
+    },
+    {
+      "regression": "R15",
+      "path": "apps/api/app/Http/ControlJson.php",
+      "anchor": "count($frames) >= 32",
+      "sha256": "5aad07da0ca9df2d69d4ebee7f56324980d28ef75e9cbae7849c5681d1905127"
+    },
+    {
+      "regression": "R15",
+      "path": "packages/protocol/security/fuzz.mjs",
+      "anchor": "raw_control",
+      "sha256": "b23ffba2c2ddcd83dced7761eefe5f560974066c29dffc9165526e7eed161420",
+      "gate": "adversarial-linux"
+    },
+    {
+      "regression": "R16",
+      "path": "packages/protocol/adapters/objects.mjs",
+      "anchor": "sodium.randombytes_buf(24)",
+      "sha256": "961efe8b4dcf4b5e23fbde220641a039ffa8978220a8253873204f1e7304d0cc"
+    },
+    {
+      "regression": "R16",
+      "path": "packages/protocol/vault/test-engine.mjs",
+      "anchor": "fresh nonce after full rollback",
+      "sha256": "04dec5b78137ff0aa5bef45b7de946a2909f9cc1925360bd47ed016f8a667920",
+      "gate": "adversarial-linux"
+    },
+    {
+      "regression": "R17",
+      "path": "packages/protocol/content/archive.mjs",
+      "anchor": "export async function parseTar",
+      "sha256": "0a8837ec53bbadbeb8af7b238fe558b80372372ae6c261414ca5382c6e6302f0"
+    },
+    {
+      "regression": "R17",
+      "path": "packages/protocol/content/test-portable.mjs",
+      "anchor": "authenticated outer encryption cannot certify missing footer",
+      "sha256": "0578593a3d2d119d8002d016df09538b3ee2a41c3502c9b1d7f28925702ce59e",
+      "gate": "adversarial-linux"
+    },
+    {
+      "regression": "R18",
+      "path": "apps/api/app/Auth/Native.php",
+      "anchor": "public function token",
+      "sha256": "8a1063713f11e048323533afc7969f5020fc330d2ceba06dc561c77d11452db0"
+    },
+    {
+      "regression": "R18",
+      "path": "packages/auth-native/src/lib.rs",
+      "anchor": "callback_attack_matrix",
+      "sha256": "c376cf1ddeccd041ddcbb4fd6c74249a2af4a604ae80cb2a0bf1bc093682f437",
+      "gate": "auth-windows-native"
+    },
+    {
+      "regression": "R19",
+      "path": "packages/protocol/adapters/objects.mjs",
+      "anchor": "export function verifyObject",
+      "sha256": "961efe8b4dcf4b5e23fbde220641a039ffa8978220a8253873204f1e7304d0cc"
+    },
+    {
+      "regression": "R19",
+      "path": "packages/protocol/security/fuzz.mjs",
+      "anchor": "authenticated_envelope_rejections",
+      "sha256": "b23ffba2c2ddcd83dced7761eefe5f560974066c29dffc9165526e7eed161420",
+      "gate": "adversarial-linux"
+    },
+    {
+      "regression": "R20",
+      "path": "packages/protocol/vault/engine.mjs",
+      "anchor": "export class VaultEngine",
+      "sha256": "3615fc8a510291a84f8667732cc017a726db891be38287e0009344496458c697"
+    },
+    {
+      "regression": "R20",
+      "path": "packages/protocol/devices/test-workflow.mjs",
+      "anchor": "second window cannot mutate active leader state",
+      "sha256": "81fb11e22c06cdf14e6bb31009748a32c45889ba2a7dc75b85f77819dae8b11f",
+      "gate": "adversarial-linux"
+    },
+    {
+      "regression": "R21",
+      "path": "apps/api/app/Groups/Service.php",
+      "anchor": "class Service",
+      "sha256": "b92447cca41c8694e87d532529685bbf27521229d50e32a3d380c8727a055cdc"
+    },
+    {
+      "regression": "R21",
+      "path": "packages/protocol/test/group.test.mjs",
+      "anchor": "signed structurally complete wrong keys cause explicit repair after unwrap",
+      "sha256": "445f6757511c2b77296d17611af16d054041f350a71293aae988c7ffbd2ca007",
+      "gate": "file-contract"
+    },
+    {
+      "regression": "R22",
+      "path": "apps/api/app/Operations/Recovery.php",
+      "anchor": "class Recovery",
+      "sha256": "b616134434d364900fc1f2c8f77b9a769056b41f0ae2b3e708ba79b47fb68790"
+    },
+    {
+      "regression": "R22",
+      "path": "packages/protocol/p16-acceptance.mjs",
+      "anchor": "beforeQuarantine",
+      "sha256": "d695e8fea3d1e06cbe16496e08567c2a01f01b1ebc75b4c9e27b6e40bc74265f",
+      "gate": "operations-linux-drill"
+    },
+    {
+      "regression": "R23",
+      "path": "apps/api/app/Files/BlobStore.php",
+      "anchor": "public function capacity",
+      "sha256": "92c5bf2348b6d1bb04dca4fef2fb4f135dabb280a49ede9c815739b715f3e5d9"
+    },
+    {
+      "regression": "R23",
+      "path": "packages/protocol/p16-acceptance.mjs",
+      "anchor": "storage_faults",
+      "sha256": "d695e8fea3d1e06cbe16496e08567c2a01f01b1ebc75b4c9e27b6e40bc74265f",
+      "gate": "operations-linux-drill"
+    },
+    {
+      "regression": "R24",
+      "path": "apps/api/routes/web.php",
+      "anchor": "Route::",
+      "sha256": "073a02ebf6d536c2bdc20505d96a6003665c82c8b39397cf87621671164b84c2"
+    },
+    {
+      "regression": "R24",
+      "path": "packages/protocol/security/http.mjs",
+      "anchor": "disabled_push_outbound_requests",
+      "sha256": "f11a57724cd590e2e94f18ffdcc2ad1e856eb93e30adb45249b6000ccddecbae",
+      "gate": "adversarial-linux"
+    }
+  ],
+  "independent_review": "NOT_RUN",
+  "production_release_allowed": false
+}

@@ -1,0 +1,58 @@
+{
+  "purpose": "P17 bounded deterministic parser/envelope mutation campaign",
+  "status": "PASS",
+  "source_commit": "af28cebe9e8a873cdd57907cff73c2b8a7adf063",
+  "source_tree_dirty": false,
+  "seed": "AnyNote/P17/bounded-mutation/v1",
+  "prng": "xorshift32 mutation selection; not cryptography",
+  "corpus_sha256": "48d9e6b09197f264ba72b4404074ec48fd3f8df6eb284f1f45dbaacd20a465de",
+  "families": {
+    "file": {
+      "seeds": 5,
+      "cases": 1280,
+      "accepted": 259,
+      "rejected": 1021
+    },
+    "identity": {
+      "seeds": 3,
+      "cases": 768,
+      "accepted": 153,
+      "rejected": 615
+    },
+    "state": {
+      "seeds": 2,
+      "cases": 512,
+      "accepted": 118,
+      "rejected": 394
+    },
+    "group": {
+      "seeds": 1,
+      "cases": 256,
+      "accepted": 51,
+      "rejected": 205
+    },
+    "object": {
+      "seeds": 6,
+      "cases": 1536,
+      "accepted": 335,
+      "rejected": 1201
+    },
+    "raw_control": {
+      "cases": 2376,
+      "accepted": 395,
+      "rejected": 1981
+    }
+  },
+  "authenticated_envelope_rejections": 512,
+  "kdf_preallocation_rejections": 5,
+  "archive_header_rejections": 512,
+  "archive_positive_visits": 1,
+  "elapsed_ms": 1843.3821149999999,
+  "observed_process_max_rss_kib": 310856,
+  "independent_review": "NOT_RUN",
+  "limitations": [
+    "Finite mutation campaign; Node reference and portable codecs share frozen design and dependencies",
+    "PHP differential covers raw control syntax, not secret AEAD or every PHP schema",
+    "RSS is this Node process high-water mark, not devices or aggregate children"
+  ]
+}

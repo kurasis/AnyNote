@@ -1,0 +1,18 @@
+{
+  "purpose": "Lossless superseded ordinary-CI watcher log; not final acceptance",
+  "original_bytes": 1772,
+  "original_sha256": "d98eaab28a84f1a1852e3a9b7a4faaaef96844bcab1a669cfec067e6ff442732",
+  "lines_utf8": [
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 1, \"active\": 29, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 2, \"active\": 28, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 4, \"active\": 26, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 7, \"active\": 23, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 7, \"active\": 23, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 8, \"active\": 22, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 8, \"active\": 22, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 9, \"active\": 21, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 9, \"active\": 21, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 9, \"active\": 21, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 10, \"active\": 20, \"missing\": [], \"failed\": []}\n"
+  ]
+}

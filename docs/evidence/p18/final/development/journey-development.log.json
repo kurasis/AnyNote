@@ -1,0 +1,23 @@
+{
+  "purpose": "Lossless UTF-8 development log, not aggregate acceptance",
+  "original_bytes": 882,
+  "original_sha256": "5418aa6202e8d9ffbf57af8f5866c7c0a3c21ad47fc70dbfdef948aec74605f9",
+  "lines_utf8": [
+    "file:///workspace/AnyNote/packages/protocol/vault/store.mjs:9\n",
+    "export const fail=code=>{throw Object.assign(new Error(code),{code});};\n",
+    "                                             ^\n",
+    "\n",
+    "Error: INVALID_SHARED_DTO\n",
+    "    at fail (file:///workspace/AnyNote/packages/protocol/vault/store.mjs:9:46)\n",
+    "    at ensure (file:///workspace/AnyNote/packages/protocol/vault/store.mjs:10:46)\n",
+    "    at sharedValue (file:///workspace/AnyNote/packages/protocol/shared/client.mjs:9:41)\n",
+    "    at #sharedCommand (file:///workspace/AnyNote/packages/protocol/notes/workflow.mjs:476:4)\n",
+    "    at NotesWorkflow.command (file:///workspace/AnyNote/packages/protocol/notes/workflow.mjs:125:46)\n",
+    "    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n",
+    "    at async #notesCommand (file:///workspace/AnyNote/packages/protocol/vault/engine.mjs:253:38) {\n",
+    "  code: 'INVALID_SHARED_DTO'\n",
+    "}\n",
+    "\n",
+    "Node.js v24.21.0\n"
+  ]
+}

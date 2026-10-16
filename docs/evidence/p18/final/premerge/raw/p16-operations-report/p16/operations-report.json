@@ -1,0 +1,174 @@
+{
+  "status": "PASS",
+  "purpose": "P16 genuine hardened synthetic staging and clean-host/root-kit recovery",
+  "source_commit": "af28cebe9e8a873cdd57907cff73c2b8a7adf063",
+  "source_tree_dirty": false,
+  "checks": 202,
+  "reference_host": {
+    "platform": "linux",
+    "arch": "x64",
+    "logical_cpus": 4,
+    "cpu": "AMD EPYC 7763 64-Core Processor",
+    "total_memory_bytes": 16766414848
+  },
+  "runtime_permissions": {
+    "status": "PASS",
+    "php": "8.4.26",
+    "pcntl": true,
+    "denied_writes": 3,
+    "runtime_ddl_privileges": false,
+    "static_mounted_in_php": false,
+    "operator_health": {
+      "status": "ready",
+      "components": {
+        "database": true,
+        "queue": true,
+        "scheduler": true
+      },
+      "recent_queue_failure": false,
+      "delivery_leases": 0,
+      "queue_depth": 0,
+      "free_bytes": 88538628096,
+      "total_bytes": 154894188544,
+      "restore_quarantine": false
+    }
+  },
+  "protected_admin_mtls_and_recent_role_verified": true,
+  "memory_scope": "sampled Node main process; excludes Python/age/MariaDB/FPM/Nginx peers and is not a sampled aggregate or hard maximum",
+  "api_image_source": {
+    "source_commit": "af28cebe9e8a873cdd57907cff73c2b8a7adf063",
+    "source_tree_dirty": false,
+    "input_count": 109,
+    "manifest_sha256": "a0a2fa874beea49bb8d01eabad017caf89f0cac4c1d58b0ee24fae16fef38382"
+  },
+  "api_image_id": "sha256:67a37c9991ba1019e50ad2d858f58564cf965125e1eaa21d50cbb3e5c2667b67",
+  "plaintext_bytes": 1000000000,
+  "source_sha256": "838a1aabfd534f87552a77d6f5bfb6f6dddeed468b59ddf90c37b0833c11e598",
+  "recovered_sha256": "838a1aabfd534f87552a77d6f5bfb6f6dddeed468b59ddf90c37b0833c11e598",
+  "backup_archive_bytes": 1001409416,
+  "backup_elapsed_ms": 9436,
+  "clean_host_restore_ms": 16480,
+  "clean_client_recovery_and_export_ms": 54350,
+  "acknowledged_data_loss_window_seconds": 5.727007744,
+  "backup_age_at_drill_end_seconds": 171.867007744,
+  "rto_offline_content_seconds": 73.274,
+  "rto_drill_seconds": 164.529,
+  "fresh_identity_group_and_file_copy_verified": true,
+  "accel_delivery_verified": true,
+  "storage_faults": {
+    "status": "PASS",
+    "physical_tmpfs_bytes": 8388608,
+    "actual_enospc_observed": true,
+    "typed_denials": [
+      "INSUFFICIENT_STORAGE",
+      "STORAGE_UNAVAILABLE",
+      "STORAGE_UNAVAILABLE"
+    ],
+    "committed_bytes_preserved": true,
+    "quota_unchanged": true,
+    "real_directory_fsync_failure": true,
+    "recovered_write_bytes": 65536
+  },
+  "interrupted_backup": {
+    "status": "PASS",
+    "actual_partial_age_bytes_observed": 1638984,
+    "no_final_archive_or_signature": true,
+    "owned_writers_resumed": true,
+    "exit_nonzero": true
+  },
+  "cleanup": {
+    "expired_upload_released": true,
+    "expired_invite_and_enrollment_removed": true,
+    "committed_reference_preserved": true,
+    "idempotent": true
+  },
+  "incident_drill": {
+    "status": "PASS",
+    "reviewed_signature_and_complete_inventory_verified": true,
+    "altered_pwa_release_refused": true,
+    "malicious_script_executed": false
+  },
+  "api_isolation_verified": true,
+  "missing_recovery_secret_no_admin_decryption": true,
+  "modified_recovery_ciphertext_refused_before_output": true,
+  "concurrent_writes": {
+    "acknowledged": 2,
+    "unavailable_or_retained": 6
+  },
+  "restored_generation_changed": true,
+  "existing_client_restore_quarantine_and_old_cursor_preserved": true,
+  "encrypted_draft_and_immutable_outbox_bytes_preserved": true,
+  "old_credentials_and_unreconciled_security_blocked": true,
+  "security_checkpoint_matches_latest": false,
+  "offline_network_used": false,
+  "private_genesis_scope": true,
+  "shared_rotated_recovery": "maintained P13 portable archive + separate export kit; no in-place trust restoration",
+  "maximum_observed_node_rss_bytes": 555778048,
+  "elapsed_ms": 308830,
+  "physical_acceptance": false,
+  "production_deployed": false,
+  "p18_journey": {
+    "status": "PASS",
+    "owner_account_id": "v6teN7KqSvI-fJf_Pf3YRw",
+    "events": [
+      {
+        "stage": "enroll",
+        "evidence": {
+          "device_id": "1iyg6EPIXqdXe-WNw6S4lg",
+          "roster": {
+            "version": "1",
+            "digest": "sJmVylnqo2gZKK1se415XW2OYSJGnGQ2AbNbZtVpV5M"
+          }
+        }
+      },
+      {
+        "stage": "share",
+        "evidence": {
+          "group_id": "x-jNk0Q1mcP-rY1UCcquqA",
+          "owner_account_id": "v6teN7KqSvI-fJf_Pf3YRw",
+          "recipient_account_id": "JluWezM-kcW1uqtLt22Vug",
+          "role": "reader",
+          "accepted_without_grants_denied": true
+        }
+      },
+      {
+        "stage": "upload",
+        "evidence": {
+          "file_version_id": "sqnHJZ7-rmGan5hHDDGUtA",
+          "plaintext_bytes": 72,
+          "plaintext_sha256": "d2a5b9215138f49030d76985024b725954100a9006758ffc5b01493a966433bf",
+          "independent_recipient_hash": "d2a5b9215138f49030d76985024b725954100a9006758ffc5b01493a966433bf"
+        }
+      },
+      {
+        "stage": "revoke",
+        "evidence": {
+          "recipient_account_id": "JluWezM-kcW1uqtLt22Vug",
+          "manifest_denied": true,
+          "group_denied": true,
+          "removed_recipient_excluded": true,
+          "fresh_epoch_publication": true,
+          "previously_downloaded_copies_remain_readable": true
+        }
+      }
+    ],
+    "recovery_scope": "The same owner subsequently backs up and independently recovers its private epoch-zero file. Shared content requires the separate P13 portable export kit; no root-kit authority over the removed peer is asserted.",
+    "installation": "Fresh hardened P16 source datadir and immutable API image, verified by runtime permissions and clean-install driver",
+    "completed_stages": [
+      "install",
+      "enroll",
+      "share",
+      "upload",
+      "revoke",
+      "recover",
+      "restore"
+    ],
+    "root_reset_generation": "1",
+    "private_file_source_sha256": "838a1aabfd534f87552a77d6f5bfb6f6dddeed468b59ddf90c37b0833c11e598",
+    "private_file_recovered_sha256": "838a1aabfd534f87552a77d6f5bfb6f6dddeed468b59ddf90c37b0833c11e598",
+    "private_file_fresh_download_sha256": "838a1aabfd534f87552a77d6f5bfb6f6dddeed468b59ddf90c37b0833c11e598",
+    "old_credentials_quarantined": true,
+    "private_file_bytes": 1000000000,
+    "shared_root_kit_recovery": false
+  }
+}

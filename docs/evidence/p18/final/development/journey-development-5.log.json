@@ -1,0 +1,8 @@
+{
+  "purpose": "Lossless UTF-8 development log, not aggregate acceptance",
+  "original_bytes": 64,
+  "original_sha256": "1bf68f938a1a3aba020c3d017f30129be0a45d864c88044521cc7d48fcf75d9c",
+  "lines_utf8": [
+    "PASS: linked enrollment/share/upload/revoke development journey\n"
+  ]
+}

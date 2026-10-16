@@ -1,0 +1,12 @@
+{
+  "purpose": "P10 actual native SQLite and portable protected multi-account interoperation",
+  "status": "PASS",
+  "checks": 89,
+  "platform": "win32",
+  "source_commit": "af28cebe9e8a873cdd57907cff73c2b8a7adf063",
+  "source_tree_dirty": false,
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "transport_scope": "Modeled security/content receipts; actual HTTP/SQL is a separate mandatory gate",
+  "storage_scope": "Native actual protected SQLite and typed IPC; peer IndexedDB adapter uses transactional model here"
+}

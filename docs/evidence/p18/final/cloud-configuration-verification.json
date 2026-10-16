@@ -1,0 +1,37 @@
+{
+  "purpose": "P18 complete tested cloud install/start/repository membership saved and read back from backend",
+  "status": "PASS",
+  "source_commit": "388e6d7206f4c4937943924673bfa045ab704dc5",
+  "source_tree": "9202b1f460c940b54ed7917e48d8917c1a1b09d2",
+  "observed_at": "2026-10-16T21:41:23.007977+00:00",
+  "draft_id": "c6e44868-d5c7-48f5-a9bc-581b967d3273~cecfgdraft_6ad299ee6144819d8fb39516daa66d98",
+  "revision": 11,
+  "base_version_id": "c6e44868-d5c7-48f5-a9bc-581b967d3273~cecfgver_6ad26ae18734819d973364e7cbd58853",
+  "install_script_bytes": 6860,
+  "install_script_sha256": "dca12dcede4c8ac85594f7c97c877c08871009979927a3ad9ffcbeefadd7ebf0",
+  "start_skill_bytes": 9084,
+  "start_skill_sha256": "c55d326a1c045093b5c196d6767932a0528f570b93df4c3fc42f2a4836afaf25",
+  "repositories": [
+    {
+      "repository_id": "kurasis/AnyNote",
+      "ref": "388e6d7206f4c4937943924673bfa045ab704dc5",
+      "mount_path": "AnyNote",
+      "depth": null
+    }
+  ],
+  "unrelated_fields_verified_unchanged": [
+    "network_policy",
+    "secrets",
+    "runtime_requirements",
+    "pending_runtime_requirements",
+    "base_version_id"
+  ],
+  "source_179_frozen_inputs_preserved": true,
+  "actual_startup_commands": 19,
+  "ordinary_pr_jobs_passed": 30,
+  "ordinary_main_jobs_passed": 30,
+  "current_instance_verified": true,
+  "requires_publish": true,
+  "fresh_task_restoration": "NOT_RUN",
+  "production_release_allowed": false
+}

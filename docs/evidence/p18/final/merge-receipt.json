@@ -1,0 +1,12 @@
+{
+  "purpose": "P18 all30 ordinary jobs and exact three-package acceptance before expected-head ordinary squash",
+  "status": "MERGED",
+  "pull_request": "https://github.com/kurasis/AnyNote/pull/33",
+  "checked_head": "af28cebe9e8a873cdd57907cff73c2b8a7adf063",
+  "checked_tree": "9202b1f460c940b54ed7917e48d8917c1a1b09d2",
+  "base_before_merge": "a55b73e84a30c11b2e737d1a3830e54ec774ed19",
+  "verified_synthetic_merge_commit": "32fcad0799a34c339a70d652520068674f04b8c6",
+  "merge_commit": "388e6d7206f4c4937943924673bfa045ab704dc5",
+  "physical_acceptance": false,
+  "production_deployed": false
+}

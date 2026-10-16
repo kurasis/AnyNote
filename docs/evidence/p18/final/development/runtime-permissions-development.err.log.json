@@ -1,0 +1,18 @@
+{
+  "purpose": "Lossless optional development diagnostic, not clean final acceptance",
+  "original_bytes": 739,
+  "original_sha256": "c04a0920cf68cd184456e41e3e1aa5d7d27331974720affb27567e0a583539b0",
+  "lines_utf8": [
+    "Traceback (most recent call last):\n",
+    "  File \"/workspace/AnyNote/scripts/p16-drill.py\", line 193, in <module>\n",
+    "    if __name__=='__main__':main()\n",
+    "                            ^^^^^^\n",
+    "  File \"/workspace/AnyNote/scripts/p16-drill.py\", line 186, in main\n",
+    "    if a.operation=='action':print(json.dumps(action(a.argument)));return\n",
+    "                                              ^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/workspace/AnyNote/scripts/p16-drill.py\", line 172, in action\n",
+    "    if runtime!={'php':'8.4.26','pcntl':True}:raise RuntimeError('Pinned PHP/pcntl worker prerequisite missing')\n",
+    "                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "RuntimeError: Pinned PHP/pcntl worker prerequisite missing\n"
+  ]
+}

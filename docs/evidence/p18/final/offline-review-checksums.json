@@ -1,0 +1,74 @@
+{
+  "purpose": "Complete local offline review set checksums; binaries/images retained in original Actions attachments and local sets, not committed here",
+  "files": [
+    {
+      "path": "AnyNote-0.18.0-review-api-388e6d7206f4.tar.gz",
+      "sha256": "1e02b92036ef48f784bb31f998e48438afddc930416064d14239f09c55b217e2"
+    },
+    {
+      "path": "AnyNote-0.18.0-review-pwa-388e6d7206f4.tar.gz",
+      "sha256": "bdd71c0e773eded5f8cec3d0ee7f1390fb064ffc2edc9e45076eee822490646f"
+    },
+    {
+      "path": "AnyNote-0.18.0-review-windows-388e6d7206f4.tar.gz",
+      "sha256": "983a732a03a9383501fb1f6e861387fd5789f273227e680af20eae3d0f1ea1db"
+    },
+    {
+      "path": "OPERATOR_HANDOFF.md",
+      "sha256": "4e67d18b6b5a78032fe825f154150c564e74f6ddc46ba60eec76dc6f077a0b95"
+    },
+    {
+      "path": "P18_RELEASE.md",
+      "sha256": "6d96b346a17f086ab7a3a8eb19a2b3e1ce2ace71b55c8f647fbef158ed03248c"
+    },
+    {
+      "path": "SHA256SUMS",
+      "sha256": "d0d8b49af5eab729e2a77cdcc631af326be54ef69d019a3162ab9142dfd4670e"
+    },
+    {
+      "path": "USER_GUIDE.md",
+      "sha256": "08896c0d918a22ee2c3bbc6ec9bebb357e8b90ced524a24a50ee74dd86374da7"
+    },
+    {
+      "path": "acceptance.json",
+      "sha256": "c7dfcc70bfe2609cc9e964d4a9f2efa7c431b5763fec301d6f43e1a091868bcc"
+    },
+    {
+      "path": "api-manifest.json",
+      "sha256": "61e988dd54241aac1cfd0cabb332142634be634337b4999bd1b4f6d64d476563"
+    },
+    {
+      "path": "cohort.json",
+      "sha256": "cc160c7ccaff467d84cd0e41382a2290c644f9db643f987f7587597e204ac199"
+    },
+    {
+      "path": "matrix.json",
+      "sha256": "7eb9d7079d8e5041cc22eeb7b4a8a1cf24a723e37f4ccd1052040aeff9e1afee"
+    },
+    {
+      "path": "p18-inherited-verification-p15.json",
+      "sha256": "f66ddab0cb0a102beeb8393610dfd1c5f889c77f8f07c09348a71bbc1dad835e"
+    },
+    {
+      "path": "p18-inherited-verification-p16.json",
+      "sha256": "db9e6366d07e6c8bfe40a9c8e9a69493d0b3a72470ee1b8c787f8976d8a38107"
+    },
+    {
+      "path": "p18-inherited-verification.json",
+      "sha256": "8666022473d6cca8771844c48532de54c1e200e2d1bf01e973f37ce70feda3c5"
+    },
+    {
+      "path": "pwa-manifest.json",
+      "sha256": "0ada496922ad51f8dd5059be31ff6e56cb08a900950b39cb3478cc3ca64cb16b"
+    },
+    {
+      "path": "raw-report-audit.json",
+      "sha256": "d9dbd02006198f388f2e8cad48c07fee001d2bd3e793de4076cb6eb50c1a4c05"
+    },
+    {
+      "path": "windows-manifest.json",
+      "sha256": "28d978f1e721ce21d780302eb59dc691a88e64199e5dc8f25351bbd38e95a21f"
+    }
+  ],
+  "actions_retention_days": 14
+}

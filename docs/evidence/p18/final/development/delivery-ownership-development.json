@@ -1,0 +1,13 @@
+{
+  "purpose": "Repair restored owned synthetic delivery directory UID to existing runtime UID; no deletion or data reset",
+  "before": {
+    "uid": 65534,
+    "gid": 65534,
+    "mode": "0o755"
+  },
+  "after": {
+    "uid": 1000,
+    "gid": 1000,
+    "mode": "0o755"
+  }
+}

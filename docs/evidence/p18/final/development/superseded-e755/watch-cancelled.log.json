@@ -1,0 +1,20 @@
+{
+  "purpose": "Lossless superseded ordinary-CI watcher log; not final acceptance",
+  "original_bytes": 2263,
+  "original_sha256": "69a340f305fe86208329ff5723ef953fb56308ce08cc9552db1b3714412e54d7",
+  "lines_utf8": [
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 1, \"active\": 29, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 2, \"active\": 28, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 4, \"active\": 26, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 7, \"active\": 23, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 7, \"active\": 23, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 8, \"active\": 22, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 8, \"active\": 22, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 9, \"active\": 21, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 9, \"active\": 21, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 9, \"active\": 21, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 10, \"active\": 20, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"PENDING\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 10, \"active\": 20, \"missing\": [], \"failed\": []}\n",
+    "{\"status\": \"FAIL\", \"source_commit\": \"e755c6f3490e0abb14ba4e5fe0daf4edc0ac1428\", \"mandatory_jobs\": 30, \"passed\": 10, \"active\": 13, \"missing\": [], \"failed\": [\"linux-native-browser\", \"vault-windows-native\", \"shared-windows-native\", \"notes-windows-native\", \"sync-windows-native\", \"devices-windows-native\", \"content-windows-native\"]}\n"
+  ]
+}

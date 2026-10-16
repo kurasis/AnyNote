@@ -1,0 +1,24 @@
+{
+  "purpose": "Actual retained P06 validation deviation and subsequent strict protected-state proof; no original baseline rewrite",
+  "observed_maintenance": {
+    "status": "PASS",
+    "authentication_rows": 18,
+    "files": {
+      "expired_uploads": 0,
+      "deleted_files": 0,
+      "orphan_blobs": 0
+    },
+    "invitations": 0,
+    "enrollments": 0,
+    "delivery_leases": 0,
+    "expired_unpublished_grant_pages": 0
+  },
+  "original_rate_bucket_rows": 8,
+  "scope": "Expired rate-limit admission counters may decrease; every other original table/content/session/file remains subject to unchanged strict comparison",
+  "original_baseline_sha256": "78be1ead883e788515a787303ea79206e815e227bd1199396a4c101defee387e",
+  "status": "VERIFIED_PROTECTED_STATE_UNCHANGED",
+  "original_non_rate_tables_and_session_rows": "strict comparison PASS",
+  "tls_oauth_environment_bytes": "strict comparison PASS",
+  "baseline_rewritten": false,
+  "source_commit": "b344f08985df56f2bc59a2c74ffaf18cc8985ece"
+}

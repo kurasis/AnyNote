@@ -1,0 +1,23 @@
+{
+  "purpose": "Publication guard rejected API-named checksum keys; all hashes verified against actual offline files, derived record layout corrected, source policy/raw reports unchanged",
+  "original_bytes": 1414,
+  "original_sha256": "069fd887425b67d4856550c58e4f16c1c8a626ddae0d42f3d31b207530cef5cf",
+  "lines_utf8": [
+    "Archived 103 original public JSON reports; aggregate acceptance True\n",
+    "Archived 103 original public JSON reports; aggregate acceptance True\n",
+    "Traceback (most recent call last):\n",
+    "  File \"/workspace/anynote-setup/p18-archive-secrets.py\", line 21, in <module>\n",
+    "    assert re.fullmatch(r'docs/evidence/p18/final/(?:(?:premerge|development/initial-merge-pr)/)?raw/p03-foundation-report/p03/(?:foundation-report|http-contract-report)\\.json',str(relative)),'Unapproved receipt scope'\n",
+    "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "AssertionError: Unapproved receipt scope\n",
+    "Traceback (most recent call last):\n",
+    "  File \"/workspace/anynote-setup/p18-publish-archive.py\", line 48, in <module>\n",
+    "    execute('python3',setup/'p18-archive-secrets.py')\n",
+    "  File \"/workspace/anynote-setup/p18-publish-archive.py\", line 8, in execute\n",
+    "    def execute(*args):subprocess.run(list(map(str,args)),cwd=root,check=True)\n",
+    "                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n",
+    "  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py\", line 571, in run\n",
+    "    raise CalledProcessError(retcode, process.args,\n",
+    "subprocess.CalledProcessError: Command '['python3', '/workspace/anynote-setup/p18-archive-secrets.py']' returned non-zero exit status 1.\n"
+  ]
+}

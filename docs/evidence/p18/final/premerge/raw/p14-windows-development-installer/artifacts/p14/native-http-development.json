@@ -1,0 +1,23 @@
+{
+  "purpose": "P14 actual native coordinator over maintained PKCE/verified HTTPS/Laravel/MariaDB and native SQL",
+  "status": "PASS",
+  "checks": 62,
+  "source_commit": "af28cebe9e8a873cdd57907cff73c2b8a7adf063",
+  "source_tree_dirty": false,
+  "native_driver_sha256": "Q_hpe-BaGaqqfcCMPurw7FS0MXo81meO8p1VBBKLnmk",
+  "build": "release",
+  "memory": {
+    "native_peak_bytes": 157929472,
+    "helper_peak_bytes": 374636544,
+    "status": "MEASURED_OS_COUNTERS",
+    "scope": "Native process and direct trusted helper; WebView2 NOT_RUN"
+  },
+  "physical_acceptance": false,
+  "webview2": "NOT_RUN",
+  "large_file": {
+    "status": "PASS",
+    "bytes": 1000000000,
+    "source_sha256": "qCcRRmFaBhEjVY5P6zNDhlHImQ_oyhtC_7Wlb7xz-fw",
+    "scope": "Actual native upload/download and standard-age export/offline validation/fresh import/download; WebView2 acceptance remains separate"
+  }
+}

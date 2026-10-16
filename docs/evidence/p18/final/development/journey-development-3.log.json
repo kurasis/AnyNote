@@ -1,0 +1,18 @@
+{
+  "purpose": "Lossless UTF-8 development log, not aggregate acceptance",
+  "original_bytes": 1113,
+  "original_sha256": "2bf900147162291033219fb2cc208a371fd6034e37bb35dd2f09b5b04f17716f",
+  "lines_utf8": [
+    "file:///workspace/AnyNote/packages/protocol/p16-fixture.mjs:70\n",
+    "  if(part.status!==200)throw Error('DOWNLOAD_DENIED:'+part.status);const approved=part.headers['access-control-allow-origin']===f.browser.origin,credentials=part.headers['access-control-allow-credentials']==='true',hidden=!part.headers['x-accel-redirect'];if(!approved||!credentials||!hidden)throw Error('CIPHERTEXT_DELIVERY_HEADERS:'+JSON.stringify({approved_origin:approved,credentials,internal_ticket_hidden:hidden}));cors&&=approved&&credentials&&hidden;const plain=await notes(f,'files',['decrypt',{reader_id:reader.reader_id,ciphertext:part.bytes}]);try{bytes+=plain.plaintext.length;hash.update(plain.plaintext);}finally{plain.plaintext.fill(0);}\n",
+    "                             ^\n",
+    "\n",
+    "Error: DOWNLOAD_DENIED:503\n",
+    "    at downloadFile (file:///workspace/AnyNote/packages/protocol/p16-fixture.mjs:70:30)\n",
+    "    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n",
+    "    at async releaseJourney (file:///workspace/AnyNote/packages/protocol/p18-journey.mjs:33:18)\n",
+    "    at async file:///workspace/AnyNote/[eval1]:5:18\n",
+    "\n",
+    "Node.js v24.21.0\n"
+  ]
+}

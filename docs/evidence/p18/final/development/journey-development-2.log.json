@@ -1,0 +1,32 @@
+{
+  "purpose": "Lossless UTF-8 development log, not aggregate acceptance",
+  "original_bytes": 924,
+  "original_sha256": "b9e2c4887574be2100e5027e5015a11835bedebd2d734c5285e39b51c65eff84",
+  "lines_utf8": [
+    "node:internal/modules/run_main:107\n",
+    "    triggerUncaughtException(\n",
+    "    ^\n",
+    "\n",
+    "AssertionError [ERR_ASSERTION]: /accounts/ZAXOsxEckByPg1q7kZkTQA/roster:NOT_FOUND\n",
+    "\n",
+    "404 !== 200\n",
+    "\n",
+    "    at ok (file:///workspace/AnyNote/packages/protocol/p18-journey.mjs:11:353)\n",
+    "    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n",
+    "    at async snapshot (file:///workspace/AnyNote/packages/protocol/p18-journey.mjs:13:35)\n",
+    "    at async file:///workspace/AnyNote/packages/protocol/p18-journey.mjs:17:178\n",
+    "    at async Promise.all (index 1)\n",
+    "    at async refresh (file:///workspace/AnyNote/packages/protocol/p18-journey.mjs:17:116)\n",
+    "    at async releaseJourney (file:///workspace/AnyNote/packages/protocol/p18-journey.mjs:25:206)\n",
+    "    at async file:///workspace/AnyNote/[eval1]:5:18 {\n",
+    "  generatedMessage: false,\n",
+    "  code: 'ERR_ASSERTION',\n",
+    "  actual: 404,\n",
+    "  expected: 200,\n",
+    "  operator: 'strictEqual',\n",
+    "  diff: 'simple'\n",
+    "}\n",
+    "\n",
+    "Node.js v24.21.0\n"
+  ]
+}

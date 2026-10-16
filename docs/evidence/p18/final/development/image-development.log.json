@@ -1,0 +1,8 @@
+{
+  "purpose": "Lossless UTF-8 development log, not aggregate acceptance",
+  "original_bytes": 106,
+  "original_sha256": "c0d2f2bed6470f57a8d9adce2a4b29647716f65701f53e98992143d2df3f7661",
+  "lines_utf8": [
+    "{\"status\": \"PASS\", \"image_id\": \"sha256:4bc9c3c84205b6aeb2ca9d72022a0b58c5ed271ce09cb1d3b51ae758127d0ff9\"}\n"
+  ]
+}

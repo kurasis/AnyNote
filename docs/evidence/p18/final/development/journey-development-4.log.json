@@ -1,0 +1,29 @@
+{
+  "purpose": "Lossless UTF-8 development log, not aggregate acceptance",
+  "original_bytes": 1438,
+  "original_sha256": "90bfa42b37267b691ea65041a500080e4786848069454c9682ba1a26b79ccc53",
+  "lines_utf8": [
+    "file:///workspace/AnyNote/packages/protocol/p18-journey.mjs:12\n",
+    " const shared=async(f,op,arg)=>{try{return await notes(f,'shared',[op,structuredClone(arg)]);}catch(error){throw new Error('P18_SHARED:'+op+':'+error.message,{cause:error});}};\n",
+    "                                                                                                                 ^\n",
+    "\n",
+    "Error: P18_SHARED:adopt:ROLLBACK_QUARANTINE\n",
+    "    at shared (file:///workspace/AnyNote/packages/protocol/p18-journey.mjs:12:114)\n",
+    "    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n",
+    "    at async refresh (file:///workspace/AnyNote/packages/protocol/p18-journey.mjs:17:235)\n",
+    "    at async releaseJourney (file:///workspace/AnyNote/packages/protocol/p18-journey.mjs:36:68)\n",
+    "    at async file:///workspace/AnyNote/[eval1]:5:18 {\n",
+    "  [cause]: Error: ROLLBACK_QUARANTINE\n",
+    "      at fail (file:///workspace/AnyNote/packages/protocol/vault/store.mjs:9:46)\n",
+    "      at ensure (file:///workspace/AnyNote/packages/protocol/vault/store.mjs:10:46)\n",
+    "      at replayGroup (file:///workspace/AnyNote/packages/protocol/shared/proof.mjs:23:12)\n",
+    "      at #sharedCommand (file:///workspace/AnyNote/packages/protocol/notes/workflow.mjs:477:136)\n",
+    "      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n",
+    "      at async #notesCommand (file:///workspace/AnyNote/packages/protocol/vault/engine.mjs:253:38) {\n",
+    "    code: 'ROLLBACK_QUARANTINE'\n",
+    "  }\n",
+    "}\n",
+    "\n",
+    "Node.js v24.21.0\n"
+  ]
+}

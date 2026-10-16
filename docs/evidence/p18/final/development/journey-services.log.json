@@ -1,0 +1,8 @@
+{
+  "purpose": "Lossless UTF-8 development log, not aggregate acceptance",
+  "original_bytes": 119,
+  "original_sha256": "2351d2ab9a2c9fee67759c06d2935eec462ab31f946438a17305f9c84e32a644",
+  "lines_utf8": [
+    "{\"status\": \"PASS\", \"purpose\": \"isolated synthetic staging\", \"database_public\": false, \"runtime_ddl_privileges\": false}\n"
+  ]
+}

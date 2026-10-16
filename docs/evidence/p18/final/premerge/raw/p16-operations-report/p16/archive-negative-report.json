@@ -1,0 +1,12 @@
+{
+  "purpose": "P16 real maintained age/OpenSSL adversarial archive cases",
+  "status": "PASS",
+  "source_commit": "af28cebe9e8a873cdd57907cff73c2b8a7adf063",
+  "source_tree_dirty": false,
+  "tests_run": 10,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "real_age_and_openssl": true,
+  "private_keys_in_report": false
+}

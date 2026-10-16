@@ -1,0 +1,8 @@
+{
+  "purpose": "Lossless UTF-8 development log, not aggregate acceptance",
+  "original_bytes": 116,
+  "original_sha256": "2b393a9840b54ce2a0c636acf38a1fb24baf2c00d51da3a76734dfb417404bf9",
+  "lines_utf8": [
+    "PASS: all24 R01\u2013R24 authority/test anchors, portable predicates and179 frozen files; runtime evidence is separate\n"
+  ]
+}

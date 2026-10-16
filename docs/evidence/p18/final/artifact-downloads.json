@@ -1,0 +1,203 @@
+{
+  "purpose": "Public ordinary-run artifact download and ZIP-digest verification; not aggregate test acceptance",
+  "source_commit": "388e6d7206f4c4937943924673bfa045ab704dc5",
+  "cohort_status_when_downloaded": "PASS",
+  "artifacts": [
+    {
+      "id": 12074460608,
+      "name": "p01-linux-native-browser",
+      "run_id": 38963073165,
+      "zip_sha256": "47a7b9cf7c12a7b0f0914dff5cc9f2716de93686f6f3387248f345c509a5d77b",
+      "zip_bytes": 12599
+    },
+    {
+      "id": 12073846442,
+      "name": "p01-iphone-device-kit",
+      "run_id": 38963073165,
+      "zip_sha256": "d073013e18a1707ad773a2ceccb404e040ad694f77530795ddfcf78fadac8ab2",
+      "zip_bytes": 219970
+    },
+    {
+      "id": 12073602302,
+      "name": "p01-windows-synthetic-probe",
+      "run_id": 38963073165,
+      "zip_sha256": "c8ed95d9d3bf7e9f53ea4bfc1f0687878a63ed1979ef1aed8ebd09a90f3f6e78",
+      "zip_bytes": 1119568
+    },
+    {
+      "id": 12073978391,
+      "name": "p09-linux-notes-report",
+      "run_id": 38963073166,
+      "zip_sha256": "2f171bece1d45c603ade2f71513b8efb2618f2fe490b155a29fe46bea0ce6cf7",
+      "zip_bytes": 22171
+    },
+    {
+      "id": 12073978326,
+      "name": "p09-windows-notes-report",
+      "run_id": 38963073166,
+      "zip_sha256": "b90f1dea360d50ef96234fdbd842757b294e68366e65c797ec6440e24d8b52c5",
+      "zip_bytes": 21362
+    },
+    {
+      "id": 12074881206,
+      "name": "p08-windows-devices-report",
+      "run_id": 38963073173,
+      "zip_sha256": "aa4ce74aba58f7094a4b44c78785b4e33f3318e1f158697bbf228d46f5a036b8",
+      "zip_bytes": 20205
+    },
+    {
+      "id": 12074277829,
+      "name": "p08-linux-devices-report",
+      "run_id": 38963073173,
+      "zip_sha256": "5a339816dcbab9948c04087bccab5bc3f0b693d9a3860e64da4a21615ebde4ee",
+      "zip_bytes": 20984
+    },
+    {
+      "id": 12074966562,
+      "name": "p11-windows-sync-report",
+      "run_id": 38963073185,
+      "zip_sha256": "9e039d3d7fce37145a7e2f489780ce35173dae3490c944e0c0b881b80eeb337e",
+      "zip_bytes": 35752
+    },
+    {
+      "id": 12073674732,
+      "name": "p11-linux-sync-report",
+      "run_id": 38963073185,
+      "zip_sha256": "77e66c17540d29e441b512769787d9a43bfaaad370ff96c3376dd4f8b0d86b67",
+      "zip_bytes": 37183
+    },
+    {
+      "id": 12074405135,
+      "name": "p03-foundation-report",
+      "run_id": 38963073186,
+      "zip_sha256": "dc4c3b4ae2dd68a727ddfe9636a02970260f6f02ee8a80eebe1586ce0ffcaa43",
+      "zip_bytes": 19734
+    },
+    {
+      "id": 12074686278,
+      "name": "p10-windows-shared-report",
+      "run_id": 38963073187,
+      "zip_sha256": "1b39749e7e850a38d9625af31a1a7eb16aea55025183ef77684b5238b9358d4c",
+      "zip_bytes": 21467
+    },
+    {
+      "id": 12074474075,
+      "name": "p10-linux-shared-report",
+      "run_id": 38963073187,
+      "zip_sha256": "c7e08328e510e85f6b467b4489cdc706bcc2eb573e3251b8afb7b3260420506a",
+      "zip_bytes": 22625
+    },
+    {
+      "id": 12074928092,
+      "name": "p12-linux-files-report",
+      "run_id": 38963073230,
+      "zip_sha256": "131b0746b466a5ccd6c337c241582bd1f4609eb3ab6afe72951a0c40bc7d98d6",
+      "zip_bytes": 37680
+    },
+    {
+      "id": 12074024457,
+      "name": "p12-windows-files-report",
+      "run_id": 38963073230,
+      "zip_sha256": "0d51c06605a3b530c97f68d94919bd057ff6db9cf4020f17c7179b8515f985b2",
+      "zip_bytes": 36020
+    },
+    {
+      "id": 12074550080,
+      "name": "p06-windows-authentication-report",
+      "run_id": 38963073236,
+      "zip_sha256": "0d05d533b1f5981c10af1ca1894fa1f97c70f43c7d073c768f0e4ef96e52b1c6",
+      "zip_bytes": 9657
+    },
+    {
+      "id": 12074365330,
+      "name": "p06-linux-authentication-report",
+      "run_id": 38963073236,
+      "zip_sha256": "0038cbe6d5f1982cbfdded3c687a21cabc964b79d1bf09112496798096cc6c85",
+      "zip_bytes": 10697
+    },
+    {
+      "id": 12077405684,
+      "name": "p14-windows-development-installer",
+      "run_id": 38963073241,
+      "zip_sha256": "b5814ab2d7a1ce213ed39acd2c98a2290c8e9dcfafd70abc1310e259c9e92862",
+      "zip_bytes": 71140441
+    },
+    {
+      "id": 12074698461,
+      "name": "p15-linux-pwa-report",
+      "run_id": 38963073242,
+      "zip_sha256": "6f341e41f1c9b91d052718a63c19f6e52f41bdaf5d63f744397b86f98e1d46d8",
+      "zip_bytes": 11403989
+    },
+    {
+      "id": 12073916489,
+      "name": "p15-webkit-shell-report",
+      "run_id": 38963073242,
+      "zip_sha256": "39dd78dc50d25a7714bc2a87870f6df8680a0e2c661fe5b6b3c90c906f14b2d9",
+      "zip_bytes": 45436
+    },
+    {
+      "id": 12073996841,
+      "name": "p05-windows-crypto-report",
+      "run_id": 38963073245,
+      "zip_sha256": "c46d3b573e69818bd9dbc595f6ed04006ee3e2f9c519c011c28f552b6efdf072",
+      "zip_bytes": 789
+    },
+    {
+      "id": 12073393220,
+      "name": "p05-linux-crypto-report",
+      "run_id": 38963073245,
+      "zip_sha256": "5fde9d7d868a514e1f6ce0d8a221cddb7daf52c19ffb161bf344af3541dcd09b",
+      "zip_bytes": 5141
+    },
+    {
+      "id": 12074910714,
+      "name": "p16-capacity-report",
+      "run_id": 38963073253,
+      "zip_sha256": "3adcd3cfb26fdad1a0910ed8eac9ff365561ed6e89685e73524a554ca0d4fbde",
+      "zip_bytes": 46158
+    },
+    {
+      "id": 12074530953,
+      "name": "p16-operations-report",
+      "run_id": 38963073253,
+      "zip_sha256": "4af3c4491f32cb3d33d63901e8e5b769568b5f0e63c967d9a92527c7f2d42f71",
+      "zip_bytes": 214215351
+    },
+    {
+      "id": 12074248385,
+      "name": "p13-linux-content-report",
+      "run_id": 38963073308,
+      "zip_sha256": "1d844fa0898738716f40d62d3e744f69d2b8448ef9e53f99e10b15dcf286bbf4",
+      "zip_bytes": 47751
+    },
+    {
+      "id": 12074077702,
+      "name": "p13-windows-content-report",
+      "run_id": 38963073308,
+      "zip_sha256": "93a7579428539661ea0029642b822d13de87736eace3a7fe96cc4f9329d33e82",
+      "zip_bytes": 45539
+    },
+    {
+      "id": 12073528012,
+      "name": "p17-security-report",
+      "run_id": 38963073312,
+      "zip_sha256": "40d5cdc4192767004f03f0ed93f5470019d0e6c459df06860c4438b059a85a3e",
+      "zip_bytes": 86683
+    },
+    {
+      "id": 12075250290,
+      "name": "p07-windows-custody-report",
+      "run_id": 38963073315,
+      "zip_sha256": "1aa516f17fe60d517f2ec8e281fe7f0236e820991e43abcb3e93b812efe41cb4",
+      "zip_bytes": 6531
+    },
+    {
+      "id": 12074636412,
+      "name": "p07-linux-custody-report",
+      "run_id": 38963073315,
+      "zip_sha256": "9c1c77f9e900401dc95f2accd987c1c18316dbb73b10bd991e18f3b77e6b0c88",
+      "zip_bytes": 7357
+    }
+  ]
+}
