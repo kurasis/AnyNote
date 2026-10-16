@@ -18,7 +18,7 @@ for row in trace['regressions']:
         assert not path.is_symlink() and path.resolve().is_relative_to(ROOT)
         raw=path.read_bytes();assert entry['anchor'].encode()in raw,row['id']+': stale source anchor'
         anchors.append({'regression':row['id'],'path':entry['path'],'anchor':entry['anchor'],'sha256':hashlib.sha256(raw).hexdigest(),**({'gate':entry['gate']}if 'gate'in entry else {})})
-for args in [['python3','scripts/p05-port-codecs.py'],['python3','scripts/p03-contracts.py'],['python3','scripts/check-p14.py']]:
+for args in [['python3','scripts/p05-port-codecs.py'],['python3','scripts/p03-contracts.py'],['python3','scripts/check-p14.py'],['python3','scripts/check_baseline.py']]:
     subprocess.run(args,cwd=ROOT,check=True,capture_output=True)
 out=ROOT/'artifacts/p17';out.mkdir(parents=True,exist_ok=True)
 git=lambda *a:subprocess.check_output(['git',*a],cwd=ROOT).decode().strip()

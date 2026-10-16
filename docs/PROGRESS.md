@@ -29,7 +29,7 @@ their clean exact-head CI/merge evidence is separate. See
 | P14 | VERIFIED | Native Windows/WebView2 single installer, actual dialogs/SQL/1GB/recovery/upgrade/restart, all 25 software gates; physical and production signing remain open |
 | P15 | VERIFIED | Installed PWA shell, EN/RU mobile/keyboard UX, exact 1 GB/API/recovery/import/update/quota software acceptance and all 27 mandatory candidate jobs; final merge is gated by the same exact-head cohort; physical/review/signing/memory gates remain open |
 | P16 | VERIFIED | Hardened deployment, real1GB concurrent/interrupted backup, clean-host/root-kit/fresh-state recovery and10-account/50-device/100000-revision capacity; PR30/main all29 gates verified in permanent evidence;100GB/production/physical/review remain separate |
-| P17 | VERIFIED / SYNTHETIC SCOPE | R01–R24 traceability,69 maintained client tests, bounded parser/envelope mutation, genuine multi-account SQL/store/log inspection, resource fixes and live advisory/target review; exact final30-job proofs indexed in evidence/p17; qualified independent review NOT_RUN, production release blocked |
+| P17 | VERIFIED | Synthetic scope only: R01–R24 traceability,69 maintained client tests, bounded mutation, genuine multi-account SQL/store/log inspection, resource fixes and live advisory/target review; final30-job proofs indexed in evidence/p17; qualified review NOT_RUN, production release blocked |
 | P18 | NOT STARTED | P14–P17 and release/signing gates |
 
 ## Completed task: P00-BASELINE

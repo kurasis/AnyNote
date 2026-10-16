@@ -2215,3 +2215,10 @@ This document is not a substitute for those exact-source results. Independent
 review is TRACKED_NOT_BOOKED / NOT_RUN; production, physical, memory and100GB are
 not claimed. The frozen179-file audit and original retained-state proof remain
 unchanged; no reset/fault/maintenance test targets retained P06.
+
+Initial documentation headaa58c56 failed the ordinary baseline because its P17
+table used an unsupported combined status label. Affected dependent jobs stopped
+before acceptance; their failures are not phase PASS evidence. The table now uses
+the existing VERIFIED vocabulary with synthetic scope in its evidence column,
+and p17-check explicitly runs the unchanged baseline validator as well. No parser,
+allowed status, required check or acceptance assertion is weakened.
