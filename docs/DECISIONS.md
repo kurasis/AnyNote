@@ -1172,3 +1172,14 @@ fault before fresh unlock and requires the real old receipt to arrive after
 activation. This makes the late acknowledgement/newer-draft ordering explicit
 instead of depending on the background poll's timing. No API response, signature,
 local-store result or custody operation is fabricated.
+
+A zero quota reported by CDP did not produce the expected actual write failure
+on the already-open 5a83489 writer. No underlying admission/caching cause was
+captured; a quota estimate alone cannot stand in for a failed transaction. The
+fault setup now closes and reopens the same actual Chromium disk profile,
+requires distinct browser PIDs and applies a negligible one-byte limit before
+opening the vault. It requires a real typed Worker/IndexedDB denial at writer
+admission or a growing draft update, then exact ciphertext/plaintext recovery
+after restoring capacity. It imports/clears no storage or credentials. A short
+preflight runs before costly files and the same fault repeats after the unchanged
+real1GB workflow. This supplements rather than replaces the full acceptance.

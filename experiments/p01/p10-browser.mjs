@@ -14,6 +14,7 @@ const report={purpose:'P10 actual multi-account shared-group UI and protected pe
 mkdirSync(root+'/artifacts/p10',{recursive:true});
 rmSync(root+'/artifacts/p10/browser-report.json',{force:true});
 let checks=0,context;const children=[];
+const launchProfile=profile=>chromium.launchPersistentContext(profile,{executablePath:process.env.CHROMIUM_EXECUTABLE??['/usr/bin/google-chrome','/usr/bin/chromium'].find(existsSync),headless:true,chromiumSandbox:true,acceptDownloads:true,args:['--host-resolver-rules=MAP app.anynote.test 127.0.0.1,MAP api.anynote.test 127.0.0.1','--no-proxy-server']});
 const check=(value,name)=>{if(!value)throw Error(name);checks++;};
 const control=(op,input)=>{const r=spawnSync('python3',['scripts/p06-stack.py','control',op],{cwd:root,encoding:'utf8',input});if(r.status!==0)throw Error('CONTROL_FAILED');return JSON.parse(r.stdout);};
 // Chromium's resolver rules do not configure Node/Playwright's request client.
@@ -36,16 +37,17 @@ try{
     const r=spawnSync('certutil',['-A','-d','sql:'+db,'-n','AnyNote P06 disposable CA','-t','C,,','-i',root+'/.local/p06/tls/ca.crt']);if(r.status!==0)throw Error('NSS_TRUST');
   }
   try{
-    context=await chromium.launchPersistentContext(join(scratch,'profile'),{executablePath:process.env.CHROMIUM_EXECUTABLE??['/usr/bin/google-chrome','/usr/bin/chromium'].find(existsSync),headless:true,chromiumSandbox:true,acceptDownloads:true,args:['--host-resolver-rules=MAP app.anynote.test 127.0.0.1,MAP api.anynote.test 127.0.0.1','--no-proxy-server']});
+    context=await launchProfile(join(scratch,'profile'));
   }catch(e){
     if(process.env.GITHUB_ACTIONS!=='true'&&process.argv.includes('--allow-cloud-sandbox-block')&&/sandbox|namespace|Operation not permitted|Failed to move to new namespace/i.test(String(e))){report.status='BLOCKED';report.reason='Cloud Chromium sandbox unavailable; hosted mandatory browser gate remains required';writeFileSync(root+'/artifacts/p10/browser-report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));process.exitCode=0;}else throw e;
   }
 
   if(context){
+    if(process.argv.includes('--p15-pwa')&&!process.argv.includes('--p12-files'))throw Error('P15_REQUIRES_REAL_GIGABYTE_CASE');
     report.browser_version=context.browser().version();
     report.runtime_platform=process.platform;
     const errors=[],url='https://app.anynote.test:18443/auth/',phrase='public synthetic purple harbor paper lantern',options={protocol:'ctap2',ctap2Version:'ctap2_1',transport:'internal',hasResidentKey:true,hasUserVerification:true,isUserVerified:true,automaticPresenceSimulation:true,hasPrf:true};
-    const launch=()=>chromium.launchPersistentContext(join(scratch,'profile-'+children.length),{executablePath:process.env.CHROMIUM_EXECUTABLE??['/usr/bin/google-chrome','/usr/bin/chromium'].find(existsSync),headless:true,chromiumSandbox:true,acceptDownloads:true,args:['--host-resolver-rules=MAP app.anynote.test 127.0.0.1,MAP api.anynote.test 127.0.0.1','--no-proxy-server']});
+    const launch=()=>launchProfile(join(scratch,'profile-'+children.length));
     async function action(p,id,expected=null){await p.locator('#'+id).click();try{await p.waitForFunction(()=>!document.getElementById('status').dataset.busy&&!!document.getElementById('status').textContent,null,{timeout:300000});await p.waitForFunction(()=>!!document.getElementById('status').dataset.error||['Done','Готово'].includes(document.getElementById('status').textContent),null,{timeout:300000});}catch{throw Error('P10_UI_WAIT:'+id+':'+JSON.stringify(await p.evaluate(()=>({locked:document.getElementById('workspace').hidden,busy:!!document.getElementById('status').dataset.busy,error:document.getElementById('status').dataset.error,phase:document.getElementById('status').dataset.phase,diagnostics:globalThis.__custodyDiagnostics}))));}const e=await p.locator('#status').getAttribute('data-error');if(expected){check((Array.isArray(expected)?expected:[expected]).includes(e),'P10_EXPECTED_UI_DENIAL:'+id+':'+e);return;}if(e)throw Error('P10_UI:'+id+':'+e+':'+await p.locator('#status').getAttribute('data-phase')+':'+JSON.stringify(await p.evaluate(()=>globalThis.__custodyDiagnostics)));}
     // Observe only closed error/operation codes and visibility, never RPC values.
     // Native Worker execution, timers, custody guards and results remain untouched.
@@ -65,7 +67,7 @@ try{
     async function setup(ctx,name){await observeCustody(ctx);const p=await ctx.newPage();await p.route('**/api/v1/**',pace);const cdp=await ctx.newCDPSession(p);p.on('pageerror',e=>errors.push(e.name));await cdp.send('WebAuthn.enable');await cdp.send('WebAuthn.addVirtualAuthenticator',{options});const response=await p.goto(url);check(response.status()===200&&response.headers()['content-security-policy'].includes("worker-src 'self'")&&!response.headers()['content-security-policy'].includes("'unsafe-eval'"),'REAL_TRUSTED_TLS_CSP');await p.waitForFunction(()=>document.getElementById('status').dataset.state==='ready');await p.locator('#invite').fill(control('invite').token);await p.locator('#handle').fill(name);await p.locator('#register').click();await p.locator('#pending').waitFor({state:'visible',timeout:30000});const download=p.waitForEvent('download');await p.locator('#kit').click();const kit=JSON.parse(readFileSync(await (await download).path(),'utf8')).kit;await p.locator('#saved').check();await p.locator('#verify-account').fill(kit.account_id.slice(-6));await p.locator('#verify-secret').fill(kit.recovery_secret.slice(-6));await p.locator('#local-phrase').fill(phrase);await p.locator('#finish').click();await p.waitForFunction(()=>document.getElementById('account').textContent.includes('trusted')||document.getElementById('status').dataset.error,null,{timeout:90000});check((await p.locator('#account').textContent()).includes('trusted'),'GENUINE_UV_REGISTRATION_ROOT_BOOTSTRAP');await notesPage(p);return {p,account:kit.account_id,root:kit.root_fingerprint,cdp};}
     async function notesPage(p){await p.goto(url+'notes.html');await p.waitForFunction(()=>document.getElementById('status').dataset.state==='ready');await readyWriter(p);await p.locator('#phrase').fill(phrase);await action(p,'unlock');check(await p.locator('#workspace').isVisible(),'FRESH_POSSESSION_UNLOCK');}
     const owner=await setup(context,'p10-browser-owner');const peers=[];for(const name of ['p10-browser-editor','p10-browser-reader']){const ctx=await launch();children.push(ctx);peers.push(await setup(ctx,name));}
-    const p=owner.p;await p.locator('#group-kind').selectOption('shared');await p.locator('#group-title').fill('PUBLIC browser shared group');await action(p,'create-group');const group=await p.locator('#groups li').filter({hasText:'PUBLIC browser shared group'}).getAttribute('data-id');check(!!group,'SHARED_CREATE_THROUGH_SHIPPED_UI');await p.locator('#thread-title').fill('PUBLIC browser shared thread');await action(p,'create-thread');await action(p,'new-entry');await p.locator('#note-title').fill('PUBLIC full history title');await p.locator('#note-body').fill('PUBLIC pre-invitation shared body');await action(p,'save-note');
+    let p=owner.p;await p.locator('#group-kind').selectOption('shared');await p.locator('#group-title').fill('PUBLIC browser shared group');await action(p,'create-group');const group=await p.locator('#groups li').filter({hasText:'PUBLIC browser shared group'}).getAttribute('data-id');check(!!group,'SHARED_CREATE_THROUGH_SHIPPED_UI');await p.locator('#thread-title').fill('PUBLIC browser shared thread');await action(p,'create-thread');await action(p,'new-entry');await p.locator('#note-title').fill('PUBLIC full history title');await p.locator('#note-body').fill('PUBLIC pre-invitation shared body');await action(p,'save-note');
     await p.locator('#members-panel > summary').click();await p.waitForFunction(()=>!document.getElementById('status').dataset.busy);await action(p,'close-history');
     for(const [index,role]of [[0,'editor'],[1,'reader']]){
       const peer=peers[index];await p.locator('#member-account').fill(peer.account);await p.locator('#member-root').fill(peer.root);await p.locator('#member-role').selectOption(role);await p.locator('#sharing-confirm').uncheck();await action(p,'invite-member','IDENTITY_CONFIRMATION_REQUIRED');await p.locator('#sharing-confirm').check();await action(p,'invite-member');const card=await p.locator('#share-card').inputValue();check(card.length>0&&!card.includes('PUBLIC pre-invitation shared body'),'PUBLIC_CARD_HAS_NO_NOTE_PLAINTEXT');
@@ -101,6 +103,30 @@ try{
       const again=await p.reload();check(again.status()===200,'P11_RELOAD_REAL_HOST');await p.waitForFunction(()=>document.getElementById('status').dataset.state==='ready');await readyWriter(p);await p.locator('#phrase').fill(phrase);await action(p,'unlock');await action(p,'sync-now');check(await p.locator('#sync-state').textContent()==='Synced','P11_INDEXEDDB_CURSOR_RESTART_AND_CATCHUP');
       report.p11_staged_sync_checks=4;
     }
+    const restartQuotaOwner=async()=>{
+      const oldBrowser=await context.browser().newBrowserCDPSession();
+      const oldPid=(await oldBrowser.send('SystemInfo.getProcessInfo')).processInfo.find(item=>item.type==='browser')?.id;
+      await oldBrowser.detach();await context.close();
+      context=await launchProfile(join(scratch,'profile'));await observeCustody(context);
+      p=await context.newPage();owner.p=p;p.on('pageerror',e=>errors.push(e.name));await p.route('**/api/v1/**',pace);
+      const newBrowser=await context.browser().newBrowserCDPSession();
+      const newPid=(await newBrowser.send('SystemInfo.getProcessInfo')).processInfo.find(item=>item.type==='browser')?.id;
+      await newBrowser.detach();
+      if(!Number.isSafeInteger(oldPid)||!Number.isSafeInteger(newPid)||oldPid===newPid)throw Error('P15_BROWSER_RESTART_NOT_OBSERVED');
+      const cdp=await context.newCDPSession(p);owner.cdp=cdp;
+      return {page:p,cdp,previous_browser_pid:oldPid,browser_pid:newPid};
+    };
+    if(process.argv.includes('--p15-pwa')){
+      // Fast fault-setup preflight supplements the unchanged genuine gigabyte
+      // scenario below; the mandatory acceptance repeats it after the gigabyte.
+      await p.locator('#groups button').filter({hasText:'PUBLIC browser shared group'}).click();await p.waitForFunction(()=>!document.getElementById('status').dataset.busy);
+      await p.locator('#threads button').filter({hasText:'PUBLIC browser shared thread'}).click();await p.waitForFunction(()=>!document.getElementById('status').dataset.busy);
+      await action(p,'new-entry');await p.locator('#note-title').fill('PUBLIC P15 quota preflight');await p.locator('#note-body').fill('PUBLIC acknowledged quota preflight text');await action(p,'save-local');
+      const preflightDraft=await p.locator('#drafts li[data-id]').last().getAttribute('data-id'),preflightChecks=[];
+      report.p15_storage_preflight={status:'PENDING',checks:preflightChecks};
+      Object.assign(report.p15_storage_preflight,await quotaCase({page:p,action,readyWriter,restart:restartQuotaOwner,draft:preflightDraft,
+        check:(value,name)=>{check(value,name);preflightChecks.push(name);}}));
+    }
     if(process.argv.includes('--p12-files'))report.p12_files=await filesCase({page:p,action,check,scratch,control});
     if(process.argv.includes('--p15-pwa')){
       if(!process.argv.includes('--p12-files'))throw Error('P15_REQUIRES_REAL_GIGABYTE_CASE');
@@ -108,7 +134,7 @@ try{
       Object.assign(report.p15_pwa,await pwaCase({page:p,action,scratch,control,readyWriter,commitBeforeLosingResponse,
         check:(value,name)=>{check(value,name);passed.push(name);}}));
       const quotaChecks=[];report.p15_storage={status:'PENDING',checks:quotaChecks};
-      Object.assign(report.p15_storage,await quotaCase({page:p,action,readyWriter,draft:report.p15_pwa.retained_update_draft_id,
+      Object.assign(report.p15_storage,await quotaCase({page:p,action,readyWriter,restart:restartQuotaOwner,draft:report.p15_pwa.retained_update_draft_id,
         check:(value,name)=>{check(value,name);quotaChecks.push(name);}}));
     }
     if(process.argv.includes('--p13-content'))report.p13_content=await contentCase({page:p,action,check,scratch,control});

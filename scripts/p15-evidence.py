@@ -32,7 +32,10 @@ assert len(pwa['updated_attempt_id']) == 22 and len(pwa['original_update_request
 assert pwa['retained_outbox_records'] > 0 and len(pwa['outbox_before_after_sha256']) == 64
 storage = browser['p15_storage']
 assert storage['status'] == 'PASS' and storage['physical_acceptance'] is False
-assert storage['forced_origin_quota_bytes'] == 0 and storage['retained_draft_records'] > 0
+assert storage['forced_origin_quota_bytes'] == 1 and storage['retained_draft_records'] > 0
+assert storage['failed_operation'] in ['writer-admission', 'draft-update']
+assert storage['browser_pid'] != storage['previous_browser_pid']
+assert browser['p15_storage_preflight']['status'] == 'PASS'
 assert storage['observed_error'] in ['INSUFFICIENT_STORAGE', 'STORAGE_FAILURE', 'STORAGE_ABORTED']
 assert pwa['memory']['samples'] > 1
 assert pwa['process_memory']['samples'] > 1 and pwa['process_memory']['processes']

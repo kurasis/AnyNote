@@ -2024,3 +2024,18 @@ subprocess success, platform/WTS, source, HTTP/browser and interop checks remain
 Preserved-custody report counts are updated accordingly. The actual complete
 local native stdout contains18 and both names. This is a receipt maintenance
 fix, not removal of a native failure or a passing new hosted cohort.
+
+The 5a83489 PWA run38830492419 / job116747913420 passes all34 P15 workflow
+assertions: actual full1GB export/offline/import/destination hashes, installed
+waiting-worker activation, byte-identical encrypted outbox and real old receipt
+after activation retaining newer text. Artifact12018388010 ZIP SHA256 is
+87a4852d03bf70f4b2d9b66f302dbca70f13ab231782e6f87352c11e045e9ea8.
+Overall status remains FAIL: its subsequent zero-quota fault reported quota0
+but observed no typed write denial within the unchanged60s. This does not
+establish a storage failure or capacity result; storage stayed PENDING.
+The revised fault reopens the same real disk profile in a distinct browser
+process, applies one-byte quota before writer access and requires a genuine
+Worker/IndexedDB denial plus last-acknowledged recovery. An early preflight
+provides faster fault-setup feedback and the same check remains mandatory after
+the unchanged incompressible1GB workflow. No profile reset/import, mocked store,
+crypto bypass, smaller gigabyte substitute or relaxed timeout is used.

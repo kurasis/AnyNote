@@ -81,12 +81,14 @@ localized shells and offline static installation. Both supplement the original
 25 gates; the full required software cohort is 27 jobs. These browser steps are prepared;
 they have not yet passed at this source.
 
-The same mandatory Chromium job also applies an actual zero-origin-quota fault
-through its quota manager, requires a real Worker/IndexedDB write failure without
-a new-save acknowledgement, compares retained ciphertext and reopens the last
-acknowledged text after lock/reload/fresh authorization. It restores the browser
-quota in finally and deletes no retained data. This is not physical disk filling
-or iPhone eviction/capacity evidence.
+The mandatory Chromium job closes and reopens the same persistent disk profile,
+records distinct real browser process IDs and applies a one-byte origin quota
+before the first protected writer access. A short preflight supplements the full
+unchanged gigabyte scenario; the fault is repeated after that complete flow.
+Actual Worker/IndexedDB write denial must prevent a new acknowledgement, retain
+exact encrypted draft bytes and allow the last acknowledged text to reopen after
+capacity restoration and fresh authorization. Quota overrides are restored in
+finally. No storage import/reset or physical disk/iPhone eviction claim is made.
 
 Memory separates sampled aggregate Chromium RSS from renderer/dedicated-Worker
 V8 heap/backing storage, with baselines, observed peaks/increases and requested
