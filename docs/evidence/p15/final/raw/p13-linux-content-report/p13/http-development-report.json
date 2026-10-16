@@ -1,0 +1,9 @@
+{
+  "purpose": "P13 actual export HTTPS/SQL development checks",
+  "status": "PASS",
+  "checks": 401,
+  "source_commit": "d2aeff8a6a6ca8e0166f14c32ef4b13d55142eec",
+  "source_tree_dirty": false,
+  "physical_acceptance": false,
+  "scope": "Captured export leases, current authorization, reference-safe retention and quota, and pruned-payload full resync; full P13 acceptance remains required"
+}

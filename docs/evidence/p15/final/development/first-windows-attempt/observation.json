@@ -1,0 +1,42 @@
+{
+  "purpose": "Final-head Windows first-attempt failure history; not passing software acceptance",
+  "status": "FAIL",
+  "source_commit": "d2aeff8a6a6ca8e0166f14c32ef4b13d55142eec",
+  "source_tree": "a857686c2bde27392fd913259e9fc32cd715040f",
+  "run_id": 38841237709,
+  "run_attempt": 1,
+  "job_id": 116781571507,
+  "step": "Actual installed Windows and WebView2 dialogs lifecycle SQL and 1 GB workflows",
+  "last_phase": "signed-test-upgrade",
+  "observed_step_exit_code": 1,
+  "diagnostic_exception_observed": false,
+  "final_webview_pass_observed": false,
+  "cause": "NOT_ESTABLISHED",
+  "runtime_and_windows_test_paths_byte_identical_to_passing_candidate": 242,
+  "passing_comparison_candidate": "b0d6c2e36680facbd49624c6205a195b2f644464",
+  "artifacts": [
+    {
+      "id": 12021734604,
+      "zip_sha256": "d849a0c9b7ddd43aeb866dea53c16376756ed1313b358a295ccdc49d09370fad"
+    },
+    {
+      "id": 12021729673,
+      "zip_sha256": "760eedd35ce1de474eae3fe77a3eb16fa7e3d509b64f749468d2dee2a9e68e78"
+    }
+  ],
+  "physical_acceptance": false,
+  "local_reports": [
+    {
+      "path": "first-attempt-excerpt.log",
+      "sha256": "d002e8ffecf752c255da83f4f544abd60af7b1bc400de35ff0ce170db45eb20d"
+    }
+  ],
+  "repeat_requested": {
+    "scope": "One complete ordinary rerun of the failed Windows job on the unchanged SHA",
+    "run_attempt": 2,
+    "job_id": 116791178369,
+    "runner_debug_logging": true,
+    "code_checks_timeouts_changed": false,
+    "result": "PENDING"
+  }
+}

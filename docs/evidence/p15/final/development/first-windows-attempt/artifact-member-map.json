@@ -1,0 +1,79 @@
+{
+  "purpose": "Exact public first-attempt raw bytes; API metadata captured and ZIP hashes verified before the ordinary repeat",
+  "artifacts": [
+    {
+      "id": 12021734604,
+      "name": "p14-windows-development-installer",
+      "source_commit": "d2aeff8a6a6ca8e0166f14c32ef4b13d55142eec",
+      "zip_sha256": "d849a0c9b7ddd43aeb866dea53c16376756ed1313b358a295ccdc49d09370fad",
+      "metadata_captured_before_repeat": true,
+      "created_at": "2026-10-16T03:07:01Z",
+      "expired_at_capture": false
+    },
+    {
+      "id": 12021729673,
+      "name": "p14-ci-harness-diagnosis-not-owner-installer",
+      "source_commit": "d2aeff8a6a6ca8e0166f14c32ef4b13d55142eec",
+      "zip_sha256": "760eedd35ce1de474eae3fe77a3eb16fa7e3d509b64f749468d2dee2a9e68e78",
+      "metadata_captured_before_repeat": true,
+      "created_at": "2026-10-16T03:07:04Z",
+      "expired_at_capture": false
+    }
+  ],
+  "members": [
+    {
+      "artifact_id": 12021734604,
+      "original_member": "artifacts/p14/backend-http-errors.json",
+      "archive_path": "report-backend-http-errors.json",
+      "sha256": "bdd2ded35fa5adf9d1ee4d0ccd1488f7ec32e214a55fe0b7977f7feaa16afc70"
+    },
+    {
+      "artifact_id": 12021734604,
+      "original_member": "artifacts/p14/backend-filesystem-capability.json",
+      "archive_path": "report-backend-filesystem-capability.json",
+      "sha256": "70a74be5c57aab99b89934a7eea96474a087b1c164a2e76d6bb002f7afb0aebe"
+    },
+    {
+      "artifact_id": 12021734604,
+      "original_member": "apps/desktop/src-tauri/resources/runtime-manifest.json",
+      "archive_path": "report-runtime-manifest.json",
+      "sha256": "f5a565ddb03f28b7862e18f5e3bd28fa03aa61620da53a057c92d9a875f8cc5e"
+    },
+    {
+      "artifact_id": 12021734604,
+      "original_member": "artifacts/p14/capability-audit.json",
+      "archive_path": "report-capability-audit.json",
+      "sha256": "ada322c239fa0de66b2baafba35ce08c9ae130cb8f1630e2f960c4206eb8a59a"
+    },
+    {
+      "artifact_id": 12021734604,
+      "original_member": "artifacts/p14/native-sharing-development.json",
+      "archive_path": "report-native-sharing-development.json",
+      "sha256": "6e2e3cc9cfabc4f4aff41c7ceb3d6f95838b24bbf4121122274d1e4ad9a8a652"
+    },
+    {
+      "artifact_id": 12021734604,
+      "original_member": "artifacts/p14/native-pairing-development.json",
+      "archive_path": "report-native-pairing-development.json",
+      "sha256": "15b398f66256988df513d732142c3ac009c9e4334751ed031ad2b1ab5f343ec1"
+    },
+    {
+      "artifact_id": 12021734604,
+      "original_member": "artifacts/p14/ui-diagnostic-binaries.json",
+      "archive_path": "report-ui-diagnostic-binaries.json",
+      "sha256": "e9e20c431383d65448401d28bfa0dc14c482d65673d1bd4c07bd36d2083bea37"
+    },
+    {
+      "artifact_id": 12021734604,
+      "original_member": "artifacts/p14/windows-host-preflight.json",
+      "archive_path": "report-windows-host-preflight.json",
+      "sha256": "dc34ca6a9d3057e9c4b5a65423397b21428bbe349609a224dcd3bd56a5775e27"
+    },
+    {
+      "artifact_id": 12021729673,
+      "original_member": "artifacts/p14/ui-diagnostic-binaries.json",
+      "archive_path": "harness-ui-diagnostic-binaries.json",
+      "sha256": "e9e20c431383d65448401d28bfa0dc14c482d65673d1bd4c07bd36d2083bea37"
+    }
+  ]
+}

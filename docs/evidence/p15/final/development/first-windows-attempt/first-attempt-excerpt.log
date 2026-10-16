@@ -1,0 +1,14 @@
+2026-10-16T02:48:39.8854601Z P14 WebView phase: owner-install
+2026-10-16T02:48:53.1408844Z P14 WebView phase: instrumented-unlock
+2026-10-16T02:48:55.4201731Z P14 WebView phase: signed-updater-preflight
+2026-10-16T02:49:07.5044503Z P14 WebView phase: small-dialog-recovery-preflight
+2026-10-16T02:49:52.9336057Z P14 WebView phase: keyboard-notes
+2026-10-16T02:50:22.8580652Z P14 WebView phase: clipboard
+2026-10-16T02:51:04.3853698Z P14 WebView phase: isolated-previews
+2026-10-16T02:51:33.2479221Z P14 WebView phase: gigabyte-workflow
+2026-10-16T03:01:21.2143885Z P14 WebView phase: real-five-minute-idle
+2026-10-16T03:06:25.1823890Z P14 WebView phase: installer-restart
+2026-10-16T03:06:32.5167473Z P14 WebView phase: signed-test-upgrade
+2026-10-16T03:06:41.4910216Z P14 native writer lease ready after crash-restart contention
+2026-10-16T03:06:52.0257061Z P14 native writer lease ready after crash-restart contention
+2026-10-16T03:06:55.1526784Z ##[error]Process completed with exit code 1.

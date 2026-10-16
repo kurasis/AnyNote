@@ -1,0 +1,8 @@
+{
+  "purpose": "Actual merged-head staged dependency and license integrity; not independent legal review",
+  "status": "PASS",
+  "source_commit": "b1832ce0ae98bc7e1ca2bb567cad20b3c7303432",
+  "components": 712,
+  "upstream_notice_files_verified": 965,
+  "frozen_lockfiles_verified": 5
+}

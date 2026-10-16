@@ -1,0 +1,20 @@
+{
+  "purpose": "Confirmed complete cloud draft save and exact readback, separate from Publish and fresh restoration",
+  "status": "PASS",
+  "source_commit": "b1832ce0ae98bc7e1ca2bb567cad20b3c7303432",
+  "repository": {
+    "name": "kurasis/AnyNote",
+    "host": "github.com",
+    "commit": "b1832ce0ae98bc7e1ca2bb567cad20b3c7303432",
+    "mount_path": "AnyNote"
+  },
+  "complete_install_script_sha256": "0d0c88ca018cb0019f5092e717d635eaa71513e59c2bd38f356d16f42c66e412",
+  "complete_start_skill_sha256": "d39eceee115476ec1154c1e0e4ac1d53bf9fa3bfcbd93412abd7c73885032f55",
+  "complete_install_script_utf8_bytes": 6715,
+  "complete_start_skill_utf8_bytes": 5155,
+  "full_section_readback_equal": true,
+  "unrelated_network_secret_runtime_configuration_preserved": true,
+  "requires_publish": true,
+  "published_observed": false,
+  "fresh_task_restoration_observed": false
+}

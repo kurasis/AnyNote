@@ -1,0 +1,36 @@
+{
+  "purpose": "Actual complete ordinary Windows repeat after the preserved first-attempt abrupt exit; not a diagnosis of its cause",
+  "status": "PASS",
+  "source_commit": "d2aeff8a6a6ca8e0166f14c32ef4b13d55142eec",
+  "run_id": 38841237709,
+  "run_attempt": 2,
+  "job_id": 116791178369,
+  "event": "pull_request",
+  "steps": [
+    {
+      "name": "Actual installed Windows and WebView2 dialogs lifecycle SQL and 1 GB workflows",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T03:24:59Z",
+      "completed_at": "2026-10-16T03:42:32Z"
+    },
+    {
+      "name": "Actual native 1 GB transfer export recovery import and token refresh",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T03:42:32Z",
+      "completed_at": "2026-10-16T03:54:58Z"
+    },
+    {
+      "name": "Exact-source installed-host and installer receipt",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T03:54:58Z",
+      "completed_at": "2026-10-16T03:54:59Z"
+    }
+  ],
+  "runtime_test_code_timeouts_changed": false,
+  "runner_debug_logging": true,
+  "first_attempt_cause": "NOT_ESTABLISHED",
+  "physical_acceptance": false
+}

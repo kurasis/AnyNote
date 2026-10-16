@@ -1,0 +1,10 @@
+{
+  "purpose": "P10 actual HTTPS/SQL signed shared-group integration",
+  "status": "PASS",
+  "checks": 407,
+  "source_commit": "d2aeff8a6a6ca8e0166f14c32ef4b13d55142eec",
+  "source_tree_dirty": false,
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "request_pacing": "Only real roster/journal reads paced below unchanged limits; eight-way mutation races remain concurrent"
+}

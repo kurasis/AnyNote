@@ -1,0 +1,17 @@
+{
+  "purpose": "Expected-head ordinary squash merge after the complete passing exact-head cohort",
+  "status": "MERGED",
+  "pull_request": "https://github.com/kurasis/AnyNote/pull/28",
+  "checked_head": "d2aeff8a6a6ca8e0166f14c32ef4b13d55142eec",
+  "checked_tree": "a857686c2bde27392fd913259e9fc32cd715040f",
+  "base_before_merge": "e5fe04d657850189eb956fb802fee9326e486a67",
+  "verified_synthetic_merge_commit": "f4c88c827af3776f73d9c38818d4c4bac3425c7f",
+  "merge_commit": "b1832ce0ae98bc7e1ca2bb567cad20b3c7303432",
+  "physical_acceptance": false,
+  "publication": "No production release or deployment",
+  "merged_tree": "a857686c2bde27392fd913259e9fc32cd715040f",
+  "local_origin_actual_remote_equal": true,
+  "checked_and_merged_tree_equal": true,
+  "main_clean": true,
+  "local_branch_note": "The restored baseline used work; main did not exist and was created tracking the verified actual origin/main. Existing work and feature branches retained."
+}

@@ -1,0 +1,600 @@
+{
+  "purpose": "Unique exact raw archive paths, including any earlier failed run-attempt artifacts",
+  "members": [
+    {
+      "artifact_id": 12021202776,
+      "artifact_name": "p01-linux-native-browser",
+      "original_member": "experiments/p01/artifacts/large-report.json",
+      "archive_path": "raw/p01-linux-native-browser/experiments/p01/artifacts/large-report.json",
+      "sha256": "4246b6cc88b89ea266072afab3e7fc0cb004024be16bf2c74aa1abdb8f8b8ab3"
+    },
+    {
+      "artifact_id": 12021202776,
+      "artifact_name": "p01-linux-native-browser",
+      "original_member": "artifacts/p04/public-signature-report.json",
+      "archive_path": "raw/p01-linux-native-browser/artifacts/p04/public-signature-report.json",
+      "sha256": "1cc4f6a0dae17146cfd312e788ed1cfae84a2ad10e2df9a45932198b99ea6ddc"
+    },
+    {
+      "artifact_id": 12021177465,
+      "artifact_name": "p01-windows-synthetic-probe",
+      "original_member": "artifacts/device-kit-hosted.json",
+      "archive_path": "raw/p01-windows-synthetic-probe/artifacts/device-kit-hosted.json",
+      "sha256": "80e4ae46c77884465876b747214d6c511a4092fe5a7d78c309ba8bb43086a5ae"
+    },
+    {
+      "artifact_id": 12021177465,
+      "artifact_name": "p01-windows-synthetic-probe",
+      "original_member": "artifacts/capabilities.json",
+      "archive_path": "raw/p01-windows-synthetic-probe/artifacts/capabilities.json",
+      "sha256": "e609867d6637b19cbfc414b254a3f4f67d2ccfb85e1a6c4192fca0a286153ad1"
+    },
+    {
+      "artifact_id": 12021177465,
+      "artifact_name": "p01-windows-synthetic-probe",
+      "original_member": "artifacts/hosted-collector/trial-27975179be6c465eb5118aefa91cd08d.json",
+      "archive_path": "raw/p01-windows-synthetic-probe/artifacts/hosted-collector/trial-27975179be6c465eb5118aefa91cd08d.json",
+      "sha256": "3e548dfee0342596abbe8e9329bd6a9717ece4851868ea12c0699b98413d5cb3"
+    },
+    {
+      "artifact_id": 12020964487,
+      "artifact_name": "p01-iphone-device-kit",
+      "original_member": "device-kit-report.json",
+      "archive_path": "raw/p01-iphone-device-kit/device-kit-report.json",
+      "sha256": "630b5c86f5596dc9dd4298f6a1024c1e47281ecbaaa3ac8bc9d413d7ba4ee55a"
+    },
+    {
+      "artifact_id": 12021621958,
+      "artifact_name": "p03-foundation-report",
+      "original_member": "p03/foundation-report.json",
+      "archive_path": "raw/p03-foundation-report/p03/foundation-report.json",
+      "sha256": "11df564d3d7eea83159c71326ab28a39866d5b9eb84ad8d8a7568a0300f6fee1"
+    },
+    {
+      "artifact_id": 12021621958,
+      "artifact_name": "p03-foundation-report",
+      "original_member": "p03/http-contract-report.json",
+      "archive_path": "raw/p03-foundation-report/p03/http-contract-report.json",
+      "sha256": "12e3b7ae3f1dc28718d9804f5d9f519f865bf3bd7f6eeb66e7ed1dbc879d27df"
+    },
+    {
+      "artifact_id": 12021621958,
+      "artifact_name": "p03-foundation-report",
+      "original_member": "p04/backend-report.json",
+      "archive_path": "raw/p03-foundation-report/p04/backend-report.json",
+      "sha256": "3d5e288ff8d3cde72b7a3ad3358c757aa7031187e365d042bad4f6dd1f1efe2c"
+    },
+    {
+      "artifact_id": 12021836557,
+      "artifact_name": "p09-linux-notes-report",
+      "original_member": "http-report.json",
+      "archive_path": "raw/p09-linux-notes-report/http-report.json",
+      "sha256": "5b5ab199fb3d68190aaaf1b985ac2b7c02e6795a793f39e08c91a77c97325adb"
+    },
+    {
+      "artifact_id": 12021836557,
+      "artifact_name": "p09-linux-notes-report",
+      "original_member": "browser-report.json",
+      "archive_path": "raw/p09-linux-notes-report/browser-report.json",
+      "sha256": "82ccce047cc4a993a47de05a580cc671186d3d807e024ffe3d9cd36905cef4f2"
+    },
+    {
+      "artifact_id": 12021836557,
+      "artifact_name": "p09-linux-notes-report",
+      "original_member": "source-report.json",
+      "archive_path": "raw/p09-linux-notes-report/source-report.json",
+      "sha256": "9729a94a422e36c03fc1de4da402d042cb18747a72bd38508a479bbd9f851e4c"
+    },
+    {
+      "artifact_id": 12021836557,
+      "artifact_name": "p09-linux-notes-report",
+      "original_member": "native-interop-report.json",
+      "archive_path": "raw/p09-linux-notes-report/native-interop-report.json",
+      "sha256": "3686b9b3b8dc51e34c6f2a2822d77dda6584bcdbedcbcc0c95298c6eb81f7d5c"
+    },
+    {
+      "artifact_id": 12021802755,
+      "artifact_name": "p09-windows-notes-report",
+      "original_member": "source-report.json",
+      "archive_path": "raw/p09-windows-notes-report/source-report.json",
+      "sha256": "6900b0f1419c6f7e593e20179cf487f546f9ce969380ca4971b2534e2736ec04"
+    },
+    {
+      "artifact_id": 12021802755,
+      "artifact_name": "p09-windows-notes-report",
+      "original_member": "native-interop-report.json",
+      "archive_path": "raw/p09-windows-notes-report/native-interop-report.json",
+      "sha256": "8ffd01263df38a70d0c51cebe3e32d1b6aa57feacd39516b9970f78c1f986feb"
+    },
+    {
+      "artifact_id": 12022051112,
+      "artifact_name": "p13-linux-content-report",
+      "original_member": "p13/authority-report.json",
+      "archive_path": "raw/p13-linux-content-report/p13/authority-report.json",
+      "sha256": "1cbb5947cea232069c0140630843bf82d84ecf80233feeb04e67191d09ff1998"
+    },
+    {
+      "artifact_id": 12022051112,
+      "artifact_name": "p13-linux-content-report",
+      "original_member": "p13/http-development-report.json",
+      "archive_path": "raw/p13-linux-content-report/p13/http-development-report.json",
+      "sha256": "bc8737a53bab84bb9d5397d7be3cd8bff4d5bd495d91c8dfff77f80ef5311146"
+    },
+    {
+      "artifact_id": 12022051112,
+      "artifact_name": "p13-linux-content-report",
+      "original_member": "p13/gigabyte-development.json",
+      "archive_path": "raw/p13-linux-content-report/p13/gigabyte-development.json",
+      "sha256": "ee999e51d46051aa90c374c4e1a692838d9a2ef2e99f6bbaacf69c6a4771156a"
+    },
+    {
+      "artifact_id": 12022051112,
+      "artifact_name": "p13-linux-content-report",
+      "original_member": "p13/preview-probe.json",
+      "archive_path": "raw/p13-linux-content-report/p13/preview-probe.json",
+      "sha256": "ea53edfc8fae203d31888a1637b736197434034f87bae49da18d6d6c82475d8f"
+    },
+    {
+      "artifact_id": 12022051112,
+      "artifact_name": "p13-linux-content-report",
+      "original_member": "p13/source-report.json",
+      "archive_path": "raw/p13-linux-content-report/p13/source-report.json",
+      "sha256": "6af4ce87c79f62ad63cfb9e6b2a000e71de4fa099b518db0402305c1df9827b5"
+    },
+    {
+      "artifact_id": 12022051112,
+      "artifact_name": "p13-linux-content-report",
+      "original_member": "p10/browser-report.json",
+      "archive_path": "raw/p13-linux-content-report/p10/browser-report.json",
+      "sha256": "26b8a12e7b404d6834648349e8da1d56b477be2daa182ba96a0f17294da4fc10"
+    },
+    {
+      "artifact_id": 12021513062,
+      "artifact_name": "p13-windows-content-report",
+      "original_member": "source-report.json",
+      "archive_path": "raw/p13-windows-content-report/source-report.json",
+      "sha256": "a7b3433c5de2e5890225cfdba1b2a9b59c2a378949f1d41927e6911dbc1f9586"
+    },
+    {
+      "artifact_id": 12021513062,
+      "artifact_name": "p13-windows-content-report",
+      "original_member": "gigabyte-development.json",
+      "archive_path": "raw/p13-windows-content-report/gigabyte-development.json",
+      "sha256": "b1148064339095b3caafe50d0e4d64c6cd9f5c4457bd1cbbee14101e0480a0e8"
+    },
+    {
+      "artifact_id": 12021373134,
+      "artifact_name": "p06-linux-authentication-report",
+      "original_member": "http-report.json",
+      "archive_path": "raw/p06-linux-authentication-report/http-report.json",
+      "sha256": "065edc89baa92f790c25c9515c3572ebc759f3e44a120995750c170e06040c58"
+    },
+    {
+      "artifact_id": 12021373134,
+      "artifact_name": "p06-linux-authentication-report",
+      "original_member": "browser-report.json",
+      "archive_path": "raw/p06-linux-authentication-report/browser-report.json",
+      "sha256": "afabf5713e47b5c5443ecba8229d793fe3a8af31d903ddcea076880eed84c9bd"
+    },
+    {
+      "artifact_id": 12021373134,
+      "artifact_name": "p06-linux-authentication-report",
+      "original_member": "source-report.json",
+      "archive_path": "raw/p06-linux-authentication-report/source-report.json",
+      "sha256": "e2a4989db2b74354ab666e4fb44024b7e9fcfd6416ed698d12e2f13c27e44338"
+    },
+    {
+      "artifact_id": 12020878174,
+      "artifact_name": "p06-windows-authentication-report",
+      "original_member": "source-report.json",
+      "archive_path": "raw/p06-windows-authentication-report/source-report.json",
+      "sha256": "e7bdc528edec77ba1ed1d1040e98261e44b1e94cd57802226ed93538b3535662"
+    },
+    {
+      "artifact_id": 12022431459,
+      "artifact_name": "p11-windows-sync-report",
+      "original_member": "p11/native-interop-report.json",
+      "archive_path": "raw/p11-windows-sync-report/p11/native-interop-report.json",
+      "sha256": "fbb111a20a2377ba4cbc97b3632b21076a4f55765ea77a646c9c028e2af7f348"
+    },
+    {
+      "artifact_id": 12022431459,
+      "artifact_name": "p11-windows-sync-report",
+      "original_member": "p11/source-report.json",
+      "archive_path": "raw/p11-windows-sync-report/p11/source-report.json",
+      "sha256": "d5a3364b52ddfe2f2c79e4af439d3a66eab2dcdd967df6fb3055914759a60f01"
+    },
+    {
+      "artifact_id": 12022431459,
+      "artifact_name": "p11-windows-sync-report",
+      "original_member": "p10/native-interop-report.json",
+      "archive_path": "raw/p11-windows-sync-report/p10/native-interop-report.json",
+      "sha256": "fc417ccae88f5658682b36e292c5016c9048e3fb4e437b691bd3ad22926b1ead"
+    },
+    {
+      "artifact_id": 12022216816,
+      "artifact_name": "p11-linux-sync-report",
+      "original_member": "p11/http-report.json",
+      "archive_path": "raw/p11-linux-sync-report/p11/http-report.json",
+      "sha256": "3743beb3ca90e8d61dc02407b031499401af45bcda1af843f32a69eff68d2940"
+    },
+    {
+      "artifact_id": 12022216816,
+      "artifact_name": "p11-linux-sync-report",
+      "original_member": "p11/membership-report.json",
+      "archive_path": "raw/p11-linux-sync-report/p11/membership-report.json",
+      "sha256": "837f3bab6df1fd8ba7944d7f0cf7113585190fdc058f827f9f725d80d262fbfc"
+    },
+    {
+      "artifact_id": 12022216816,
+      "artifact_name": "p11-linux-sync-report",
+      "original_member": "p11/native-interop-report.json",
+      "archive_path": "raw/p11-linux-sync-report/p11/native-interop-report.json",
+      "sha256": "fbb111a20a2377ba4cbc97b3632b21076a4f55765ea77a646c9c028e2af7f348"
+    },
+    {
+      "artifact_id": 12022216816,
+      "artifact_name": "p11-linux-sync-report",
+      "original_member": "p10/browser-report.json",
+      "archive_path": "raw/p11-linux-sync-report/p10/browser-report.json",
+      "sha256": "420a0b342462dd7babb28a14151a56b5756c63423829792f1008a7757e715c52"
+    },
+    {
+      "artifact_id": 12022216816,
+      "artifact_name": "p11-linux-sync-report",
+      "original_member": "p11/source-report.json",
+      "archive_path": "raw/p11-linux-sync-report/p11/source-report.json",
+      "sha256": "db97f9b3f2846f64a77f4ddf27e3666b86481f50032187dae90db143806ea9da"
+    },
+    {
+      "artifact_id": 12022216816,
+      "artifact_name": "p11-linux-sync-report",
+      "original_member": "p10/native-interop-report.json",
+      "archive_path": "raw/p11-linux-sync-report/p10/native-interop-report.json",
+      "sha256": "9b7011460b23d50959fa140cb9edb68e1aa20cc3bef0806b90fcf3891bb90acc"
+    },
+    {
+      "artifact_id": 12022074394,
+      "artifact_name": "p12-linux-files-report",
+      "original_member": "p11/native-interop-report.json",
+      "archive_path": "raw/p12-linux-files-report/p11/native-interop-report.json",
+      "sha256": "fbb111a20a2377ba4cbc97b3632b21076a4f55765ea77a646c9c028e2af7f348"
+    },
+    {
+      "artifact_id": 12022074394,
+      "artifact_name": "p12-linux-files-report",
+      "original_member": "p12/http-report.json",
+      "archive_path": "raw/p12-linux-files-report/p12/http-report.json",
+      "sha256": "2b581651de965ac5484771a41fb11b1c1ccac0b7ce6cab0d2d9210df44120281"
+    },
+    {
+      "artifact_id": 12022074394,
+      "artifact_name": "p12-linux-files-report",
+      "original_member": "p12/membership-report.json",
+      "archive_path": "raw/p12-linux-files-report/p12/membership-report.json",
+      "sha256": "2c5f69445f48a13d4a8b2405cb24b82d61c157226b8dcebab0af78e1e6a417b7"
+    },
+    {
+      "artifact_id": 12022074394,
+      "artifact_name": "p12-linux-files-report",
+      "original_member": "p10/browser-report.json",
+      "archive_path": "raw/p12-linux-files-report/p10/browser-report.json",
+      "sha256": "95a1bc8a79a6a21f832fc2a9561a3f36199d48923099604b56fde283e97c360e"
+    },
+    {
+      "artifact_id": 12022074394,
+      "artifact_name": "p12-linux-files-report",
+      "original_member": "p12/source-report.json",
+      "archive_path": "raw/p12-linux-files-report/p12/source-report.json",
+      "sha256": "02070c290aaacd2711275c5b057ef3b88e4d750a5fd1fa53a3ee456458dfdc25"
+    },
+    {
+      "artifact_id": 12022074394,
+      "artifact_name": "p12-linux-files-report",
+      "original_member": "p10/native-interop-report.json",
+      "archive_path": "raw/p12-linux-files-report/p10/native-interop-report.json",
+      "sha256": "9b7011460b23d50959fa140cb9edb68e1aa20cc3bef0806b90fcf3891bb90acc"
+    },
+    {
+      "artifact_id": 12021738583,
+      "artifact_name": "p12-windows-files-report",
+      "original_member": "p11/native-interop-report.json",
+      "archive_path": "raw/p12-windows-files-report/p11/native-interop-report.json",
+      "sha256": "fbb111a20a2377ba4cbc97b3632b21076a4f55765ea77a646c9c028e2af7f348"
+    },
+    {
+      "artifact_id": 12021738583,
+      "artifact_name": "p12-windows-files-report",
+      "original_member": "p12/source-report.json",
+      "archive_path": "raw/p12-windows-files-report/p12/source-report.json",
+      "sha256": "3551230e172bda941d6393e4d0a4d0c253b866d7b5997f0ba4803a18736015ea"
+    },
+    {
+      "artifact_id": 12021738583,
+      "artifact_name": "p12-windows-files-report",
+      "original_member": "p10/native-interop-report.json",
+      "archive_path": "raw/p12-windows-files-report/p10/native-interop-report.json",
+      "sha256": "fc417ccae88f5658682b36e292c5016c9048e3fb4e437b691bd3ad22926b1ead"
+    },
+    {
+      "artifact_id": 12022067654,
+      "artifact_name": "p10-linux-shared-report",
+      "original_member": "http-report.json",
+      "archive_path": "raw/p10-linux-shared-report/http-report.json",
+      "sha256": "c2ca77ddb606a733acdaea8f7581254263fd222f1d6685fb5008ca5b1c0aefde"
+    },
+    {
+      "artifact_id": 12022067654,
+      "artifact_name": "p10-linux-shared-report",
+      "original_member": "browser-report.json",
+      "archive_path": "raw/p10-linux-shared-report/browser-report.json",
+      "sha256": "c9f6ea3bea6271c88f4bcee6000b7eadd7e54dc2dda08415d8672c640c57da80"
+    },
+    {
+      "artifact_id": 12022067654,
+      "artifact_name": "p10-linux-shared-report",
+      "original_member": "source-report.json",
+      "archive_path": "raw/p10-linux-shared-report/source-report.json",
+      "sha256": "ca4699657f0a60c3937272cd7341890547eb6383ab0217ccf8456d5b5d6579e2"
+    },
+    {
+      "artifact_id": 12022067654,
+      "artifact_name": "p10-linux-shared-report",
+      "original_member": "native-interop-report.json",
+      "archive_path": "raw/p10-linux-shared-report/native-interop-report.json",
+      "sha256": "9b7011460b23d50959fa140cb9edb68e1aa20cc3bef0806b90fcf3891bb90acc"
+    },
+    {
+      "artifact_id": 12022027026,
+      "artifact_name": "p10-windows-shared-report",
+      "original_member": "source-report.json",
+      "archive_path": "raw/p10-windows-shared-report/source-report.json",
+      "sha256": "3d99b65da52a70d00fe67602acd3c2fd0e95ffb8b13926cf8076bb87e8110471"
+    },
+    {
+      "artifact_id": 12022027026,
+      "artifact_name": "p10-windows-shared-report",
+      "original_member": "native-interop-report.json",
+      "archive_path": "raw/p10-windows-shared-report/native-interop-report.json",
+      "sha256": "fc417ccae88f5658682b36e292c5016c9048e3fb4e437b691bd3ad22926b1ead"
+    },
+    {
+      "artifact_id": 12023399512,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "artifacts/p14/backend-filesystem-capability.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12023399512/artifacts/p14/backend-filesystem-capability.json",
+      "sha256": "70a74be5c57aab99b89934a7eea96474a087b1c164a2e76d6bb002f7afb0aebe"
+    },
+    {
+      "artifact_id": 12023399512,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "apps/desktop/src-tauri/resources/runtime-manifest.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12023399512/apps/desktop/src-tauri/resources/runtime-manifest.json",
+      "sha256": "f5a565ddb03f28b7862e18f5e3bd28fa03aa61620da53a057c92d9a875f8cc5e"
+    },
+    {
+      "artifact_id": 12023399512,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "artifacts/p14/backend-http-errors.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12023399512/artifacts/p14/backend-http-errors.json",
+      "sha256": "f42005cbeee5630c6d58aed14abd6cc1a8ab4c41112a9ec3b878135835e39729"
+    },
+    {
+      "artifact_id": 12023399512,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "artifacts/p14/capability-audit.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12023399512/artifacts/p14/capability-audit.json",
+      "sha256": "ada322c239fa0de66b2baafba35ce08c9ae130cb8f1630e2f960c4206eb8a59a"
+    },
+    {
+      "artifact_id": 12023399512,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "artifacts/p14/native-http-development.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12023399512/artifacts/p14/native-http-development.json",
+      "sha256": "13efa0c3faee5e143acdc5e8166d00cfef3cbe84eadf27f2e9615d4093c1c4a4"
+    },
+    {
+      "artifact_id": 12023399512,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "artifacts/p14/native-pairing-development.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12023399512/artifacts/p14/native-pairing-development.json",
+      "sha256": "15b398f66256988df513d732142c3ac009c9e4334751ed031ad2b1ab5f343ec1"
+    },
+    {
+      "artifact_id": 12023399512,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "artifacts/p14/native-sharing-development.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12023399512/artifacts/p14/native-sharing-development.json",
+      "sha256": "6e2e3cc9cfabc4f4aff41c7ceb3d6f95838b24bbf4121122274d1e4ad9a8a652"
+    },
+    {
+      "artifact_id": 12023399512,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "artifacts/p14/source-report.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12023399512/artifacts/p14/source-report.json",
+      "sha256": "610148cde35e208dd4c631f811f13e52209106e59b01a452900025bbf1005d96"
+    },
+    {
+      "artifact_id": 12023399512,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "artifacts/p14/ui-diagnostic-binaries.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12023399512/artifacts/p14/ui-diagnostic-binaries.json",
+      "sha256": "752bd0be4395f37243329eb2139ce99b8bffad4310f07b6c8a8bb114bbbd3411"
+    },
+    {
+      "artifact_id": 12023399512,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "artifacts/p14/windows-host-preflight.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12023399512/artifacts/p14/windows-host-preflight.json",
+      "sha256": "dc34ca6a9d3057e9c4b5a65423397b21428bbe349609a224dcd3bd56a5775e27"
+    },
+    {
+      "artifact_id": 12023399512,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "artifacts/p14/windows-webview-development.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12023399512/artifacts/p14/windows-webview-development.json",
+      "sha256": "fc4502a1615548254cbcf656cfe2e20ba60c1474bd5b1429cefe7474dfc3a00b"
+    },
+    {
+      "artifact_id": 12021734604,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "artifacts/p14/backend-http-errors.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12021734604/artifacts/p14/backend-http-errors.json",
+      "sha256": "bdd2ded35fa5adf9d1ee4d0ccd1488f7ec32e214a55fe0b7977f7feaa16afc70"
+    },
+    {
+      "artifact_id": 12021734604,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "artifacts/p14/backend-filesystem-capability.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12021734604/artifacts/p14/backend-filesystem-capability.json",
+      "sha256": "70a74be5c57aab99b89934a7eea96474a087b1c164a2e76d6bb002f7afb0aebe"
+    },
+    {
+      "artifact_id": 12021734604,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "apps/desktop/src-tauri/resources/runtime-manifest.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12021734604/apps/desktop/src-tauri/resources/runtime-manifest.json",
+      "sha256": "f5a565ddb03f28b7862e18f5e3bd28fa03aa61620da53a057c92d9a875f8cc5e"
+    },
+    {
+      "artifact_id": 12021734604,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "artifacts/p14/capability-audit.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12021734604/artifacts/p14/capability-audit.json",
+      "sha256": "ada322c239fa0de66b2baafba35ce08c9ae130cb8f1630e2f960c4206eb8a59a"
+    },
+    {
+      "artifact_id": 12021734604,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "artifacts/p14/native-sharing-development.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12021734604/artifacts/p14/native-sharing-development.json",
+      "sha256": "6e2e3cc9cfabc4f4aff41c7ceb3d6f95838b24bbf4121122274d1e4ad9a8a652"
+    },
+    {
+      "artifact_id": 12021734604,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "artifacts/p14/native-pairing-development.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12021734604/artifacts/p14/native-pairing-development.json",
+      "sha256": "15b398f66256988df513d732142c3ac009c9e4334751ed031ad2b1ab5f343ec1"
+    },
+    {
+      "artifact_id": 12021734604,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "artifacts/p14/ui-diagnostic-binaries.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12021734604/artifacts/p14/ui-diagnostic-binaries.json",
+      "sha256": "e9e20c431383d65448401d28bfa0dc14c482d65673d1bd4c07bd36d2083bea37"
+    },
+    {
+      "artifact_id": 12021734604,
+      "artifact_name": "p14-windows-development-installer",
+      "original_member": "artifacts/p14/windows-host-preflight.json",
+      "archive_path": "raw/p14-windows-development-installer--artifact-12021734604/artifacts/p14/windows-host-preflight.json",
+      "sha256": "dc34ca6a9d3057e9c4b5a65423397b21428bbe349609a224dcd3bd56a5775e27"
+    },
+    {
+      "artifact_id": 12021729673,
+      "artifact_name": "p14-ci-harness-diagnosis-not-owner-installer",
+      "original_member": "artifacts/p14/ui-diagnostic-binaries.json",
+      "archive_path": "raw/p14-ci-harness-diagnosis-not-owner-installer/artifacts/p14/ui-diagnostic-binaries.json",
+      "sha256": "e9e20c431383d65448401d28bfa0dc14c482d65673d1bd4c07bd36d2083bea37"
+    },
+    {
+      "artifact_id": 12022161553,
+      "artifact_name": "p15-linux-pwa-report",
+      "original_member": "p15/source-report.json",
+      "archive_path": "raw/p15-linux-pwa-report/p15/source-report.json",
+      "sha256": "705c796feaf2cd886d55364dc9de61a035e735b4286efe28908582c89b55bb89"
+    },
+    {
+      "artifact_id": 12022161553,
+      "artifact_name": "p15-linux-pwa-report",
+      "original_member": "p10/browser-report.json",
+      "archive_path": "raw/p15-linux-pwa-report/p10/browser-report.json",
+      "sha256": "bd09f2fa328a72b575e27f2de9b7df7037fef108a6dccc91b366395e3a07450f"
+    },
+    {
+      "artifact_id": 12021622842,
+      "artifact_name": "p15-webkit-shell-report",
+      "original_member": "webkit-report.json",
+      "archive_path": "raw/p15-webkit-shell-report/webkit-report.json",
+      "sha256": "4ec7b6c56f02b95c9026a2bde87d67b94b0388daa5242747ba702cc357be9ce1"
+    },
+    {
+      "artifact_id": 12022045628,
+      "artifact_name": "p08-linux-devices-report",
+      "original_member": "http-report.json",
+      "archive_path": "raw/p08-linux-devices-report/http-report.json",
+      "sha256": "196387a4c9371fdef1d7923e17e67c67db0fc88bbf9638a027ea39814cc31e25"
+    },
+    {
+      "artifact_id": 12022045628,
+      "artifact_name": "p08-linux-devices-report",
+      "original_member": "browser-report.json",
+      "archive_path": "raw/p08-linux-devices-report/browser-report.json",
+      "sha256": "2681838e42383629f76db4bdebf8ad70cb405c4d171779dfade3f37ba3177b50"
+    },
+    {
+      "artifact_id": 12022045628,
+      "artifact_name": "p08-linux-devices-report",
+      "original_member": "source-report.json",
+      "archive_path": "raw/p08-linux-devices-report/source-report.json",
+      "sha256": "018d7bbba44a4ce43fa956508c3d966cb1b7c1bd9facea9dafb171f97be8355d"
+    },
+    {
+      "artifact_id": 12022006682,
+      "artifact_name": "p08-windows-devices-report",
+      "original_member": "source-report.json",
+      "archive_path": "raw/p08-windows-devices-report/source-report.json",
+      "sha256": "a5807d92b112469301792af4fe72b5092c9cc0e50b2869ef93aead6c4e69ca2b"
+    },
+    {
+      "artifact_id": 12021539170,
+      "artifact_name": "p07-windows-custody-report",
+      "original_member": "source-report.json",
+      "archive_path": "raw/p07-windows-custody-report/source-report.json",
+      "sha256": "03676f8a40d8e6b0805dc510eaf307628bfef44815ca5aacecfe5f498727de3b"
+    },
+    {
+      "artifact_id": 12021124461,
+      "artifact_name": "p07-linux-custody-report",
+      "original_member": "http-report.json",
+      "archive_path": "raw/p07-linux-custody-report/http-report.json",
+      "sha256": "330232d758977e4f7786d772825e415e357165610cb639fbd6d50062d76cb0de"
+    },
+    {
+      "artifact_id": 12021124461,
+      "artifact_name": "p07-linux-custody-report",
+      "original_member": "browser-report.json",
+      "archive_path": "raw/p07-linux-custody-report/browser-report.json",
+      "sha256": "bd479c827d437b2c9b8196cd99a37865bcd1d971673111080ea9dfd120258de7"
+    },
+    {
+      "artifact_id": 12021124461,
+      "artifact_name": "p07-linux-custody-report",
+      "original_member": "source-report.json",
+      "archive_path": "raw/p07-linux-custody-report/source-report.json",
+      "sha256": "47774832f71826a2738020ee28bc18550b5d52fc33be77ee5b05461a428d2730"
+    },
+    {
+      "artifact_id": 12021603149,
+      "artifact_name": "p05-linux-crypto-report",
+      "original_member": "crypto-report.json",
+      "archive_path": "raw/p05-linux-crypto-report/crypto-report.json",
+      "sha256": "a851e7ae07aafebd13422bdd4ef485e33da2f16a87f265924a2d9df7f98c7682"
+    },
+    {
+      "artifact_id": 12021603149,
+      "artifact_name": "p05-linux-crypto-report",
+      "original_member": "php-report.json",
+      "archive_path": "raw/p05-linux-crypto-report/php-report.json",
+      "sha256": "9a535eb5f639ee4999fe22e93c19b7b64354b01428ea1a240f4f83cad1b8ce53"
+    },
+    {
+      "artifact_id": 12020633344,
+      "artifact_name": "p05-windows-crypto-report",
+      "original_member": "windows-report.json",
+      "archive_path": "raw/p05-windows-crypto-report/windows-report.json",
+      "sha256": "f5b2ea7f96b9019de2bebad4e66b719ca586eee63cd2189bd9dde4239526ae95"
+    }
+  ]
+}
