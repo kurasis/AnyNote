@@ -4,6 +4,12 @@ Status vocabulary: NOT STARTED, IN PROGRESS, IMPLEMENTED / UNVERIFIED, BLOCKED,
 VERIFIED. Evidence outcomes: PASS, FAIL, BLOCKED, NOT RUN. A document or scaffold
 does not satisfy a feature gate. Production release is not ready.
 
+P15 postmerge follow-up: the ordinary merged-main cohort finished 25/27, with
+PWA unlock and Windows updater-observer failures. Generation fences and
+handle-free installer observation are implemented with added runtime regressions;
+their clean exact-head CI/merge evidence is separate. See
+[postmerge lifecycle evidence](evidence/postmerge-lifecycle/README.md).
+
 | Phase | Status | Evidence / remaining gate |
 | --- | --- | --- |
 | P00 | VERIFIED | Local baseline and four negative cases passed; scope/version/inventory deliverables complete; remote bootstrap and clean-clone verification passed; both baseline Actions runs verified |

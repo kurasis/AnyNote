@@ -1,0 +1,132 @@
+{
+  "purpose": "P10 actual multi-account shared-group UI and protected persistent storage",
+  "status": "FAIL",
+  "source_commit": "b1832ce0ae98bc7e1ca2bb567cad20b3c7303432",
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "browser_version": "155.0.8059.39",
+  "runtime_platform": "linux",
+  "p11_staged_sync_checks": 4,
+  "p15_storage_preflight": {
+    "status": "PASS",
+    "checks": [
+      "P15_QUOTA_STARTS_WITH_ACKNOWLEDGED_ENCRYPTED_DRAFT",
+      "P15_QUOTA_REOPENS_SAME_DISK_PROFILE_IN_NEW_BROWSER_PROCESS",
+      "P15_ACTUAL_BROWSER_ORIGIN_QUOTA_IS_ONE_BYTE",
+      "P15_REAL_QUOTA_WRITE_FAILURE_REPORTED",
+      "P15_QUOTA_FAILURE_CANNOT_ACKNOWLEDGE_NEW_WORK",
+      "P15_QUOTA_ABORT_RETAINS_EXACT_ENCRYPTED_DRAFT_BYTES",
+      "P15_NO_SPACE_RECOVERY_REOPENS_LAST_ACKNOWLEDGED_TEXT"
+    ],
+    "physical_acceptance": false,
+    "forced_origin_quota_bytes": 1,
+    "failed_operation": "writer-admission",
+    "previous_browser_pid": 24525,
+    "browser_pid": 31688,
+    "prior_origin_usage_bytes": 23603721,
+    "prior_origin_quota_bytes": 92936513126,
+    "observed_error": "STORAGE_FAILURE",
+    "retained_draft_records": 1,
+    "retained_ciphertext_sha256": "cc6e72016abfe4b5dc841c538726c7e72fe08f59ef72ee47c2ade16640d5ef0b",
+    "scope": "Actual Chromium restart with the same persistent disk profile and one-byte quota before real Worker/IndexedDB write admission; no storage import/reset, crypto/store mocks or physical disk/iPhone eviction claim"
+  },
+  "p12_files": {
+    "gigabyte_bytes": 1000000000,
+    "memory": {
+      "samples": 1127,
+      "sample_interval_ms": 250,
+      "baseline_rss_bytes": 4490149888,
+      "observed_peak_rss_bytes": 5782982656,
+      "observed_peak_growth_bytes": 1292832768,
+      "scope": "sum of actual hosted Chromium process RSS; includes shared-page double counts and other open fixture windows; no iPhone or hard memory ceiling claim"
+    },
+    "checks": 14,
+    "physical_acceptance": false,
+    "stream_completion": "actual desktop saved output hash; iPhone Files acceptance remains NOT_RUN"
+  },
+  "p15_pwa": {
+    "status": "PENDING",
+    "checks": []
+  },
+  "checks": 66,
+  "reason": "P10_UI_WAIT:unlock:{\"locked\":true,\"busy\":false,\"diagnostics\":[{\"event\":\"custody-error\",\"operation\":\"notes.group\",\"error\":\"VAULT_LOCKED\",\"lock_reason\":\"explicit\",\"ms\":315138}]}",
+  "custody_diagnostics": [
+    [
+      {
+        "hidden": false,
+        "events": []
+      },
+      {
+        "hidden": true,
+        "events": [
+          {
+            "event": "custody-error",
+            "operation": "notes.group",
+            "error": "VAULT_LOCKED",
+            "lock_reason": "explicit",
+            "ms": 315138
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "hidden": false,
+        "events": []
+      },
+      {
+        "hidden": true,
+        "events": [
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "PINNED_ACCOUNT_REQUIRED",
+            "ms": 160676
+          },
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "PINNED_ACCOUNT_REQUIRED",
+            "ms": 190869
+          },
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "PINNED_ACCOUNT_REQUIRED",
+            "ms": 204548
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "hidden": false,
+        "events": []
+      },
+      {
+        "hidden": true,
+        "events": [
+          {
+            "event": "custody-error",
+            "operation": "notes.queue",
+            "error": "ROLE_FORBIDDEN",
+            "ms": 273163
+          },
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "ROSTER_CHANGED",
+            "ms": 352273
+          },
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "VAULT_LOCKED",
+            "lock_reason": "explicit",
+            "ms": 578609
+          }
+        ]
+      }
+    ]
+  ]
+}

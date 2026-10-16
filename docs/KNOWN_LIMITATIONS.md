@@ -1,5 +1,12 @@
 # Known limitations
 
+P15 merged-main push checks finished 25/27 despite the separately passing
+premerge cohort. The PWA stale-network generation and Windows installer observer
+follow-up requires its own clean-source CI, runtime receipts and guarded merge;
+see [evidence](evidence/postmerge-lifecycle/README.md). The old silent Windows
+exit has no direct process-death trace. Reproducing the Restart Manager read-handle
+hazard does not establish every previous abrupt exit's cause.
+
 - P00 is complete; an isolated P01 synthetic native/Node/browser-worker harness
   exists. No production authentication, device trust, encrypted vault, product API,
   manifests or resume is implemented. A Laravel development foundation is now

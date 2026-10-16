@@ -1,5 +1,21 @@
 # Decisions
 
+## P15 postmerge network generations and updater observation
+
+An HTTP response started before lock has no right to enter a later vault
+generation. Group status/list, proof and shared-journal adoption now check the
+captured UI generation after network waits and before custody/map changes.
+The runtime regression delays real authenticated responses; it does not replace
+server or Worker results. Lock continues to mask immediately and terminate custody.
+
+The Windows acceptance observer must not hold an installed-executable read handle
+while the pinned NSIS Restart Manager can force its resource users to exit.
+Poll metadata until replacement, then retain actual bytes/version/restart/draft/
+outbox verification. A real read-only Restart Manager regression records the
+handle hazard without shutting any process down. The original silent exit lacks
+a captured death trace and is not retroactively labelled a proven process kill.
+See [evidence](evidence/postmerge-lifecycle/README.md) for results and scope.
+
 ## ADR-001 — Scope, stack and initial version matrix
 
 Date: 2026-10-10. Status: ACCEPTED for development baseline; platform support
