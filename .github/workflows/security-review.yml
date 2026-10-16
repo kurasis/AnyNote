@@ -37,6 +37,7 @@ jobs:
       - name: Every threat binding, maintained authority and bounded parser mutation
         run: |
           source scripts/runtime-env.sh
+          python3 scripts/check-p18.py
           python3 scripts/p17-check.py
           python3 scripts/p17-run.py
           node --expose-gc packages/protocol/security/response-regression.mjs

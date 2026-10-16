@@ -981,3 +981,21 @@ no exploitable high/critical defects follows from passing engineering checks.
 Qualified review remains TRACKED_NOT_BOOKED / NOT_RUN, and release is explicitly
 limited to synthetic evaluation. P18 is the next software stage; physical,
 100GB, memory, production signing/keys/deployment and G2/G3 remain open.
+
+
+## P18 software packaging and handoff
+
+P18 adds three versioned exact-source review candidates (tested Windows installer,
+actual PWA bytes and tested immutable API image), complete corresponding source,
+frozen inventories/notices/SBOM, canonical bounded manifests, streaming verification
+and an offline final assembler. Existing30 ordinary jobs remain mandatory. The
+same-owner synthetic journey adds genuine device enrollment, shared reader/file
+hash verification, immediate removal/epoch exclusion and future publication before
+the existing private1GB backup/root-reset/quarantined-restore/offline/fresh-state
+journey. No new production migration, protocol, dependency lock or runtime auth
+switch is introduced. User/operator installation, custody, support, incident,
+backup-retention and recovery handoff are in USER_GUIDE/OPERATOR_HANDOFF/P18_RELEASE.
+Final exact PR/main/ZIP/Git evidence is indexed separately after execution.
+Production remains blocked by the documented independent/physical/memory/100GB/
+signing/custody/license/owner gates. P18 is completion of the bounded software
+phase, not production authorization.

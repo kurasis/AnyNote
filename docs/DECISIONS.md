@@ -1324,3 +1324,23 @@ lease/revision. The authenticated read must preserve an in-flight content
 comparison. Its regression interleaves16 real polls, rejects a genuine intervening
 commit and denies locked capabilities. Actual mutations still claim writer leases;
 no retry of a failed assertion or stale transaction is introduced.
+
+
+## ADR027: Exact tested review packages and fail-closed publication
+
+Package only artifacts already executed by the corresponding ordinary job. Record
+all PWA static hashes in its actual receipt and the API image ID from the signed
+backup, never rebuild a different binary/static/image and reuse the old evidence.
+Review-set version0.18.0 does not relabel tested Windows binary0.14.0. Include actual
+Git source and conservative dependency/notices metadata; old standalone test locks
+remain historical source, not supported executable distributions. Keep candidate
+archives in Actions/offline handoff, with14-day expiry explicit, and original raw
+PR/main reports in a permanent evidence archive. Checksums are consistency, not
+publisher signatures or independent trust. Verify bounded regular archive members
+without extracting and refuse replacement/duplicate/link/traversal/tampering.
+The offline assembler independently replays inherited full1GB/PWA/Windows/update/
+operations/capacity/security assertions against all30 jobs/28ZIPs. The95-criterion
+matrix preserves full required outcomes and distinguishes related suite execution
+from unrecorded full criterion/physical acceptance. Production eligibility always
+returns BLOCKED/nonzero; no caller flag, test signature or invented owner acceptance
+opens it. A future production ceremony needs separate authorization/review.
