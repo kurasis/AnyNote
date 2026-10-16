@@ -1304,3 +1304,23 @@ risk decision is synthetic-only, with no assertion of absent exploitable high/
 critical defects. ASVS5.0.0 Level2 is a review reference, not certification. P18
 software preparation may continue, while production, physical/memory/100GB and
 independent-review gates remain closed. See P17_SECURITY_REVIEW and evidence/p17.
+
+## ADR026: Verify long signed rosters before taking the short write lease
+
+The first P17 main cohort failed native adoption of a valid1001-event history.
+Controlled isolated CPU pauses reproduced `STALE_WRITER`: signature replay had
+consumed the existing10-second write lease. Adopt only after full replay, then
+claim that same short lease and require the current revision to equal the
+pre-verification revision plus its own lease increment. An intervening writer
+invalidates the prepared snapshot rather than rebasing it. Existing foreign-owner,
+expiry, generation, capability, rollback and transactional fence checks remain.
+Do not extend leases or remove history/signature checks to fit slow CI. Preserve
+the original main failure separately and run all ordinary gates for the corrected
+source. This is an availability correction, not an independent security review.
+
+The same failed main cohort exposed a second source of `STALE_WRITER`: progress
+polls called `file_transfers`, whose read unnecessarily claimed a new writer
+lease/revision. The authenticated read must preserve an in-flight content
+comparison. Its regression interleaves16 real polls, rejects a genuine intervening
+commit and denies locked capabilities. Actual mutations still claim writer leases;
+no retry of a failed assertion or stale transaction is introduced.

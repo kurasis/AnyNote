@@ -595,6 +595,19 @@ samples retain process/phase scope and do not establish physical device budgets.
 
 ## P17 review and synthetic release boundary
 
+The initial P17 main cohort at `626e25e` failed native adoption of a correct
+1001-event history after its PR passed 30/30. Controlled local CPU pauses
+reproduced expiration of the 10-second writer lease during signature replay.
+The follow-up claims the unchanged lease after replay and compares the original
+revision plus exactly its own lease increment before adoption. This avoids that
+availability failure without accepting intervening writes or changing authority,
+signature, rollback or lifecycle checks. Original failed evidence remains separate
+from final PR/main acceptance in the P17 archive.
+The same cohort's Windows 1 GB upload then failed attachment with `STALE_WRITER`.
+Transfer progress reads were advancing the write revision. The read now retains
+capability/authentication checks without claiming a lease, and the readiness/CAS
+test includes actual polling plus intervening-write and locked-capability denial.
+
 Qualified independent protocol/security review remains TRACKED_NOT_BOOKED / NOT_RUN.
 The AI-assisted R01–R24 traceability, finite deterministic mutation, source review,
 canary inspection and passing ordinary jobs do not establish the absence of
