@@ -1,0 +1,97 @@
+name: P16 operations and consistent recovery
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: operations-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  operations-linux-drill:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      ANYNOTE_TOOLCHAINS: /tmp/anynote-p16-toolchains
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.12.14'
+      - name: Frozen maintained tools and genuine service prerequisites
+        run: |
+          bash scripts/install-p01-toolchains.sh
+          source scripts/runtime-env.sh
+          for package in packages/protocol experiments/p01 packages/api-client apps/devices-web apps/notes-web packages/content-browser; do
+            npm --prefix "$package" ci --ignore-scripts --no-audit --no-fund
+          done
+          python3 scripts/install-p02-tools.py
+          python3 scripts/dev-stack.py install
+      - name: Independent signed-backup negative cases and immutable production image
+        run: |
+          source scripts/runtime-env.sh
+          python3 scripts/check-p16.py
+          python3 scripts/p16-stack.py build
+      - name: Real 1 GB, concurrent consistent backup, clean-host and clean-client recovery
+        run: |
+          source scripts/runtime-env.sh
+          python3 scripts/p16-drill.py run
+          python3 scripts/p16-evidence.py operations
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: p16-operations-report
+          path: artifacts/p16/*.json
+          retention-days: 14
+          if-no-files-found: error
+      - name: Stop only owned synthetic projects, retain their state
+        if: always()
+        run: |
+          source scripts/runtime-env.sh
+          python3 scripts/p16-drill.py action stop-all
+  operations-capacity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      ANYNOTE_TOOLCHAINS: /tmp/anynote-p16-toolchains
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.12.14'
+      - name: Frozen maintained tools and immutable deployment
+        run: |
+          bash scripts/install-p01-toolchains.sh
+          source scripts/runtime-env.sh
+          for package in packages/protocol experiments/p01 packages/api-client apps/devices-web apps/notes-web packages/content-browser; do
+            npm --prefix "$package" ci --ignore-scripts --no-audit --no-fund
+          done
+          python3 scripts/install-p02-tools.py
+          python3 scripts/dev-stack.py install
+          python3 scripts/p16-stack.py build
+      - name: Actual ten accounts, fifty certified devices and 100000 retained signed revisions
+        run: |
+          source scripts/runtime-env.sh
+          node packages/protocol/p16-capacity.mjs
+          python3 scripts/p16-evidence.py capacity
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: p16-capacity-report
+          path: artifacts/p16/*.json
+          retention-days: 14
+          if-no-files-found: error
+      - name: Stop only owned synthetic projects, retain their state
+        if: always()
+        run: |
+          source scripts/runtime-env.sh
+          python3 scripts/p16-drill.py action stop-all

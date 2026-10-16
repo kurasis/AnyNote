@@ -2074,3 +2074,103 @@ exempted. Every one of the 76 candidate raw JSON reports was checked against the
 staged Git bytes, including nested artifact paths otherwise covered by ignore.
 The seven PWA policy/translation tests, actual bundle and frozen 179-file audit
 also passed locally. These dirty precommit checks are not final clean-head CI.
+
+
+## P16 development observations (not final acceptance)
+
+Actual maintained age/OpenSSL negative suite:9 tests PASS, including whole-file
+signature verification, wrong identity, corruption/truncation/authenticated EOF,
+missing/changed/duplicate/unsafe components and no-replace publication.
+
+A separate physical8MiB tmpfs was filled until actual ENOSPC. Production BlobStore
+refused allocation; unavailable-store and actual unsupported directory fsync
+returned typed denials. Prior committed bytes and SQL quota stayed unchanged;
+a65536-byte write passed after capacity recovery. The fixture alone lowers the
+reserve on its bounded tmpfs to reach the real fault; production10GiB/10% admission
+remains intact. PHPUnit foundation:11 tests/217 assertions PASS on actual MariaDB.
+
+An actual1000000000-byte random source uploaded120 encrypted parts successfully.
+That development run subsequently failed because the initial Nginx root-storage
+deny also matched /me/storage; the template was corrected and genuine200/503
+DB-outage behavior confirmed. A smaller8MiB+1 development journey then passed
+consistent signed age backup with concurrent HTTP writes, clean-target DB/blob
+inventory equality, a new generation, signed root-reset revocation after backup,
+newer independent checkpoint refusal and clean-process offline root-kit recovery.
+Its final fresh-host check lacked the required Origin and failed; the adapter was
+corrected. Neither attempt is a final phase PASS or a substitution for exact1GB.
+
+Full ordinary29-job source receipts, genuine full-size restore/fresh copy/download,
+capacity measurements and public artifact/Git-input audit will be recorded after
+executed acceptance. Physical/review/production and100GB gates remain separate.
+
+
+P16 validation update:26 PHP tests/359 assertions and the complete owned SQL
+concurrency/rollback/supervised-restart suite passed. A real client registered
+one account plus four HTTPS/certified enrollments locally. Hosted source5244f5f
+registered10 accounts/50 devices, then failed before inserting the large fixture:
+a test loader passed an array into the object-only public canonicalizer. The
+loader now uses the existing typed equality helper; a bounded diagnostic
+verified500 signatures and installed its first500-row SQL batch before the
+intentionally truncated stream was refused. This is not100000-row acceptance.
+The archive suite now includes an independently wrong signing key and passes
+10 real age/OpenSSL tests. Newer full29-job acceptance is still pending.
+
+P16 candidate `63fba93` normal hosted jobs completed the actual1GB upload and
+created100,000 encrypted/signed revisions with all50 devices registered. Neither
+job passed: the operations fixture omitted its `ident` import, and history reads
+exceeded the maintained120/session/minute limit. The corrected fixture spaces
+history requests550ms apart without changing server admission. Local actual mTLS
+verification passed: certified non-admin403, recent admin without certificate404,
+and certified recent admin200. These partial results are not phase acceptance.
+
+Candidate2443000 passed the complete real1GB upload, authenticated sync snapshot,
+retained draft/outbox creation, bounded ENOSPC/object/fsync/DB failures and actual
+queue restart. It failed before backup because an expired-enrollment SQL fixture
+omitted required P08 creator/mode/public-record columns under production strict
+SQL. The fixture now supplies all required columns and emits only safe error
+metadata; no SQL mode, runtime schema or admission rule is relaxed.
+
+The follow-up console review also found the expired-grant collector result was
+referenced without invoking its service. The actual scheduled/console command
+now calls the bounded collector; its regression exercises the real Artisan
+entry point twice and verifies committed pages/burned descriptors survive.
+
+The strengthened real-command regression passes in26 tests/362 assertions;
+full owned SQL concurrency/rollback and supervised kill/restart follow below.
+
+Preservation deviation during local validation: maintenance was inadvertently
+invoked once on retained P06 after its strict before/after proof. It reported18
+expired authentication rows and zero file/invite/enrollment/grant changes. The
+original baseline has only rate-limit buckets in those expiry tables; subsequent
+strict comparison retains every original non-rate table/content/session and
+TLS/OAuth/environment byte. The private explicit deviation receipt permits
+expired admission-counter deletion without rebaselining any protected state.
+
+Candidateb344f08 executed consistent/concurrent and interrupted backups, full
+clean-host SQL/blob checksum restoration, independent offline1GB recovery, newer
+checkpoint refusal, existing-client quarantine with exact retained draft/outbox,
+and fresh-identity1GB re-encryption/full destination hash. It then failed its
+X-Accel CORS assertion: Nginx internal redirects discarded upstream CORS headers.
+The internal location now carries only API-approved CORS/request-ID values and
+repeats HSTS; it never reflects arbitrary request origins. No final PASS is
+claimed for that failed attempt. New acceptance also observes real supervised
+scheduler/queue/durability/capacity health and refuses preexisting source/capacity
+targets rather than labelling reused state a clean installation.
+
+A focused real-TLS/Nginx/FastCGI internal-redirect regression now passes approved
+origin/credentials/request-ID/HSTS preservation, ticket-header hiding, direct
+internal-path404 and absent CORS for a hostile origin. It uses public synthetic
+FastCGI bytes and is not labelled application-authorization/full-phase acceptance.
+
+P16 full candidate `09247a08feedf61a07cd6e60c76b57da069622fb` operations/capacity acceptance PASS. Actual
+1GB full source/offline/fresh-destination hashes agree: `ce198dae9dd34339a224009e285e227389e90222b6f5de0b7198deedb4da1510`.
+The exact-source raw reports, original source SHAs, ZIP/Git input-byte audit and
+final29-job/merge/environment receipts are indexed in evidence/p16 and PR30.
+Candidate backup 9548ms; offline-content RTO
+73.882s; fresh-state drill RTO
+164.463s. Capacity history latency:{"p50": 33.74903300002916, "p95": 40.76833899994381, "max": 84.0695790000027}ms.
+Counts are10 actual accounts/50 certified devices/100000 verified signed inserted
+revisions/1001 authenticated HTTP pages/100001 history rows.10 signed-age negative
+cases,26 PHP tests/362 assertions, full SQL concurrency/rollback and supervised
+restart passed. Final documentation head requires its own full normal29-job
+cohort before merge; physical100GB/device/review/production are not claimed.

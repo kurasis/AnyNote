@@ -28,7 +28,7 @@ their clean exact-head CI/merge evidence is separate. See
 | P13 | VERIFIED | Protected content UX, safe previews/thumbnails, reference-safe retention, independent age recovery and fresh standard import; 401 HTTP/SQL, 427 authority, 59 sandboxed UI checks, actual Linux/Windows 1 GB archive and all 24 software gates PASS; physical/review gates remain open |
 | P14 | VERIFIED | Native Windows/WebView2 single installer, actual dialogs/SQL/1GB/recovery/upgrade/restart, all 25 software gates; physical and production signing remain open |
 | P15 | VERIFIED | Installed PWA shell, EN/RU mobile/keyboard UX, exact 1 GB/API/recovery/import/update/quota software acceptance and all 27 mandatory candidate jobs; final merge is gated by the same exact-head cohort; physical/review/signing/memory gates remain open |
-| P16 | NOT STARTED | P04/P08/P11–P13 and appropriately sized synthetic host |
+| P16 | VERIFIED | Hardened deployment, real1GB concurrent/interrupted backup, clean-host/root-kit/fresh-state recovery and10-account/50-device/100000-revision capacity acceptance; final documentation head requires all29 normal gates before merge;100GB inventory/production/physical/review remain separate |
 | P17 | NOT STARTED | P02/P08–P16; independent review |
 | P18 | NOT STARTED | P14–P17 and release/signing gates |
 
@@ -879,3 +879,61 @@ All 179 frozen files and dependency locks remain unchanged. P16 independent
 staging/backup/restore operations are next; no production or owner trial is
 authorized. Revert the reviewed implementation to roll back; preserve all
 encrypted local state and journals, and do not purge caches/databases as rollback.
+
+
+## P16 implementation and validation in progress
+
+Added reviewable immutable API/static deployment templates, external secret-file
+injection and separate migration/runtime SQL privileges; bounded Nginx/PHP and
+supervised maintenance; internal authorized ciphertext delivery with durable
+reference-safe hard-link custody; signed standard-age consistent DB/blob backup;
+clean-target restore with persistent host/SQL quarantine, credential invalidation
+and a fresh transport generation. Independent signed/encrypted security checkpoints
+assist rollback detection without pretending to be global transparency.
+
+A bounded offline root-kit/witness reader recovers private epoch-zero content from
+restored SQL/blob bytes. Existing P13 portable recovery remains the shared/rotated/
+history path. No in-place clearing of unreconciled security state is implemented.
+Fresh identity/private-group copy uses new IDs/DEKs and current ordinary client
+authority. Source formats and prior locks are unchanged.
+
+Development: nine real age/OpenSSL archive-negative tests, actual8MiB tmpfs
+ENOSPC/unavailable-object/fsync failures, unchanged committed bytes/quota and
+post-capacity recovery passed. Eleven foundation PHPUnit tests/217 assertions
+passed against actual MariaDB. A smaller development restore exercised consistent
+backup/concurrent HTTP, clean DB/blob restoration, changed generation, real signed
+root reset after backup, independent newer checkpoint refusal and separate-process
+root-kit decryption. It is not final1GB acceptance. Final29-job exact-source
+operations/capacity and inherited acceptance is pending; do not mark the phase
+VERIFIED from this development record. Production/physical/review/signing and
+100GB capacity remain separate, as documented in P16_OPERATIONS.
+
+
+P16 validation update:26 PHP tests/359 assertions and the complete owned SQL
+concurrency/rollback/supervised-restart suite passed. A real client registered
+one account plus four HTTPS/certified enrollments locally. Hosted source5244f5f
+registered10 accounts/50 devices, then failed before inserting the large fixture:
+a test loader passed an array into the object-only public canonicalizer. The
+loader now uses the existing typed equality helper; a bounded diagnostic
+verified500 signatures and installed its first500-row SQL batch before the
+intentionally truncated stream was refused. This is not100000-row acceptance.
+The archive suite now includes an independently wrong signing key and passes
+10 real age/OpenSSL tests. Newer full29-job acceptance is still pending.
+
+## Completed phase: P16 independent operations software
+
+Candidate `09247a08feedf61a07cd6e60c76b57da069622fb` passed the actual new operations/capacity requirements.
+All29 ordinary gates and exact raw ZIP/Git input-byte audit are recorded through
+PR30 and [evidence/p16](evidence/p16/README.md). The final documentation head must
+pass its own complete29-job normal cohort before expected-head merge.
+Measured candidate backup:9548ms; offline-content recovery
+RTO:73.882s; full fresh-state drill RTO:164.463s.
+1001 authenticated history pages read100001 retained rows; bulk publication is
+a bounded verified SQL fixture, not100000 individually authorized HTTP writes.
+All179 frozen files/locks remain unchanged. P17 adversarial testing/review
+preparation is next. No production deployment/release or owner physical trial
+is authorized; restored security stays quarantined and generic shared/rotated
+recovery requires separately retained portable exports/kits.
+Rollback preserves every retained encrypted SQL/blob/profile/key/session/journal
+and must account for immutable records and additive migrations; never destructively
+roll back data or clear quarantine to make old credentials work.

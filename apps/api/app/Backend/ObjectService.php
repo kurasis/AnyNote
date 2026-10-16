@@ -4,6 +4,7 @@ namespace App\Backend;
 
 use App\Crypto\PublicProtocol as P;
 use App\Devices\Protocol;
+use App\Files\BlobStore;
 use App\Http\ApiException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -108,6 +109,7 @@ final class ObjectService
             $ledgers = $this->quota->lock($a->accountId, $g->id);
             $ciphertext = P::binary($b->ciphertext);
             $bytes = strlen($ciphertext) + strlen(P::binary($b->wrap->ciphertext));
+            app(BlobStore::class)->capacity($bytes + (int) $ledgers[0]->reserved_bytes);
             $this->quota->apply($ledgers, $bytes, 0);
             if (! $object) {
                 DB::table('objects')->insert(['id' => $c->object_id, 'group_id' => $g->id, 'kind' => $c->object_kind, 'thread_id' => $c->thread_id]);

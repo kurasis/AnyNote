@@ -1,0 +1,125 @@
+pid /tmp/nginx.pid;
+worker_processes 1;
+error_log /dev/null;
+events { worker_connections 256; }
+http {
+    include /etc/nginx/mime.types;
+    server_tokens off;
+    access_log off;
+    client_max_body_size 4m;
+    client_body_buffer_size 64k;
+    client_header_buffer_size 1k;
+    large_client_header_buffers 4 8k;
+    client_body_timeout 30s;
+    client_header_timeout 15s;
+    send_timeout 60s;
+    keepalive_timeout 30s;
+    limit_conn_zone $binary_remote_addr zone=per_ip:1m;
+    limit_conn per_ip 16;
+    limit_conn_zone $server_name zone=service_connections:1m;
+    limit_conn service_connections 32;
+    limit_req_zone $server_name zone=service_requests:1m rate=20r/s;
+    client_body_temp_path /tmp/client;
+    fastcgi_temp_path /tmp/fastcgi;
+    proxy_temp_path /tmp/proxy;
+    uwsgi_temp_path /tmp/uwsgi;
+    scgi_temp_path /tmp/scgi;
+    ssl_certificate /tls/server.crt;
+    ssl_certificate_key /tls/server.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_session_tickets off;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305;
+    server { listen 8443 ssl default_server; server_name _; return 404; }
+    server {
+        listen 8443 ssl;
+        server_name @API_HOST@;
+        ssl_client_certificate /tls/operator-ca.crt;
+        ssl_verify_client optional;
+        ssl_verify_depth 1;
+        limit_req zone=service_requests burst=60 nodelay;
+        limit_req_status 429;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Cache-Control no-store always;
+        add_header Strict-Transport-Security "max-age=31536000" always;
+        error_page 413 = @control_too_large;
+        location @control_too_large {
+            include /etc/nginx/fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME /app/public/index.php;
+            fastcgi_param ANYNOTE_EDGE_ERROR request-too-large;
+            fastcgi_param HTTPS on;
+            fastcgi_param CONTENT_LENGTH 0;
+            fastcgi_pass_request_body off;
+            fastcgi_pass api:9000;
+        }
+        location ~* "^/(?:storage|vendor|config|bootstrap|admin|_ignition|telescope|horizon)(?:/|$)|(?:^|/)\.|\.(?:php|env|sql|bak|pem|key)$" { return 404; }
+        location ^~ /api/v1/admin/ {
+            if ($ssl_client_verify != SUCCESS) { return 404; }
+            include /etc/nginx/fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME /app/public/index.php;
+            fastcgi_param HTTPS on;
+            fastcgi_pass api:9000;
+        }
+        location ~ "^/api/v1/uploads/[A-Za-z0-9_-]{22}/parts/(0|[1-9][0-9]{0,2})$" {
+            client_max_body_size 8388624;
+            fastcgi_request_buffering off;
+            include /etc/nginx/fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME /app/public/index.php;
+            fastcgi_param HTTPS on;
+            fastcgi_pass api:9000;
+            fastcgi_read_timeout 180s;
+        }
+        location ^~ /_anynote-cipher/ {
+            internal;
+            alias /delivery/;
+            default_type application/octet-stream;
+            max_ranges 0;
+            # X-Accel internal redirects discard arbitrary upstream headers.
+            # Carry only values already approved by the API, never reflect Origin.
+            add_header Access-Control-Allow-Origin $upstream_http_access_control_allow_origin always;
+            add_header Access-Control-Allow-Credentials $upstream_http_access_control_allow_credentials always;
+            add_header Access-Control-Expose-Headers $upstream_http_access_control_expose_headers always;
+            add_header X-Request-ID $upstream_http_x_request_id always;
+            add_header Vary Origin always;
+            add_header X-Content-Type-Options nosniff always;
+            add_header Cache-Control no-store always;
+            add_header Strict-Transport-Security "max-age=31536000" always;
+        }
+        location /api/ {
+            include /etc/nginx/fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME /app/public/index.php;
+            fastcgi_param HTTPS on;
+            fastcgi_pass api:9000;
+            fastcgi_read_timeout 180s;
+        }
+        location / { return 404; }
+    }
+    server {
+        listen 8443 ssl;
+        server_name @APP_HOST@;
+        root /static;
+        index index.html;
+        add_header Content-Security-Policy "default-src 'none'; manifest-src 'self'; img-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; worker-src 'self'; frame-src 'none'; connect-src @API_ORIGIN@; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; object-src 'none'" always;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Strict-Transport-Security "max-age=31536000" always;
+        add_header Cache-Control no-cache always;
+        add_header Permissions-Policy "camera=(self), microphone=(), geolocation=()" always;
+        location ~ "(?:^|/)\.|\.(?:php|env|sql|bak|pem|key)$" { return 404; }
+        location = /auth/preview-render.mjs {
+            add_header Content-Security-Policy "default-src 'none'; script-src 'self'; connect-src 'none'; worker-src 'none'" always;
+            add_header X-Content-Type-Options nosniff always;
+            try_files $uri =404;
+        }
+        location = /auth/preview-parser.mjs {
+            add_header Content-Security-Policy "default-src 'none'; script-src 'self'; connect-src 'none'; worker-src 'none'" always;
+            add_header X-Content-Type-Options nosniff always;
+            try_files $uri =404;
+        }
+        location = /auth/sw.js {
+            add_header Content-Security-Policy "default-src 'none'; script-src 'self'; connect-src @STATIC_ASSETS@; worker-src 'none'; object-src 'none'" always;
+            add_header X-Content-Type-Options nosniff always;
+            add_header Cache-Control no-cache always;
+            try_files $uri =404;
+        }
+        location / { try_files $uri $uri/ =404; }
+    }
+}
