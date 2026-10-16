@@ -125,6 +125,16 @@ class Candidate(unittest.TestCase):
         self.path.write_bytes(gzip.compress(raw + b'hidden-content'))
         with self.assertRaises(ValueError): c.verify(self.path)
 
+    def test_extension_headers_rejected_before_body_read(self):
+        import gzip
+        # Valid checksums but no body: rejection must come from header policy,
+        # not from attempting to load an attacker-declared multi-gigabyte body.
+        for kind in [tarfile.XHDTYPE, tarfile.XGLTYPE, tarfile.GNUTYPE_LONGNAME, tarfile.GNUTYPE_SPARSE]:
+            with self.subTest(kind=kind):
+                item = tarfile.TarInfo('extension'); item.type = kind; item.size = c.MAX_MEMBER
+                self.path.write_bytes(gzip.compress(item.tobuf(format=tarfile.USTAR_FORMAT)))
+                with self.assertRaisesRegex(ValueError, 'No links or extension headers'): c.verify(self.path)
+
     def test_failed_missing_duplicate_or_wrong_source_cohort_is_refused(self):
         spec = importlib.util.spec_from_file_location('acceptance', c.ROOT / 'scripts/p18-acceptance.py')
         a = importlib.util.module_from_spec(spec); spec.loader.exec_module(a)

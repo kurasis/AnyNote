@@ -2260,7 +2260,7 @@ correction (2/2). Full final ordinary gates remain mandatory.
 
 ## P18 development and final acceptance evidence
 
-The P18 development candidate archive suite actually passed17 tests (including
+The P18 development candidate archive suite actually passed18 tests (including
 subcase negatives) covering byte tampering, malformed paths, links, duplicates,
 missing members, size limits, source binding, immutable output and forged release
 clearance. Baseline179/P03 contracts remain unchanged. Syntax and documentation
@@ -2291,3 +2291,11 @@ that build did not replace the retained source environment's immutable image pin
 Original76-table/content/session/TLS/OAuth preservation plus exactly3 P16 additive
 migrations/2tables passed separately. Seventeen P18 negatives and ten maintained
 age/OpenSSL archive tests passed locally; zero failures/skips.
+
+P18 parser follow-up: source review found that a generic TAR reader can process
+PAX/GNU extension payloads before application length checks. The candidate reader
+now parses only fixed512-byte USTAR headers, validates checksum/type/size before
+reading any body, hashes bounded1MiB blocks and validates zero padding plus gzip
+EOF/CRC. A new real compressed-header negative covers PAX/global/long-name/sparse
+multi-gigabyte declarations with no body; all18 tests pass. The initial PR source
+is preserved separately as superseded, never claimed as final acceptance.

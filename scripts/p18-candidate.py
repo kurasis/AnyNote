@@ -124,11 +124,37 @@ def write_archive(destination, manifest, files):
 def verify(path):
     regular(path)
     require(path.stat().st_size <= MAX_TOTAL, 'Compressed candidate too large')
-    with path.open('rb') as compressed, gzip.GzipFile(fileobj=compressed, mode='rb') as decompressed, tarfile.open(fileobj=decompressed, mode='r|') as tar:
-        first = tar.next()
-        require(first is not None and first.name == 'candidate.json' and first.isfile()
-                and first.size <= 4 * 1024**2, 'Bounded first manifest required')
-        raw = tar.extractfile(first).read()
+    # Parse fixed USTAR headers before reading bodies. Generic tar readers may
+    # eagerly load PAX/GNU extension bodies before application size checks.
+    with path.open('rb') as compressed, gzip.GzipFile(fileobj=compressed, mode='rb') as stream:
+        def header():
+            raw = stream.read(512)
+            require(len(raw) == 512, 'Truncated USTAR header')
+            if not any(raw):
+                return None
+            require(raw[257:265] == tarfile.POSIX_MAGIC, 'Only fixed USTAR headers accepted')
+            item = tarfile.TarInfo.frombuf(raw, 'utf-8', 'strict')
+            require(item.type in (tarfile.REGTYPE, tarfile.AREGTYPE), 'No links or extension headers')
+            safe_name(item.name)
+            require(0 <= item.size <= MAX_MEMBER, 'Member exceeds size budget')
+            return item
+
+        def content(item, keep=False):
+            digest = hashlib.sha256(); remaining = item.size; parts = []
+            while remaining:
+                block = stream.read(min(1048576, remaining))
+                require(bool(block), 'Truncated USTAR member')
+                remaining -= len(block); digest.update(block)
+                if keep:
+                    parts.append(block)
+            padding = stream.read((-item.size) % 512)
+            require(len(padding) == (-item.size) % 512 and not any(padding), 'Invalid member padding')
+            return b''.join(parts) if keep else digest.hexdigest()
+
+        first = header()
+        require(first is not None and first.name == 'candidate.json' and first.size <= 4 * 1024**2,
+                'Bounded first manifest required')
+        raw = content(first, keep=True)
         manifest = json.loads(raw)
         require(raw == canonical(manifest), 'Noncanonical/duplicate-key candidate manifest')
         require(manifest['schema'] == SCHEMA and manifest['role'] in ('windows', 'pwa', 'api'),
@@ -148,25 +174,19 @@ def verify(path):
                     re.fullmatch('[0-9a-f]{64}', row['sha256']), 'Invalid/duplicate file declaration')
             expected[name] = row
         seen = set(); total = 0
-        for member in tar:
-            # Streaming TarFile iteration includes the first member on some versions.
-            if member is first:
-                continue
-            name = safe_name(member.name)
-            require(member.isfile() and not member.issparse() and name not in seen and name in expected,
-                    'Unexpected, duplicate, linked or nonregular member')
+        while (member := header()) is not None:
+            name = member.name
+            require(name not in seen and name in expected, 'Unexpected or duplicate member')
             row = expected[name]
             require(member.size == row['bytes'], 'Member length mismatch')
             total += member.size
             require(total <= MAX_TOTAL, 'Expanded candidate too large')
-            stream = tar.extractfile(member)
-            require(hashlib.file_digest(stream, 'sha256').hexdigest() == row['sha256'], 'Member digest mismatch')
+            require(content(member) == row['sha256'], 'Member digest mismatch')
             seen.add(name)
         require(seen == expected.keys(), 'Missing candidate member')
-        # Consume the gzip trailer/CRC and reject hidden data after tar EOF.
-        # TarFile may already have buffered part of the final zero padding.
-        padding = tar.fileobj.buf + decompressed.read(10241)
-        require(len(padding) <= 10240 and not any(padding), 'Unexpected data after archive EOF')
+        # Require the second zero header, bounded zero padding and gzip EOF/CRC.
+        padding = stream.read(10241)
+        require(512 <= len(padding) <= 10240 and not any(padding), 'Unexpected/truncated archive EOF')
     return manifest
 
 
