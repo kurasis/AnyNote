@@ -1,0 +1,11 @@
+{
+  "purpose": "Lossless original log representation; concatenate lines_utf8 and encode UTF-8 to recover the original bytes, including CRLF/trailing spaces",
+  "original_path": "development/native-writer-reproduction/roster-final-clippy.log",
+  "encoding": "UTF-8 lines with original terminators",
+  "original_bytes": 155,
+  "original_sha256": "c615a18c07a83d0ba26545f34feec136e71008c1399d931b6446edb9ea9cfd61",
+  "lines_utf8": [
+    "    Checking anynote-local-vault v0.1.0 (/workspace/AnyNote/packages/vault-native)\n",
+    "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.63s\n"
+  ]
+}

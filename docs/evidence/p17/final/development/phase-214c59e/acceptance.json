@@ -1,0 +1,20 @@
+{
+  "purpose": "P17 phase-only report retention; full ordinary cohort failed, never aggregate acceptance",
+  "status": "FAIL",
+  "source_commit": "214c59e7c0754b46c1437818ddc1eee6f9efc41f",
+  "checks": [
+    {
+      "id": 117010614011,
+      "name": "adversarial-linux",
+      "head_sha": "214c59e7c0754b46c1437818ddc1eee6f9efc41f",
+      "status": "completed",
+      "conclusion": "success",
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38912212563/job/117010614011",
+      "started_at": "2026-10-16T14:00:01Z",
+      "completed_at": "2026-10-16T14:03:28Z",
+      "run_id": 38912212563
+    }
+  ],
+  "full_cohort_snapshot_sha256": "29cec3655f1f2a76388df7072a2020b95278aaf656c9ebca4ec7c3d7b1ca8918",
+  "aggregate_acceptance": false
+}

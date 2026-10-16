@@ -1,0 +1,40 @@
+{
+  "purpose": "Historical failures and phase-only result retention; not aggregate acceptance",
+  "aggregate_acceptance": false,
+  "status": "NOT_ACCEPTED",
+  "observations": [
+    {
+      "head": "aa58c56c5fa95a83f27f5423612982e900c6da8e",
+      "finding": "Unsupported combined documentation phase status; unchanged baseline rejected before dependent acceptance",
+      "remediation_head": "214c59e7c0754b46c1437818ddc1eee6f9efc41f"
+    },
+    {
+      "head": "214c59e7c0754b46c1437818ddc1eee6f9efc41f",
+      "job_id": 117011052170,
+      "run_id": 38912212527,
+      "finding": "Upstream libsodium-sys-stable1.24.1 build.rs Windows DNS11002 before tests",
+      "single_job_rerun_request_http_status": 403,
+      "automatic_approval_rejection": false,
+      "response": "Ordinary follow-up documentation commit to run full exact-head cohort on fresh hosted runners; no credential/integrity/source bypass",
+      "phase_adversarial_job": "PASS; exact raw evidence retained separately; full cohort FAIL"
+    }
+  ],
+  "preserved_original_reports": [
+    {
+      "path": "cohort-aa58c56-observed.json",
+      "sha256": "d28adf12502a898b46d446757ca68c6358ec6356893b421430e190f0622c7297"
+    },
+    {
+      "path": "cohort-214c59e-observed.json",
+      "sha256": "29cec3655f1f2a76388df7072a2020b95278aaf656c9ebca4ec7c3d7b1ca8918"
+    },
+    {
+      "path": "baseline-aa58c56-original.log",
+      "sha256": "99535ea1c60ee65af65de62fc871807c46c1e80b054e578383268ac4a4fed181"
+    },
+    {
+      "path": "vault-windows-native-214c59e-original.log",
+      "sha256": "b7b83c8e603025a867f4b8c26fe9969d1ca4f65529785a7116f234a763c53edf"
+    }
+  ]
+}

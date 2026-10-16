@@ -1,0 +1,45 @@
+{
+  "purpose": "Exact saved/read-back correction-head cloud configuration while GitHub authentication is blocked; not final merged-main acceptance",
+  "status": "PASS",
+  "source_commit": "4fcde745326f5ef55eced855aabc0e2fcd110b1f",
+  "draft_id": "c6e44868-d5c7-48f5-a9bc-581b967d3273~cecfgdraft_6ad23ecade44819d93154adfeb310a2a",
+  "revision": 9,
+  "base_version_id": "c6e44868-d5c7-48f5-a9bc-581b967d3273~cecfgver_6ad220a395c8819d89fa87304dbb8451",
+  "repositories": [
+    {
+      "name": "kurasis/AnyNote",
+      "host": "github.com",
+      "commit": "4fcde745326f5ef55eced855aabc0e2fcd110b1f",
+      "mount_path": "AnyNote"
+    }
+  ],
+  "install_script_exact_readback": true,
+  "start_skill_exact_readback": true,
+  "repositories_exact_readback": true,
+  "unrelated_metadata_exact_readback": true,
+  "preserved_metadata_fields": [
+    "network_policy",
+    "secrets",
+    "runtime_requirements",
+    "pending_runtime_requirements",
+    "base_version_id"
+  ],
+  "saved_contents": {
+    "install_script": {
+      "bytes": 6802,
+      "sha256": "1eab3c13f5aecf89708d27b3210364a47afde43d958924d194c98a89825a0d1b"
+    },
+    "start_skill": {
+      "bytes": 8778,
+      "sha256": "ed896bd6c75d26476e7178cb1fb08b2f12e8b920a169f95b9c16e46ecd746241"
+    }
+  },
+  "requires_publish": true,
+  "current_instance_verified": true,
+  "fresh_task_restoration": "NOT_RUN",
+  "github_access": "BLOCKED_AUTHENTICATION",
+  "latest_pr_ci": "UNKNOWN; last observed29/30 PASS, one active, before401",
+  "final_merged_main_acceptance": false,
+  "production_deployed": false,
+  "verified_at": "2026-10-16T16:49:57.614Z"
+}

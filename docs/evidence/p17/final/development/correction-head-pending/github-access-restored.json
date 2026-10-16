@@ -1,0 +1,11 @@
+{
+  "purpose": "Owner-refreshed existing GitHub binding successfully verified; prior401 remains historical",
+  "status": "RESTORED",
+  "observed_at": "2026-10-16T17:10:39.806059+00:00",
+  "read_only_api": "PASS: PR32 exacthead/base before merge",
+  "read_only_git": "PASS: ls-remote exactbase before merge",
+  "corrected_pr_jobs_passed": 30,
+  "corrected_merge_commit": "a55b73e84a30c11b2e737d1a3830e54ec774ed19",
+  "main_acceptance_at_record": "PENDING",
+  "credential_values_captured": false
+}

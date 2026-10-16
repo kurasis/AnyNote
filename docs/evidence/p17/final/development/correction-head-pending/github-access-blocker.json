@@ -1,0 +1,19 @@
+{
+  "purpose": "Existing GitHub binding failure after prior successful push/PR; no token values captured",
+  "status": "BLOCKED_AUTHENTICATION",
+  "observed_at": "2026-10-16T16:46:57.886890+00:00",
+  "source_commit": "4fcde745326f5ef55eced855aabc0e2fcd110b1f",
+  "pull_request": "https://github.com/kurasis/AnyNote/pull/32",
+  "last_verified_ordinary_jobs_passed": 29,
+  "mandatory_jobs": 30,
+  "latest_github_ci_status": "UNKNOWN; latest read rejected",
+  "api_read_http_status": 401,
+  "fresh_process_api_read_http_status": 401,
+  "existing_git_proxy_read": "Authentication failed for read-only git ls-remote",
+  "binding_variable_present": true,
+  "additional_authentication_tool_available": false,
+  "request_to_owner": "Refresh GitHub connection in cloud environment settings; never supply secret values in chat",
+  "merge_performed": false,
+  "new_final_main_created": false,
+  "auto_review_rejection": false
+}

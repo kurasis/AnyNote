@@ -1,0 +1,12 @@
+{
+  "purpose": "Expected-head ordinary squash merge after all30 normal exact-head gates and actual raw byte verification",
+  "status": "MERGED",
+  "pull_request": "https://github.com/kurasis/AnyNote/pull/31",
+  "checked_head": "e96ab009f01ce9cb3b9dcdec65ae447d5228a1bf",
+  "checked_tree": "8c48e385c2f7ea9638102b74d745ab7b040d9a0a",
+  "base_before_merge": "81298cc8cc110a25347e40a56011f84c65f8c66b",
+  "verified_synthetic_merge_commit": "423e09b7944ba4dea7133ed4f28849cd52485156",
+  "merge_commit": "626e25e144c4f18b84c32862201ff6eaa0618a6c",
+  "physical_acceptance": false,
+  "production_deployed": false
+}

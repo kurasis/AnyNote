@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "source_commit": "a55b73e84a30c11b2e737d1a3830e54ec774ed19",
+  "source_tree_dirty": false,
+  "plaintext_bytes": 1000000000,
+  "chunks": 120,
+  "archive_bytes": "1000542392",
+  "independent_age_reader": "Rust age 0.12.1/MSVC",
+  "independent_age_plain_tar_bytes": 1000297984,
+  "maximum_observed_process_rss_bytes": 402079744,
+  "elapsed_ms": 371607,
+  "plaintext_temporary_files": 0,
+  "physical_acceptance": false
+}

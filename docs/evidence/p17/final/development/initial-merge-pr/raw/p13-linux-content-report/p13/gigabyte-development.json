@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "source_commit": "e96ab009f01ce9cb3b9dcdec65ae447d5228a1bf",
+  "source_tree_dirty": false,
+  "plaintext_bytes": 1000000000,
+  "chunks": 120,
+  "archive_bytes": "1000542392",
+  "independent_age_reader": "Go age 1.3.2",
+  "independent_age_plain_tar_bytes": 1000297984,
+  "maximum_observed_process_rss_bytes": 436154368,
+  "elapsed_ms": 86182,
+  "plaintext_temporary_files": 0,
+  "physical_acceptance": false
+}

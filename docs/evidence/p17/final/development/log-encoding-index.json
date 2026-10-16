@@ -1,0 +1,79 @@
+{
+  "purpose": "Lossless Git-compatible log envelopes; raw report JSON bytes remain unchanged",
+  "status": "VERIFIED",
+  "raw_report_json_bytes_changed": false,
+  "logs": [
+    {
+      "original_path": "development/baseline-aa58c56-original.log",
+      "representation_path": "development/baseline-aa58c56-original.log.json",
+      "original_sha256": "99535ea1c60ee65af65de62fc871807c46c1e80b054e578383268ac4a4fed181",
+      "original_bytes": 14677
+    },
+    {
+      "original_path": "development/initial-merge-main/files-windows-main-original.log",
+      "representation_path": "development/initial-merge-main/files-windows-main-original.log.json",
+      "original_sha256": "04c68d612621f40c9a90f68737df87316c0ce565f3349175ae0e4fa38b353cac",
+      "original_bytes": 679855
+    },
+    {
+      "original_path": "development/initial-merge-main/host-windows-main-original.log",
+      "representation_path": "development/initial-merge-main/host-windows-main-original.log.json",
+      "original_sha256": "54084fa0096adb21dd72ba7a87d0a01d226bc7d6cc2e499a72217c7000a10f53",
+      "original_bytes": 434789
+    },
+    {
+      "original_path": "development/native-writer-reproduction/p11-slow-diagnostic.log",
+      "representation_path": "development/native-writer-reproduction/p11-slow-diagnostic.log.json",
+      "original_sha256": "ec1e92dbcce79cd8421ced72f8ac00adc7d7a511be5e4d46082f47ce3f7a69b6",
+      "original_bytes": 653
+    },
+    {
+      "original_path": "development/native-writer-reproduction/p11-slow-fixed.log",
+      "representation_path": "development/native-writer-reproduction/p11-slow-fixed.log.json",
+      "original_sha256": "6c0d171c3ddec9eca5d0dc958473ad56344ec81bb195be3fb913a2c2a85eaed8",
+      "original_bytes": 615
+    },
+    {
+      "original_path": "development/native-writer-reproduction/roster-final-baseline.log",
+      "representation_path": "development/native-writer-reproduction/roster-final-baseline.log.json",
+      "original_sha256": "2b393a9840b54ce2a0c636acf38a1fb24baf2c00d51da3a76734dfb417404bf9",
+      "original_bytes": 116
+    },
+    {
+      "original_path": "development/native-writer-reproduction/roster-final-clippy.log",
+      "representation_path": "development/native-writer-reproduction/roster-final-clippy.log.json",
+      "original_sha256": "c615a18c07a83d0ba26545f34feec136e71008c1399d931b6446edb9ea9cfd61",
+      "original_bytes": 155
+    },
+    {
+      "original_path": "development/native-writer-reproduction/roster-final-vault.log",
+      "representation_path": "development/native-writer-reproduction/roster-final-vault.log.json",
+      "original_sha256": "f9884f2b88b75cdd326c4c99bbec93ec354f854d60f6ab819bedbd5918cce067",
+      "original_bytes": 1459
+    },
+    {
+      "original_path": "development/native-writer-reproduction/roster-native-tests.log",
+      "representation_path": "development/native-writer-reproduction/roster-native-tests.log.json",
+      "original_sha256": "8278c21ce502e3f017c8302fa9a504cf33d0a9d10a0d40c7521d3641b7c5e567",
+      "original_bytes": 11694
+    },
+    {
+      "original_path": "development/native-writer-reproduction/transfer-polls-after.log",
+      "representation_path": "development/native-writer-reproduction/transfer-polls-after.log.json",
+      "original_sha256": "d55faa3b6fb5837b8852e94f99f04940cbf73c9a61a6f92b1ddfaf5bac8defe7",
+      "original_bytes": 508
+    },
+    {
+      "original_path": "development/native-writer-reproduction/transfer-polls-before.log",
+      "representation_path": "development/native-writer-reproduction/transfer-polls-before.log.json",
+      "original_sha256": "a07451e6c2509e70f585849a408afb9ac564217bf281a3dcc667fa40812c3000",
+      "original_bytes": 891
+    },
+    {
+      "original_path": "development/vault-windows-native-214c59e-original.log",
+      "representation_path": "development/vault-windows-native-214c59e-original.log.json",
+      "original_sha256": "b7b83c8e603025a867f4b8c26fe9969d1ca4f65529785a7116f234a763c53edf",
+      "original_bytes": 53963
+    }
+  ]
+}

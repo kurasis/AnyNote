@@ -1,0 +1,23 @@
+{
+  "purpose": "P17 pending-correction ledger; no final corrected acceptance/publication claim",
+  "status": "BLOCKED_AUTHENTICATION",
+  "aggregate_acceptance": false,
+  "correction_commit": "4fcde745326f5ef55eced855aabc0e2fcd110b1f",
+  "pull_request": "https://github.com/kurasis/AnyNote/pull/32",
+  "last_observed_ordinary_pr_passed": 29,
+  "mandatory_pr_jobs": 30,
+  "latest_pr_ci": "UNKNOWN after401",
+  "initial_pr31_jobs_passed": 30,
+  "initial_main_jobs_passed": 28,
+  "initial_main_failed_jobs": [
+    "files-windows-native",
+    "host-windows-build"
+  ],
+  "correction_merged": false,
+  "final_main_ci": "NOT_RUN; corrected merge not performed",
+  "corrected_head_startup": "PASS18commands and original-state preservation",
+  "corrected_head_configuration": "Saved/readback PASS revision9; requiresPublishtrue",
+  "final_public_archive": "NOT_PUBLISHED",
+  "independent_review": "NOT_RUN",
+  "production_release_allowed": false
+}

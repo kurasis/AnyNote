@@ -1,0 +1,214 @@
+{
+  "status": "PASS",
+  "physical_acceptance": false,
+  "os_share_mocked": true,
+  "limitation": "Real Chromium sandbox enabled; Share UI is an explicit mock. No physical iPhone/Files acceptance.",
+  "source_commit": "e96ab009f01ce9cb3b9dcdec65ae447d5228a1bf",
+  "browser": "155.0.8059.39",
+  "automatic_and_mocked_share_result": {
+    "version": 1,
+    "status": "PASS_AUTOMATED_LOCAL_CHECKS",
+    "physical_acceptance": false,
+    "checks": [
+      {
+        "name": "frozen-rust-crypto",
+        "status": "PASS",
+        "checks": 39
+      },
+      {
+        "name": "frozen-node-crypto",
+        "status": "PASS",
+        "checks": 39
+      },
+      {
+        "name": "frozen-browser-worker-crypto",
+        "status": "PASS",
+        "checks": 39
+      },
+      {
+        "name": "public-argon2id-vector",
+        "status": "PASS",
+        "elapsed_ms": 197,
+        "wasm_heap_bytes": 67371008
+      },
+      {
+        "name": "public-argon2id-vector",
+        "status": "PASS",
+        "elapsed_ms": 184,
+        "wasm_heap_bytes": 67371008
+      },
+      {
+        "name": "public-argon2id-vector",
+        "status": "PASS",
+        "elapsed_ms": 178,
+        "wasm_heap_bytes": 67371008
+      },
+      {
+        "name": "14-invalid-KDF-profiles",
+        "status": "PASS"
+      },
+      {
+        "name": "ciphertext-only-IDB-OPFS-reopen",
+        "status": "PASS",
+        "ciphertext_only": true,
+        "indexeddb_reopened": true,
+        "opfs_reopened": true
+      },
+      {
+        "name": "actual-readonly-storage-denial",
+        "status": "PASS",
+        "readonly_denial": true,
+        "quota_exhaustion": "NOT RUN: readonly denial is not quota exhaustion"
+      },
+      {
+        "name": "second-part-corrupt-abort-preserves-output",
+        "status": "PASS"
+      },
+      {
+        "name": "second-part-truncate-abort-preserves-output",
+        "status": "PASS"
+      },
+      {
+        "name": "second-part-overflow-abort-preserves-output",
+        "status": "PASS"
+      },
+      {
+        "name": "lock-invalidates-live-key",
+        "status": "PASS"
+      }
+    ],
+    "files": [
+      {
+        "status": "PASS",
+        "bytes": 0,
+        "chunks": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "transport": "LOCAL_OPFS_CIPHERTEXT_ONLY; no network request",
+        "export": "VERIFIED_OPFS_STAGING; Files not yet verified"
+      },
+      {
+        "status": "PASS",
+        "bytes": 1,
+        "chunks": 1,
+        "sha256": "d03502c43d74a30b936740a9517dc4ea2b2ad7168caa0a774cefe793ce0b33e7",
+        "transport": "LOCAL_OPFS_CIPHERTEXT_ONLY; no network request",
+        "export": "VERIFIED_OPFS_STAGING; Files not yet verified"
+      },
+      {
+        "status": "PASS",
+        "bytes": 8388609,
+        "chunks": 2,
+        "sha256": "15f3e8ffe2299eb97b89e941b8a48ad5c9373a799acca6d8569332e932368c09",
+        "transport": "LOCAL_OPFS_CIPHERTEXT_ONLY; no network request",
+        "export": "VERIFIED_OPFS_STAGING; Files not yet verified"
+      },
+      {
+        "status": "PASS",
+        "bytes": 1000000000,
+        "chunks": 120,
+        "sha256": "d716074e2bfca81eb847409f5fdf94f4dab6821f621bd7c3d71c3620c8a32819",
+        "transport": "LOCAL_OPFS_CIPHERTEXT_ONLY; no network request",
+        "export": "VERIFIED_OPFS_STAGING; Files not yet verified"
+      }
+    ],
+    "started_at": "2026-10-16T14:07:55.745Z",
+    "transport": "Local ciphertext-only OPFS adapter, not a network/backend test",
+    "opfs_commit": "Verified close publishes an in-memory disk-file alias; not a production atomic-path guarantee",
+    "files_destination": {
+      "status": "PASS_SELECTED_OUTPUT_HASH",
+      "bytes": 1000000000,
+      "sha256": "d716074e2bfca81eb847409f5fdf94f4dab6821f621bd7c3d71c3620c8a32819",
+      "selected_bytes": 1000000000,
+      "expected_bytes": 1000000000,
+      "limitation": "Owner selected a file after download/share; destination provenance and device memory need physical review"
+    },
+    "memory": "NOT MEASURED: WASM heap is not device process memory",
+    "remaining": [
+      "Network upload/download and resume",
+      "Actual device memory / older iPhone",
+      "Physical low-space fault",
+      "Passkeys/PRF and enrollment",
+      "Force-close/background recovery",
+      "PWA update with pending writes"
+    ],
+    "capabilities": {
+      "secure_context": true,
+      "indexeddb": true,
+      "opfs": true,
+      "usage_bytes": 677544,
+      "quota_bytes": 10738095784,
+      "persisted": false
+    },
+    "cleaned_orphans": 0,
+    "large_storage_estimate": {
+      "quota": 10738099573,
+      "usage": 681333,
+      "usageDetails": {
+        "caches": 669184,
+        "indexedDB": 3789,
+        "serviceWorkerRegistrations": 8360
+      }
+    },
+    "completed_at": "2026-10-16T14:08:43.598Z",
+    "build": {
+      "source_commit": "e96ab009f01ce9cb3b9dcdec65ae447d5228a1bf",
+      "version": "0.1.4",
+      "kind": "P01 synthetic static device kit",
+      "production": false
+    },
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+    "installed_pwa": false,
+    "origin": "http://127.0.0.1:41119",
+    "owner_reported_target": "iPhone 17 Pro / iOS 26.7.1; not verified by this page",
+    "synthetic_export_name": "synthetic-export-65d2dacc-ce52-4597-9f7a-c8970eede4a2.bin",
+    "share": "OUTCOME_UNKNOWN_AFTER_RESTART: verify the saved file; no share success inferred",
+    "recovery": {
+      "status": "RESTORED_DIAGNOSTICS_ONLY",
+      "previous_stage": "verify",
+      "loaded_build": {
+        "source_commit": "e96ab009f01ce9cb3b9dcdec65ae447d5228a1bf",
+        "version": "0.1.4",
+        "kind": "P01 synthetic static device kit",
+        "production": false
+      },
+      "restored_at": "2026-10-16T14:08:59.859Z",
+      "keys_restored": false,
+      "previous_kit_path": null
+    },
+    "last_phase": "verify-saved-file",
+    "retained_export": "REOPENED_AND_HASH_VERIFIED",
+    "stream_download": {
+      "status": "STREAM_SENT_NOT_FILES_VERIFIED",
+      "bytes": 1000000000,
+      "expected_bytes": 1000000000,
+      "method": "SCOPED_SERVICE_WORKER_DISK_STREAM",
+      "physical_acceptance": false
+    },
+    "temporary_export_cleanup": "PASS"
+  },
+  "pending_share_page_destroyed_and_report_restored": true,
+  "restored_selected_output_hash": true,
+  "report_download_restart_retained": true,
+  "failed_report_retained": true,
+  "interrupted_run_not_restarted": true,
+  "real_service_worker_stream_download": true,
+  "streamed_download_bytes": 1000000000,
+  "prepared_ticket_survives_actual_service_worker_stop": true,
+  "stream_download_selected_hash": true,
+  "unknown_download_token_rejected": true,
+  "cancelled_stream_releases_lock": true,
+  "arbitrary_export_path_rejected": true,
+  "unmarked_export_rejected": true,
+  "download_replay_rejected": true,
+  "retained_staged_export_reopened_and_hashed": true,
+  "wrong_json_size_recorded": true,
+  "wrong_json_retry_after_reload": true,
+  "legacy_failed_report_offers_retry": true,
+  "malformed_checkpoint_rejected": true,
+  "denied_checkpoint_blocks_before_work": true,
+  "wrong_selected_length_rejected": true,
+  "downloaded_report_matches": true,
+  "owned_export_directories_remaining": 0,
+  "nested_path": "/nested/anynote-p01/",
+  "secure_context": "Trustworthy loopback, not a phone HTTPS origin"
+}

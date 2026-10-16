@@ -1,0 +1,125 @@
+{
+  "purpose": "Exact public raw bytes; phase-only receipt never grants aggregate acceptance",
+  "aggregate_acceptance": false,
+  "members": [
+    {
+      "artifact_id": 12050304174,
+      "artifact_name": "p17-security-report",
+      "original_member": "fuzz-report.json",
+      "archive_path": "raw/p17-security-report/fuzz-report.json",
+      "sha256": "b57d70a30cbe20ea122ca0c968e0d7a92d6a7565b5512102e40bd1fa90461f27"
+    },
+    {
+      "artifact_id": 12050304174,
+      "artifact_name": "p17-security-report",
+      "original_member": "osv-advisory-GHSA-wrw7-89jp-8q8g.json",
+      "archive_path": "raw/p17-security-report/osv-advisory-GHSA-wrw7-89jp-8q8g.json",
+      "sha256": "6f0878c29fd08698ef22b5fd79ecc736ff301496530d1d6aa48942de6446908e"
+    },
+    {
+      "artifact_id": 12050304174,
+      "artifact_name": "p17-security-report",
+      "original_member": "http-report.json",
+      "archive_path": "raw/p17-security-report/http-report.json",
+      "sha256": "d099d48aad056a2b4592a6b59c4f7c7b05966786a4617af3fb5b9ecb3cf05fd6"
+    },
+    {
+      "artifact_id": 12050304174,
+      "artifact_name": "p17-security-report",
+      "original_member": "osv-advisory-RUSTSEC-2024-0370.json",
+      "archive_path": "raw/p17-security-report/osv-advisory-RUSTSEC-2024-0370.json",
+      "sha256": "9ec89f5e0f0258ad897ca88ed59a6f8155961303e1cb8457c20a62616a384a86"
+    },
+    {
+      "artifact_id": 12050304174,
+      "artifact_name": "p17-security-report",
+      "original_member": "osv-advisory-RUSTSEC-2024-0429.json",
+      "archive_path": "raw/p17-security-report/osv-advisory-RUSTSEC-2024-0429.json",
+      "sha256": "0b4b5d032cf3e07ec5da89d447ff7115f4750cd81ddcb6d1b0ceff177412ff4f"
+    },
+    {
+      "artifact_id": 12050304174,
+      "artifact_name": "p17-security-report",
+      "original_member": "osv-advisory-RUSTSEC-2026-0346.json",
+      "archive_path": "raw/p17-security-report/osv-advisory-RUSTSEC-2026-0346.json",
+      "sha256": "e53a4e87b6a117694e828091597d3df465c2c2ab844106a22e0b1a33252844d3"
+    },
+    {
+      "artifact_id": 12050304174,
+      "artifact_name": "p17-security-report",
+      "original_member": "osv-advisory-RUSTSEC-2026-0347.json",
+      "archive_path": "raw/p17-security-report/osv-advisory-RUSTSEC-2026-0347.json",
+      "sha256": "3d818507f84401147bd2c3b8796feee5d4df71c88c4819fe37a809c7db8af194"
+    },
+    {
+      "artifact_id": 12050304174,
+      "artifact_name": "p17-security-report",
+      "original_member": "osv-advisory-RUSTSEC-2026-0348.json",
+      "archive_path": "raw/p17-security-report/osv-advisory-RUSTSEC-2026-0348.json",
+      "sha256": "3d9113bde1bbffbc77e980b05de869b5c4dab06f3413cb285685060a3753c5b6"
+    },
+    {
+      "artifact_id": 12050304174,
+      "artifact_name": "p17-security-report",
+      "original_member": "osv-advisory-RUSTSEC-2026-0349.json",
+      "archive_path": "raw/p17-security-report/osv-advisory-RUSTSEC-2026-0349.json",
+      "sha256": "07815dcd55d1367f034bf9dca0e1c9b2604fb4a9437c281b8a9c70707fefbb40"
+    },
+    {
+      "artifact_id": 12050304174,
+      "artifact_name": "p17-security-report",
+      "original_member": "osv-batch-0.json",
+      "archive_path": "raw/p17-security-report/osv-batch-0.json",
+      "sha256": "6e7daf41bf1019fb74f68905b358d2b4adcc87c9efeca0bafa17ef81ec6fce30"
+    },
+    {
+      "artifact_id": 12050304174,
+      "artifact_name": "p17-security-report",
+      "original_member": "osv-batch-1000.json",
+      "archive_path": "raw/p17-security-report/osv-batch-1000.json",
+      "sha256": "7f148645585571258f558fbf2c467734e05e84d049449fffd8f1da7233708988"
+    },
+    {
+      "artifact_id": 12050304174,
+      "artifact_name": "p17-security-report",
+      "original_member": "osv-batch-500.json",
+      "archive_path": "raw/p17-security-report/osv-batch-500.json",
+      "sha256": "bc09571f8ab36a6ca3d5507b40500e1c9650730cdd598032073948ca66ea8a7a"
+    },
+    {
+      "artifact_id": 12050304174,
+      "artifact_name": "p17-security-report",
+      "original_member": "portable-report.json",
+      "archive_path": "raw/p17-security-report/portable-report.json",
+      "sha256": "eeaddf16fa25683d06c8cc0e68462f57226e1244c60613826a7798aa2568083f"
+    },
+    {
+      "artifact_id": 12050304174,
+      "artifact_name": "p17-security-report",
+      "original_member": "remediation-report.json",
+      "archive_path": "raw/p17-security-report/remediation-report.json",
+      "sha256": "296c9fb6748f3f3ced723e63246edcf61288c417cfbaef74c9284289399bad7d"
+    },
+    {
+      "artifact_id": 12050304174,
+      "artifact_name": "p17-security-report",
+      "original_member": "source-report.json",
+      "archive_path": "raw/p17-security-report/source-report.json",
+      "sha256": "f1a5397ccc7a67b6bfff62ca711659714ca049e6035b6abc41d73f70a3312945"
+    },
+    {
+      "artifact_id": 12050304174,
+      "artifact_name": "p17-security-report",
+      "original_member": "supply-chain-report.json",
+      "archive_path": "raw/p17-security-report/supply-chain-report.json",
+      "sha256": "a0413b888f3209599ab8934e10d46342711bff65bce56563f83aa4a25744058a"
+    },
+    {
+      "artifact_id": 12050304174,
+      "artifact_name": "p17-security-report",
+      "original_member": "traceability-report.json",
+      "archive_path": "raw/p17-security-report/traceability-report.json",
+      "sha256": "45a4cd4d491a011a1f033504e64fb43e4c01b8e4cb9e5697dee8afc99331b263"
+    }
+  ]
+}

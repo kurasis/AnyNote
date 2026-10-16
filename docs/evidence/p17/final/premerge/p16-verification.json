@@ -1,0 +1,29 @@
+{
+  "purpose": "P16 raw acceptance semantics after exact Git-blob and ZIP verification",
+  "status": "PASS",
+  "ordinary_cohort_status_when_verified": "PASS",
+  "aggregate_acceptance": true,
+  "source_commit": "4fcde745326f5ef55eced855aabc0e2fcd110b1f",
+  "source_tree": "7d8cb6c26b6fb9f88e20c05d97f257fea9caf1f8",
+  "plaintext_bytes": 1000000000,
+  "full_sha256": "5ea5c0a453794445d12a89da836fa3803e14fa49bf2d2a9cb1fc840453a4d02e",
+  "operations_checks": 202,
+  "archive_negative_tests": 10,
+  "accounts": 10,
+  "active_devices": 50,
+  "retained_signed_revisions_inserted": 100000,
+  "actual_authenticated_http_history_pages": 1001,
+  "actual_history_rows_read": 100001,
+  "backup_elapsed_ms": 10859,
+  "rto_offline_content_seconds": 68.183,
+  "rto_drill_seconds": 141.917,
+  "http_page_latency_ms": {
+    "p50": 87.49274899996817,
+    "p95": 475.52685899997596,
+    "max": 1171.004336000071
+  },
+  "physical_100gb_fixture": "NOT_RUN",
+  "physical_acceptance": false,
+  "independent_security_review": "NOT_RUN",
+  "production_deployed": false
+}

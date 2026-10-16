@@ -1,0 +1,16 @@
+{
+  "purpose": "Actual18-command startup on the clean correction head while GitHub access is unavailable; not merged-main acceptance",
+  "status": "PASS",
+  "source_commit": "4fcde745326f5ef55eced855aabc0e2fcd110b1f",
+  "source_tree": "7d8cb6c26b6fb9f88e20c05d97f257fea9caf1f8",
+  "startup_commands": 18,
+  "startup_script_sha256": "be2bbcc4530f232e9b6eed65331517ecd6a90233524f88c03d1a1d9bf52fe5b2",
+  "private_log_sha256": "1a74614a77fef11c23e1326faa41b194c4b27f83ca9d8c37df216104aa9549c7",
+  "original_baseline_sha256": "78be1ead883e788515a787303ea79206e815e227bd1199396a4c101defee387e",
+  "original_baseline_rewritten": false,
+  "retained_state_verification": "PASS: original76 tables/content/sessions/TLS/OAuth; known3additive migrations/2tables, existing explicit P16 rate deviation; no P17 migration",
+  "current_instance_verified": true,
+  "merged_main_acceptance": false,
+  "fresh_task_restoration": "NOT_RUN",
+  "production_deployed": false
+}

@@ -1,0 +1,19 @@
+{
+  "purpose": "Initial P17 main failure, separate from the passing original PR cohort and final corrected acceptance",
+  "status": "FAIL",
+  "aggregate_acceptance": false,
+  "source_commit": "626e25e144c4f18b84c32862201ff6eaa0618a6c",
+  "failed_jobs": [
+    "files-windows-native",
+    "host-windows-build"
+  ],
+  "diagnosis": [
+    "1001-event signature replay can outlast the unchanged10-second lease; controlled paused process returned STALE_WRITER",
+    "Actual transfer-list polling advances write revision and invalidates content CAS; extended existing regression fails before correction"
+  ],
+  "original_logs": {
+    "files-windows-main-original.log": "04c68d612621f40c9a90f68737df87316c0ce565f3349175ae0e4fa38b353cac",
+    "host-windows-main-original.log": "54084fa0096adb21dd72ba7a87d0a01d226bc7d6cc2e499a72217c7000a10f53"
+  },
+  "final_corrected_acceptance": "Separate exact-source PR/main receipts; this attempt stays failed"
+}

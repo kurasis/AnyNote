@@ -1,0 +1,9 @@
+{
+  "purpose": "P11 actual three-role and second-device lease reauthorization races",
+  "status": "PASS",
+  "checks": 418,
+  "source_commit": "4fcde745326f5ef55eced855aabc0e2fcd110b1f",
+  "source_tree_dirty": false,
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN"
+}

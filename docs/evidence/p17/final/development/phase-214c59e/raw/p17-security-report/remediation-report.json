@@ -1,0 +1,22 @@
+{
+  "purpose": "P17 exact old/new response resource regression reproduction",
+  "status": "PASS",
+  "source_commit": "214c59e7c0754b46c1437818ddc1eee6f9efc41f",
+  "source_tree_dirty": false,
+  "historical_source": {
+    "commit": "81298cc8cc110a25347e40a56011f84c65f8c66b",
+    "path": "packages/protocol/auth-client.mjs",
+    "sha256": "e347668e62fbf49c9b92853c4a1098800a5eaac5802d8cb86804bb27eefecd94",
+    "evaluated_function_sha256": "9a6db119609e2f4e4d26c919050123a44be7575171f8a97676393232246b6507"
+  },
+  "before": {
+    "consumed_chunk_collectible_before_eof": false,
+    "reader_locked_after_failure": true
+  },
+  "after": {
+    "consumed_chunk_collectible_before_eof": true,
+    "reader_locked_after_failure": false
+  },
+  "scope": "Actual Web Streams and V8 GC observations; not a device memory budget or throughput benchmark",
+  "independent_review": "NOT_RUN"
+}

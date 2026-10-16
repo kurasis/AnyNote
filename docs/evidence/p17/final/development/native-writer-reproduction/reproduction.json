@@ -1,0 +1,69 @@
+{
+  "purpose": "Actual local development reproductions; separate from clean final ordinary acceptance",
+  "development_only": true,
+  "aggregate_acceptance": false,
+  "full_exact_source_acceptance": false,
+  "base_commit": "626e25e144c4f18b84c32862201ff6eaa0618a6c",
+  "correction_commit": "4fcde745326f5ef55eced855aabc0e2fcd110b1f",
+  "binary_sha256_before_run": "NOT_CAPTURED; no exact-binary receipt is claimed",
+  "roster_process_control": "Only the owned synthetic native process receives SIGSTOP; SIGCONT after80ms on a100ms interval during snapshot calls. Production lease remains10000ms.",
+  "before_roster": {
+    "error": "STALE_WRITER",
+    "elapsed_ms": 38669.12394099999
+  },
+  "after_roster": {
+    "checks": 9,
+    "valid_elapsed_ms": 56097.265801999994,
+    "valid_error": null,
+    "omitted_error": "ROSTER_CHANGED",
+    "signature_error": "INVALID_SIGNATURE",
+    "rollback_error": "ROLLBACK_QUARANTINE",
+    "reported_source_tree_dirty": true
+  },
+  "transfer_poll_regression": {
+    "before_tests": 1,
+    "before_pass": 0,
+    "before_error": "STALE_WRITER",
+    "after_tests": 2,
+    "after_pass": 2,
+    "final_vault_tests": 18,
+    "final_vault_pass": 18,
+    "actual_transfer_reads": 16,
+    "intervening_commit_denied": true,
+    "locked_capability_denied": true
+  },
+  "source_reference_hashes": {
+    "626e25e144c4f18b84c32862201ff6eaa0618a6c": {
+      "packages/vault-native/src/devices.rs": "9bccf1ec214f3888aa12959269e0990df522daebdee3267f5de6cf1aff77d68f",
+      "packages/vault-native/src/notes/files.rs": "3d64ce20195c3b68d009a87ba4b1c3410a2c870b55cff5ff92698629800d60ed",
+      "packages/vault-native/tests/vault.rs": "40168624ff4df55581c98a48e9840850fffa790c9dfc7e66795df32dec7ce5a8",
+      "experiments/p01/p11-native-interop.mjs": "014623ab1d8b3a2857662959922546645e94e139a302dc93331c61ecc0b7dbc4"
+    },
+    "4fcde745326f5ef55eced855aabc0e2fcd110b1f": {
+      "packages/vault-native/src/devices.rs": "2374b1f7a76ff47bf9559d39e38df7bed0d91f80a66b30dd2d1c5c03f43736a9",
+      "packages/vault-native/src/notes/files.rs": "4af50b8120857a7a16493de22fd53e76df154d843f34362af4276bfa0204764d",
+      "packages/vault-native/tests/vault.rs": "bbe3c0184ba444a645012b28125d457ee32e278d2188b1be023674de736da0cf",
+      "experiments/p01/p11-native-interop.mjs": "f8a5744c556b0ce9939fa6d7f59aefd78166d9d3aa8091597c336d84dc8e7c29"
+    }
+  },
+  "log_sha256": {
+    "p11-slow-diagnostic.log": "ec1e92dbcce79cd8421ced72f8ac00adc7d7a511be5e4d46082f47ce3f7a69b6",
+    "p11-slow-fixed.log": "6c0d171c3ddec9eca5d0dc958473ad56344ec81bb195be3fb913a2c2a85eaed8",
+    "transfer-polls-before.log": "a07451e6c2509e70f585849a408afb9ac564217bf281a3dcc667fa40812c3000",
+    "transfer-polls-after.log": "d55faa3b6fb5837b8852e94f99f04940cbf73c9a61a6f92b1ddfaf5bac8defe7",
+    "roster-final-vault.log": "f9884f2b88b75cdd326c4c99bbec93ec354f854d60f6ab819bedbd5918cce067",
+    "roster-final-clippy.log": "c615a18c07a83d0ba26545f34feec136e71008c1399d931b6446edb9ea9cfd61",
+    "roster-final-baseline.log": "2b393a9840b54ce2a0c636acf38a1fb24baf2c00d51da3a76734dfb417404bf9",
+    "roster-native-tests.log": "8278c21ce502e3f017c8302fa9a504cf33d0a9d10a0d40c7521d3641b7c5e567"
+  },
+  "qualified_independent_review": "NOT_RUN",
+  "production_release_allowed": false,
+  "snapshot_correction_native_suite": {
+    "passed": 112,
+    "failed": 0,
+    "ignored": 0,
+    "scope": "Built after the roster correction and before the later transfer-read correction; not a final combined-source receipt. Final-source vault suite18/18 is separate.",
+    "actual_incompressible_gigabyte": true,
+    "raw_log_sha256": "8278c21ce502e3f017c8302fa9a504cf33d0a9d10a0d40c7521d3641b7c5e567"
+  }
+}

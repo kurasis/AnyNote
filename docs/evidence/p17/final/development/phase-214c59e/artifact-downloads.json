@@ -1,0 +1,14 @@
+{
+  "purpose": "Public ordinary-run artifact download and ZIP-digest verification; not aggregate test acceptance",
+  "source_commit": "214c59e7c0754b46c1437818ddc1eee6f9efc41f",
+  "cohort_status_when_downloaded": "FAIL",
+  "artifacts": [
+    {
+      "id": 12050304174,
+      "name": "p17-security-report",
+      "run_id": 38912212563,
+      "zip_sha256": "7199ee0b5d8dfc7e7e50b8615d84f1d19be1e7770510606c75bd5c08196429ae",
+      "zip_bytes": 85496
+    }
+  ]
+}

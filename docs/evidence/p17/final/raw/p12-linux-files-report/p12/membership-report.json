@@ -1,0 +1,8 @@
+{
+  "purpose": "P12 actual file role/removal/rekey/owner and full-content-quota maintenance races",
+  "status": "PASS",
+  "checks": 452,
+  "source_commit": "a55b73e84a30c11b2e737d1a3830e54ec774ed19",
+  "source_tree_dirty": false,
+  "physical_acceptance": false
+}

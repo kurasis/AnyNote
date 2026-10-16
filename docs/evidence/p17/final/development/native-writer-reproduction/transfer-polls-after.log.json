@@ -1,0 +1,19 @@
+{
+  "purpose": "Lossless original log representation; concatenate lines_utf8 and encode UTF-8 to recover the original bytes, including CRLF/trailing spaces",
+  "original_path": "development/native-writer-reproduction/transfer-polls-after.log",
+  "encoding": "UTF-8 lines with original terminators",
+  "original_bytes": 508,
+  "original_sha256": "d55faa3b6fb5837b8852e94f99f04940cbf73c9a61a6f92b1ddfaf5bac8defe7",
+  "lines_utf8": [
+    "   Compiling anynote-local-vault v0.1.0 (/workspace/AnyNote/packages/vault-native)\n",
+    "    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.99s\n",
+    "     Running tests/vault.rs (packages/vault-native/target/debug/deps/vault-c7aa835558993b53)\n",
+    "\n",
+    "running 2 tests\n",
+    "test host_writer_readiness_does_not_invalidate_content_cas ... ok\n",
+    "test host_writer_readiness_preserves_owner_expiry_and_generation_fences ... ok\n",
+    "\n",
+    "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 16 filtered out; finished in 5.01s\n",
+    "\n"
+  ]
+}

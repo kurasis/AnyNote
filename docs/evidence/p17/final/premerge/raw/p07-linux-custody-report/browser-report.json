@@ -1,0 +1,11 @@
+{
+  "purpose": "P07 actual encrypted IndexedDB, worker custody and lifecycle integration",
+  "status": "PASS",
+  "source_commit": "c3b9d1c20c22e8edec9a58376cf88fefba66232d",
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "checks": 28,
+  "chromium_sandbox": true,
+  "tls_verification": "NSS trusted test CA; hostname and TLS checks enabled",
+  "storage": "Actual persistent IndexedDB transactions and worker termination"
+}

@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "scope": "PUBLIC_SIGNATURE_ONLY_P05",
+  "php": "8.4.26",
+  "checks": 377,
+  "sources": [
+    {
+      "runtime": "Rust",
+      "frames": 24
+    },
+    {
+      "runtime": "Node",
+      "frames": 24
+    },
+    {
+      "runtime": "Chromium worker",
+      "frames": 24
+    }
+  ],
+  "physical_acceptance": false,
+  "source_commit": "a55b73e84a30c11b2e737d1a3830e54ec774ed19",
+  "source_tree_dirty": false,
+  "public_input_sha256": "a7279c7fce7d6969a06cd0f1ca5e98f40a06ca58dc8b079f87b54471f1d99184"
+}

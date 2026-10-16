@@ -1,0 +1,14 @@
+{
+  "purpose": "Lossless original log representation; concatenate lines_utf8 and encode UTF-8 to recover the original bytes, including CRLF/trailing spaces",
+  "original_path": "development/native-writer-reproduction/p11-slow-fixed.log",
+  "encoding": "UTF-8 lines with original terminators",
+  "original_bytes": 615,
+  "original_sha256": "6c0d171c3ddec9eca5d0dc958473ad56344ec81bb195be3fb913a2c2a85eaed8",
+  "lines_utf8": [
+    "DIAGNOSTIC_SNAPSHOT {\"elapsed_ms\":56097.265801999994,\"error\":null}\n",
+    "DIAGNOSTIC_SNAPSHOT {\"elapsed_ms\":92114.694851,\"error\":\"ROSTER_CHANGED\"}\n",
+    "DIAGNOSTIC_SNAPSHOT {\"elapsed_ms\":89237.273606,\"error\":\"INVALID_SIGNATURE\"}\n",
+    "DIAGNOSTIC_SNAPSHOT {\"elapsed_ms\":47175.85982099996,\"error\":\"ROLLBACK_QUARANTINE\"}\n",
+    "{\"purpose\":\"P11 actual native/portable signed history beyond 1000 events\",\"status\":\"PASS\",\"checks\":9,\"events\":1001,\"source_commit\":\"626e25e144c4f18b84c32862201ff6eaa0618a6c\",\"source_tree\":\"8c48e385c2f7ea9638102b74d745ab7b040d9a0a\",\"source_tree_dirty\":true,\"physical_acceptance\":false,\"independent_review\":\"NOT_RUN\"}\n"
+  ]
+}
