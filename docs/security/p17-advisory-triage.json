@@ -1,0 +1,39 @@
+{
+  "purpose": "Exact advisory disposition for synthetic P17 evaluation; no production waiver",
+  "review_kind": "AI-assisted engineering review, not qualified independent audit",
+  "review_date": "2026-10-16",
+  "production_release_allowed": false,
+  "entries": [
+    {
+      "ecosystem": "crates.io",
+      "name": "glib",
+      "version": "0.18.5",
+      "advisories": ["GHSA-wrw7-89jp-8q8g", "RUSTSEC-2024-0429"],
+      "classification": "Moderate upstream unsound VariantStrIter; one issue with two advisory IDs",
+      "disposition": "EXCLUDED_WINDOWS_TARGET",
+      "reason": "Frozen desktop lock includes Linux GTK variants. Neither glib nor its VariantStrIter is reachable in the locked x86_64-pc-windows-msvc graph. Linux desktop distribution is unsupported. Exclusion is rechecked from actual Cargo metadata, not assumed from the lock.",
+      "followup": "Reassess and upgrade the GTK dependency chain before enabling any Linux desktop product target."
+    },
+    {
+      "ecosystem": "crates.io",
+      "name": "proc-macro-error",
+      "version": "1.0.4",
+      "advisories": ["RUSTSEC-2024-0370"],
+      "classification": "Upstream unmaintained notice; not a demonstrated exploitable issue",
+      "disposition": "EXCLUDED_WINDOWS_TARGET",
+      "reason": "Present in the conservative cross-target GTK lock closure and absent from the actual Windows resolve graph. Build-time macro code remains a supply-chain trust concern.",
+      "followup": "Remove or replace through maintained upstream GTK updates before considering a Linux desktop product."
+    },
+    {
+      "ecosystem": "crates.io",
+      "name": "rustls",
+      "version": "0.23.45",
+      "advisories": ["RUSTSEC-2026-0346", "RUSTSEC-2026-0347", "RUSTSEC-2026-0348", "RUSTSEC-2026-0349"],
+      "classification": "Conditional TLS secret Debug disclosure, ECH rejection leakage, Brotli allocation and key-share prediction downgrade; upstream fix 0.23.46",
+      "disposition": "FROZEN_SYNTHETIC_PROFILES_ONLY",
+      "reason": "Old auth-native and vault-native standalone frozen test locks retain 0.23.45. Installed Windows, Windows helper and content-native locks already use fixed 0.23.46. The product Windows graph must contain only rustls >=0.23.46, no glib/proc-macro-error, and no Brotli decompression feature. Old standalone builds are synthetic fixtures, never release inputs. This does not erase the old vulnerable dependency or waive release risk.",
+      "affected_lockfiles": ["packages/auth-native/Cargo.lock", "packages/vault-native/Cargo.lock"],
+      "followup": "P18 must build only the checked Windows root/helper locks. Any future standalone distribution needs a new reviewed lock profile with 0.23.46 or later; preserve the old fixture locks as historical evidence."
+    }
+  ]
+}

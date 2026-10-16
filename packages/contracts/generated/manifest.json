@@ -244,7 +244,7 @@
     },
     {
       "path": "packages/protocol/auth-client.mjs",
-      "sha256": "e347668e62fbf49c9b92853c4a1098800a5eaac5802d8cb86804bb27eefecd94"
+      "sha256": "d2b5536ad70262b376fa1c0118c893aa6bd2d0d459801342a01543deb8455f48"
     },
     {
       "path": "packages/protocol/auth-formats.mjs",

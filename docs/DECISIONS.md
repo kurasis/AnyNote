@@ -1268,3 +1268,39 @@ P06 and Windows storage paths remain unchanged. A real filesystem collector
 regression preserves an old file in the other database namespace while removing
 its own eligible orphan. This prevents scheduled maintenance in one owned test
 database from collecting another database's retained ciphertext.
+
+
+## ADR-025 — P17 adversarial scope, resource bounds and independent review
+
+Date:2026-10-16. Accepted only for the existing synthetic evaluation scope.
+
+A response byte limit must also bound retained allocations. The common client
+reader now copies into one fixed bounded destination and releases its reader in
+a nested finally even when cancellation rejects. Real Web Streams/V8 GC against
+the exact old Git function reproduce both former failures and verify the fix.
+Portable AJV formats normalize throwing strict-decoder denials into false; the
+five generated codecs retain the frozen schema/semantic predicates. No cipher,
+wire domain, valid serialization, content authority, migration or prior lock changes.
+
+R01–R24 source/test bindings,69 client tests, finite seeded mutation, real
+three-account HTTPS/SQL, immutable concurrency/response-loss recovery and secret
+canary inspection supplement every inherited gate. Temporary503 refusals remain
+counted as failures of an individual attempt until the same immutable request
+obtains its verified receipt; SQL independently confirms one revision per operation.
+No timeout, server rate, production storage reserve, sandbox or integrity check
+is weakened to obtain acceptance. Before/blocked/after SQL counter observations
+are published instead of inferring ordering from a test name.
+
+The live OSV lock census is conservative across targets. Exact advisory IDs and
+actual supported-target reachability determine disposition. Windows uses fixed
+rustls0.23.46; Linux-only GTK and old standalone synthetic lock findings stay in
+reviewed records and never become a blanket production waiver. Newly observed
+advisories fail closed. Old fixture locks remain immutable; P18 may distribute
+only explicitly checked supported root/helper profiles.
+
+AI-assisted source review/tests cannot satisfy qualified independent review.
+Reviewer booking/report/retest are NOT_RUN; no reviewer is contacted. The release
+risk decision is synthetic-only, with no assertion of absent exploitable high/
+critical defects. ASVS5.0.0 Level2 is a review reference, not certification. P18
+software preparation may continue, while production, physical/memory/100GB and
+independent-review gates remain closed. See P17_SECURITY_REVIEW and evidence/p17.

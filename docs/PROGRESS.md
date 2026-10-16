@@ -28,8 +28,8 @@ their clean exact-head CI/merge evidence is separate. See
 | P13 | VERIFIED | Protected content UX, safe previews/thumbnails, reference-safe retention, independent age recovery and fresh standard import; 401 HTTP/SQL, 427 authority, 59 sandboxed UI checks, actual Linux/Windows 1 GB archive and all 24 software gates PASS; physical/review gates remain open |
 | P14 | VERIFIED | Native Windows/WebView2 single installer, actual dialogs/SQL/1GB/recovery/upgrade/restart, all 25 software gates; physical and production signing remain open |
 | P15 | VERIFIED | Installed PWA shell, EN/RU mobile/keyboard UX, exact 1 GB/API/recovery/import/update/quota software acceptance and all 27 mandatory candidate jobs; final merge is gated by the same exact-head cohort; physical/review/signing/memory gates remain open |
-| P16 | VERIFIED | Hardened deployment, real1GB concurrent/interrupted backup, clean-host/root-kit/fresh-state recovery and10-account/50-device/100000-revision capacity acceptance; final documentation head requires all29 normal gates before merge;100GB inventory/production/physical/review remain separate |
-| P17 | NOT STARTED | P02/P08–P16; independent review |
+| P16 | VERIFIED | Hardened deployment, real1GB concurrent/interrupted backup, clean-host/root-kit/fresh-state recovery and10-account/50-device/100000-revision capacity; PR30/main all29 gates verified in permanent evidence;100GB/production/physical/review remain separate |
+| P17 | VERIFIED / SYNTHETIC SCOPE | R01–R24 traceability,69 maintained client tests, bounded parser/envelope mutation, genuine multi-account SQL/store/log inspection, resource fixes and live advisory/target review; exact final30-job proofs indexed in evidence/p17; qualified independent review NOT_RUN, production release blocked |
 | P18 | NOT STARTED | P14–P17 and release/signing gates |
 
 ## Completed task: P00-BASELINE
@@ -937,3 +937,34 @@ recovery requires separately retained portable exports/kits.
 Rollback preserves every retained encrypted SQL/blob/profile/key/session/journal
 and must account for immutable records and additive migrations; never destructively
 roll back data or clear quarantine to make old credentials work.
+
+
+## P17 adversarial software evaluation and review handoff
+
+Added all24 threat-to-authority/test bindings, reproducible raw/schema/envelope/
+archive mutation, actual three-account adversarial HTTPS/SQL, concurrent immutable
+publication with typed transient retries and exact once-only SQL counts, synthetic
+secret-canary inspection and live1075-component advisory review. Fixed fragmented
+response allocation retention, reader-lock cleanup on stream error and untyped
+portable base64 format exceptions. Exact old/new real stream observations reproduce
+both resource defects before the fix; frozen schemas/predicates/179 prior files
+stay unchanged. SQL counter commit/rollback receipts now retain real observer
+before/blocked/after sequences.
+
+Local development passed69 client tests,4352 schema mutations,2376 PHP/JS control
+cases,512 authenticated envelope substitutions,512 corrupt tar headers and five
+KDF denials;26 PHP tests/362 assertions and owned SQL concurrency/supervised restart
+also passed. Development receipts retain dirty-source status and do not stand in
+for final clean acceptance. The final normal cohort requires all30 jobs, including
+both operations gates and the new adversarial-linux job; original raw receipts,
+exact source hashes and PR/main merge results are indexed in evidence/p17.
+
+Three live advisory component matches are retained, not suppressed: GTK glib and
+proc-macro-error are absent from the actual Windows target; old standalone frozen
+auth/vault test profiles retain rustls0.23.45, while the product Windows/helper/
+content locks and checked Windows graph use fixed0.23.46. Old profiles remain
+synthetic-only. See P17_SECURITY_REVIEW and the exact advisory triage. No claim of
+no exploitable high/critical defects follows from passing engineering checks.
+Qualified review remains TRACKED_NOT_BOOKED / NOT_RUN, and release is explicitly
+limited to synthetic evaluation. P18 is the next software stage; physical,
+100GB, memory, production signing/keys/deployment and G2/G3 remain open.
