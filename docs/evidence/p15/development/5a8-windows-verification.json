@@ -1,0 +1,129 @@
+{
+  "purpose": "Verified complete development Windows software job only; not the full P15 cohort",
+  "status": "PASS",
+  "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+  "run_id": 38830492320,
+  "job_id": 116747912190,
+  "artifact": {
+    "id": 12019580659,
+    "name": "p14-windows-development-installer",
+    "run_id": 38830492320,
+    "zip_sha256": "207cdfbaca4477aec0d473374044eaea5ac07ea77aa54145eaea38cb8179e6ff",
+    "zip_bytes": 32710243
+  },
+  "reports": [
+    {
+      "path": "5a8-windows-backend-filesystem-capability.json",
+      "artifact_id": 12019580659,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/backend-filesystem-capability.json",
+      "sha256": "70a74be5c57aab99b89934a7eea96474a087b1c164a2e76d6bb002f7afb0aebe",
+      "source_commit": null,
+      "status_as_reported": null,
+      "git_input_rows_verified": 0
+    },
+    {
+      "path": "5a8-windows-backend-http-errors.json",
+      "artifact_id": 12019580659,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/backend-http-errors.json",
+      "sha256": "f42005cbeee5630c6d58aed14abd6cc1a8ab4c41112a9ec3b878135835e39729",
+      "source_commit": null,
+      "status_as_reported": null,
+      "git_input_rows_verified": 0
+    },
+    {
+      "path": "5a8-windows-runtime-manifest.json",
+      "artifact_id": 12019580659,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "apps/desktop/src-tauri/resources/runtime-manifest.json",
+      "sha256": "f5a565ddb03f28b7862e18f5e3bd28fa03aa61620da53a057c92d9a875f8cc5e",
+      "source_commit": null,
+      "status_as_reported": null,
+      "git_input_rows_verified": 0
+    },
+    {
+      "path": "5a8-windows-capability-audit.json",
+      "artifact_id": 12019580659,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/capability-audit.json",
+      "sha256": "51a521bc24628352ab3bbb4c06ae135913b7df6b8ff3eb30080f6a045dae8cb3",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 0
+    },
+    {
+      "path": "5a8-windows-native-http-development.json",
+      "artifact_id": 12019580659,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/native-http-development.json",
+      "sha256": "096cf416708777dd04341c1f100f9ccae1b0e79120a8831fbd6fda233adb72e7",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 0
+    },
+    {
+      "path": "5a8-windows-native-pairing-development.json",
+      "artifact_id": 12019580659,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/native-pairing-development.json",
+      "sha256": "e3011ea0efa4f8d35f9c0bc769ab8a85eaa0669bc85d9a81ae08880572003f7f",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 0
+    },
+    {
+      "path": "5a8-windows-native-sharing-development.json",
+      "artifact_id": 12019580659,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/native-sharing-development.json",
+      "sha256": "fadc928afc5381783a060aa679e1af315f18cc6cd9097eaa0cef6d8e3a17ccf1",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 0
+    },
+    {
+      "path": "5a8-windows-source-report.json",
+      "artifact_id": 12019580659,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/source-report.json",
+      "sha256": "6af9a26d56a9fc832803beef3b689a5946a7c63c93c67dff3c6249f730dbae53",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 887
+    },
+    {
+      "path": "5a8-windows-ui-diagnostic-binaries.json",
+      "artifact_id": 12019580659,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/ui-diagnostic-binaries.json",
+      "sha256": "dd8cf676f8570183ea00acce2bf7485fab95a580c364869335fa87b6606a6f45",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "BUILT_UNVERIFIED",
+      "git_input_rows_verified": 0
+    },
+    {
+      "path": "5a8-windows-windows-host-preflight.json",
+      "artifact_id": 12019580659,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/windows-host-preflight.json",
+      "sha256": "6057c4268401129282e5572a2770252973cbe3ea205779130f82c35e3073e263",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 0
+    },
+    {
+      "path": "5a8-windows-windows-webview-development.json",
+      "artifact_id": 12019580659,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/windows-webview-development.json",
+      "sha256": "21790504409b912872fb3b77190e36993b82bc5784b58a2f8f420a14de57ead3",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 0
+    }
+  ],
+  "installer_digest_verified": true,
+  "physical_acceptance": false,
+  "qualified_review": "NOT_RUN"
+}

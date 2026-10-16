@@ -1078,3 +1078,120 @@ initial memory-target observation is `OBSERVED_ABOVE_INITIAL_TARGET`;
 it is not silently promoted to an unsampled budget or physical-platform pass.
 Keep memory/resource follow-up and production signing/physical/independent-review
 gates explicit before release. P15 proceeds with the complete iPhone PWA work.
+
+## P15 waiting-worker update and evidence scope
+
+Updates preserve the browser's normal waiting lifecycle. Check for update saves
+local work and locks; activation waits for all controlled windows to close.
+There is no skipWaiting message that could replace code while another window
+holds an unsaved editor or transfer. Every cached asset and worker policy byte
+contributes to the revision; failed installation discards only that candidate.
+BFCache return creates a fresh locked document instead of reusing a closed Worker.
+
+Push payloads never supply notification text, URLs, authority or key access.
+Optional receipt displays only neutral local text; delivery is not configured.
+No dependency or frozen format changes are required. Hosted mobile viewports,
+process RSS and per-agent V8 samples retain their exact software/memory scope;
+physical iPhone Files, PRF, storage and memory acceptance remain separate.
+
+P15 shell localization captures initial UI text nodes, never watches arbitrary
+runtime plaintext. Tagged display templates preserve parameter bytes, while only
+closed UI vocabulary is translated. No local/sessionStorage token or preference
+is introduced. Update pauses owned transfers before serializing its save/lock;
+the editor is inert during that save so a later keystroke cannot be silently
+masked by the update. Manual pause and page destruction retain the encrypted
+import job; its selection UI requires the same archive/kit and fresh audience
+confirmation before resuming. The exact P07 cache regression assertion expands
+only for the manifest and two original local icons; it does not admit API routes.
+
+The update preparation explicitly propagates a failed save through the ordinary
+UI error handler. A reported UI failure cannot be mistaken for a completed
+save/lock and continue the explicit update action.
+
+P15 list navigation reloads authenticated entry titles after a lock; keeping the
+old plaintext title map would violate masking. Only the current server page or
+retained selected-thread references are opened through the existing verified
+Worker/cached-payload path. A generation check fences each returned label before
+DOM insertion. Entry bodies remain outside the rendered list.
+
+## P15 portable history preflight
+
+The independent reader correctly refused a shared-group archive containing live
+records newer than its exported confirmed history. Protected local witnesses
+were sufficient for the live client, but did not travel in that public journal.
+The exporter now runs the existing historical object/file checks against the
+exact replayed proof that will travel before creating the age stream or sink.
+Missing inclusion fails closed; no footer/kit is issued. The owner can use the
+existing Confirm verified history action and prepare a fresh snapshot. EN/RU
+guidance explains that step. The reader, signatures, independent pins and frozen
+formats stay strict and unchanged; no server or export-footer claim substitutes
+for historical inclusion.
+
+P15 import resume binds its confirmation token to the freshly displayed preview.
+After a new private group is created, the stored destination has its resolved ID
+but the previous token described new-private/null. Refreshing only the token
+fixes resume; the stored destination and immutable requests remain unchanged,
+and confirm still rechecks the exact destination. A changed audience cannot use
+that resume path to rebind prepared ciphertext.
+
+Final checked-head raw reports can be archived on an evidence-only Git branch
+after the guarded merge. Each retains its actual source SHA and verified Git
+inputs. This preserves the checked main tree and avoids a report/commit
+self-reference cycle; the branch is a public evidence archive, not a software
+release or another implementation checkout.
+
+P15 inherited Windows acceptance exposed `STALE_WRITER` on a real small-file
+upload at 6bec7d9. Native host capability admission previously called `lease`
+even for transfer/status polling. That increments the global protected revision
+and fence, so polling between content_read and content_commit can manufacture a
+CAS conflict without another content writer. A real SQLite regression reproduces
+the same typed denial with the former admission behavior.
+
+Host admission now validates/reuses a live lease belonging to this exact vault
+instance. Missing/expired leases still go through the original transactional
+claim, foreign live owners still get WRITER_BUSY and clock/generation checks
+remain. Every actual mutation retains its original lease/fence/CAS path, including
+rejection of a genuinely stale snapshot. No lease duration, retry bound, signed
+authority or cryptographic format changes. This addresses the demonstrated
+polling conflict; the earlier a3706f4/cf1c631 abrupt updater exits still have no
+established cause and are not retrospectively reclassified.
+
+The pinned Playwright1.64.0 waitForFunction poller calls its predicate, treats
+its Promise as truthy and fulfills with that Promise. It then adopts false
+without polling again. Executing the exact installed poller body demonstrates
+async-false returns false with zero repolls, while the synchronous control polls
+twice before true. Thus the prior async registration predicate was not a waiting
+barrier; it did not establish a service-worker lifecycle defect. The P15 harness
+now explicitly awaits each real page evaluation in Node, retaining the same
+30-second bound and all active/waiting/controller assertions. Worker runtime,
+activation and dependency locks do not change.
+
+The update scenario also keeps the genuine committed receipt and exact immutable
+request retry unavailable until actual activation. It then releases the network
+fault before fresh unlock and requires the real old receipt to arrive after
+activation. This makes the late acknowledgement/newer-draft ordering explicit
+instead of depending on the background poll's timing. No API response, signature,
+local-store result or custody operation is fabricated.
+
+A zero quota reported by CDP did not produce the expected actual write failure
+on the already-open 5a83489 writer. No underlying admission/caching cause was
+captured; a quota estimate alone cannot stand in for a failed transaction. The
+fault setup now closes and reopens the same actual Chromium disk profile,
+requires distinct browser PIDs and applies a negligible one-byte limit before
+opening the vault. It requires a real typed Worker/IndexedDB denial at writer
+admission or a growing draft update, then exact ciphertext/plaintext recovery
+after restoring capacity. It imports/clears no storage or credentials. A short
+preflight runs before costly files and the same fault repeats after the unchanged
+real1GB workflow. This supplements rather than replaces the full acceptance.
+
+P15 evidence scanning preserves the exact public raw reports, including their
+original formatting. The generic-key heuristic mistook foundation path/checksum
+inventory lines for credentials. Each exempted path/digest was compared with the
+reported commit's actual Git blob. Only those exact complete lines in the two
+specific P15 foundation report paths are exempted. The final scanner's own exact
+checksum is included; no directory-wide or arbitrary-value exception is added.
+Changed-checksum, out-of-scope-known-checksum and fake-PAT negatives must reject.
+Raw logs retain trailing blank lines because their archived SHA-256 binds exact
+bytes; prose/code whitespace checks exclude only those preserved raw log files.
+Nested public artifact report paths are force-added explicitly so the general
+runtime artifacts ignore cannot silently omit audited public evidence.

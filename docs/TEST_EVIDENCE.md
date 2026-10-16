@@ -1851,3 +1851,214 @@ The complete preserved-data setup passed at the accepted source, retaining
 owned-service startup passed 15 commands at that source. Final documentation-head CI, ordinary guarded PR27 merge and
 configuration persistence have separate outcomes; draft save is not Publish or
 independently observed fresh restoration.
+
+## P15 development observations
+
+Executed locally on the P15 working tree: six real service-worker policy tests
+pass, install assets/build pass, all 179 frozen baseline files compare unchanged,
+and generated contracts compare read-only (325 structures/111 operations).
+Cloud Chromium failed before startup due to its sandbox-helper ownership; no
+browser/physical acceptance is claimed. The new CI gigabyte/update/V8-memory
+case and source-receipt collector are prepared and NOT_RUN at this source.
+
+P15 local follow-up: seven executable tests pass (six worker policy tests plus
+translation isolation for runtime/recovery text and prototype-shaped strings).
+The first remote P07 browser run failed NO_AUTH_API_KIT_OR_DYNAMIC_CACHE because
+its exact allowlist did not yet include the new manifest and two icons. The test
+is updated to exactly 14 static resources and explicitly rejects query strings;
+no API/cache security assertion or prior lifecycle test is disabled. New Chromium
+gigabyte/update and hosted WebKit checks remain pending for the updated source.
+
+The initial P15 browser run stopped after actual 1GB protected upload/reselection
+at P12_UNATTACHED_RECOVERY_VISIBLE: the UI now intentionally displays a localized
+human label instead of the raw UNATTACHED enum. The exact workflow state/version
+is retained in DOM data attributes; the regression now requires an UNATTACHED row
+with an available Attach action. No upload, cryptographic, full-hash, receipt or
+size assertion is removed. This initial run does not establish the later download,
+portable export/import, update or memory results.
+
+The final P14 head b30dc74bd2e97b3c46a6cacd51ee02ffc9568e70 was independently
+checked through GitHub: all 25 mandatory jobs succeed. Downloaded artifact
+11996283176 has SHA-256
+793dc5dca37591b1f65dcdf9666981e5228ffddeb3c246af25a3e17e9349a9ec.
+Its clean source receipt binds tree49e97603ea2bfd3d83a7976dddbf19dd18f9ad73;
+all 869 input hashes were compared with actual Git blobs, all seven declared raw
+report hashes/statuses and the installer digest verified. This read-only audit
+neither reran physical tests nor closed the retained signing/memory limits.
+
+At a3706f4 the P12 browser subcase completed all 14 assertions, actual protected
+1GB upload/reselection, service-worker full-hash download and OPFS/offline export.
+The following P15 case timed out on a hidden mobile tab because P12 intentionally
+ends locked. Its precondition now uses the real unlock/proof/group flow and actual
+writer readiness before proceeding; lock and timeout boundaries are unchanged.
+The full cohort remains failed until the corrected P15 scenario executes.
+
+A direct trusted-TLS request found manifest delivered as text/plain. Nginx now
+sets application/manifest+json explicitly, delivery policy participates in the
+static revision, and both browser gates assert the actual response media type.
+P15 revision also clears decrypted destination titles and stale preference
+references at lock, keeps the save state visible at a keyboard-sized viewport,
+and records source/recovered/imported full digests and per-process memory counters.
+
+The a3706f4 inherited Windows host job116677705874 stopped with exit1 during
+signed-test-upgrade, after two logged writer-readiness waits. No sanitized error
+or final WebView PASS receipt was produced; the cause is NOT_ESTABLISHED. Its
+installer/report ZIP12009129806 digest is
+ce9fa74f963b89958d1eb8bee8e6b44b4c97982f4f63fd677dc4b43ede6ae693.
+Pairing/sharing/preflight receipts pass, but they do not establish the unfinished
+host acceptance. The earlier 6d47151 Windows host job passed. The final P15 head
+still requires its own complete passing mandatory cohort; no retry or timeout
+weakening is used to relabel this observation.
+
+At d68be7e, actual hosted WebKit27.2 passes16 shell checks including the delivered
+manifest media type. ZIP12009034586 SHA256
+8afe19697e0343960e5237209f14a3f0721670e542985fb9ca68026b4abb0175 and all885
+Git input blobs independently verify. The focused PWA run is separate from full
+27-job merge acceptance and physical iPhone tests.
+
+The cloud's full owned development foundation check now passes, including actual
+Composer locked advisory audit (no known vulnerabilities),102 formatted PHP files,
+11 PHPUnit tests/217 assertions, transactional SQL and database-outage recovery.
+Trusted P06 HTTPS/session/CSRF/origin readiness passes afterwards. Local protocol
+306 tests and4 hostile-preview tests pass. These observations supersede the
+earlier cloud Packagist access blocker; they are not production deployment.
+
+The focused d68be7e Chromium run completed inherited P12 but stopped before P15
+portable export while selecting the reopened entry by title. The UI cleared its
+title map on lock, then listed entries without decrypting their verified titles;
+the list remained Untitled until opening an entry. P15 now opens authenticated
+payloads for the current list page (or retained offline references), checks the
+current generation and renders only their verified titles. The existing title
+selector is retained and the opened editor title is asserted explicitly. No API
+response, cryptographic check or actual gigabyte is replaced. ZIP12010332975
+digest6fea55c44372f9367482110b420efb57aca44712a8bde5aa7e61b8116b0c0f5b
+was independently checked; it is a failed development receipt, not acceptance.
+
+The final prepared P15 update scenario also stages a real API-accepted immutable
+attempt with only its response lost, edits a newer local version, and compares
+all encrypted outbox record hashes before/after actual activation while still
+locked. Fresh unlock must reconcile that exact old operation receipt, retain the
+newer local text and leave it locally saved. Only ciphertext record hashes and
+opaque identifiers enter the report. This expanded scenario remains pending
+until its exact-source browser receipt passes.
+
+The af01b02 focused browser run passes the reopened-title, mobile/keyboard,
+manifest/cache and actual1GB archive EOF/kit-release assertions, then its
+independent reader rejects UNANCHORED_HISTORY. ZIP12011298739 SHA256
+a0b7aa25425c199787225353f9c15f8f0d50626586e4ef32ec93e68fc3591518 verifies.
+The exported shared journal lacked inclusion of newer live records. Production
+export now checks its portable journal before creating an outer stream; the
+browser regression requires denial before any download, then uses the existing
+owner history-confirmation API/UI and repeats the complete genuine1GB recovery
+and import. This is not reader relaxation or a smaller substitute. Full P15
+acceptance remains pending at the corrected source.
+
+A focused state regression reproduced a second import issue before the full
+large-file resume: after new-private group creation, begin returned a fresh
+audience token but retained the initial token. The pre-fix test failed because
+the old token was still accepted. Resume now persists its freshly displayed
+token; two tests with the real frozen authenticated archive prove that the old
+token is rejected, the new one works, and a later destination change still
+cannot publish or replace the retained job. The read-only P13 suite now passes
+19 tests, and the seven PWA tests/build/frozen179 checks pass. This small state
+regression supplements the unchanged genuine1GB browser/API scenario.
+
+P15 final storage-fault acceptance is prepared in the same full1GB Chromium job:
+CDP sets the actual origin quota to zero, the shipped Worker attempts an encrypted
+IndexedDB transaction, typed storage failure must prevent a new-save acknowledgement,
+and ciphertext records/last acknowledged text must survive lock/reload/fresh
+authorization. The quota override is restored in finally, without deleting data.
+This prepared check is NOT_RUN locally because the cloud browser sandbox is
+unavailable; its exact-source hosted result is required. It does not assert
+physical iPhone storage, disk filling or immunity from OS eviction.
+
+The cf1c631 ordinary PWA job (38822277539 / 116721420311) completed the
+full genuine gigabyte export, independent offline hash, protected import resume
+and imported-destination full hash, then failed
+`P15_NEW_WORKER_WAITS_FOR_CONTROLLED_WINDOW`. Artifact 12015111858 ZIP SHA-256 is
+`67941f76955dd2613112bf5f0c1f56d7e27a9d6d978c4b3ce36886dd1491285f`.
+Its receipt did not capture the individual registration states; the cause is
+not established. The follow-up requires an actually controlled active window
+before update and waits for all active/waiting/controller conditions together
+within the unchanged 30-second bound, recording closed lifecycle states if it
+fails. A non-null waiting slot is no longer used as the transition barrier.
+No early activation, runtime cache policy or timeout is changed. This diagnostic
+follow-up is not a passing update or quota result until actually exercised.
+
+The ordinary 6bec7d9 Windows job116733736143 / run38826077937 fails explicitly
+with `Native job STALE_WRITER` in the small-dialog upload preflight, before its
+1GB flow. The existing native host acquired a new write lease for each protected
+IPC poll. New real-SQLite regression coverage interleaves those admission calls
+between content_read and content_commit and reproduces STALE_WRITER before the
+fix. Admission now reuses a live owned lease without changing metadata; real
+mutation/CAS, foreign-owner exclusion, expiry takeover and invalidated capability
+checks remain. Both focused regressions pass with real Argon and serial execution.
+The full native suite and actual new-source Windows acceptance remain required;
+this local result alone is not a passing hosted cohort. Earlier silent updater
+exits remain NOT_ESTABLISHED.
+
+The e87e4dd and6bec7d9 PWA runs also failed the old waiting-worker assertion,
+before quota acceptance. The installed Playwright1.64.0 poller body was executed
+with public closed predicates: async-false settles false without repolling;
+a synchronous false/false/true control repolls twice. The exact bundle/body
+hashes and result are retained in development/playwright-poll-diagnostic.json.
+This is tool diagnosis, not browser acceptance. An explicit awaited Node loop
+now checks actual registration states within the unchanged30s; there is no async
+waitForFunction predicate. The full1GB/new-worker/late-receipt/quota hosted run
+remains required at the new source.
+
+After the native admission fix, the complete locked/all-features native vault
+command passes72 unit tests plus40 integration tests, including genuine1GB,
+resume/export and real Argon, with-j4/serial test execution. The Windows native
+coordinator's14 Linux software tests also pass using the supported
+ANYNOTE_NATIVE_NODE override pointing to pinned Node24.21.0. Its initial local
+attempt lacked the default Windows node.exe path; the override fixes that test
+configuration without source or timeout changes. These Linux tests do not
+establish the separate installed Windows/WebView2 job or physical Hello/TPM.
+
+The 5a83489 P07 Linux browser/custody job116747913041 (run38830492330)
+passes its28 browser checks and executes the native suite, then its evidence
+script rejects the old exact16 custody count after P15 adds two tests. P07–P10
+receipt gates now require exact18 plus both new regression names; all original
+subprocess success, platform/WTS, source, HTTP/browser and interop checks remain.
+Preserved-custody report counts are updated accordingly. The actual complete
+local native stdout contains18 and both names. This is a receipt maintenance
+fix, not removal of a native failure or a passing new hosted cohort.
+
+The 5a83489 PWA run38830492419 / job116747913420 passes all34 P15 workflow
+assertions: actual full1GB export/offline/import/destination hashes, installed
+waiting-worker activation, byte-identical encrypted outbox and real old receipt
+after activation retaining newer text. Artifact12018388010 ZIP SHA256 is
+87a4852d03bf70f4b2d9b66f302dbca70f13ab231782e6f87352c11e045e9ea8.
+Overall status remains FAIL: its subsequent zero-quota fault reported quota0
+but observed no typed write denial within the unchanged60s. This does not
+establish a storage failure or capacity result; storage stayed PENDING.
+The revised fault reopens the same real disk profile in a distinct browser
+process, applies one-byte quota before writer access and requires a genuine
+Worker/IndexedDB denial plus last-acknowledged recovery. An early preflight
+provides faster fault-setup feedback and the same check remains mandatory after
+the unchanged incompressible1GB workflow. No profile reset/import, mocked store,
+crypto bypass, smaller gigabyte substitute or relaxed timeout is used.
+
+## P15 complete independent software candidate
+
+Candidate `b0d6c2e36680facbd49624c6205a195b2f644464` passes all 27 ordinary required jobs,
+including actual installed Windows/WebView2 and both additional PWA gates.
+The full genuine random 1 GB flow, quota abort, waiting-worker update, exact
+unknown outbox/newer draft reconciliation, complete ZIP digests and every
+reported Git-input hash are verified in [evidence/p15](evidence/p15/README.md).
+Final documentation changes require their own 27-job exact-head passing cohort;
+its raw reports and equal-tree guarded merge will be archived on the evidence-only
+branch linked there, without rewriting candidate or synthetic-merge source SHAs.
+Physical/review/production/memory/capacity gates remain explicitly open.
+
+Before the final evidence commit, the full Git-visible secret scan passed with
+12 fake-PAT paths, four changed/out-of-scope receipt negatives, all 15 prior
+changed key/digest negatives, the old-fragment mutation and alternate age identity.
+Nineteen initial generic-key findings were public inventory/file SHA-256 values;
+the archived foundation values were independently compared to actual Git blobs.
+Only exact full path/checksum lines in the two specific public receipt paths are
+exempted. Every one of the 76 candidate raw JSON reports was checked against the
+staged Git bytes, including nested artifact paths otherwise covered by ignore.
+The seven PWA policy/translation tests, actual bundle and frozen 179-file audit
+also passed locally. These dirty precommit checks are not final clean-head CI.

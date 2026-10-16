@@ -1,0 +1,262 @@
+{
+  "purpose": "Actual P14 postmerge ordinary push cohort observed after earlier handoff had 16 active jobs",
+  "status": "PASS",
+  "source_commit": "e5fe04d657850189eb956fb802fee9326e486a67",
+  "event": "push",
+  "observed_at": "2026-10-16T00:06:23.031557+00:00",
+  "mandatory_jobs": 25,
+  "passed": 25,
+  "checks": [
+    {
+      "name": "auth-linux-http-browser",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587032984,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793745/job/116587032984",
+      "started_at": "2026-10-15T18:06:02Z",
+      "completed_at": "2026-10-15T18:09:40Z"
+    },
+    {
+      "name": "auth-windows-native",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587032850,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793745/job/116587032850",
+      "started_at": "2026-10-15T18:08:32Z",
+      "completed_at": "2026-10-15T18:10:29Z"
+    },
+    {
+      "name": "baseline",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587032443,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793636/job/116587032443",
+      "started_at": "2026-10-15T18:06:01Z",
+      "completed_at": "2026-10-15T18:06:14Z"
+    },
+    {
+      "name": "content-linux-http-browser",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587032079,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793665/job/116587032079",
+      "started_at": "2026-10-15T18:06:01Z",
+      "completed_at": "2026-10-15T18:28:47Z"
+    },
+    {
+      "name": "content-windows-native",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587032217,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793665/job/116587032217",
+      "started_at": "2026-10-15T18:06:02Z",
+      "completed_at": "2026-10-15T18:18:13Z"
+    },
+    {
+      "name": "crypto-linux-browser-php",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587032678,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793771/job/116587032678",
+      "started_at": "2026-10-15T18:06:02Z",
+      "completed_at": "2026-10-15T18:10:43Z"
+    },
+    {
+      "name": "crypto-windows-native",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587033035,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793771/job/116587033035",
+      "started_at": "2026-10-15T18:09:13Z",
+      "completed_at": "2026-10-15T18:12:45Z"
+    },
+    {
+      "name": "devices-linux-http-browser",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587032175,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793663/job/116587032175",
+      "started_at": "2026-10-15T18:06:02Z",
+      "completed_at": "2026-10-15T18:22:24Z"
+    },
+    {
+      "name": "devices-windows-native",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587032209,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793663/job/116587032209",
+      "started_at": "2026-10-15T18:06:17Z",
+      "completed_at": "2026-10-15T18:23:58Z"
+    },
+    {
+      "name": "file-contract",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587032227,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793646/job/116587032227",
+      "started_at": "2026-10-15T18:06:02Z",
+      "completed_at": "2026-10-15T18:07:04Z"
+    },
+    {
+      "name": "files-linux-http-browser",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587033622,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793702/job/116587033622",
+      "started_at": "2026-10-15T18:06:02Z",
+      "completed_at": "2026-10-15T18:46:09Z"
+    },
+    {
+      "name": "files-windows-native",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587033410,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793702/job/116587033410",
+      "started_at": "2026-10-15T18:07:06Z",
+      "completed_at": "2026-10-15T18:29:22Z"
+    },
+    {
+      "name": "foundation",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587033418,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793672/job/116587033418",
+      "started_at": "2026-10-15T18:06:01Z",
+      "completed_at": "2026-10-15T18:09:10Z"
+    },
+    {
+      "name": "host-windows-build",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587032404,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793699/job/116587032404",
+      "started_at": "2026-10-15T18:07:03Z",
+      "completed_at": "2026-10-15T19:23:27Z"
+    },
+    {
+      "name": "linux-native-browser",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587033269,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793643/job/116587033269",
+      "started_at": "2026-10-15T18:06:01Z",
+      "completed_at": "2026-10-15T18:10:35Z"
+    },
+    {
+      "name": "notes-linux-http-browser",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587032436,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793648/job/116587032436",
+      "started_at": "2026-10-15T18:10:37Z",
+      "completed_at": "2026-10-15T18:28:04Z"
+    },
+    {
+      "name": "notes-windows-native",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587032141,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793648/job/116587032141",
+      "started_at": "2026-10-15T18:10:42Z",
+      "completed_at": "2026-10-15T18:24:52Z"
+    },
+    {
+      "name": "shared-linux-http-browser",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587032177,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793678/job/116587032177",
+      "started_at": "2026-10-15T18:06:01Z",
+      "completed_at": "2026-10-15T18:31:07Z"
+    },
+    {
+      "name": "shared-windows-native",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587031791,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793678/job/116587031791",
+      "started_at": "2026-10-15T18:06:00Z",
+      "completed_at": "2026-10-15T18:29:27Z"
+    },
+    {
+      "name": "static-device-kit",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587032706,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793643/job/116587032706",
+      "started_at": "2026-10-15T18:06:01Z",
+      "completed_at": "2026-10-15T18:08:29Z"
+    },
+    {
+      "name": "sync-linux-http-browser",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587032777,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793667/job/116587032777",
+      "started_at": "2026-10-15T18:08:05Z",
+      "completed_at": "2026-10-15T18:38:58Z"
+    },
+    {
+      "name": "sync-windows-native",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587032710,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793667/job/116587032710",
+      "started_at": "2026-10-15T18:09:43Z",
+      "completed_at": "2026-10-15T18:36:02Z"
+    },
+    {
+      "name": "vault-linux-http-browser",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587031856,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793644/job/116587031856",
+      "started_at": "2026-10-15T18:06:02Z",
+      "completed_at": "2026-10-15T18:21:23Z"
+    },
+    {
+      "name": "vault-windows-native",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587032176,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793644/job/116587032176",
+      "started_at": "2026-10-15T18:06:00Z",
+      "completed_at": "2026-10-15T18:21:33Z"
+    },
+    {
+      "name": "windows-provider",
+      "head_sha": "e5fe04d657850189eb956fb802fee9326e486a67",
+      "status": "completed",
+      "conclusion": "success",
+      "id": 116587033304,
+      "details_url": "https://github.com/kurasis/AnyNote/actions/runs/38782793643/job/116587033304",
+      "started_at": "2026-10-15T18:10:46Z",
+      "completed_at": "2026-10-15T18:13:47Z"
+    }
+  ],
+  "physical_acceptance": false
+}

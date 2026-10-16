@@ -1,0 +1,14 @@
+{
+  "purpose": "Executed pinned Playwright poller diagnosis; not browser or product acceptance",
+  "status": "PASS",
+  "source_commit": "6bec7d95b6805501c597fb44084781319b553641",
+  "source_tree_dirty": true,
+  "playwright": "1.64.0",
+  "bundle_sha256": "2325ca4c1c83070e89dc49fb82525508f0a68e0cf12e2a624277968da216b7e0",
+  "executed_poller_body_sha256": "bc1a66a35d11348566d25114b0a74a1016df911f575b74a09fdc575bf43095e7",
+  "async_false_result": false,
+  "async_false_repolls": 0,
+  "synchronous_control_repolls": 2,
+  "conclusion": "The actual pinned poller fulfills with the Promise and adopts its false value without retrying; the app harness must await each async condition itself",
+  "physical_acceptance": false
+}

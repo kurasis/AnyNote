@@ -1,3 +1,4 @@
+import {mountPwa} from './pwa.mjs';
 import {PreviewClient} from '../../packages/content-browser/preview-client.mjs';
 import {archiveUI} from './archive.mjs';
 import {contentUI} from './content.mjs';
@@ -22,24 +23,27 @@ let synchronizer,poller,backgroundSync=false,uiInterrupt=false;
 const text=k=>words[language][k]??words.en[k]??k;
 const vault=new LocalVault('/auth/vault-worker.js',mask);
 function erase(v){if(v&&typeof v==='object')for(const k of Object.keys(v)){if(typeof v[k]==='string')v[k]='';else erase(v[k]);}}
-let transfers,contentTools,portableTools;
+let transfers,contentTools,portableTools,pwa;
 function mask(){
  contentTools?.close();portableTools?.close({locked:true});
  transfers?.pause();if($('file-delete-confirm'))$('file-delete-confirm').checked=false;if($('file-restart-confirm'))$('file-restart-confirm').checked=false;if($('file-copy-confirm'))$('file-copy-confirm').checked=false;if($('file-copy-audience'))$('file-copy-audience').textContent='';if($('file-source'))$('file-source').value='';if($('file-items'))$('file-items').replaceChildren();if($('file-state'))$('file-state').textContent='';
  poller?.stop();synchronizer=undefined;
  generation++;clearTimeout(timer);editor&&erase(editor);editor=undefined;pendingConflict&&erase(pendingConflict);pendingConflict=undefined;
- roles.clear();groups.clear();titles.clear();references.clear();preferences=[];settingsGroup=undefined;groupSelected=threadSelected=undefined;server=false;
+ roles.clear();groups.clear();titles.clear();references.clear();preferences=[];settingsGroup=undefined;settingsHeads=[];preferencesDraft=undefined;groupSelected=threadSelected=undefined;server=false;
  $('workspace').hidden=true;$('unlock-panel').hidden=false;$('editor').hidden=true;$('conflict').hidden=true;
  for(const id of ['member-account','member-root','share-card','incoming-owner','incoming-device','phrase','group-title','thread-title','note-title','note-body','checklist-text','loaded-search'])$(id).value='';
- copyPrepared=undefined;for(const id of ['sharing-confirm','copy-confirm','close-account-confirm'])$(id).checked=false;for(const id of ['members-list','invitation-list','groups','threads','entries','drafts','checklist','preview','versions','trash-items','draft-recovery-target'])$(id).replaceChildren();
- for(const id of ['membership-state','copy-audience','group-heading','thread-heading','thread-summary','audience','conflict-remote','save-state'])$(id).textContent='';
+ copyPrepared=undefined;for(const id of ['sharing-confirm','copy-confirm','close-account-confirm'])$(id).checked=false;for(const id of ['members-list','invitation-list','groups','threads','entries','drafts','checklist','preview','versions','trash-items','draft-recovery-target','copy-destination','key-target'])$(id).replaceChildren();
+ for(const id of ['membership-state','copy-audience','group-heading','thread-heading','thread-summary','audience','conflict-remote','save-state','pwa-save-state'])$(id).textContent='';
  $('lock-state').textContent=text('locked');$('status').textContent=text('locked');delete $('status').dataset.error;delete $('status').dataset.busy;
  for(const id of ['unlock','login','create-group','create-thread','save-note','save-local','refresh','retry'])$(id).disabled=false;
 }
 function translate(){
+ pwa?.translate();
  contentTools?.translate();portableTools?.translate();
  document.documentElement.lang=language;$('language').value=language;
  for(const e of document.querySelectorAll('[data-i18n]'))e.textContent=text(e.dataset.i18n);
+ for(const e of document.querySelectorAll('[data-i18n-aria]'))e.setAttribute('aria-label',text(e.dataset.i18nAria));
+ if(!$('editor').hidden&&$('save-state').dataset.state)savedState($('save-state').dataset.state);
  $('lock-state').textContent=text($('workspace').hidden?'locked':'unlocked');
 }
 function reportError(e){
@@ -62,7 +66,7 @@ function run(action){
  tail=r.catch(()=>{});return tail;
 }
 function checkGeneration(g){if(g!==generation||document.hidden)throw Error('STALE_CAPABILITY');}
-function savedState(state){$('save-state').dataset.state=state;$('save-state').textContent=text({SAVING:'saving',LOCAL_SAVED:'local',QUEUED:'local',SENT_UNKNOWN:'unknown',SYNCING:'syncing',COMMITTED:'synced',CONFLICT:'local_conflict'}[state]??'attention');}
+function savedState(state){const label=text({SAVING:'saving',LOCAL_SAVED:'local',QUEUED:'local',SENT_UNKNOWN:'unknown',SYNCING:'syncing',COMMITTED:'synced',CONFLICT:'local_conflict'}[state]??'attention');for(const id of ['save-state','pwa-save-state']){const node=$(id);if(node){node.dataset.state=state;node.textContent=label;}}}
 function button(label,action){const e=document.createElement('button');e.type='button';e.textContent=label;e.onclick=()=>run(action);return e;}
 function item(container,label,action,id){const li=document.createElement('li');if(id)li.dataset.id=id;li.append(button(label,action));container.append(li);}
 function content(title='',markdown='',metadata_kind='content'){return {title,markdown,metadata_kind,tags:[],checklist:[],summary_entry_id:null,preferences:[]};}
@@ -129,6 +133,7 @@ async function synchronize(){
 }
 async function refresh(){await flushIfDirty();await prove();if(groupSelected)await groupStatus(groupSelected);await loadGroups();await copyDestinations();if(groupSelected&&groups.has(groupSelected))await openGroup(groupSelected);await retryPending();await summary();}
 async function openGroup(id){
+ pwa?.select(1);
  contentTools?.close();portableTools?.close();
  clearTimeout(timer);await flushIfDirty();groupSelected=id;threadSelected=undefined;const g=await groupStatus(id);if(!g)throw Error('GROUP_REQUIRED');
  $('group-heading').textContent=titles.get(id)??text('pending_title');$('audience').textContent=text(g.state==='archived'?'archived':g.kind==='shared'?'shared_group':'private');$('thread-heading').textContent='';$('entries').replaceChildren();$('editor').hidden=true;$('threads').replaceChildren();threadCursor=null;
@@ -140,9 +145,10 @@ async function loadThreads(more=false){
  for(const ref of [...page.objects].sort((a,b)=>preferenceOrder('thread-order',a.object_id,b.object_id))){references.set(ref.object_id,{group_id:groupSelected,...ref});const opened=await openRevision(groupSelected,ref,ref.heads[0]);titles.set(ref.object_id,opened.payload.title);item($('threads'),(ref.archived?'▣ ':'')+(opened.payload.title||text('untitled')),()=>openThread(ref.object_id),ref.object_id);}
 }
 async function openThread(id){
+ pwa?.select(2);
  await flushIfDirty();threadSelected=id;const ref=references.get(id);if(!ref||ref.group_id!==groupSelected||ref.object_kind!=='thread')throw Error('CONTEXT_MISMATCH');
  $('thread-heading').textContent=titles.get(id)??text('untitled');$('entries').replaceChildren();$('editor').hidden=true;entryCursor=null;
- await threadSummary(ref);if(server)await loadEntries();else for(const [object,r]of references)if(r.group_id===groupSelected&&r.thread_id===id&&!r.tombstoned)item($('entries'),titles.get(object)??text('untitled'),()=>openEntry(object),object);
+ await threadSummary(ref);if(server)await loadEntries();else{const g=generation;for(const r of references.values())if(r.group_id===groupSelected&&r.thread_id===id&&!r.tombstoned)await entryLabel(groupSelected,r,g);}
 }
 function preferenceOrder(key,a,b){const order=id=>BigInt(preferences.find(p=>p.key===key&&p.target_id===id)?.value??'9223372036854775807');return order(a)<order(b)?-1:order(a)>order(b)?1:a<b?-1:1;}
 async function threadSummary(ref){
@@ -152,9 +158,16 @@ async function threadSummary(ref){
  if(state.object.tombstoned)return;const entry=await fetchPayload(groupSelected,state.object);$('thread-summary').textContent=entry.payload.title;
 }
 async function loadEntries(more=false){
- if(!threadSelected)throw Error('THREAD_REQUIRED');const page=await api.call('/threads/'+threadSelected+'/entries'+(more&&entryCursor?'?after='+entryCursor:''),null,'objects-page');
+ if(!threadSelected)throw Error('THREAD_REQUIRED');const g=generation,group=groupSelected;const page=await api.call('/threads/'+threadSelected+'/entries'+(more&&entryCursor?'?after='+entryCursor:''),null,'objects-page');checkGeneration(g);
  if(page.group_id!==groupSelected||page.thread_id!==threadSelected)throw Error('CONTEXT_MISMATCH');entryCursor=page.next;$('more-entries').hidden=entryCursor===null;if(!more)$('entries').replaceChildren();
- for(const ref of page.objects){if(ref.object_kind!=='entry'||ref.thread_id!==threadSelected)throw Error('CONTEXT_MISMATCH');references.set(ref.object_id,{group_id:groupSelected,...ref});item($('entries'),titles.get(ref.object_id)??text('untitled'),()=>openEntry(ref.object_id),ref.object_id);}
+ for(const ref of page.objects){if(ref.object_kind!=='entry'||ref.thread_id!==threadSelected)throw Error('CONTEXT_MISMATCH');references.set(ref.object_id,{group_id:group,...ref});await entryLabel(group,ref,g);}
+}
+async function entryLabel(group,ref,g){
+ if(ref.object_kind!=='entry')throw Error('CONTEXT_MISMATCH');
+ // A lock discards all decrypted titles. Reopen this page's verified payloads
+ // rather than relying on a title map populated by a previous editor visit.
+ const opened=await fetchPayload(group,ref);checkGeneration(g);
+ titles.set(ref.object_id,opened.payload.title);item($('entries'),opened.payload.title||text('untitled'),()=>openEntry(ref.object_id),ref.object_id);
 }
 function showEditor(value,state='LOCAL_SAVED'){
  editor=structuredClone(value);editVersion=0;$('editor').hidden=false;$('conflict').hidden=true;$('versions').replaceChildren();$('note-title').value=editor.content.title;$('note-body').value=editor.content.markdown;drawChecklist();renderMarkdown($('preview'),editor.content.markdown);savedState(state);
@@ -174,6 +187,7 @@ async function flushLocal(){
 }
 async function flushIfDirty(){clearTimeout(timer);if(editor&&editVersion>0)await flushLocal();}
 async function openDraft(id){
+ pwa?.select(2);
  await flushIfDirty();const d=await vault.notes('draft',[id]),p=d.payload;groupSelected=p.context.group_id;threadSelected=p.context.thread_id;
  $('group-heading').textContent=titles.get(groupSelected)??text('pending_title');$('thread-heading').textContent=threadSelected?(titles.get(threadSelected)??text('untitled')):'';
  showEditor({...edit(groupSelected,p.context.object_kind,p.context.object_id,threadSelected,payloadContent(p),p.context.parents,p.context.action,p.context.archived),draft_id:id,attachments:structuredClone(p.context.attachments)});
@@ -280,6 +294,13 @@ $('keep-both').onclick=()=>run(async()=>{if(!editor||editor.object_kind!=='entry
 $('send-group-keys').onclick=()=>run(async()=>{if(!groupSelected)throw Error('GROUP_REQUIRED');const target=$('key-target').value;if(!target)throw Error('INVALID_REQUEST');await devices.sync(vault,selected.account_id);let request;if(groups.get(groupSelected)?.kind==='shared'){await sharedProof(groupSelected);request=await shared('ownGrants',{group_id:groupSelected,device_id:target});}else{const evidence=await vault.notes('groupEvidence',[groupSelected]),grant=await vault.devices('distribute',[evidence,target,null,true]);request=grant.request;}await devices.call('/me/device-envelopes','envelope-request','cancel-result',request);$('status').textContent=text('key_done');});
 $('offline').onclick=()=>run(async()=>{if(!navigator.serviceWorker)throw Error('STORAGE_UNAVAILABLE');await navigator.serviceWorker.register('/auth/sw.js',{scope:'/auth/'});await navigator.serviceWorker.ready;$('status').textContent=text('offline_done');});
 async function start(){translate();const list=await profiles();$('profiles').replaceChildren();for(const p of list){const o=document.createElement('option');o.value=JSON.stringify(p);o.textContent=p.account_id.slice(-8)+' · '+p.device_id.slice(-8);$('profiles').append(o);}if(!list.length){$('empty').hidden=false;return;}selected=list[0];await vault.open(selected);$('status').dataset.state='ready';}
+pwa=mountPwa({language:()=>language,prepareUpdate:async()=>{
+ transfers?.pause();portableTools?.pause();let prepared=false;
+ await run(async()=>{const form=$('editor'),before=form.inert;form.inert=true;try{await flushIfDirty();if(editor&&editVersion>0)throw Error('STORAGE_FAILURE');await vault.lock();prepared=true;}finally{form.inert=before;}});
+ // run reports and consumes ordinary UI errors. An unsuccessful save must also
+ // stop the update action instead of being mistaken for a successful lock.
+ if(!prepared)throw Error('STORAGE_FAILURE');
+}});
 start().catch(reportError);
 
 const shared=(op,x)=>vault.notes('shared',[op,x]);
@@ -348,13 +369,15 @@ $('cancel-membership').onclick=()=>run(async()=>{const body=await shared('cancel
 
 $('close-account').onclick=()=>run(async()=>{if(!$('close-account-confirm').checked)throw Error('CONFIRMATION_REQUIRED');await login();await prove();const pins=(await vault.call('info')).pins,operation_id=btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(16)))).replaceAll('+','-').replaceAll('/','_').replaceAll('=','');await sharing.call('/me/close-account','account-close-request','account-close-result',{version:1,account_id:selected.account_id,root_fingerprint:pins.root_fingerprint,operation_id,confirmation:'CLOSE_ACCOUNT'});server=false;await vault.lock();});
 
-transfers=new TransferManager({vault,cache:new CipherCache(),transport:new FilesClient(auth),active:()=>!document.hidden&&!$('workspace').hidden,progress:p=>{$('file-state').textContent=text(p.state==='UNATTACHED'?'file_unattached':p.state==='NEEDS_SOURCE'?'file_needs_source':'working')+(p.total?' '+Math.floor(100*p.bytes/p.total)+'%':'');}});
+function transferState(state){return text({UNATTACHED:'file_unattached',ATTACHED:'file_attached',NEEDS_SOURCE:'file_needs_source',RESTART_REQUIRED:'file_restart_needed',UPLOADING:'file_uploading',DOWNLOADING:'file_downloading'}[state]??'file_pending');}
+transfers=new TransferManager({vault,cache:new CipherCache(),transport:new FilesClient(auth),active:()=>!document.hidden&&!$('workspace').hidden,progress:p=>{$('file-state').textContent=transferState(p.state)+(p.total?' '+Math.floor(100*p.bytes/p.total)+'%':'');}});
+$('file-pause').onclick=()=>{transfers.pause();$('file-state').textContent=text('file_paused');};
 document.addEventListener('visibilitychange',()=>{if(document.hidden)transfers.pause();});
 $('file-refresh').onclick=()=>run(async()=>{
  await flushIfDirty();if(!server)await prove();if(!groupSelected)throw Error('GROUP_REQUIRED');await groupStatus(groupSelected);await keyFor(groups.get(groupSelected));
  const transport=transfers.transport,storage=await transport.call('/me/storage');const unattached=new Set();let recoveryAfter=null,recoveryCount=0;do{const recovery=await transport.call('/me/unattached-files'+(recoveryAfter?'?after='+recoveryAfter:''));recoveryCount+=recovery.items.length;if(recoveryCount>1000)throw Error('RESOURCE_LIMIT');for(const item of recovery.items)if(item.group_id===groupSelected)unattached.add(item.file_version_id);if(unattached.size>1000)throw Error('RESOURCE_LIMIT');recoveryAfter=recovery.next_after;}while(recoveryAfter!==null);$('storage-state').textContent=storage.committed_bytes+' / '+storage.limit_bytes+' '+text('encrypted_bytes')+'; '+storage.reserved_bytes+' '+text('reserved_bytes');
  $('file-items').replaceChildren();const local=await transfers.command('list');for(const f of local.filter(f=>f.group_id===groupSelected&&f.state!=='SUPERSEDED')){
-  const li=document.createElement('li');li.textContent=f.state+' · '+f.file_version_id;
+  const li=document.createElement('li');li.dataset.state=f.state;li.dataset.versionId=f.file_version_id;li.textContent=transferState(f.state)+' · '+f.file_version_id.slice(-8);
   if(f.state==='UNATTACHED')li.append(button(text('attach_file'),async()=>{if(!editor)throw Error('THREAD_REQUIRED');await flushLocal();await vault.notes('attach',[{draft_id:editor.draft_id,file_draft_id:f.draft_id}]);await openDraft(editor.draft_id);}));
   else if(f.state!=='ATTACHED')li.append(button(text('resume_file'),async()=>{const source=$('file-source').files[0];await transfers.upload(source,groupSelected,f.draft_id);}));
   let fileCopy;

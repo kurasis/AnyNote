@@ -1,0 +1,162 @@
+   Compiling anynote-local-vault v0.1.0 (/workspace/AnyNote/packages/vault-native)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.32s
+     Running unittests src/lib.rs (packages/vault-native/target/debug/deps/anynote_local_vault-73d1ab6b263a79a6)
+
+running 72 tests
+test custody::tests::portable_compound_bytes_require_both_keys_and_exact_descriptor ... ok
+test hello::attestation::tests::a_different_real_rsa_subject_cannot_match_the_app_key ... ok
+test hello::attestation::tests::every_truncation_is_rejected_without_panicking ... ok
+test hello::attestation::tests::exact_public_area_hash_binds_policy_and_exponent_encoding ... ok
+test hello::attestation::tests::incorrect_magic_tag_nonce_names_and_unsafe_clock_fail ... ok
+test hello::attestation::tests::independent_software_impostor_is_only_an_unverified_candidate ... ok
+test hello::attestation::tests::migratable_imported_signing_restricted_or_reserved_templates_fail ... ok
+test hello::attestation::tests::noncanonical_private_or_unsupported_cng_public_blobs_fail ... ok
+test hello::attestation::tests::oversized_trailing_and_hostile_length_inputs_are_rejected ... ok
+test hello::attestation::tests::pcp_every_truncation_extra_bytes_and_oversized_claim_fail ... ok
+test hello::attestation::tests::pcp_expected_native_key_nonce_and_certified_name_cannot_be_substituted ... ok
+test hello::attestation::tests::pcp_frame_extracts_exact_independently_signed_components_without_trust ... ok
+test hello::attestation::tests::pcp_hostile_sizes_cannot_shift_or_hide_components ... ok
+test hello::attestation::tests::pcp_rejects_component_reordering_and_tpm2b_or_tpmt_signature_framing ... ok
+test hello::attestation::tests::pcp_rejects_wrong_magic_versions_header_extensions_and_endianness ... ok
+test hello::attestation::tests::unsupported_tpm_algorithms_parameters_and_policy_sizes_fail ... ok
+test hello::enrollment::tests::backward_clock_observation_stays_disabled_after_clock_recovers ... ok
+test hello::enrollment::tests::cancellation_returns_no_local_key_and_does_not_retry ... ok
+test hello::enrollment::tests::credential_changing_storage_operations_require_prior_invalidation ... ok
+test hello::enrollment::tests::expiry_backward_clock_and_context_change_during_prompt_return_no_local_key ... ok
+test hello::enrollment::tests::failed_creation_cleans_journal_and_failed_cleanup_keeps_ownership ... ok
+test hello::enrollment::tests::failed_deletion_is_nonresumable_and_retryable ... ok
+test hello::enrollment::tests::generation_changes_allow_saved_content_but_rotation_and_wrong_vault_refuse_before_prompt ... ok
+test hello::enrollment::tests::ipc_accepts_only_fixed_actions_and_bounded_mode_choices ... ok
+test hello::enrollment::tests::remembered_roundtrip_reopens_across_manager_restart_without_plaintext_or_verifier ... ok
+test hello::enrollment::tests::revoked_envelope_replay_cannot_reopen_deleted_key ... ok
+test hello::enrollment::tests::session_envelope_is_memory_only_and_restart_requires_cleanup ... ok
+test hello::enrollment::tests::stale_enrollment_never_becomes_enabled ... ok
+test hello::enrollment::tests::tampered_cipher_and_authenticated_metadata_fail_closed ... ok
+test hello::prf::tests::actual_authenticated_encryption_roundtrip_and_negative_controls ... ok
+test hello::prf::tests::capability_never_creates_or_deletes_a_credential ... ok
+test hello::prf::tests::direct_every_failure_and_deletion_failure_are_visible_and_stop_later_work ... ok
+test hello::prf::tests::direct_invalidation_before_after_every_stage_and_during_cleanup_discards_success ... ok
+test hello::prf::tests::direct_mode_has_only_creation_and_exact_cleanup_never_prf_assertions ... ok
+test hello::prf::tests::direct_none_or_tpm_observations_never_claim_hardware_or_prf_trust ... ok
+test hello::prf::tests::every_failure_stops_later_operations_but_always_cleans_up ... ok
+test hello::prf::tests::independent_assertion_fixture_still_requires_rp_presence_uv_and_no_backup_flags ... ok
+test hello::prf::tests::independent_creation_fixture_rejects_wrong_ids_lengths_and_every_truncation ... ok
+test hello::prf::tests::independent_w3c_creation_fixture_binds_the_exact_returned_credential ... ok
+test hello::prf::tests::invalidated_request_does_no_crypto_and_delete_failure_cannot_be_success ... ok
+test hello::prf::tests::invalidation_at_each_pre_and_post_step_always_stops_and_cleans_up ... ok
+test hello::prf::tests::network_order_credential_length_accepts_a_length_above_one_byte ... ok
+test hello::prf::tests::successful_prf_report_keeps_all_security_gates_unresolved ... ok
+test hello::proof::tests::attestation_mode_has_only_its_own_stages_and_always_cleans_up ... ok
+test hello::proof::tests::authorized_capability_is_separate_and_never_claims_skipped_security_checks ... ok
+test hello::proof::tests::cancelled_operation_keeps_its_code_and_still_cleans_up ... ok
+test hello::proof::tests::capability_session_invalidation_prevents_or_discards_authorized_decryption ... ok
+test hello::proof::tests::every_capability_failure_stops_and_deletes_its_key ... ok
+test hello::proof::tests::every_failure_stops_private_operations_and_always_deletes ... ok
+test hello::proof::tests::export_details_survive_failed_gate_and_unconditional_cleanup ... ok
+test hello::proof::tests::export_formats_are_measured_without_blessing_unsupported_types ... ok
+test hello::proof::tests::failed_deletion_cannot_be_reported_as_success ... ok
+test hello::proof::tests::legacy_behavior_measures_all_stages_without_promoting_eligibility ... ok
+test hello::proof::tests::legacy_compatibility_is_explicit_and_never_promotes_or_replaces_oaep ... ok
+test hello::proof::tests::returned_claim_metadata_is_unverified_even_when_cleanup_fails ... ok
+test hello::proof::tests::session_invalidation_stops_a_second_prompt_and_cleans_up ... ok
+test hello::proof::tests::success_is_not_hardware_evidence_or_unlock ... ok
+test hello::tpm::read_public::tests::another_public_key_and_every_changed_name_byte_are_rejected ... ok
+test hello::tpm::read_public::tests::every_truncation_oversized_extra_bytes_and_forged_lengths_fail ... ok
+test hello::tpm::read_public::tests::exact_native_tpm_error_is_reported_without_success ... ok
+test hello::tpm::read_public::tests::fixed_read_only_command_and_exact_fixture_binding ... ok
+test hello::tpm::read_public::tests::missing_nonduplicable_attributes_and_broader_templates_fail ... ok
+test hello::tpm::read_public::tests::public_area_hash_and_response_names_are_bound_not_just_lengths ... ok
+test hello::tpm::tests::capability_never_creates_or_deletes_a_key ... ok
+test hello::tpm::tests::each_failure_stops_later_operations_and_always_cleans_up ... ok
+test hello::tpm::tests::local_binding_has_its_own_contract_without_reclassifying_private_export ... ok
+test hello::tpm::tests::local_binding_invalidation_including_cleanup_never_publishes_evidence ... ok
+test hello::tpm::tests::pcp_readback_separates_usage_from_only_the_sdk_defined_provider_marker ... ok
+test hello::tpm::tests::policy_readback_rejects_every_broader_usage_export_and_wrong_length ... ok
+test hello::tpm::tests::pre_and_post_stage_invalidation_cannot_publish_success ... ok
+test hello::tpm::tests::success_keeps_authorization_and_hardware_gates_open ... ok
+test secret_pages::tests::paged_secret_inventory_crosses_660_without_identity_or_plaintext_loss ... ok
+
+test result: ok. 72 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.03s
+
+     Running unittests src/bin/p07-integration.rs (packages/vault-native/target/debug/deps/p07_integration-c34f5008542d31d0)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/p08-integration.rs (packages/vault-native/target/debug/deps/p08_integration-f8a94ecaa220a195)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/devices.rs (packages/vault-native/target/debug/deps/devices-9f95ab435029bfb8)
+
+running 9 tests
+test actual_native_signed_chain_and_encrypted_inspector ... ok
+test native_fresh_recovery_rejects_substituted_root_and_recovers_keys_only_after_activation ... ok
+test native_independent_generation_and_both_key_enrollment ... ok
+test native_known_checkpoint_and_descendant_revocation_reject_rollback_and_self_revoke ... ok
+test native_local_l_rotation_keeps_additive_control_and_frozen_secret_frames ... ok
+test native_manifest_pin_and_roster_signature_substitution_fail ... ok
+test native_qr_secretstream_direction_replay_and_lock ... ok
+test native_two_connections_and_aborted_sql_write_preserve_acknowledged_control ... ok
+test native_typed_boundary_denies_preview_foreign_stale_and_raw_keys ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 40.10s
+
+     Running tests/notes.rs (packages/vault-native/target/debug/deps/notes-2c67f43fac7b7ea4)
+
+running 10 tests
+test native_main_ipc_refuses_foreign_preview_stale_and_unknown_note_commands ... ok
+test native_note_catalog_is_not_generic_mutable_and_rotation_preserves_pending_work ... ok
+test native_note_restart_and_encrypted_sqlite_wal_inspection ... ok
+test native_pending_attempt_protects_newer_text_and_a_different_receipt_cannot_retire_it ... ok
+test native_receipt_fault_rolls_back_retirement_and_preserves_the_acknowledged_draft ... ok
+test native_verified_revoke_blocks_old_epoch_even_if_service_flags_are_false ... ok
+test p12_native_ciphertext_cache_verifies_bytes_and_refuses_corruption ... ok
+test p12_native_copy_burn_and_atomic_export_keep_original_recoverable ... ok
+test p12_native_incompressible_gigabyte_durable_resume_and_export ... ok
+test staged_sync_cursor_is_atomic_and_restore_regression_keeps_drafts ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 438.59s
+
+     Running tests/shared.rs (packages/vault-native/target/debug/deps/shared-c03dd1ecce15e085)
+
+running 3 tests
+test native_shared_attempt_restart_and_ciphertext_privacy ... ok
+test native_shared_closed_commands_and_main_window_fences ... ok
+test native_shared_sql_fault_keeps_previous_security_journal ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 21.99s
+
+     Running tests/vault.rs (packages/vault-native/target/debug/deps/vault-c7aa835558993b53)
+
+running 18 tests
+test all_lifecycle_events_reject_old_capabilities ... ok
+test cross_account_namespace_is_denied ... ok
+test cross_connection_leader_and_stale_fence ... ok
+test draft_never_evicted_and_phrase_choice_is_explicit ... ok
+test empty_store_reenrollment_and_unknown_schema_preserve_bytes ... ok
+test host_writer_readiness_does_not_invalidate_content_cas ... ok
+test host_writer_readiness_preserves_owner_expiry_and_generation_fences ... ok
+test interrupted_l_rotation_keeps_prior_key_and_ciphertext ... ok
+test known_record_rollback_and_nonce_after_unknown_full_restart ... ok
+test native_session_tokens_are_encrypted_and_not_ipc_readable ... ok
+test non_windows_hello_has_no_software_fallback ... ok
+test p13_multipart_custody_reserves_namespace_rotates_and_rejects_downgrade ... ok
+test real_rust_ipc_main_scope_and_lock_boundary ... ok
+test real_sqlite_atomic_batch_fault ... ok
+test restart_ciphertext_and_secret_export_denial ... ok
+test signed_manifest_rejects_root_pin_substitution ... ok
+test wrapper_revocation_rotates_l_and_preserves_all_local_work ... ok
+test wrong_phrase_and_excessive_kdf_reject_before_unlock ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 45.08s
+
+   Doc-tests anynote_local_vault
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

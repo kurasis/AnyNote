@@ -27,7 +27,10 @@ export class ProtectedImport{
   const reader=new PortableReader(()=>source.stream(),kit);let accepted=false;
   try{const report=await reader.validate();
    this.#reader=reader;this.#channel=new RecoveryChannel(reader);let state;if(import_id)state=await this.jobs.job(import_id,'import-state');const context=await this.destination(state?.destination.group_id),audience_digest=hash(canonicalBytes(wire(context)));
-   if(import_id){ensure(destination_group===undefined||destination_group===state.destination.group_id,'IDEMPOTENCY_MISMATCH');ensure(state.purpose==='p13-import-job'&&state.version===1&&state.archive_sha256===kit.archive_sha256&&state.export_id===kit.export_id&&state.destination.group_id===context.group_id,'IDEMPOTENCY_MISMATCH');ensure(!['COMPLETE','CANCELLED'].includes(state.state),'IMPORT_FINISHED');state.state='READY';}
+   // A newly created private group now has a resolved ID. Bind confirmation to
+   // the fresh preview without rebinding the stored destination or requests;
+   // confirm still rechecks that exact destination before any publication.
+   if(import_id){ensure(destination_group===undefined||destination_group===state.destination.group_id,'IDEMPOTENCY_MISMATCH');ensure(state.purpose==='p13-import-job'&&state.version===1&&state.archive_sha256===kit.archive_sha256&&state.export_id===kit.export_id&&state.destination.group_id===context.group_id,'IDEMPOTENCY_MISMATCH');ensure(!['COMPLETE','CANCELLED'].includes(state.state),'IMPORT_FINISHED');state.state='READY';state.audience_digest=audience_digest;}
    else state={purpose:'p13-import-job',version:1,import_id:random(),archive_sha256:kit.archive_sha256,export_id:kit.export_id,kit:structuredClone(kit),destination:context,audience_digest,state:'READY',files:[],notes:[],threads:[],published:0,pending:null};
    // A standard import copies retained tips. Full old signed history stays in the
    // independently verifiable original archive; it does not become live history.

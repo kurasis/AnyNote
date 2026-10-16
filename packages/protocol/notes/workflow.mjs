@@ -241,7 +241,18 @@ export class NotesWorkflow {
   for(const [group_id,proof]of proofs){let verified;
    const token=privateTokens.get(group_id);if(token){const records=groupApi.observedHistoryRecordsForEvaluation(token),pages=[];let batch=[];const page=items=>({purpose:'history-inventory-page',contract:'p02-file-c1',version:1,service_id:this.scope.service_id,group_id,page_index:String(pages.length),records:items});for(const record of records){if(batch.length&&(batch.length===500||wire(page([...batch,record])).length>1048576)){pages.push(page(batch));batch=[];}batch.push(record);}if(batch.length)pages.push(page(batch));
     const history=JSON.parse(new TextDecoder().decode(groupBuilders.historyForEvaluation(token,groupApi.groupSenderForEvaluation(token,this.scope.account_id,this.scope.device_id),this.#keys.signing.privateKey,pages.map(wire))));groupApi.endorseGroupHistoryForEvaluation(token,wire(history),pages.map(wire),groupApi.independentHistoryWitnessForEvaluation(token));const head={version:history.body.sequence,digest:groupCodec.groupDigest('history',wire(history))};proof.pin.history=head;proof.journal.events.push({kind:'history',history,pages});verified=groupApi.groupDetails(token);
-   }else{verified=replayGroup(proof,{ownPins:this.pins,known:proof}).details;proof.pin.history=structuredClone(verified.history);}
+   }else{
+    const replayed=replayGroup(proof,{ownPins:this.pins,known:proof}),sender=groupApi.groupSenderForEvaluation(replayed.token,this.scope.account_id,this.scope.device_id);
+    // Only the journal and independent pin travel in the archive. Local live
+    // witnesses cannot silently stand in for portable historical inclusion.
+    // Refuse before creating the outer stream if the exported proof cannot
+    // authorize every selected header in an independent reader.
+    for(const row of headers.filter(row=>row.item.group_id===group_id)){
+     if(row.item.object_kind==='file-manifest')groupApi.checkHistoricalFileForEvaluation(replayed.token,wire(row.envelope),sender);
+     else groupApi.checkHistoricalObjectForEvaluation(replayed.token,wire(row.envelope),sender);
+    }
+    verified=replayed.details;proof.pin.history=structuredClone(verified.history);
+   }
    pins.push({group_id,genesis_digest:proof.pin.genesis_digest,policy:verified.policy,epoch:verified.epoch,history:verified.history});sharedValue('adopt-request',proof);
   }
   const document=contentValue('portable-evidence',{profile:'p13-public-proof-v1',version:1,accounts:[...accounts.values()],groups:[...proofs.values()]});ensure(wire(document).length<=16777216,'RESOURCE_LIMIT');return {document,pins};

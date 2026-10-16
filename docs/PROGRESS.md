@@ -21,7 +21,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P12 | VERIFIED | Twelve portable file tests, 368 actual file HTTPS/SQL checks, 452 shared-authority checks, 60 sandboxed PWA checks, native 1 GB/cache/atomic export on Linux/MSVC; all twenty-two software gates PASS; physical G1/U11/U12 and qualified G2/G3 remain open |
 | P13 | VERIFIED | Protected content UX, safe previews/thumbnails, reference-safe retention, independent age recovery and fresh standard import; 401 HTTP/SQL, 427 authority, 59 sandboxed UI checks, actual Linux/Windows 1 GB archive and all 24 software gates PASS; physical/review gates remain open |
 | P14 | VERIFIED | Native Windows/WebView2 single installer, actual dialogs/SQL/1GB/recovery/upgrade/restart, all 25 software gates; physical and production signing remain open |
-| P15 | NOT STARTED | P01/P07–P13 and actual iPhone evidence |
+| P15 | VERIFIED | Installed PWA shell, EN/RU mobile/keyboard UX, exact 1 GB/API/recovery/import/update/quota software acceptance and all 27 mandatory candidate jobs; final merge is gated by the same exact-head cohort; physical/review/signing/memory gates remain open |
 | P16 | NOT STARTED | P04/P08/P11–P13 and appropriately sized synthetic host |
 | P17 | NOT STARTED | P02/P08–P16; independent review |
 | P18 | NOT STARTED | P14–P17 and release/signing gates |
@@ -855,3 +855,21 @@ The complete preserved-data setup passed at the accepted source, retaining
 owned-service startup passed 15 commands at that source. Final documentation-head CI, ordinary guarded PR27 merge and
 configuration persistence have separate outcomes; draft save is not Publish or
 independently observed fresh restoration.
+
+## Completed phase: P15 independent PWA software
+
+Before implementation, the accepted P14 main `e5fe04d657850189eb956fb802fee9326e486a67`
+and all 25 ordinary postmerge jobs were verified; exact receipts remain in
+[evidence/p15](evidence/p15/p14-postmerge-cohort.json). No completed phase was restarted.
+
+Candidate `b0d6c2e36680facbd49624c6205a195b2f644464` passes all 27 ordinary gates; exact raw reports,
+ZIP/source-input/Git-blob verification and development failures are in
+[evidence/p15](evidence/p15/README.md). The final documentation head requires its
+own passing 27-job cohort before a guarded merge. Implementation includes the
+installed static shell, EN/RU touch/keyboard UX, safe waiting-worker updates,
+protected pause/reselect, fresh unlock and actual gigabyte age recovery/import.
+A real one-byte-origin-quota write failure retains the prior encrypted acknowledged draft.
+All 179 frozen files and dependency locks remain unchanged. P16 independent
+staging/backup/restore operations are next; no production or owner trial is
+authorized. Revert the reviewed implementation to roll back; preserve all
+encrypted local state and journals, and do not purge caches/databases as rollback.

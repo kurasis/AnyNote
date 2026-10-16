@@ -477,7 +477,7 @@ impl Host {
             .map_err(|_| Error("HOST_BUSY"))?
             .clone()
             .ok_or(Error("VAULT_LOCKED"))?;
-        if let Err(error) = self.vault.lease(&cap) {
+        if let Err(error) = self.vault.writer_ready(&cap) {
             if matches!(error.0, "VAULT_LOCKED" | "STALE_CAPABILITY") {
                 self.lock();
             }

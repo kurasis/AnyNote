@@ -1,0 +1,51 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.14s
+     Running unittests src/lib.rs (packages/windows-native/target/debug/deps/anynote_windows_native-57b0d4a62c0124ae)
+
+running 2 tests
+test imports::payload_tests::archive_notes_exceed_one_record_without_plaintext_staging_or_cross_job_reuse ... ok
+test imports::pipe_tests::pending_plaintext_services_only_bounded_archive_prefetch_and_rejects_other_frames ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 35.88s
+
+     Running unittests src/bin/p14-integration.rs (packages/windows-native/target/debug/deps/p14_integration-01d0dd7f452ab165)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/bridge.rs (packages/windows-native/target/debug/deps/bridge-9e55e4b671013add)
+
+running 1 test
+test trusted_native_pipe_reads_frozen_archive_offline_and_recovers_authenticated_bytes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.48s
+
+     Running tests/host.rs (packages/windows-native/target/debug/deps/host-77647fb6ae4c0ca0)
+
+running 10 tests
+test actual_filesystem_space_estimate_fails_closed_before_creating_output ... ok
+test completed_cipher_stage_recovers_offline_and_kit_is_separate_and_durable ... ok
+test downloaded_cache_controls_preserve_original_sources_and_encrypted_drafts ... ok
+test interrupted_profile_publication_resumes_same_encrypted_vault_and_fixed_service ... ok
+test native_host_rejects_foreign_preview_unknown_fields_and_stale_generations ... ok
+test native_jobs_are_bounded_cancelled_and_do_not_expose_paths ... ok
+test native_private_portable_proof_and_selected_keys_match_authenticated_source ... ok
+test recovered_file_parts_use_fresh_keys_protected_checkpoints_and_reject_different_source ... ok
+test selected_handles_are_single_use_generation_bound_and_destinations_never_overwrite ... ok
+test tampered_public_profile_cannot_retarget_native_credentials ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 29.21s
+
+     Running tests/updates.rs (packages/windows-native/target/debug/deps/updates-649159dedce9615c)
+
+running 1 test
+test maintained_signatures_bind_update_application_version_platform_channel_url_and_payload ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+   Doc-tests anynote_windows_native
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

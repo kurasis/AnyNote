@@ -41,7 +41,10 @@ def main():
                      'fixtures/protocol/p02/state-vectors.json',
                      'fixtures/protocol/p02/group-vectors.json',
                      'fixtures/protocol/p02/v1/crypto.json',
-                     'fixtures/protocol/p02/v1/bytes/header-0000.hex']:
+                     'fixtures/protocol/p02/v1/bytes/header-0000.hex',
+                     'docs/evidence/p15/README.md',
+                     'docs/evidence/p15/candidate/raw/p03-foundation-report/p03/foundation-report.json',
+                     'docs/evidence/p15/final/raw/p03-foundation-report/p03/http-contract-report.json']:
         with tempfile.TemporaryDirectory(prefix='anynote-scanner-negative-') as name:
             # Recognizable synthetic PAT shape; no credential is used or committed.
             token = 'ghp_' + ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(36))
@@ -50,6 +53,26 @@ def main():
             sentinel.write_text('github_token = "' + token + '"\n')
             if scan(name) != 1:
                 raise RuntimeError('Scanner did not reject the disposable fake-token sentinel')
+    # Reviewed public input checksums are exempt only as exact path/value lines
+    # in the two archived foundation reports. Changed hashes and other paths
+    # must still trigger the generic-key detector; PAT detection is independent.
+    import hashlib
+    field = 'apps/api/app/Auth/OAuth/Access.php'
+    known = hashlib.sha256((ROOT / field).read_bytes()).hexdigest()
+    changed = hashlib.sha256(b'PUBLIC changed foundation checksum sentinel').hexdigest()
+    cases = [
+        ('docs/evidence/p15/candidate/raw/p03-foundation-report/p03/foundation-report.json', changed),
+        ('docs/evidence/p15/candidate/raw/p03-foundation-report/p03/http-contract-report.json', changed),
+        ('docs/evidence/p15/final/raw/p03-foundation-report/p03/foundation-report.json', changed),
+        ('docs/evidence/p15/unrelated-report.json', known),
+    ]
+    for relative, value in cases:
+        with tempfile.TemporaryDirectory(prefix='anynote-receipt-negative-') as name:
+            sentinel = Path(name) / relative
+            sentinel.parent.mkdir(parents=True)
+            sentinel.write_text('{"' + field + '": "' + value + '"}\n')
+            if scan(name) != 1:
+                raise RuntimeError('Scanner hid a changed or out-of-scope receipt checksum')
     for relative, field in [('vectors.json', 'file_data_key'), ('vectors.json', 'key_wrap_digest'),
                             ('identity-vectors.json', 'root_signing_key'),
                             ('identity-vectors.json', 'recovery_encryption_key'),
@@ -94,7 +117,7 @@ def main():
         sentinel=Path(name)/'fixtures/protocol/p02/v1/crypto.json';sentinel.parent.mkdir(parents=True)
         sentinel.write_text('{"export_identity": "'+value+'"}')
         if scan(name)!=1:raise RuntimeError('Scanner hid a different synthetic age private identity')
-    print('PASS: Git-visible source scan; 9 fake-token paths, 15 changed key/digest negatives, exact old fragment mutation and alternate age identity')
+    print('PASS: Git-visible source scan; 12 fake-token paths, 4 changed/out-of-scope receipt negatives, 15 changed key/digest negatives, exact old fragment mutation and alternate age identity')
 
 
 if __name__ == '__main__':

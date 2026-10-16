@@ -1,0 +1,770 @@
+{
+  "purpose": "Failed and partial development history, not final software acceptance",
+  "artifacts": [
+    {
+      "id": 12009021017,
+      "name": "p15-linux-pwa-report",
+      "source_commit": "a3706f4e1922bd7143428db25dfb36ae4a06d372",
+      "zip_sha256": "8b6b1e979acf1e90ed31037bf937f0068e4af8d8479c12f942e472b2f0a098dc"
+    },
+    {
+      "id": 12009129806,
+      "name": "p14-windows-development-installer",
+      "source_commit": "a3706f4e1922bd7143428db25dfb36ae4a06d372",
+      "zip_sha256": "ce9fa74f963b89958d1eb8bee8e6b44b4c97982f4f63fd677dc4b43ede6ae693"
+    },
+    {
+      "id": 12009299599,
+      "name": "p14-ci-harness-diagnosis-not-owner-installer",
+      "source_commit": "a3706f4e1922bd7143428db25dfb36ae4a06d372",
+      "zip_sha256": "961fc667dc25e037e4d761ffc4aad548cbcacc16dc79a907bf63c3ccfc8b23d2"
+    },
+    {
+      "id": 12010332975,
+      "name": "p15-linux-pwa-report",
+      "source_commit": "d68be7e06ad876211cd309317051c6e367c333ef",
+      "zip_sha256": "6fea55c44372f9367482110b420efb57aca44712a8bde5aa7e61b8116b0c0f5b"
+    },
+    {
+      "id": 12011298739,
+      "name": "p15-linux-pwa-report",
+      "source_commit": "af01b0263858b89c10dfbcf28228f1d28b1f02c1",
+      "zip_sha256": "a0b7aa25425c199787225353f9c15f8f0d50626586e4ef32ec93e68fc3591518"
+    },
+    {
+      "id": 12011584288,
+      "name": "p15-linux-pwa-report",
+      "source_commit": "b20810c311ef4c7b5a209fa35057a3ebfa948f89",
+      "zip_sha256": "b52ccfdeb0ff92374719c888ac1b1f823e47e92890a9daededbde0d68f9be40f"
+    },
+    {
+      "id": 12013968532,
+      "name": "p15-linux-pwa-report",
+      "source_commit": "6a42dcd097454a19d321ba88de0aeb4c97112927",
+      "zip_sha256": "a04cc3a671d2a01d73353f41facf8f0ac668a0273e9e013aa43f322c85f2fdbf"
+    },
+    {
+      "id": 12015111858,
+      "name": "p15-linux-pwa-report",
+      "source_commit": "cf1c63162e9ee66cbc379414415dc1f856a72558",
+      "zip_sha256": "67941f76955dd2613112bf5f0c1f56d7e27a9d6d978c4b3ce36886dd1491285f"
+    },
+    {
+      "id": 12015282649,
+      "name": "p14-windows-development-installer",
+      "source_commit": "cf1c63162e9ee66cbc379414415dc1f856a72558",
+      "zip_sha256": "224057f8fdda887a7398b58bd4c34bdda70ce3a791728a3cb02af475e66dc0dd"
+    },
+    {
+      "id": 12015812700,
+      "name": "p14-windows-development-installer",
+      "source_commit": "6bec7d95b6805501c597fb44084781319b553641",
+      "zip_sha256": "af87abf901a337a088ac9903602d6e814df69e76ffc2a7dc3f75e078fbfecd41"
+    },
+    {
+      "id": 12016641074,
+      "name": "p15-linux-pwa-report",
+      "source_commit": "e87e4dd1a407ba9311b727069a1bfd81bc18ec1b",
+      "zip_sha256": "ac7b4586d010eae782ccff17b796c58a5b5c94b8ec5402a8b39eef63c13afcce"
+    },
+    {
+      "id": 12016488637,
+      "name": "p15-linux-pwa-report",
+      "source_commit": "6bec7d95b6805501c597fb44084781319b553641",
+      "zip_sha256": "f323337df6d7959e925d76ed4632be1197b6924e8c181936f0547f45b056c52f"
+    },
+    {
+      "id": 12018388010,
+      "name": "p15-linux-pwa-report",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "zip_sha256": "87a4852d03bf70f4b2d9b66f302dbca70f13ab231782e6f87352c11e045e9ea8"
+    },
+    {
+      "id": 12019580659,
+      "name": "p14-windows-development-installer",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "zip_sha256": "207cdfbaca4477aec0d473374044eaea5ac07ea77aa54145eaea38cb8179e6ff"
+    },
+    {
+      "id": 12017114491,
+      "name": "p07-linux-custody-report",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "zip_sha256": "d4b4ff8d8b18e8006886233a8fbf1eae4257ab5b5172a66b8fd27836bb0f36a4"
+    },
+    {
+      "id": 12018935910,
+      "name": "p15-linux-pwa-report",
+      "source_commit": "bd6be29ff6933b90241e960e435e6c1a671c09ca",
+      "zip_sha256": "f539a73e8d64c00e8f3c8a111b4ce9846271eb46aacedf5cda016172ba9c627c"
+    }
+  ],
+  "reports": [
+    {
+      "path": "5a8-browser-report.json",
+      "sha256": "ec8a9711d4bdc4bf2de72baea616d2bba1ef39b0aed2a3c64d3b9d394fcda18f",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "FAIL",
+      "artifact_members": [
+        {
+          "artifact_id": 12018388010,
+          "member": "p10/browser-report.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "5a8348909b67953a35077155e5d6a27c7a088d3a"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "5a8-vault-browser-report.json",
+      "sha256": "652f94a8c4048c36de5b2eaa4b111f872b5b80909105134df0ed7396af03159e",
+      "source_commit": "31a18c9c6c35c4a6d95c98403cfa041946008f84",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12017114491,
+          "member": "browser-report.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "5a8348909b67953a35077155e5d6a27c7a088d3a"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "5a8-vault-count-development.json",
+      "sha256": "e71296fb495555275834a63dadcee7e0d3936c7100f5823fbea01df86accf65c",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "FAIL",
+      "artifact_members": [],
+      "artifact_source_commits": [],
+      "scope": "Local observation/validation receipt; not a CI raw report"
+    },
+    {
+      "path": "5a8-vault-http-report.json",
+      "sha256": "b4b1effd178119ee1e9c339d570e2afd72b554454666d53ad303dfe98a2adb41",
+      "source_commit": "31a18c9c6c35c4a6d95c98403cfa041946008f84",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12017114491,
+          "member": "http-report.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "5a8348909b67953a35077155e5d6a27c7a088d3a"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "5a8-windows-backend-filesystem-capability.json",
+      "sha256": "70a74be5c57aab99b89934a7eea96474a087b1c164a2e76d6bb002f7afb0aebe",
+      "source_commit": null,
+      "status_as_reported": null,
+      "artifact_members": [
+        {
+          "artifact_id": 12009129806,
+          "member": "artifacts/p14/backend-filesystem-capability.json"
+        },
+        {
+          "artifact_id": 12015282649,
+          "member": "artifacts/p14/backend-filesystem-capability.json"
+        },
+        {
+          "artifact_id": 12015812700,
+          "member": "artifacts/p14/backend-filesystem-capability.json"
+        },
+        {
+          "artifact_id": 12019580659,
+          "member": "artifacts/p14/backend-filesystem-capability.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "5a8348909b67953a35077155e5d6a27c7a088d3a",
+        "6bec7d95b6805501c597fb44084781319b553641",
+        "a3706f4e1922bd7143428db25dfb36ae4a06d372",
+        "cf1c63162e9ee66cbc379414415dc1f856a72558"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "5a8-windows-backend-http-errors.json",
+      "sha256": "f42005cbeee5630c6d58aed14abd6cc1a8ab4c41112a9ec3b878135835e39729",
+      "source_commit": null,
+      "status_as_reported": null,
+      "artifact_members": [
+        {
+          "artifact_id": 12019580659,
+          "member": "artifacts/p14/backend-http-errors.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "5a8348909b67953a35077155e5d6a27c7a088d3a"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "5a8-windows-capability-audit.json",
+      "sha256": "51a521bc24628352ab3bbb4c06ae135913b7df6b8ff3eb30080f6a045dae8cb3",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12019580659,
+          "member": "artifacts/p14/capability-audit.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "5a8348909b67953a35077155e5d6a27c7a088d3a"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "5a8-windows-native-http-development.json",
+      "sha256": "096cf416708777dd04341c1f100f9ccae1b0e79120a8831fbd6fda233adb72e7",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12019580659,
+          "member": "artifacts/p14/native-http-development.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "5a8348909b67953a35077155e5d6a27c7a088d3a"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "5a8-windows-native-pairing-development.json",
+      "sha256": "e3011ea0efa4f8d35f9c0bc769ab8a85eaa0669bc85d9a81ae08880572003f7f",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12019580659,
+          "member": "artifacts/p14/native-pairing-development.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "5a8348909b67953a35077155e5d6a27c7a088d3a"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "5a8-windows-native-sharing-development.json",
+      "sha256": "fadc928afc5381783a060aa679e1af315f18cc6cd9097eaa0cef6d8e3a17ccf1",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12019580659,
+          "member": "artifacts/p14/native-sharing-development.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "5a8348909b67953a35077155e5d6a27c7a088d3a"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "5a8-windows-runtime-manifest.json",
+      "sha256": "f5a565ddb03f28b7862e18f5e3bd28fa03aa61620da53a057c92d9a875f8cc5e",
+      "source_commit": null,
+      "status_as_reported": null,
+      "artifact_members": [
+        {
+          "artifact_id": 12009129806,
+          "member": "apps/desktop/src-tauri/resources/runtime-manifest.json"
+        },
+        {
+          "artifact_id": 12015282649,
+          "member": "apps/desktop/src-tauri/resources/runtime-manifest.json"
+        },
+        {
+          "artifact_id": 12015812700,
+          "member": "apps/desktop/src-tauri/resources/runtime-manifest.json"
+        },
+        {
+          "artifact_id": 12019580659,
+          "member": "apps/desktop/src-tauri/resources/runtime-manifest.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "5a8348909b67953a35077155e5d6a27c7a088d3a",
+        "6bec7d95b6805501c597fb44084781319b553641",
+        "a3706f4e1922bd7143428db25dfb36ae4a06d372",
+        "cf1c63162e9ee66cbc379414415dc1f856a72558"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "5a8-windows-source-report.json",
+      "sha256": "6af9a26d56a9fc832803beef3b689a5946a7c63c93c67dff3c6249f730dbae53",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12019580659,
+          "member": "artifacts/p14/source-report.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "5a8348909b67953a35077155e5d6a27c7a088d3a"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "5a8-windows-ui-diagnostic-binaries.json",
+      "sha256": "dd8cf676f8570183ea00acce2bf7485fab95a580c364869335fa87b6606a6f45",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "BUILT_UNVERIFIED",
+      "artifact_members": [
+        {
+          "artifact_id": 12019580659,
+          "member": "artifacts/p14/ui-diagnostic-binaries.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "5a8348909b67953a35077155e5d6a27c7a088d3a"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "5a8-windows-verification.json",
+      "sha256": "5d9a93c5481ca10be4d758749ebe3d8e5a961e4c71ca8d1f50578e80e5e98666",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "PASS",
+      "artifact_members": [],
+      "artifact_source_commits": [],
+      "scope": "Local observation/validation receipt; not a CI raw report"
+    },
+    {
+      "path": "5a8-windows-windows-host-preflight.json",
+      "sha256": "6057c4268401129282e5572a2770252973cbe3ea205779130f82c35e3073e263",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12019580659,
+          "member": "artifacts/p14/windows-host-preflight.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "5a8348909b67953a35077155e5d6a27c7a088d3a"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "5a8-windows-windows-webview-development.json",
+      "sha256": "21790504409b912872fb3b77190e36993b82bc5784b58a2f8f420a14de57ead3",
+      "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12019580659,
+          "member": "artifacts/p14/windows-webview-development.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "5a8348909b67953a35077155e5d6a27c7a088d3a"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "6a42-browser-report.json",
+      "sha256": "fca5f5f27cf2e0b0bfe3e8a44d6eea304526ea49c69208d6f53e8afae3c6a14a",
+      "source_commit": "6a42dcd097454a19d321ba88de0aeb4c97112927",
+      "status_as_reported": "FAIL",
+      "artifact_members": [
+        {
+          "artifact_id": 12013968532,
+          "member": "p10/browser-report.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "6a42dcd097454a19d321ba88de0aeb4c97112927"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "6bec-browser-report.json",
+      "sha256": "16dbab9809898cb88990d78adfe9191660788310cf766cf10ecf39e86c7d9cc9",
+      "source_commit": "6bec7d95b6805501c597fb44084781319b553641",
+      "status_as_reported": "FAIL",
+      "artifact_members": [
+        {
+          "artifact_id": 12016488637,
+          "member": "p10/browser-report.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "6bec7d95b6805501c597fb44084781319b553641"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "6bec-windows-native-pairing-development.json",
+      "sha256": "c6ca5ce7de06e61c66921d884e4336b5ce549020078627d092f3672740642e28",
+      "source_commit": "6bec7d95b6805501c597fb44084781319b553641",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12015812700,
+          "member": "artifacts/p14/native-pairing-development.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "6bec7d95b6805501c597fb44084781319b553641"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "6bec-windows-native-sharing-development.json",
+      "sha256": "8e77e5a4fe97d5dfff22545261ae9c37dca020c89ce5dd7eefa4d93555dbb007",
+      "source_commit": "6bec7d95b6805501c597fb44084781319b553641",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12015812700,
+          "member": "artifacts/p14/native-sharing-development.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "6bec7d95b6805501c597fb44084781319b553641"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "6bec-windows-ui-diagnostic-binaries.json",
+      "sha256": "3c23162ec88313a8b523e5237d870af1b9743d8422bacb8307cb79b96670d22c",
+      "source_commit": "6bec7d95b6805501c597fb44084781319b553641",
+      "status_as_reported": "BUILT_UNVERIFIED",
+      "artifact_members": [
+        {
+          "artifact_id": 12015812700,
+          "member": "artifacts/p14/ui-diagnostic-binaries.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "6bec7d95b6805501c597fb44084781319b553641"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "6bec-windows-windows-host-preflight.json",
+      "sha256": "f8954aebe799f6fa42d58163436357fdc37efa0e2d7920f208d58ec3d921140b",
+      "source_commit": "6bec7d95b6805501c597fb44084781319b553641",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12015812700,
+          "member": "artifacts/p14/windows-host-preflight.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "6bec7d95b6805501c597fb44084781319b553641"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "a370-browser-report.json",
+      "sha256": "1e40b9dbae3a23f875f17f16115e3edf1d0683f8cebaf43cb013c868260e0f1e",
+      "source_commit": "a3706f4e1922bd7143428db25dfb36ae4a06d372",
+      "status_as_reported": "FAIL",
+      "artifact_members": [
+        {
+          "artifact_id": 12009021017,
+          "member": "p10/browser-report.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "a3706f4e1922bd7143428db25dfb36ae4a06d372"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "a370-windows-native-pairing-development.json",
+      "sha256": "7148fbdb5c154bf6a9b167683b31bc2382ea766c054230669539601ce29a985e",
+      "source_commit": "a3706f4e1922bd7143428db25dfb36ae4a06d372",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12009129806,
+          "member": "artifacts/p14/native-pairing-development.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "a3706f4e1922bd7143428db25dfb36ae4a06d372"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "a370-windows-native-sharing-development.json",
+      "sha256": "477fe71fc870f681904617a57fd1029124ff4513b30603421283952b792817d3",
+      "source_commit": "a3706f4e1922bd7143428db25dfb36ae4a06d372",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12009129806,
+          "member": "artifacts/p14/native-sharing-development.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "a3706f4e1922bd7143428db25dfb36ae4a06d372"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "a370-windows-ui-diagnostic-binaries.json",
+      "sha256": "8392a8aa96ee79d66aa51b5f9c6c06f3b99d274a611c7716708f7a6b6014041c",
+      "source_commit": "a3706f4e1922bd7143428db25dfb36ae4a06d372",
+      "status_as_reported": "BUILT_UNVERIFIED",
+      "artifact_members": [
+        {
+          "artifact_id": 12009129806,
+          "member": "artifacts/p14/ui-diagnostic-binaries.json"
+        },
+        {
+          "artifact_id": 12009299599,
+          "member": "artifacts/p14/ui-diagnostic-binaries.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "a3706f4e1922bd7143428db25dfb36ae4a06d372"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "a370-windows-windows-host-preflight.json",
+      "sha256": "b11e833d5dcd322ece0bec76527534d1dbdcc9ca9bd9d36ab967d7a4fb83ec50",
+      "source_commit": "a3706f4e1922bd7143428db25dfb36ae4a06d372",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12009129806,
+          "member": "artifacts/p14/windows-host-preflight.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "a3706f4e1922bd7143428db25dfb36ae4a06d372"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "af01-browser-report.json",
+      "sha256": "8db427d84afbf3c15f8850c33cafa856e805f7a255de1c7ba4039a96527e8ffe",
+      "source_commit": "af01b0263858b89c10dfbcf28228f1d28b1f02c1",
+      "status_as_reported": "FAIL",
+      "artifact_members": [
+        {
+          "artifact_id": 12011298739,
+          "member": "p10/browser-report.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "af01b0263858b89c10dfbcf28228f1d28b1f02c1"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "b208-browser-report.json",
+      "sha256": "2d80266e80966a2ccee456fdbcac611e13c6ee9f1a145b8fee563ef2f44c70c5",
+      "source_commit": "b20810c311ef4c7b5a209fa35057a3ebfa948f89",
+      "status_as_reported": "FAIL",
+      "artifact_members": [
+        {
+          "artifact_id": 12011584288,
+          "member": "p10/browser-report.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "b20810c311ef4c7b5a209fa35057a3ebfa948f89"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "bd6-browser-report.json",
+      "sha256": "17a4b0b45701efdf6205976b01f9529b93efde45728666339f2c51b8765fe401",
+      "source_commit": "bd6be29ff6933b90241e960e435e6c1a671c09ca",
+      "status_as_reported": "FAIL",
+      "artifact_members": [
+        {
+          "artifact_id": 12018935910,
+          "member": "p10/browser-report.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "bd6be29ff6933b90241e960e435e6c1a671c09ca"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "cf1-browser-report.json",
+      "sha256": "11627bfc9c46d81b6e579d4ea3b15579cc05ecbf2c67c2ae10f0c2f6730c84c9",
+      "source_commit": "cf1c63162e9ee66cbc379414415dc1f856a72558",
+      "status_as_reported": "FAIL",
+      "artifact_members": [
+        {
+          "artifact_id": 12015111858,
+          "member": "p10/browser-report.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "cf1c63162e9ee66cbc379414415dc1f856a72558"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "cf1-windows-native-pairing-development.json",
+      "sha256": "fc8f27855a63ddeabff81d9533c409df892a44a9ff35cfcd5e2684333d0acf63",
+      "source_commit": "cf1c63162e9ee66cbc379414415dc1f856a72558",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12015282649,
+          "member": "artifacts/p14/native-pairing-development.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "cf1c63162e9ee66cbc379414415dc1f856a72558"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "cf1-windows-native-sharing-development.json",
+      "sha256": "06e0e524d37c297b5e7a27854246555a0ecae528b3fca28a53380a58f75a4fb0",
+      "source_commit": "cf1c63162e9ee66cbc379414415dc1f856a72558",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12015282649,
+          "member": "artifacts/p14/native-sharing-development.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "cf1c63162e9ee66cbc379414415dc1f856a72558"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "cf1-windows-ui-diagnostic-binaries.json",
+      "sha256": "c4009d407ecbbd4b13adedb85cf258af390fe3e48c28cdd172d7cd73a05cf2cc",
+      "source_commit": "cf1c63162e9ee66cbc379414415dc1f856a72558",
+      "status_as_reported": "BUILT_UNVERIFIED",
+      "artifact_members": [
+        {
+          "artifact_id": 12015282649,
+          "member": "artifacts/p14/ui-diagnostic-binaries.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "cf1c63162e9ee66cbc379414415dc1f856a72558"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "cf1-windows-windows-host-preflight.json",
+      "sha256": "79da96eda99457af84609ec0795ec6b8dd13a126a75e5992d0d662e0e96f0fea",
+      "source_commit": "cf1c63162e9ee66cbc379414415dc1f856a72558",
+      "status_as_reported": "PASS",
+      "artifact_members": [
+        {
+          "artifact_id": 12015282649,
+          "member": "artifacts/p14/windows-host-preflight.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "cf1c63162e9ee66cbc379414415dc1f856a72558"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "d68-browser-report.json",
+      "sha256": "17fe59447c4f8ee486061691c4680bce7f71cb9f92dc879db8f19db99ab48825",
+      "source_commit": "d68be7e06ad876211cd309317051c6e367c333ef",
+      "status_as_reported": "FAIL",
+      "artifact_members": [
+        {
+          "artifact_id": 12010332975,
+          "member": "p10/browser-report.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "d68be7e06ad876211cd309317051c6e367c333ef"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "e87-browser-report.json",
+      "sha256": "c69299e30dbff586395d56179f3bb5289846cbf7c8f5effdf4d32da518be86af",
+      "source_commit": "e87e4dd1a407ba9311b727069a1bfd81bc18ec1b",
+      "status_as_reported": "FAIL",
+      "artifact_members": [
+        {
+          "artifact_id": 12016641074,
+          "member": "p10/browser-report.json"
+        }
+      ],
+      "artifact_source_commits": [
+        "e87e4dd1a407ba9311b727069a1bfd81bc18ec1b"
+      ],
+      "scope": "Exact public CI raw bytes"
+    },
+    {
+      "path": "local-native-writer-regression.json",
+      "sha256": "d1f62f0aededa0f85b81c5adabc301fd4a7a41bc84264b0c454fc30546abd9d0",
+      "source_commit": "6bec7d95b6805501c597fb44084781319b553641",
+      "status_as_reported": "PASS",
+      "artifact_members": [],
+      "artifact_source_commits": [],
+      "scope": "Local observation/validation receipt; not a CI raw report"
+    },
+    {
+      "path": "playwright-poll-diagnostic.json",
+      "sha256": "0390afa8fb1a53b8cef692f04b11bce29d7caab56ac6ed5619a754ef2924c57e",
+      "source_commit": "6bec7d95b6805501c597fb44084781319b553641",
+      "status_as_reported": "PASS",
+      "artifact_members": [],
+      "artifact_source_commits": [],
+      "scope": "Local observation/validation receipt; not a CI raw report"
+    },
+    {
+      "path": "startup-dd44-development.json",
+      "sha256": "270fa5338a73bc67c8ecfe8cc6bc0a2cf9be7d5e91cbdd24c98a59030e0ef498",
+      "source_commit": "dd44cc612b92dcdab0f49dee9d0fa18894221abe",
+      "status_as_reported": "PASS",
+      "artifact_members": [],
+      "artifact_source_commits": [],
+      "scope": "Local observation/validation receipt; not a CI raw report"
+    },
+    {
+      "path": "windows-6bec-development.json",
+      "sha256": "19e6e742892c5a4b96030cec858d12c0cbc670d476ac8359faaef5bf5b798691",
+      "source_commit": "6bec7d95b6805501c597fb44084781319b553641",
+      "status_as_reported": "FAIL",
+      "artifact_members": [],
+      "artifact_source_commits": [],
+      "scope": "Local observation/validation receipt; not a CI raw report"
+    },
+    {
+      "path": "windows-a370-development.json",
+      "sha256": "fbf31f258e28d424752910f00833e034f7c2c6cfdb080a81f8245a11eedb173f",
+      "source_commit": "a3706f4e1922bd7143428db25dfb36ae4a06d372",
+      "status_as_reported": "FAIL",
+      "artifact_members": [],
+      "artifact_source_commits": [],
+      "scope": "Local observation/validation receipt; not a CI raw report"
+    },
+    {
+      "path": "windows-cf1-development.json",
+      "sha256": "97257bc8e78c1ad416a7681ad05c4767c3cb1505656e5d5ebb3f3fc5db144fe3",
+      "source_commit": "cf1c63162e9ee66cbc379414415dc1f856a72558",
+      "status_as_reported": "FAIL",
+      "artifact_members": [],
+      "artifact_source_commits": [],
+      "scope": "Local observation/validation receipt; not a CI raw report"
+    }
+  ],
+  "physical_acceptance": false
+}

@@ -1,0 +1,57 @@
+{
+  "purpose": "Local modified-source SQLite polling/CAS red-green and native regression observation; not hosted/clean-head acceptance",
+  "status": "PASS",
+  "source_commit": "6bec7d95b6805501c597fb44084781319b553641",
+  "source_tree_dirty": true,
+  "execution_scope": "Tests executed before committing the fix; before-case uses a thin new API wrapper around the former Host lease-renewing admission. Native inputs after the fix were unchanged through these commands.",
+  "later_git_input_binding": {
+    "commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+    "inputs": [
+      {
+        "path": "packages/vault-native/src/lib.rs",
+        "sha256": "0f38ab84495d50ed7b5acd093d7affb94a1fcf2f2012e5ee94eb72f8c303179f"
+      },
+      {
+        "path": "packages/vault-native/tests/vault.rs",
+        "sha256": "40168624ff4df55581c98a48e9840850fffa790c9dfc7e66795df32dec7ce5a8"
+      },
+      {
+        "path": "packages/windows-native/src/host.rs",
+        "sha256": "aac3d1cab3b79a12d2edcd879159bbec94cb90ef66af91bd3c6d4759e6d9c7ea"
+      }
+    ],
+    "scope": "Verified native input bytes only; this does not relabel the earlier dirty test execution as a clean-head run"
+  },
+  "results": {
+    "before": "FAIL_STALE_WRITER",
+    "focused_after": 2,
+    "vault_unit_tests": 72,
+    "vault_integration_tests": 40,
+    "genuine_incompressible_bytes": 1000000000,
+    "coordinator_linux_tests": 14,
+    "native_jobs": 4,
+    "test_threads": 1,
+    "argon": "REAL"
+  },
+  "coordinator_configuration": "Initial local run lacked default Windows node.exe; rerun uses supported ANYNOTE_NATIVE_NODE with pinned Linux Node24.21.0. Actual Windows/WebView2 is separately mandatory.",
+  "local_reports": [
+    {
+      "path": "native-writer-before.log",
+      "sha256": "29bd188c834d6b2ec8226eaab6d31a67cb16c42de83ae80b37934d5d7948a48f"
+    },
+    {
+      "path": "native-writer-after.log",
+      "sha256": "f5dc82f0dfc55d2318687b1667608e552d571dfcb5ade46382203c1e36a1f9a3"
+    },
+    {
+      "path": "native-writer-full.log",
+      "sha256": "1528db9a95f8c0c5b78b8a67e03caf0af0f6c2b0e6592085ba13ad12bba08840"
+    },
+    {
+      "path": "native-host-linux.log",
+      "sha256": "c660b77df607dce2a692bff49486246599f5377b48f2f60f2fb319352d8c159c"
+    }
+  ],
+  "hosted_fix_acceptance": "PENDING",
+  "physical_acceptance": false
+}

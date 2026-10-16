@@ -1,0 +1,42 @@
+{
+  "purpose": "Read-only verification of final P14 acceptance before P15 closure",
+  "status": "PASS",
+  "source_commit": "b30dc74bd2e97b3c46a6cacd51ee02ffc9568e70",
+  "source_tree": "49e97603ea2bfd3d83a7976dddbf19dd18f9ad73",
+  "artifact_id": 11996283176,
+  "zip_sha256": "793dc5dca37591b1f65dcdf9666981e5228ffddeb3c246af25a3e17e9349a9ec",
+  "git_input_blobs_verified": 869,
+  "raw_reports": [
+    {
+      "path": "artifacts/p14/windows-host-preflight.json",
+      "sha256": "a8cce65a90585f8e05af94a592c617a5efb500afe0b2a424809264248690d03e"
+    },
+    {
+      "path": "artifacts/p14/native-pairing-development.json",
+      "sha256": "49b1c051bb5c30162883cf2fa8b2324398f17913cd519cb51f01c90a02b74a93"
+    },
+    {
+      "path": "artifacts/p14/native-sharing-development.json",
+      "sha256": "91003626d24e713e8538f2a040cfd3157be8d05a2464f627816f575eb50b6796"
+    },
+    {
+      "path": "artifacts/p14/native-http-development.json",
+      "sha256": "8b0c446ad2c16d287413c022db8e1981a8aeb9e15806907e2e7d67795d29acdc"
+    },
+    {
+      "path": "artifacts/p14/windows-webview-development.json",
+      "sha256": "afe922bb3ab93d55db6dd79c70d24190999418aefcaa28d95243f0043394a264"
+    },
+    {
+      "path": "artifacts/p14/backend-filesystem-capability.json",
+      "sha256": "70a74be5c57aab99b89934a7eea96474a087b1c164a2e76d6bb002f7afb0aebe"
+    },
+    {
+      "path": "artifacts/p14/capability-audit.json",
+      "sha256": "7329c2b630a5cadde8605e0ca65522b13a1345e0c15e49525105d265eb385a60"
+    }
+  ],
+  "installer_digest_verified": true,
+  "mandatory_jobs_observed_success": 25,
+  "physical_acceptance": false
+}

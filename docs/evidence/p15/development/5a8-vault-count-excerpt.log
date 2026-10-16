@@ -1,0 +1,5 @@
+2026-10-16T00:41:23.3187645Z [36;1mpython3 scripts/p07-evidence.py linux[0m
+2026-10-16T00:42:12.3290434Z {"purpose":"P07 actual encrypted IndexedDB, worker custody and lifecycle integration","status":"PASS","source_commit":"31a18c9c6c35c4a6d95c98403cfa041946008f84","physical_acceptance":false,"independent_review":"NOT_RUN","checks":28,"chromium_sandbox":true,"tls_verification":"NSS trusted test CA; hostname and TLS checks enabled","storage":"Actual persistent IndexedDB transactions and worker termination"}
+2026-10-16T00:51:57.8487760Z   File "/home/runner/work/AnyNote/AnyNote/scripts/p07-evidence.py", line 10, in <module>
+2026-10-16T00:51:57.8488958Z     assert '16 passed; 0 failed; 0 ignored' in tests.stdout,'The 16 native custody tests did not execute'
+2026-10-16T00:51:57.8490083Z AssertionError: The 16 native custody tests did not execute

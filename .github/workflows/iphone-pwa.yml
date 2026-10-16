@@ -1,0 +1,112 @@
+name: P15 iPhone PWA software acceptance
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+permissions:
+  contents: read
+concurrency:
+  group: pwa-${{ github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+jobs:
+  pwa-linux-http-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      ANYNOTE_TOOLCHAINS: /tmp/anynote-p06-toolchains
+      CHROMIUM_EXECUTABLE: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.12.14'
+      - name: Frozen dependencies and owned real services
+        run: |
+          bash scripts/install-p01-toolchains.sh
+          source scripts/runtime-env.sh
+          for package in packages/protocol experiments/p01 packages/api-client apps/devices-web apps/notes-web packages/content-browser; do
+            npm --prefix "$package" ci --ignore-scripts --no-audit --no-fund
+          done
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libnss3-tools
+          python3 scripts/install-p02-tools.py
+          python3 scripts/dev-stack.py install
+          python3 scripts/dev-stack.py up
+      - name: Installation assets and cache/update policy
+        run: |
+          source scripts/runtime-env.sh
+          python3 scripts/check-p15.py
+      - name: Actual multi-account PWA, lifecycle and incompressible gigabyte
+        run: |
+          source scripts/runtime-env.sh
+          python3 scripts/p06-stack.py reset
+          node experiments/p01/p10-browser.mjs --p11-sync --p12-files --p15-pwa
+          python3 scripts/p15-evidence.py
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: p15-linux-pwa-report
+          path: |
+            artifacts/p15/*
+            artifacts/p10/browser-report.json
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Stop only owned services
+        if: always()
+        run: |
+          python3 scripts/p06-stack.py stop
+          python3 scripts/dev-stack.py stop
+  pwa-webkit-shell:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      ANYNOTE_TOOLCHAINS: /tmp/anynote-p06-toolchains
+      PLAYWRIGHT_BROWSERS_PATH: /tmp/anynote-webkit
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c
+        with:
+          python-version: '3.12.14'
+      - name: Frozen browser and app dependencies
+        run: |
+          bash scripts/install-p01-toolchains.sh
+          source scripts/runtime-env.sh
+          for package in packages/protocol experiments/p01 packages/api-client apps/devices-web apps/notes-web packages/content-browser; do
+            npm --prefix "$package" ci --ignore-scripts --no-audit --no-fund
+          done
+          node experiments/p01/node_modules/playwright-core/cli.js install --with-deps webkit
+          python3 scripts/dev-stack.py install
+          python3 scripts/dev-stack.py up
+          python3 scripts/p06-stack.py up
+      - name: Real hostname and certificate trust
+        run: |
+          sudo cp .local/p06/tls/ca.crt /usr/local/share/ca-certificates/anynote-test.crt
+          sudo update-ca-certificates
+          printf '\n127.0.0.1 app.anynote.test api.anynote.test\n' | sudo tee -a /etc/hosts
+      - name: Actual WebKit locked shell and offline install
+        run: |
+          source scripts/runtime-env.sh
+          node experiments/p01/p15-webkit.mjs
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: p15-webkit-shell-report
+          path: artifacts/p15/webkit-report.json
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Stop only owned services
+        if: always()
+        run: |
+          python3 scripts/p06-stack.py stop
+          python3 scripts/dev-stack.py stop

@@ -1,0 +1,24 @@
+{
+  "purpose": "Development failure observation; stale exact-count evidence assertion, not final acceptance",
+  "status": "FAIL",
+  "source_commit": "5a8348909b67953a35077155e5d6a27c7a088d3a",
+  "reported_source_commit": "31a18c9c6c35c4a6d95c98403cfa041946008f84",
+  "run_id": 38830492330,
+  "job_id": 116747913041,
+  "artifact_id": 12017114491,
+  "zip_sha256": "d4b4ff8d8b18e8006886233a8fbf1eae4257ab5b5172a66b8fd27836bb0f36a4",
+  "observations": [
+    "Actual sandboxed browser report passed 28 checks.",
+    "Native subprocess check=True returned before stale exact-16 assertion failed; CI did not print the captured native stdout.",
+    "Two new real SQLite regression tests made the correct expected custody count 18. Local full native output independently records those 18 tests.",
+    "bd6be29ff6933b90241e960e435e6c1a671c09ca updates exact evidence counts and requires both new test names.",
+    "No passing final job or physical acceptance is inferred from this failed run."
+  ],
+  "local_reports": [
+    {
+      "path": "5a8-vault-count-excerpt.log",
+      "sha256": "6f70824c76197b23664f5085c8d32a9f21d9578f8a91b840434df273b7b1a3b6"
+    }
+  ],
+  "physical_acceptance": false
+}

@@ -523,3 +523,34 @@ The accepted Windows GUI run observed a 339,361,792-byte (323.6 MiB) native-plus
 helper working-set increase, above the initial 128 MiB target. The helper startup
 is included; the separate WebView2 sum counts shared pages. This is an unresolved
 performance target, retained independently of the passing functional workflows.
+
+P15 software candidate acceptance is in evidence/p15, with a separately required
+final exact-head cohort and archived receipts. The local cloud Chromium setuid
+helper is owned by unmapped nobody and cannot start its required sandbox; hosted
+mandatory Chromium keeps its sandbox enabled. Physical iPhone
+Files/PRF/storage/memory and the historical Save-to-Files reload remain unverified.
+Update waits for all windows to close; the existing autosave delay cannot promise
+survival of a last edit that never received encrypted local-save acknowledgement.
+Optional neutral push handling does not establish subscription or actual delivery.
+
+Development a3706f4 P12 sampling observed 4,606,652,416-byte aggregate Chromium
+RSS baseline and 5,783,552,000-byte peak (1,176,899,584-byte increase). This sum
+includes multiple peer browsers/shared mappings and does not establish mobile
+working memory or a physical 64MiB target pass. Per-process anonymous/file/shared/
+PSS and per-agent V8 counters are added for attribution; missing counters remain
+unknown. The overall a3706f4 PWA cohort failed after its completed P12 subcase,
+so these observations are development evidence, not final P15 acceptance.
+
+Portable shared-group export needs confirmed history covering the selected
+revisions. New live work beyond the exported checkpoint is blocked before output;
+a group owner must confirm retained history and prepare a fresh snapshot. This
+does not block ordinary authenticated individual-file download, and never
+substitutes a live local witness for the offline reader's historical inclusion.
+
+P15 candidate aggregate Chromium RSS increase was 1264234496 bytes
+above 4512481280 bytes during the P15 phase. This includes peer windows
+and shared-page double counting; per-PID and renderer/Worker V8 raw counters
+retain their own baselines, restarts, cadence and missing/external-memory limits.
+It is not physical iPhone budget or unsampled-maximum evidence. Actual hosted
+one-byte-origin-quota write failure demonstrates encrypted transaction retention and
+recovery, not physical disk filling or immunity from operating-system eviction.

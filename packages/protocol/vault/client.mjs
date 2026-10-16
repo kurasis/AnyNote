@@ -1,10 +1,15 @@
 import {releaseKdf} from './kdf.mjs';
 import {IndexedVault,metadata,ensure,name,scope} from './store.mjs';
+// pagehide permanently closes that document's Worker clients. A BFCache return
+// must create a fresh locked document on Account, Devices and Notes alike.
+let recoveryInstalled=false;
+function installPageRecovery(){if(!recoveryInstalled){recoveryInstalled=true;addEventListener('pageshow',event=>{if(event.persisted)location.reload();});}}
 // UI receives only an opaque capability and display data. Lock masks synchronously,
 // fences every pending result and broadcasts before waiting for encrypted durability.
 export class LocalVault {
   #worker;#pending=new Map();#id=0;#generation=0;#cap;#ready;#bus;#profile;#timer;#closed=false;#client;#needsOpen=false;#initReject;#initTimer;#epoch;#background=0;
   constructor(url,mask=()=>{}){
+    installPageRecovery();
     this.mask=mask;this.url=url;this.#spawn();
     this.hide=()=>{if(document.hidden)this.lock().catch(()=>{});};this.pagehide=()=>{this.lock().finally(()=>this.close()).catch(()=>{});};
     document.addEventListener('visibilitychange',this.hide);addEventListener('pagehide',this.pagehide);
