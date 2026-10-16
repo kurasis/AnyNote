@@ -1,0 +1,42 @@
+{
+  "purpose": "P06 actual HTTPS/SQL synthetic-authenticator attack evidence",
+  "status": "PASS",
+  "source_commit": "f6f02875f83906985db55d30485b8978b8994a60",
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "registration_concurrency": {
+    "requests": 8,
+    "winners": 1,
+    "denials": 7
+  },
+  "native_sdk_transport": "actual maintained Rust OAuth2 to PHP League through HTTPS, loopback TCP and refresh/reuse",
+  "code_concurrency": {
+    "requests": 8,
+    "configured_php_workers": 8,
+    "winners": 1,
+    "denials": 7,
+    "token_rows_added": 1
+  },
+  "counter_concurrency": {
+    "requests": 8,
+    "winners": 1,
+    "denials": 7,
+    "same_nonzero_counter": 1
+  },
+  "rate_concurrency": {
+    "requests": 64,
+    "simultaneous_requests": 8,
+    "admitted": 60,
+    "limited": 4,
+    "expired_window_reset": "PASS"
+  },
+  "refresh_concurrency": {
+    "requests": 8,
+    "configured_php_workers": 8,
+    "winners": 1,
+    "denials": 7,
+    "reuse_family_revocation": "PASS"
+  },
+  "authentication_vs_content": "Fresh login/recovery/native grants restricted; both-key current-device proof required",
+  "checks": 215
+}

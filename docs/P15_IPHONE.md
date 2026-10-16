@@ -1,8 +1,9 @@
 # iPhone PWA development and acceptance
 
-P15 is in development. Implementation and prepared checks below are not completed
-browser, physical-device or release acceptance. P14 remains software accepted;
-its production signing, memory and physical limitations remain.
+P15 independent software acceptance is recorded in [evidence/p15](evidence/p15/README.md).
+The candidate passes all 27 ordinary jobs; the final documentation head must pass
+the same complete cohort before guarded merge. Physical-device/release acceptance
+and P14 production signing, memory and physical limitations remain open.
 
 ## Installation and navigation
 
@@ -78,8 +79,9 @@ draft and the exact encrypted outbox bytes. A real accepted request with a lost
 response is reconciled after activation without retiring its newer draft.
 The separate `pwa-webkit-shell` gate tests actual hosted WebKit TLS,
 localized shells and offline static installation. Both supplement the original
-25 gates; the full required software cohort is 27 jobs. These browser steps are prepared;
-they have not yet passed at this source.
+25 gates; the full required software cohort is 27 jobs. Exact candidate results
+and final checked-head archive references are in evidence/p15; later documentation
+changes are not silently labelled as already tested code heads.
 
 The mandatory Chromium job closes and reopens the same persistent disk profile,
 records distinct real browser process IDs and applies a one-byte origin quota

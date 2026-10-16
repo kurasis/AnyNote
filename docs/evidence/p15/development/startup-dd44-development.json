@@ -1,0 +1,19 @@
+{
+  "purpose": "Actual complete preserved-data startup on P15 development source",
+  "status": "PASS",
+  "source_commit": "dd44cc612b92dcdab0f49dee9d0fa18894221abe",
+  "commands": 16,
+  "startup_log_sha256": "faa0a55d0c8839e46bfb7b91f571c96c43c4b1f20a33e02f8b7cb0632cec20d7",
+  "frozen_baseline_files": 179,
+  "private_file_count": 11,
+  "sql_tables": 76,
+  "existing_sessions_retained": true,
+  "mutable_rate_limit_buckets": {
+    "before": 8,
+    "after": 10,
+    "scope": "Actual readiness updates counters/expiry and adds route/IP buckets; all other retained checksums and existing session row hashes compare unchanged"
+  },
+  "physical_acceptance": false,
+  "source_tree": "9244d329e48a8ffa0884eeab9cc70420e39157bc",
+  "scope": "Actual development startup, not merged-main or fresh-task restoration evidence. SQL comparison binds table names/content checksums, not DDL byte definitions."
+}

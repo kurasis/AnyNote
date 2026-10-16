@@ -1183,3 +1183,15 @@ admission or a growing draft update, then exact ciphertext/plaintext recovery
 after restoring capacity. It imports/clears no storage or credentials. A short
 preflight runs before costly files and the same fault repeats after the unchanged
 real1GB workflow. This supplements rather than replaces the full acceptance.
+
+P15 evidence scanning preserves the exact public raw reports, including their
+original formatting. The generic-key heuristic mistook foundation path/checksum
+inventory lines for credentials. Each exempted path/digest was compared with the
+reported commit's actual Git blob. Only those exact complete lines in the two
+specific P15 foundation report paths are exempted. The final scanner's own exact
+checksum is included; no directory-wide or arbitrary-value exception is added.
+Changed-checksum, out-of-scope-known-checksum and fake-PAT negatives must reject.
+Raw logs retain trailing blank lines because their archived SHA-256 binds exact
+bytes; prose/code whitespace checks exclude only those preserved raw log files.
+Nested public artifact report paths are force-added explicitly so the general
+runtime artifacts ignore cannot silently omit audited public evidence.

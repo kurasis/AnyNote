@@ -1,0 +1,10 @@
+   Compiling anynote-local-vault v0.1.0 (/workspace/AnyNote/packages/vault-native)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.79s
+     Running tests/vault.rs (packages/vault-native/target/debug/deps/vault-c7aa835558993b53)
+
+running 2 tests
+test host_writer_readiness_does_not_invalidate_content_cas ... ok
+test host_writer_readiness_preserves_owner_expiry_and_generation_fences ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 16 filtered out; finished in 4.49s
+

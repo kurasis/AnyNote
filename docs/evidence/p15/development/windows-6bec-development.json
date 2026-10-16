@@ -1,0 +1,55 @@
+{
+  "purpose": "P15 Windows regression development observation, not acceptance",
+  "status": "FAIL",
+  "source_commit": "6bec7d95b6805501c597fb44084781319b553641",
+  "job_id": 116733736143,
+  "run_id": 38826077937,
+  "last_logged_phase": "small-dialog-recovery-preflight",
+  "observed_error": "STALE_WRITER",
+  "exact_upload_suboperation": "NOT_CAPTURED",
+  "demonstrated_conflict": "Host admission lease renewals between content read and CAS reproduced in real local SQLite regression",
+  "new_source_hosted_fix_acceptance": "PENDING",
+  "prior_silent_updater_exit_cause": "NOT_ESTABLISHED",
+  "webview_pass_receipt_present": false,
+  "artifact_id": 12015812700,
+  "zip_sha256": "af87abf901a337a088ac9903602d6e814df69e76ffc2a7dc3f75e078fbfecd41",
+  "verified_public_report_rows": [
+    {
+      "artifact_id": 12015812700,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/native-pairing-development.json",
+      "sha256": "c6ca5ce7de06e61c66921d884e4336b5ce549020078627d092f3672740642e28",
+      "source_commit": "6bec7d95b6805501c597fb44084781319b553641",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 0
+    },
+    {
+      "artifact_id": 12015812700,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/native-sharing-development.json",
+      "sha256": "8e77e5a4fe97d5dfff22545261ae9c37dca020c89ce5dd7eefa4d93555dbb007",
+      "source_commit": "6bec7d95b6805501c597fb44084781319b553641",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 0
+    },
+    {
+      "artifact_id": 12015812700,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/ui-diagnostic-binaries.json",
+      "sha256": "3c23162ec88313a8b523e5237d870af1b9743d8422bacb8307cb79b96670d22c",
+      "source_commit": "6bec7d95b6805501c597fb44084781319b553641",
+      "status_as_reported": "BUILT_UNVERIFIED",
+      "git_input_rows_verified": 0
+    },
+    {
+      "artifact_id": 12015812700,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/windows-host-preflight.json",
+      "sha256": "f8954aebe799f6fa42d58163436357fdc37efa0e2d7920f208d58ec3d921140b",
+      "source_commit": "6bec7d95b6805501c597fb44084781319b553641",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 0
+    }
+  ],
+  "physical_acceptance": false
+}

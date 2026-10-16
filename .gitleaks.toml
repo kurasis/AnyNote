@@ -21,6 +21,32 @@ regexTarget = "line"
 regexes = ['''^\s*"(?:apps/api/[^"\n]+|infra/dev/[^"\n]+|scripts/[^"\n]+|\.gitleaks\.toml|\.github/workflows/foundation\.yml)": "[0-9a-f]{64}",?\s*$''']
 
 [[rules.allowlists]]
+description = "Exact independently Git-blob-verified P15 foundation receipt path/checksum lines; changed hashes, other paths and PAT negatives must reject"
+condition = "AND"
+paths = ['''docs/evidence/p15/(?:candidate|final)/raw/p03-foundation-report/p03/(?:foundation-report|http-contract-report)\.json$''']
+regexTarget = "line"
+regexes = [
+    '''^\s*"apps/api/app/Auth/OAuth/Access\.php": "d28805f0e21ff7e30fa2d47ebc69a9fbd70d72bf47d9652fd3993e912c1157f4",?\s*$''',
+    '''^\s*"apps/api/app/Auth/Passkeys\.php": "ad9eff1f4b4e14901a1763e7b90b26e66b702ca96f665ff56c41fe247e1c04e7",?\s*$''',
+    '''^\s*"apps/api/app/Auth/WebAuthn\.php": "b91770c2f150ded7d344e8fce8099a362ce9abcb63e512fc90346a867ad20ede",?\s*$''',
+    '''^\s*"apps/api/app/Http/ApiErrors\.php": "46ff0b000373668f44e31d45fc9fb8488bd79b41044a901b96c512d67aa69a0a",?\s*$''',
+    '''^\s*"apps/api/app/Http/ApiException\.php": "d991a9ec93689801a7a5c4a026ddc068f6fcb1f81b969834277698ce40d66509",?\s*$''',
+    '''^\s*"apps/api/app/Http/Controllers/AuthController\.php": "0c07c2f7c62de16553191b5ec5c315edbe309fb74217fdca91c9c5814d2428f1",?\s*$''',
+    '''^\s*"apps/api/app/Http/Middleware/ApiBoundary\.php": "1a03c41acbd2794fb20df4fbb58595da81d6caae328053b87e302847cb3730d3",?\s*$''',
+    '''^\s*"apps/api/app/Http/Middleware/AuthSession\.php": "15b5e194fd1dff56fdcef162a32b5108a3c7f4b9305b2433eefccb837bdcb545",?\s*$''',
+    '''^\s*"apps/api/config/api\.php": "a6029158f149c916bbcb5a2308ed619d8f81bbfee96adc0cde65f4a60937fb8e",?\s*$''',
+    '''^\s*"apps/api/config/auth\.php": "32bb34564567fa0186258eba0e72ce0f33949d7dc2bc1aa6c24cd24742c9bd22",?\s*$''',
+    '''^\s*"apps/api/config/passkeys\.php": "870bd71a253e780ac78f01a274f01447452cb5d6db240f0d8c1a8b816d5bbd7e",?\s*$''',
+    '''^\s*"apps/api/tests/Feature/ApiBoundaryTest\.php": "fefb1bf3ddcc3012242f9959a83ff877f596d8508062b354501403fad7c436ba",?\s*$''',
+    '''^\s*"packages/contracts/generated/openapi\.json": "9fbfed688a279afeb61289edd2d55cbf0d865f005ef3bc552c26b5da1becccdc",?\s*$''',
+    '''^\s*"packages/contracts/p03\-api\.schema\.json": "d5397875d6fba4fcd63d7fa33939ce34e59dd17a17923048f7fe45db72f897ed",?\s*$''',
+    '''^\s*"packages/contracts/p04\-api\.schema\.json": "30d0c2e77fc889188fe1e1b08051dc52e9b85a00e58d283e90927121fbe001fe",?\s*$''',
+    '''^\s*"scripts/api\-inventory\.py": "f7b1c221a3721eb8897d5bbd015fb97f381a4060afbea0b6ddca3c3f238a930c",?\s*$''',
+    '''^\s*"scripts/check\-secrets\.py": "06063f2040403a79070729cee3a89cc7983ceb5db8a07a55c9ed266f20823844",?\s*$''',
+    '''^\s*"scripts/check\-secrets\.py": "fa47ca6c44f8de4e4996075ed6750e2c2a41e499db1763f1de7b7cc176942a82",?\s*$''',
+]
+
+[[rules.allowlists]]
 description = "Exact public candidate wrap digest and sequential 00..1f key bytes, reproduced by fixture and independent reference checks"
 condition = "AND"
 paths = ['''fixtures/protocol/p02/vectors\.json$''']

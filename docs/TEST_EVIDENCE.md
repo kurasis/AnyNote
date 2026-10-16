@@ -2039,3 +2039,26 @@ Worker/IndexedDB denial plus last-acknowledged recovery. An early preflight
 provides faster fault-setup feedback and the same check remains mandatory after
 the unchanged incompressible1GB workflow. No profile reset/import, mocked store,
 crypto bypass, smaller gigabyte substitute or relaxed timeout is used.
+
+## P15 complete independent software candidate
+
+Candidate `b0d6c2e36680facbd49624c6205a195b2f644464` passes all 27 ordinary required jobs,
+including actual installed Windows/WebView2 and both additional PWA gates.
+The full genuine random 1 GB flow, quota abort, waiting-worker update, exact
+unknown outbox/newer draft reconciliation, complete ZIP digests and every
+reported Git-input hash are verified in [evidence/p15](evidence/p15/README.md).
+Final documentation changes require their own 27-job exact-head passing cohort;
+its raw reports and equal-tree guarded merge will be archived on the evidence-only
+branch linked there, without rewriting candidate or synthetic-merge source SHAs.
+Physical/review/production/memory/capacity gates remain explicitly open.
+
+Before the final evidence commit, the full Git-visible secret scan passed with
+12 fake-PAT paths, four changed/out-of-scope receipt negatives, all 15 prior
+changed key/digest negatives, the old-fragment mutation and alternate age identity.
+Nineteen initial generic-key findings were public inventory/file SHA-256 values;
+the archived foundation values were independently compared to actual Git blobs.
+Only exact full path/checksum lines in the two specific public receipt paths are
+exempted. Every one of the 76 candidate raw JSON reports was checked against the
+staged Git bytes, including nested artifact paths otherwise covered by ignore.
+The seven PWA policy/translation tests, actual bundle and frozen 179-file audit
+also passed locally. These dirty precommit checks are not final clean-head CI.

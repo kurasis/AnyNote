@@ -1,0 +1,44 @@
+{
+  "purpose": "P15 regression cohort development observation, not acceptance",
+  "status": "FAIL",
+  "source_commit": "a3706f4e1922bd7143428db25dfb36ae4a06d372",
+  "job_id": 116677705874,
+  "run_id": 38809165470,
+  "last_logged_phase": "signed-test-upgrade",
+  "process_exit_code": 1,
+  "cause": "NOT_ESTABLISHED",
+  "webview_pass_receipt_present": false,
+  "artifact_id": 12009129806,
+  "zip_sha256": "ce9fa74f963b89958d1eb8bee8e6b44b4c97982f4f63fd677dc4b43ede6ae693",
+  "public_reports": [
+    {
+      "path": "artifacts/p14/backend-filesystem-capability.json",
+      "sha256": "70a74be5c57aab99b89934a7eea96474a087b1c164a2e76d6bb002f7afb0aebe"
+    },
+    {
+      "path": "artifacts/p14/backend-http-errors.json",
+      "sha256": "bdd2ded35fa5adf9d1ee4d0ccd1488f7ec32e214a55fe0b7977f7feaa16afc70"
+    },
+    {
+      "path": "artifacts/p14/capability-audit.json",
+      "sha256": "d3f665b59706bc465f47ba8a20e88744c557db8bc26cc98d757a07b871fb465c"
+    },
+    {
+      "path": "artifacts/p14/native-pairing-development.json",
+      "sha256": "7148fbdb5c154bf6a9b167683b31bc2382ea766c054230669539601ce29a985e"
+    },
+    {
+      "path": "artifacts/p14/native-sharing-development.json",
+      "sha256": "477fe71fc870f681904617a57fd1029124ff4513b30603421283952b792817d3"
+    },
+    {
+      "path": "artifacts/p14/ui-diagnostic-binaries.json",
+      "sha256": "8392a8aa96ee79d66aa51b5f9c6c06f3b99d274a611c7716708f7a6b6014041c"
+    },
+    {
+      "path": "artifacts/p14/windows-host-preflight.json",
+      "sha256": "b11e833d5dcd322ece0bec76527534d1dbdcc9ca9bd9d36ab967d7a4fb83ec50"
+    }
+  ],
+  "physical_acceptance": false
+}

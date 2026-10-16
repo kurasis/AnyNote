@@ -1,0 +1,114 @@
+{
+  "purpose": "P10 actual multi-account shared-group UI and protected persistent storage",
+  "status": "FAIL",
+  "source_commit": "af01b0263858b89c10dfbcf28228f1d28b1f02c1",
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "browser_version": "155.0.8059.39",
+  "runtime_platform": "linux",
+  "p11_staged_sync_checks": 4,
+  "p12_files": {
+    "gigabyte_bytes": 1000000000,
+    "memory": {
+      "samples": 1586,
+      "sample_interval_ms": 250,
+      "baseline_rss_bytes": 4586491904,
+      "observed_peak_rss_bytes": 5776048128,
+      "observed_peak_growth_bytes": 1189556224,
+      "scope": "sum of actual hosted Chromium process RSS; includes shared-page double counts and other open fixture windows; no iPhone or hard memory ceiling claim"
+    },
+    "checks": 14,
+    "physical_acceptance": false,
+    "stream_completion": "actual desktop saved output hash; iPhone Files acceptance remains NOT_RUN"
+  },
+  "p15_pwa": {
+    "status": "PENDING",
+    "checks": [
+      "P15_VERIFIED_ENTRY_TITLE_AFTER_LOCK",
+      "P15_REAL_INCOMPRESSIBLE_SOURCE_SIZE",
+      "P15_MOBILE_CONTENT_NAVIGATION",
+      "P15_NO_HORIZONTAL_MOBILE_OVERFLOW",
+      "P15_KEYBOARD_VIEWPORT_READABLE_INPUT",
+      "P15_KEYBOARD_VIEWPORT_VISIBLE_SAVE_STATE",
+      "P15_RUSSIAN_INSTALL_GUIDANCE",
+      "P15_STABLE_INSTALL_MANIFEST",
+      "P15_INSTALLED_STATIC_ASSETS_CACHED",
+      "P15_REAL_MANIFEST_MEDIA_TYPE",
+      "P15_NO_API_OR_EXPORT_CACHE_ENTRIES",
+      "P15_GIGABYTE_SHIPPED_ARCHIVE_EOF",
+      "P15_KIT_RELEASED_ONLY_AFTER_DURABLE_ARCHIVE"
+    ]
+  },
+  "checks": 72,
+  "reason": "UNANCHORED_HISTORY",
+  "custody_diagnostics": [
+    [
+      {
+        "hidden": false,
+        "events": []
+      },
+      {
+        "hidden": false,
+        "events": []
+      }
+    ],
+    [
+      {
+        "hidden": false,
+        "events": []
+      },
+      {
+        "hidden": true,
+        "events": [
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "PINNED_ACCOUNT_REQUIRED",
+            "ms": 165131
+          },
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "PINNED_ACCOUNT_REQUIRED",
+            "ms": 188740
+          },
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "PINNED_ACCOUNT_REQUIRED",
+            "ms": 205067
+          },
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "PINNED_ACCOUNT_REQUIRED",
+            "ms": 223101
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "hidden": false,
+        "events": []
+      },
+      {
+        "hidden": true,
+        "events": [
+          {
+            "event": "custody-error",
+            "operation": "notes.queue",
+            "error": "ROLE_FORBIDDEN",
+            "ms": 285038
+          },
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "ROSTER_CHANGED",
+            "ms": 381557
+          }
+        ]
+      }
+    ]
+  ]
+}

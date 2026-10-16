@@ -1,0 +1,52 @@
+{
+  "purpose": "P15 Windows regression development observation, not acceptance",
+  "status": "FAIL",
+  "source_commit": "cf1c63162e9ee66cbc379414415dc1f856a72558",
+  "job_id": 116721420297,
+  "run_id": 38822277471,
+  "last_logged_phase": "signed-test-upgrade",
+  "process_exit_code": 1,
+  "cause": "NOT_ESTABLISHED",
+  "webview_pass_receipt_present": false,
+  "artifact_id": 12015282649,
+  "zip_sha256": "224057f8fdda887a7398b58bd4c34bdda70ce3a791728a3cb02af475e66dc0dd",
+  "verified_public_report_rows": [
+    {
+      "artifact_id": 12015282649,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/native-pairing-development.json",
+      "sha256": "fc8f27855a63ddeabff81d9533c409df892a44a9ff35cfcd5e2684333d0acf63",
+      "source_commit": "cf1c63162e9ee66cbc379414415dc1f856a72558",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 0
+    },
+    {
+      "artifact_id": 12015282649,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/native-sharing-development.json",
+      "sha256": "06e0e524d37c297b5e7a27854246555a0ecae528b3fca28a53380a58f75a4fb0",
+      "source_commit": "cf1c63162e9ee66cbc379414415dc1f856a72558",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 0
+    },
+    {
+      "artifact_id": 12015282649,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/ui-diagnostic-binaries.json",
+      "sha256": "c4009d407ecbbd4b13adedb85cf258af390fe3e48c28cdd172d7cd73a05cf2cc",
+      "source_commit": "cf1c63162e9ee66cbc379414415dc1f856a72558",
+      "status_as_reported": "BUILT_UNVERIFIED",
+      "git_input_rows_verified": 0
+    },
+    {
+      "artifact_id": 12015282649,
+      "artifact_name": "p14-windows-development-installer",
+      "member": "artifacts/p14/windows-host-preflight.json",
+      "sha256": "79da96eda99457af84609ec0795ec6b8dd13a126a75e5992d0d662e0e96f0fea",
+      "source_commit": "cf1c63162e9ee66cbc379414415dc1f856a72558",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 0
+    }
+  ],
+  "physical_acceptance": false
+}

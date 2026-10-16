@@ -21,7 +21,7 @@ does not satisfy a feature gate. Production release is not ready.
 | P12 | VERIFIED | Twelve portable file tests, 368 actual file HTTPS/SQL checks, 452 shared-authority checks, 60 sandboxed PWA checks, native 1 GB/cache/atomic export on Linux/MSVC; all twenty-two software gates PASS; physical G1/U11/U12 and qualified G2/G3 remain open |
 | P13 | VERIFIED | Protected content UX, safe previews/thumbnails, reference-safe retention, independent age recovery and fresh standard import; 401 HTTP/SQL, 427 authority, 59 sandboxed UI checks, actual Linux/Windows 1 GB archive and all 24 software gates PASS; physical/review gates remain open |
 | P14 | VERIFIED | Native Windows/WebView2 single installer, actual dialogs/SQL/1GB/recovery/upgrade/restart, all 25 software gates; physical and production signing remain open |
-| P15 | NOT STARTED | P01/P07–P13 and actual iPhone evidence |
+| P15 | VERIFIED | Installed PWA shell, EN/RU mobile/keyboard UX, exact 1 GB/API/recovery/import/update/quota software acceptance and all 27 mandatory candidate jobs; final merge is gated by the same exact-head cohort; physical/review/signing/memory gates remain open |
 | P16 | NOT STARTED | P04/P08/P11–P13 and appropriately sized synthetic host |
 | P17 | NOT STARTED | P02/P08–P16; independent review |
 | P18 | NOT STARTED | P14–P17 and release/signing gates |
@@ -856,32 +856,20 @@ owned-service startup passed 15 commands at that source. Final documentation-hea
 configuration persistence have separate outcomes; draft save is not Publish or
 independently observed fresh restoration.
 
-## P15 development: installed PWA shell and preserved-data update
+## Completed phase: P15 independent PWA software
 
-Main/remote tree `49e97603ea2bfd3d83a7976dddbf19dd18f9ad73` and ordinary PR27
-merge at e5fe04d657850189eb956fb802fee9326e486a67 were rechecked before P15.
-All 25 postmerge mandatory checks were observed successful; two optional jobs
-were skipped. No previous phase was reimplemented.
+Before implementation, the accepted P14 main `e5fe04d657850189eb956fb802fee9326e486a67`
+and all 25 ordinary postmerge jobs were verified; exact receipts remain in
+[evidence/p15](evidence/p15/p14-postmerge-cohort.json). No completed phase was restarted.
 
-The new PWA shell adds a stable manifest/icons, mobile panes/Back, install and
-storage guidance, explicit pause, neutral push reception and safe waiting-worker
-update. BFCache return recreates locked custody across all three browser shells.
-Six executed worker policy tests and the actual static build pass locally; the
-179 frozen files and generated contracts remain unchanged. Local Chromium cannot
-start its required sandbox helper. The new hosted gigabyte/update/memory case is
-prepared but NOT_RUN at this source. See P15_IPHONE.md. P15 is not complete.
-
-P15 follow-up adds EN/RU Account/Devices/vault shells without ordinary storage or
-rewriting runtime recovery/identity text, actionable pause/resume selection and a
-real hosted WebKit shell gate. Seven local executable tests and the static build
-pass. The first draft CI cohort has one diagnosed cache-allowlist regression:
-P07's exact 11-file assertion must include exactly three new public manifest/icon
-resources. The corrected assertion still rejects API, export, foreign-origin and
-query-bearing responses. No failed check is bypassed or marked passing. Browser
-source acceptance remains pending, including complete gigabyte import/download
-hash, forced page destruction/reselection, waiting update and separate V8 agents.
-
-Initial P15 hosted execution reached actual 1GB protected upload/resume but stopped
-on P12's legacy visible-enum assertion. The source now retains exact machine state
-in data attributes and the check still requires UNATTACHED plus its Attach action.
-Both initial failures remain development observations, not passing acceptance.
+Candidate `b0d6c2e36680facbd49624c6205a195b2f644464` passes all 27 ordinary gates; exact raw reports,
+ZIP/source-input/Git-blob verification and development failures are in
+[evidence/p15](evidence/p15/README.md). The final documentation head requires its
+own passing 27-job cohort before a guarded merge. Implementation includes the
+installed static shell, EN/RU touch/keyboard UX, safe waiting-worker updates,
+protected pause/reselect, fresh unlock and actual gigabyte age recovery/import.
+A real one-byte-origin-quota write failure retains the prior encrypted acknowledged draft.
+All 179 frozen files and dependency locks remain unchanged. P16 independent
+staging/backup/restore operations are next; no production or owner trial is
+authorized. Revert the reviewed implementation to roll back; preserve all
+encrypted local state and journals, and do not purge caches/databases as rollback.

@@ -524,9 +524,10 @@ helper working-set increase, above the initial 128 MiB target. The helper startu
 is included; the separate WebView2 sum counts shared pages. This is an unresolved
 performance target, retained independently of the passing functional workflows.
 
-P15 PWA changes are in development; the new hosted software suite has not passed
-at this source. The cloud Chromium setuid helper is owned by unmapped nobody and
-cannot start its required sandbox; verification is not disabled. Physical iPhone
+P15 software candidate acceptance is in evidence/p15, with a separately required
+final exact-head cohort and archived receipts. The local cloud Chromium setuid
+helper is owned by unmapped nobody and cannot start its required sandbox; hosted
+mandatory Chromium keeps its sandbox enabled. Physical iPhone
 Files/PRF/storage/memory and the historical Save-to-Files reload remain unverified.
 Update waits for all windows to close; the existing autosave delay cannot promise
 survival of a last edit that never received encrypted local-save acknowledgement.
@@ -545,3 +546,11 @@ revisions. New live work beyond the exported checkpoint is blocked before output
 a group owner must confirm retained history and prepare a fresh snapshot. This
 does not block ordinary authenticated individual-file download, and never
 substitutes a live local witness for the offline reader's historical inclusion.
+
+P15 candidate aggregate Chromium RSS increase was 1264234496 bytes
+above 4512481280 bytes during the P15 phase. This includes peer windows
+and shared-page double counting; per-PID and renderer/Worker V8 raw counters
+retain their own baselines, restarts, cadence and missing/external-memory limits.
+It is not physical iPhone budget or unsampled-maximum evidence. Actual hosted
+one-byte-origin-quota write failure demonstrates encrypted transaction retention and
+recovery, not physical disk filling or immunity from operating-system eviction.

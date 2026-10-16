@@ -1,0 +1,94 @@
+{
+  "purpose": "P10 actual multi-account shared-group UI and protected persistent storage",
+  "status": "FAIL",
+  "source_commit": "d68be7e06ad876211cd309317051c6e367c333ef",
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "p11_staged_sync_checks": 4,
+  "p12_files": {
+    "gigabyte_bytes": 1000000000,
+    "memory": {
+      "samples": 1576,
+      "sample_interval_ms": 250,
+      "baseline_rss_bytes": 4539539456,
+      "observed_peak_rss_bytes": 5844975616,
+      "observed_peak_growth_bytes": 1305436160,
+      "scope": "sum of actual hosted Chromium process RSS; includes shared-page double counts and other open fixture windows; no iPhone or hard memory ceiling claim"
+    },
+    "checks": 14,
+    "physical_acceptance": false,
+    "stream_completion": "actual desktop saved output hash; iPhone Files acceptance remains NOT_RUN"
+  },
+  "checks": 59,
+  "reason": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('#entries button').filter({ hasText: 'PUBLIC P12 attached entry' })\n",
+  "custody_diagnostics": [
+    [
+      {
+        "hidden": false,
+        "events": []
+      },
+      {
+        "hidden": false,
+        "events": []
+      }
+    ],
+    [
+      {
+        "hidden": false,
+        "events": []
+      },
+      {
+        "hidden": true,
+        "events": [
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "PINNED_ACCOUNT_REQUIRED",
+            "ms": 165360
+          },
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "PINNED_ACCOUNT_REQUIRED",
+            "ms": 194324
+          },
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "PINNED_ACCOUNT_REQUIRED",
+            "ms": 214349
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "hidden": false,
+        "events": []
+      },
+      {
+        "hidden": true,
+        "events": [
+          {
+            "event": "custody-error",
+            "operation": "notes.queue",
+            "error": "ROLE_FORBIDDEN",
+            "ms": 287990
+          },
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "ROSTER_CHANGED",
+            "ms": 369808
+          },
+          {
+            "event": "custody-error",
+            "operation": "notes.group",
+            "error": "POLICY_CHANGED",
+            "ms": 392526
+          }
+        ]
+      }
+    ]
+  ]
+}
