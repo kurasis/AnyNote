@@ -84,6 +84,7 @@ services:
       - ${ANYNOTE_DEPLOY_ROOT}/nginx.conf:/etc/nginx/nginx.conf:ro
       - ${ANYNOTE_STATIC_ROOT:?independently owned static release required}:/static:ro
       - ${ANYNOTE_DEPLOY_ROOT}/storage/app/private/p16-delivery:/delivery:ro
+      - ${ANYNOTE_DEPLOY_ROOT}/tls/operator-ca.crt:/tls/operator-ca.crt:ro
       - ${ANYNOTE_DEPLOY_ROOT}/tls/server.crt:/tls/server.crt:ro
       - ${ANYNOTE_DEPLOY_ROOT}/tls/server.key:/tls/server.key:ro
     networks: [edge]

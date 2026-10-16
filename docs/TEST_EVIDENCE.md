@@ -2102,3 +2102,23 @@ corrected. Neither attempt is a final phase PASS or a substitution for exact1GB.
 Full ordinary29-job source receipts, genuine full-size restore/fresh copy/download,
 capacity measurements and public artifact/Git-input audit will be recorded after
 executed acceptance. Physical/review/production and100GB gates remain separate.
+
+
+P16 validation update:26 PHP tests/359 assertions and the complete owned SQL
+concurrency/rollback/supervised-restart suite passed. A real client registered
+one account plus four HTTPS/certified enrollments locally. Hosted source5244f5f
+registered10 accounts/50 devices, then failed before inserting the large fixture:
+a test loader passed an array into the object-only public canonicalizer. The
+loader now uses the existing typed equality helper; a bounded diagnostic
+verified500 signatures and installed its first500-row SQL batch before the
+intentionally truncated stream was refused. This is not100000-row acceptance.
+The archive suite now includes an independently wrong signing key and passes
+10 real age/OpenSSL tests. Newer full29-job acceptance is still pending.
+
+P16 candidate `63fba93` normal hosted jobs completed the actual1GB upload and
+created100,000 encrypted/signed revisions with all50 devices registered. Neither
+job passed: the operations fixture omitted its `ident` import, and history reads
+exceeded the maintained120/session/minute limit. The corrected fixture spaces
+history requests550ms apart without changing server admission. Local actual mTLS
+verification passed: certified non-admin403, recent admin without certificate404,
+and certified recent admin200. These partial results are not phase acceptance.

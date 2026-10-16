@@ -907,3 +907,15 @@ root-kit decryption. It is not final1GB acceptance. Final29-job exact-source
 operations/capacity and inherited acceptance is pending; do not mark the phase
 VERIFIED from this development record. Production/physical/review/signing and
 100GB capacity remain separate, as documented in P16_OPERATIONS.
+
+
+P16 validation update:26 PHP tests/359 assertions and the complete owned SQL
+concurrency/rollback/supervised-restart suite passed. A real client registered
+one account plus four HTTPS/certified enrollments locally. Hosted source5244f5f
+registered10 accounts/50 devices, then failed before inserting the large fixture:
+a test loader passed an array into the object-only public canonicalizer. The
+loader now uses the existing typed equality helper; a bounded diagnostic
+verified500 signatures and installed its first500-row SQL batch before the
+intentionally truncated stream was refused. This is not100000-row acceptance.
+The archive suite now includes an independently wrong signing key and passes
+10 real age/OpenSSL tests. Newer full29-job acceptance is still pending.

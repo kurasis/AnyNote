@@ -75,13 +75,18 @@ final class Recovery
             }
         }
         $tables = [];
+        $checksums = [];
         foreach (DB::select('SHOW TABLES') as $table) {
             $name = array_values((array) $table)[0];
+            D::require((bool) preg_match('/^[a-z][a-z0-9_]{0,63}$/D', $name), 'UNSUPPORTED_SCHEMA');
             $tables[$name] = DB::table($name)->count();
+            $checksum = DB::selectOne('CHECKSUM TABLE `'.$name.'` EXTENDED')->Checksum;
+            D::require($checksum !== null, 'STORAGE_UNAVAILABLE');
+            $checksums[$name] = (string) $checksum;
         }
         ksort($tables);
 
-        return ['version' => 1, 'generation' => DB::table('sync_counters')->value('generation'), 'sequence' => (string) DB::table('sync_counters')->value('sequence'), 'tables' => $tables, 'blobs' => array_values($references), 'unreferenced_opaque_blobs' => $orphans, 'reference_reconciliation' => 'PASS'];
+        return ['version' => 1, 'generation' => DB::table('sync_counters')->value('generation'), 'sequence' => (string) DB::table('sync_counters')->value('sequence'), 'tables' => $tables, 'table_checksums' => $checksums, 'blobs' => array_values($references), 'unreferenced_opaque_blobs' => $orphans, 'reference_reconciliation' => 'PASS'];
     }
 
     public function catalogue(string $group): array

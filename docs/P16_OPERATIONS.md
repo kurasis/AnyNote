@@ -45,10 +45,15 @@ it. Use independently verified certificates, DNS, static release signatures and
 image digest. Bind the edge to loopback until the owner's network policy is ready.
 Expose HTTPS only; MariaDB has no host port and an internal network. Restrict
 operator SSH by key/VPN/firewall, disable routine root/password login and public
-DB consoles. Public `/api/v1/admin/` is denied; operator console/bootstrap actions
-require host access and never confer group ownership or content keys. If an HTTP
-administration gateway is later needed, review a separate private/mTLS gateway;
-do not relax the public deny rule.
+DB consoles. The `/api/v1/admin/` path requires a verified operator client certificate
+against an independently managed CA, plus the existing recent authenticated
+service-admin role. Ordinary clients without that certificate receive404 even
+with a valid admin session. A client certificate alone never grants the service
+role or group ownership/content keys. Provision only the public operator CA
+certificate as `tls/operator-ca.crt` in Nginx; keep operator CA/client private
+keys outside runtime mounts and manage short validity/revocation independently.
+Prefer VPN/network restrictions in addition to mTLS. Console/bootstrap actions
+require controlled host access and also never confer content ownership.
 
 Install migrations through the explicit root-credential one-off used in
 `p16-stack.py`, then grant the runtime only SELECT/INSERT/UPDATE/DELETE on this DB.
@@ -106,7 +111,7 @@ is handled without publishing an incomplete backup. An unpaired signature or
 
 The signed encrypted manifest includes source/image, public origin/RP/service
 configuration, static asset/Nginx hashes, complete member sizes/digests, DB table
-counts, transport watermark, reference reconciliation and a security-checkpoint
+counts/checksums, transport watermark, reference reconciliation and a security-checkpoint
 commitment. Reinject operational secrets from independent custody after recovery;
 rotate them on suspected compromise. E2EE recovery does not depend on APP_KEY.
 
@@ -143,7 +148,7 @@ python3 scripts/operations.py --environment /secure/isolated-clean/environment r
 ```
 
 A host fence precedes SQL import. Reconciliation then verifies immutable blob
-sizes/digests, retained note wraps, chunk manifests, key-envelope epochs and roster
+sizes/digests and exact table checksums, retained note wraps, chunk manifests, key-envelope epochs and roster
 heads. Restored sessions/refresh families/OAuth grants are revoked; challenges and
 approvals expire; every group is quarantined and transport generation changes.
 A persistent SQL fence also prevents access if the host fence file disappears.
@@ -257,6 +262,8 @@ python3 scripts/p16-stack.py build
 python3 scripts/p16-drill.py run
 node packages/protocol/p16-capacity.mjs
 ```
+
+The fixture derives mount UID/GID from the actual runner; it never assumes UID1000.
 
 Run destructive/fault suites only in their explicitly marked synthetic databases.
 The normal hosted workflow runs operations and capacity on separate clean runners;

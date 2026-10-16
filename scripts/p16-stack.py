@@ -85,7 +85,24 @@ def build():
     return ops.run(['docker','image','inspect','--format','{{.Id}}','anynote-p16-api:synthetic']).decode().strip()
 
 
+def admin_tls(target):
+    custody=STATE/'offline-operator';custody.mkdir(exist_ok=True,mode=0o700)
+    expected=['admin-ca.key','admin-ca.crt','admin-client.key','admin-client.crt']
+    present=[(custody/name).exists() for name in expected]
+    if any(present) and not all(present):raise ValueError('Incomplete owned synthetic administration TLS; do not overwrite existing keys')
+    if not any(present):
+        ops.run(['openssl','req','-x509','-newkey','rsa:3072','-nodes','-keyout',custody/'admin-ca.key','-out',custody/'admin-ca.crt','-days','10','-subj','/CN=AnyNote P16 synthetic operator CA','-addext','basicConstraints=critical,CA:TRUE','-addext','keyUsage=critical,keyCertSign,cRLSign'])
+        ops.run(['openssl','req','-newkey','rsa:3072','-nodes','-keyout',custody/'admin-client.key','-out',custody/'admin-client.csr','-subj','/CN=AnyNote P16 synthetic operator'])
+        (custody/'admin-client.extensions').write_text('basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature\nextendedKeyUsage=clientAuth\n')
+        ops.run(['openssl','x509','-req','-in',custody/'admin-client.csr','-CA',custody/'admin-ca.crt','-CAkey',custody/'admin-ca.key','-CAcreateserial','-out',custody/'admin-client.crt','-days','1','-extfile',custody/'admin-client.extensions'])
+        for name in ['admin-ca.key','admin-client.key']:(custody/name).chmod(0o600)
+    destination=target/'tls/operator-ca.crt'
+    if destination.exists() and ops.digest(destination)!=ops.digest(custody/'admin-ca.crt'):raise ValueError('Preserve the existing operator CA binding')
+    if not destination.exists():shutil.copyfile(custody/'admin-ca.crt',destination)
+
+
 def up(target):
+    admin_tls(target)
     render(target)
     env=ops.Environment(target/'environment')
     env.compose('up','-d','--wait','db')

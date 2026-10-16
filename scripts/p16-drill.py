@@ -124,7 +124,7 @@ def action(name):
     if name=='restore':
         image=env.values['ANYNOTE_API_IMAGE']
         with socket.socket() as sock:sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
-        target=stack.initialize('restore-'+str(time.time_ns())[-12:],port,image=image);stack.render(target)
+        target=stack.initialize('restore-'+str(time.time_ns())[-12:],port,image=image);stack.admin_tls(target);stack.render(target)
         clean=ops.Environment(target/'environment');latest=json.loads((checkpoints/'latest.json').read_text())
         backup=json.loads((backups/'backup-receipt.json').read_text())
         result=ops.restore(clean,backup['archive_path'],custody/'backup-verification.pem',custody/'backup.identity',latest['sha256']);result['restore_environment']=str(target/'environment');result['restore_port']=port
@@ -135,7 +135,8 @@ def action(name):
     if name=='storage-faults':
         owner=hashlib.sha256(('P16 owned synthetic database '+str(ROOT)).encode()).hexdigest()
         with tempfile.NamedTemporaryFile(mode='w',suffix='.yaml') as override:
-            json.dump({'services':{'api':{'tmpfs':['/fault:size=8m,uid=1000,gid=1000,mode=0700']}}},override);override.flush()
+            fault_mount='/fault:size=8m,uid='+env.values.get('ANYNOTE_UID','1000')+',gid='+env.values.get('ANYNOTE_GID','1000')+',mode=0700'
+            json.dump({'services':{'api':{'tmpfs':[fault_mount]}}},override);override.flush()
             return json.loads(ops.run([*env.command,'-f',override.name,'run','--rm','--no-deps','-T','-e','ANYNOTE_P16_OWNER='+owner,'-v',str(ROOT/'apps/api/tests/Support/p16-storage-fault.php')+':/tmp/p16-storage-fault.php:ro','api','php','/tmp/p16-storage-fault.php']).decode().strip())
     if name=='inventory':return json.loads(env.php('operations:inventory'))
     if name=='outage-on':env.compose('stop','db');return {'status':'armed'}

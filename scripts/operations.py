@@ -282,6 +282,7 @@ def restore(env, archive, public_key, identity, expected_checkpoint):
         if not re.fullmatch('[0-9a-f]{64}',expected_checkpoint):
             raise ValueError('Independent latest security-checkpoint digest required')
         actual_image=run(['docker','image','inspect','--format','{{.Id}}',env.values['ANYNOTE_API_IMAGE']]).decode().strip()
+        if env.values['ANYNOTE_SERVICE_ID']!=manifest['deployment']['service_id']:raise ValueError('Quarantined restore must preserve the signed source service identity')
         if actual_image!=manifest['api_image_id']:raise ValueError('Restore image differs from the signed backup release')
         # The host fence precedes import and persists across EVERY failure.
         fence=env.state/'storage/app/private/RESTORE_QUARANTINE'

@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 import tarfile
 import tempfile
+import subprocess
+import sys
 import unittest
 spec=importlib.util.spec_from_file_location('operations',Path(__file__).with_name('operations.py'));ops=importlib.util.module_from_spec(spec);spec.loader.exec_module(ops)
 
@@ -47,6 +49,13 @@ class Backups(unittest.TestCase):
         p,s=self.archive()
         with self.assertRaises(Exception):self.unpack(p,s,self.root/'other')
 
+    def test_wrong_independent_signing_key_rejected(self):
+        private=self.root/'wrong-signing';public=self.root/'wrong-verification'
+        ops.run(['openssl','genpkey','-algorithm','ED25519','-out',private])
+        ops.run(['openssl','pkey','-in',private,'-pubout','-out',public])
+        path,signature=self.archive()
+        with self.assertRaises(RuntimeError):ops.verify(path,signature,public)
+
     def test_corrupt_ciphertext_cannot_reach_decrypt_or_database(self):
         p,s=self.archive();b=bytearray(p.read_bytes());b[-20]^=1;p.write_bytes(b)
         with self.assertRaises(RuntimeError):self.unpack(p,s)
@@ -81,4 +90,10 @@ class Backups(unittest.TestCase):
         self.assertEqual(original.read_bytes(),b'existing');self.assertEqual(part.read_bytes(),b'new')
 
 
-if __name__=='__main__':unittest.main()
+if __name__=='__main__':
+    suite=unittest.defaultTestLoader.loadTestsFromTestCase(Backups)
+    result=unittest.TextTestRunner(verbosity=1).run(suite)
+    root=ops.ROOT;output=root/'artifacts/p16';output.mkdir(parents=True,exist_ok=True)
+    report={'purpose':'P16 real maintained age/OpenSSL adversarial archive cases','status':'PASS' if result.wasSuccessful() else 'FAIL','source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'source_tree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=root).strip()),'tests_run':result.testsRun,'failures':len(result.failures),'errors':len(result.errors),'skipped':len(result.skipped),'real_age_and_openssl':True,'private_keys_in_report':False}
+    (output/'archive-negative-report.json').write_text(json.dumps(report,indent=2)+'\n')
+    raise SystemExit(0 if result.wasSuccessful() else 1)

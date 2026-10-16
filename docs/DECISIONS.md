@@ -1255,3 +1255,16 @@ static deployment mount. Independent deployment credentials are an actual-host
 provisioning responsibility; the synthetic runner is not evidence of two human
 operators or independent providers. New normal operations/capacity jobs supplement
 all27 inherited gates; 100GB is NOT_RUN when the host cannot hold it plus reserves.
+
+
+The protected administration path uses optional client-certificate verification
+for ordinary TLS, mandatory verified operator mTLS on admin routes, and the
+existing recent service-admin session check. Neither TLS custody nor Linux
+access alone becomes cryptographic group ownership. Test operator CA/client
+credentials are separate from server TLS, backups and static signing.
+
+Disposable P04/P03 SQL fixtures use distinct blob/delivery namespaces; established
+P06 and Windows storage paths remain unchanged. A real filesystem collector
+regression preserves an old file in the other database namespace while removing
+its own eligible orphan. This prevents scheduled maintenance in one owned test
+database from collecting another database's retained ciphertext.

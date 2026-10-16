@@ -19,6 +19,11 @@ $result = match ($argv[1] ?? '') {
 
         return ['token' => $token];
     })(),
+    'admin-role' => (function () use ($input) {
+        DB::table('users')->where('id', $input->account_id)->update(['is_admin' => true]);
+
+        return ['status' => 'PASS'];
+    })(),
     'revoke-session' => (function () use ($input) {
         DB::table('auth_sessions')->where('account_id', $input->account_id)->update(['state' => 'revoked']);
 

@@ -33,6 +33,9 @@ http {
     server {
         listen 8443 ssl;
         server_name @API_HOST@;
+        ssl_client_certificate /tls/operator-ca.crt;
+        ssl_verify_client optional;
+        ssl_verify_depth 1;
         limit_req zone=service_requests burst=60 nodelay;
         limit_req_status 429;
         add_header X-Content-Type-Options nosniff always;
@@ -49,7 +52,13 @@ http {
             fastcgi_pass api:9000;
         }
         location ~* "^/(?:storage|vendor|config|bootstrap|admin|_ignition|telescope|horizon)(?:/|$)|(?:^|/)\.|\.(?:php|env|sql|bak|pem|key)$" { return 404; }
-        location ~ ^/api/v1/admin/ { return 404; }
+        location ^~ /api/v1/admin/ {
+            if ($ssl_client_verify != SUCCESS) { return 404; }
+            include /etc/nginx/fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME /app/public/index.php;
+            fastcgi_param HTTPS on;
+            fastcgi_pass api:9000;
+        }
         location ~ "^/api/v1/uploads/[A-Za-z0-9_-]{22}/parts/(0|[1-9][0-9]{0,2})$" {
             client_max_body_size 8388624;
             fastcgi_request_buffering off;
