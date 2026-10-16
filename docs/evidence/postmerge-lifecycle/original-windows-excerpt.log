@@ -1,0 +1,9 @@
+2026-10-16T04:35:20.3886365Z P14 native job observation: {"state":"RUNNING","bytes":"0","total":"0","elapsed_ms":"45245","error":null}
+2026-10-16T04:35:35.5662789Z P14 native job observation: {"state":"RUNNING","bytes":"0","total":"0","elapsed_ms":"60420","error":null}
+2026-10-16T04:35:39.6973510Z P14 WebView phase: real-five-minute-idle
+2026-10-16T04:40:43.4688705Z P14 WebView phase: installer-restart
+2026-10-16T04:40:53.1117880Z P14 WebView phase: signed-test-upgrade
+2026-10-16T04:41:02.0208267Z P14 native writer lease ready after crash-restart contention
+2026-10-16T04:41:12.9159525Z P14 native writer lease ready after crash-restart contention
+2026-10-16T04:41:16.9696610Z ##[error]Process completed with exit code 1.
+2026-10-16T04:41:17.1261308Z ##[group]Run if (Test-Path .local/p14-windows-services/owner.json) {

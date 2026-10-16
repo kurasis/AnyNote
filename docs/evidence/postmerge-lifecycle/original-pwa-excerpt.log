@@ -1,0 +1,12 @@
+2026-10-16T04:26:14.3103800Z file:///home/runner/work/AnyNote/AnyNote/experiments/p01/p10-browser.mjs:51
+2026-10-16T04:26:14.3108589Z     async function action(p,id,expected=null){await p.locator('#'+id).click();try{await p.waitForFunction(()=>!document.getElementById('status').dataset.busy&&!!document.getElementById('status').textContent,null,{timeout:300000});await p.waitForFunction(()=>!!document.getElementById('status').dataset.error||['Done','Готово'].includes(document.getElementById('status').textContent),null,{timeout:300000});}catch{throw Error('P10_UI_WAIT:'+id+':'+JSON.stringify(await p.evaluate(()=>({locked:document.getElementById('workspace').hidden,busy:!!document.getElementById('status').dataset.busy,error:document.getElementById('status').dataset.error,phase:document.getElementById('status').dataset.phase,diagnostics:globalThis.__custodyDiagnostics}))));}const e=await p.locator('#status').getAttribute('data-error');if(expected){check((Array.isArray(expected)?expected:[expected]).includes(e),'P10_EXPECTED_UI_DENIAL:'+id+':'+e);return;}if(e)throw Error('P10_UI:'+id+':'+e+':'+await p.locator('#status').getAttribute('data-phase')+':'+JSON.stringify(await p.evaluate(()=>globalThis.__custodyDiagnostics)));}
+2026-10-16T04:26:14.3111405Z                                                                                                                                                                                                                                                                                                                                                                                                                                    ^
+2026-10-16T04:26:14.3111734Z 
+2026-10-16T04:26:14.3112034Z Error: P10_UI_WAIT:unlock:{"locked":true,"busy":false,"diagnostics":[{"event":"custody-error","operation":"notes.group","error":"VAULT_LOCKED","lock_reason":"explicit","ms":315138}]}
+2026-10-16T04:26:14.3112514Z     at action (file:///home/runner/work/AnyNote/AnyNote/experiments/p01/p10-browser.mjs:51:420)
+2026-10-16T04:26:14.3112871Z     at async pwaCase (file:///home/runner/work/AnyNote/AnyNote/experiments/p01/p15-browser-case.mjs:28:49)
+2026-10-16T04:26:14.3113213Z     at async file:///home/runner/work/AnyNote/AnyNote/experiments/p01/p10-browser.mjs:134:36
+2026-10-16T04:26:14.3113397Z 
+2026-10-16T04:26:14.3113451Z Node.js v24.21.0
+2026-10-16T04:26:14.3463308Z ##[error]Process completed with exit code 1.
+2026-10-16T04:26:14.3520062Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

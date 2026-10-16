@@ -1,5 +1,17 @@
 # Test evidence
 
+## P15 postmerge lifecycle follow-up
+
+Merged main `b1832ce` finished 25/27 ordinary push jobs: PWA failed unlocking
+after its genuine P12 gigabyte; Windows exited silently at signed upgrade.
+Original public receipts and exact job log excerpts are retained in
+[postmerge lifecycle evidence](evidence/postmerge-lifecycle/README.md).
+The follow-up adds real authenticated delayed-response lock/unlock regressions
+and a read-only real Windows Restart Manager handle-user regression. Local CDP,
+frame and metadata tests: 6 PASS, Windows-only test NOT RUN; PWA policy/build/
+179-file baseline: PASS. Hosted checks and source/ZIP audits have separate final
+receipts; local Linux is not Windows or physical-device evidence.
+
 Date: 2026-10-10. Host: Debian 13.6 x86_64, Python 3.12.14, Git 2.52.0.
 Only synthetic/documentation work has been performed. This file never treats
 an unexecuted command, a compiled scaffold or an AI review as feature acceptance.

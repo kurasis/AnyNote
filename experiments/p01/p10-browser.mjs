@@ -1,5 +1,6 @@
 import {pwaCase} from './p15-browser-case.mjs';
 import {quotaCase} from './p15-quota.mjs';
+import {lockRace} from './p15-lock-race.mjs';
 import {contentCase} from './p13-browser-case.mjs';
 import {filesCase} from './p12-browser-case.mjs';
 // Mandatory hosted sandboxed Chromium: genuine WebAuthn through the shipped strict-CSP UI.
@@ -117,6 +118,7 @@ try{
       return {page:p,cdp,previous_browser_pid:oldPid,browser_pid:newPid};
     };
     if(process.argv.includes('--p15-pwa')){
+      report.p15_lock_race=await lockRace({page:p,action,readyWriter,phrase,check});
       // Fast fault-setup preflight supplements the unchanged genuine gigabyte
       // scenario below; the mandatory acceptance repeats it after the gigabyte.
       await p.locator('#groups button').filter({hasText:'PUBLIC browser shared group'}).click();await p.waitForFunction(()=>!document.getElementById('status').dataset.busy);
