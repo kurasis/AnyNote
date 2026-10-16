@@ -2,6 +2,12 @@
 
 ## Complete P16 deployment, backup and recovery operations
 
+First read the P15 postmerge lifecycle follow-up and exact-source final archive
+linked from its completed PR. The initial b1832ce push cohort finished 25/27;
+do not substitute its premerge pass for the follow-up network-generation and
+installer-observer runtime evidence. Confirm the follow-up guarded merge, passing
+cohort and clean local/remote main before P16. P16 implementation has not started.
+
 Read AGENTS, PROGRESS, TEST_EVIDENCE, DECISIONS, KNOWN_LIMITATIONS, P15_IPHONE and
 the P03–P14 guides. Begin the frozen specification at 00, then 02/07/08/12/13/14,
 17/18 and the relevant security/lifecycle chapters. Verify the exact P15 public

@@ -85,9 +85,9 @@ function renderGroups(){
 }
 async function login(){await auth.ceremony('login');server=false;}
 async function prove(){
- const me=await auth.call('/me',null,'me-result');if(me.session.account_id!==selected.account_id)throw Error('ACCOUNT_MISMATCH');
- const r=await auth.call('/auth/device-challenge','device-challenge-request','challenge-result',{version:1,device_id:selected.device_id}),proof=await vault.proof(r.challenge,me.session.id);
- await auth.call('/auth/device-proof','device-proof-request','auth-result',{version:1,challenge_id:r.challenge.context.challenge_id,proof});await devices.sync(vault,selected.account_id);server=true;
+ const g=generation,me=await auth.call('/me',null,'me-result');checkGeneration(g);if(me.session.account_id!==selected.account_id)throw Error('ACCOUNT_MISMATCH');
+ const r=await auth.call('/auth/device-challenge','device-challenge-request','challenge-result',{version:1,device_id:selected.device_id});checkGeneration(g);const proof=await vault.proof(r.challenge,me.session.id);
+ await auth.call('/auth/device-proof','device-proof-request','auth-result',{version:1,challenge_id:r.challenge.context.challenge_id,proof});checkGeneration(g);await devices.sync(vault,selected.account_id);checkGeneration(g);server=true;
  const roster=await vault.devices('summary');$('key-target').replaceChildren();for(const d of roster.devices)if(d.status==='ACTIVE'&&d.device_id!==selected.device_id){const o=document.createElement('option');o.value=d.device_id;o.textContent=d.device_id;$('key-target').append(o);}
 }
 async function keyFor(status){
@@ -105,7 +105,7 @@ function concealGroup(id){
  for(const name of ['preview','entries','threads','checklist','versions','trash-items','members-list'])$(name).replaceChildren();
  for(const name of ['group-heading','thread-heading','thread-summary','membership-state','copy-audience','conflict-remote'])$(name).textContent='';$('audience').textContent=text('access_lost');$('copy-confirm').checked=$('sharing-confirm').checked=false;
 }
-async function groupStatus(id){if(!server)return groups.get(id);let g;try{g=await api.call('/groups/'+id,null,'group-status');}catch(e){if(e.message==='NOT_FOUND')concealGroup(id);throw e;}if(g.kind==='shared'||g.key_epoch!=='0')await sharedProof(id);await vault.notes('group',[g]);groups.set(id,g);return g;}
+async function groupStatus(id){if(!server)return groups.get(id);const seen=generation;let g;try{g=await api.call('/groups/'+id,null,'group-status');}catch(e){checkGeneration(seen);if(e.message==='NOT_FOUND')concealGroup(id);throw e;}checkGeneration(seen);if(g.kind==='shared'||g.key_epoch!=='0')await sharedProof(id);checkGeneration(seen);await vault.notes('group',[g]);checkGeneration(seen);groups.set(id,g);return g;}
 async function openRevision(group,ref,head){
  const result=await api.call('/objects/'+ref.object_id+'/revisions/'+head.revision_id,null,'bundle-result');
  if(result.group_id!==group||result.object_id!==ref.object_id||result.revision_id!==head.revision_id)throw Error('CONTEXT_MISMATCH');
@@ -114,8 +114,8 @@ async function openRevision(group,ref,head){
 }
 async function fetchPayload(group,ref){if(server)return openRevision(group,ref,ref.heads[0]);const s=await summary(),w=s.witnesses.findLast(w=>w.group_id===group&&w.object_id===ref.object_id);if(!w)throw Error('KEYS_PENDING');return vault.notes('cached',[w.revision_id]);}
 async function loadGroups(more=false){
- const page=await api.call('/groups'+(more&&groupCursor?'?after='+groupCursor:''),null,'groups-page');groupCursor=page.next;$('more-groups').hidden=groupCursor===null;
- for(const g of page.groups){if(g.kind==='shared'||g.key_epoch!=='0'){try{await sharedProof(g.group_id);}catch(e){if(e.message==='KEYS_PENDING'){groups.set(g.group_id,g);continue;}throw e;}}await vault.notes('group',[g]);groups.set(g.group_id,g);if(g.settings)settingsGroup=g.group_id;
+ const seen=generation,page=await api.call('/groups'+(more&&groupCursor?'?after='+groupCursor:''),null,'groups-page');checkGeneration(seen);groupCursor=page.next;$('more-groups').hidden=groupCursor===null;
+ for(const g of page.groups){if(g.kind==='shared'||g.key_epoch!=='0'){try{await sharedProof(g.group_id);}catch(e){checkGeneration(seen);if(e.message==='KEYS_PENDING'){groups.set(g.group_id,g);continue;}throw e;}}checkGeneration(seen);await vault.notes('group',[g]);checkGeneration(seen);groups.set(g.group_id,g);if(g.settings)settingsGroup=g.group_id;
   try{await keyFor(g);const state=await api.call('/objects/'+g.group_id,null,'object-state');references.set(g.group_id,{group_id:g.group_id,...state.object});const opened=await openRevision(g.group_id,state.object,state.object.heads[0]);titles.set(g.group_id,opened.payload.title);if(g.settings){preferences=opened.payload.preferences;settingsHeads=state.object.heads;}}
   catch(e){if(!['NOT_FOUND','KEYS_PENDING'].includes(e.message))throw e;}
  }renderGroups();await summary();
@@ -305,9 +305,9 @@ start().catch(reportError);
 
 const shared=(op,x)=>vault.notes('shared',[op,x]);
 async function sharedProof(id){
- let proof=await shared('proof',{group_id:id});const journal=await sharing.call('/groups/'+id+'/journal',null,'journal');
- const accounts=[];for(const a of proof.accounts)accounts.push({pins:a.pins,snapshot:await devices.snapshot(a.pins.account_id,a.pins.root_fingerprint)});
- proof={...proof,journal,accounts};const checked=await shared('adopt',proof);roles.set(id,checked.members.find(m=>m.account_id===selected.account_id)?.role);return proof;
+ const seen=generation;let proof=await shared('proof',{group_id:id});checkGeneration(seen);const journal=await sharing.call('/groups/'+id+'/journal',null,'journal');checkGeneration(seen);
+ const accounts=[];for(const a of proof.accounts){accounts.push({pins:a.pins,snapshot:await devices.snapshot(a.pins.account_id,a.pins.root_fingerprint)});checkGeneration(seen);}
+ proof={...proof,journal,accounts};const checked=await shared('adopt',proof);checkGeneration(seen);roles.set(id,checked.members.find(m=>m.account_id===selected.account_id)?.role);return proof;
 }
 async function accessChange(id){
  contentTools?.close();portableTools?.close();

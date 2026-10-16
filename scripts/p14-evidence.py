@@ -19,6 +19,10 @@ for name,minimum in [('windows-host-preflight.json',3),('native-pairing-developm
   assert value['updater']['status']=='PASS' and value['updater']['production_signing'] is False
   assert value['memory']['transfer']['samples']>=2 and value['memory']['transfer']['baseline_bytes']['native']>0
  reports[name]={'path':'artifacts/p14/'+name,'sha256':sha(path),'checks':value['checks']}
+observer=ROOT/'artifacts/p14/installer-observation.json';value=json.loads(observer.read_text(encoding='utf-8'))
+assert value['status']=='PASS' and value['source_commit']==head and not value['source_tree_dirty']
+assert value['rm_read_handle_registers_test_process'] is True and value['metadata_polling_registers_test_process'] is False
+reports[observer.name]={'path':'artifacts/p14/'+observer.name,'sha256':sha(observer)}
 capability=ROOT/'artifacts/p14/backend-filesystem-capability.json'
 value=json.loads(capability.read_text(encoding='utf-8'));assert value['file_fsync'] is True
 assert value['ci_directory_durability_adapter']['status']=='PASS' and value['ci_directory_durability_adapter']['primitive']=='Windows FlushFileBuffers volume'
