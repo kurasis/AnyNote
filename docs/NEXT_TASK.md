@@ -51,6 +51,14 @@ and untyped portable base64 format errors. Five portable codecs retain generated
 frozen predicates via a safe format adapter. Contract manifest remains325 structures/
 111 operations. P04 counter reports add actual before/blocked/after commit/rollback
 observations. P17 adds no production migration or wire/lock change.
+The post-merge long-roster correction acquires the existing 10-second native
+writer lease after complete signature replay, with an exact revision comparison
+before adoption. Preserve that comparison, lifecycle/foreign-owner fences and
+the full 1001-event positive and corruption/rollback tests. A passed PR cannot
+substitute for the separately observed merged-main cohort.
+Transfer-list progress polls are authenticated reads and must not claim a writer
+lease or invalidate the content helper's saved comparison. Preserve the actual
+polling, intervening-commit and locked-capability regression coverage.
 
 Live advisory census retains glib0.18.5/proc-macro-error1.0.4 in excluded Linux GTK
 closure and rustls0.23.45 in old auth-native/vault-native frozen synthetic test

@@ -2230,3 +2230,29 @@ resolution. The existing binding returned HTTP403 for the single-job rerun API;
 no token, checksum, TLS or package-source override was introduced. Recording the
 observation in a normal follow-up commit starts a new full ordinary PR cohort on
 fresh runners. The failed job is retained as failure, never relabelled PASS.
+
+After PR31 passed all30 ordinary jobs, the initial merged main `626e25e` failed
+`files-windows-native` job117042601388/run38921591663 at the positive native
+1001-event snapshot assertion. Native Rust tests before it passed. The original
+job log and failed cohort are retained. Local unchanged-source interop passed;
+an isolated process paused for80ms of each100ms during snapshot calls reproduced
+typed `STALE_WRITER` after38669ms. The 10-second lease was claimed before complete
+signature replay. The fix claims it after replay and requires exactly its own
+revision increment, retaining all owner/expiry/capability/lifecycle/rollback
+checks. The positive and omitted/corrupt/rollback history assertions are unchanged;
+typed native errors are now visible. Local slow-process/native checks and final
+ordinary PR/main results are recorded separately in the evidence archive.
+
+The same main cohort's `host-windows-build` job117042602146/run38921591986
+failed with `Native job STALE_WRITER` after all1000000000 upload bytes. Actual
+transfer-list polling took a new write lease/revision during the content helper's
+read/commit window. Extending the existing readiness/CAS test with16 real
+`file_transfers` reads reproduced the failure deterministically (0/1 PASS).
+Removing the write claim from that authenticated read preserves the pending
+content comparison; real intervening commits and locked capabilities still fail.
+After the roster correction, the same paused-process history campaign passed9/9:
+valid adoption56097ms; omitted event92115ms/ROSTER_CHANGED; corrupt signature
+89237ms/INVALID_SIGNATURE; old checkpoint47176ms/ROLLBACK_QUARANTINE. This is dirty
+development-source reproduction, not a clean final CI receipt. Both focused
+readiness/CAS and owner/expiry/generation tests passed after the transfer-read
+correction (2/2). Full final ordinary gates remain mandatory.

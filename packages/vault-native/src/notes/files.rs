@@ -1083,7 +1083,8 @@ impl Vault {
         result
     }
     pub fn file_transfers(&self, cap: &Capability) -> Result<Value> {
-        self.lease(cap)?;
+        // Progress polling reads authenticated state; it must not advance a
+        // write fence/revision underneath an in-flight content transaction.
         let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
         let s = self.authorize(&mut i, cap)?;
         Ok(self.file_control(&i, &s)?["transfers"].clone())

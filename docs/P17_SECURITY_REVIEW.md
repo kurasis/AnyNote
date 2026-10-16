@@ -204,6 +204,35 @@ Ask the reviewers specifically to challenge:
 
 ## Release-risk decision
 
+### Post-merge native writer regressions
+
+The first P17 main cohort at `626e25e` failed the positive 1001-event
+native-history scenario in `files-windows-native`, at snapshot adoption. Its
+ordinary PR cohort had passed 30/30; that does not make the main failure PASS.
+An isolated local process with controlled CPU pauses reproduced `STALE_WRITER`
+after 38.7 seconds of otherwise valid snapshot processing. The implementation
+claimed its 10-second writer lease before replaying the signed history.
+
+Snapshot adoption now verifies the complete history first, then claims the
+unchanged short lease. It requires the resulting revision to equal the original
+revision plus exactly the lease's own increment before publishing. Intervening
+writes, foreign owners, stale capabilities, lifecycle generations, rollback
+anchors and the transaction's existing fence checks still reject adoption.
+This does not extend the lease, omit events, retry an assertion, or weaken any
+signature check. The existing full-history positive/corrupt/omitted/rollback
+interop checks and native concurrency/lifecycle suite remain mandatory. The
+interop assertion now exposes only the typed native error for diagnosis.
+
+The same initial main cohort also failed `host-windows-build` after uploading
+the full 1 GB: progress polling called `file_transfers`, which claimed a new
+lease/revision even though it only read transfer metadata. That could invalidate
+the protected content comparison while the uploaded file was being attached.
+The existing readiness/CAS regression now interleaves actual transfer-list reads;
+it reproduced `STALE_WRITER` before this correction. Transfer listing now only
+authorizes and authenticates the read, preserving the in-flight revision. The
+regression also retains rejection of a real intervening commit and a locked
+capability. Mutations still acquire and check their normal writer fences.
+
 Production release remains blocked. P17 software acceptance authorizes only the
 existing synthetic evaluation scope. The bounded campaign and fixes do not prove
 absence of critical/high exploitable defects. No independent reviewer has issued

@@ -228,6 +228,7 @@ fn host_writer_readiness_does_not_invalidate_content_cas() {
     let mut observed_fence = fence;
     for _ in 0..16 {
         observed_fence = f.vault.writer_ready(&cap).unwrap();
+        assert!(f.vault.file_transfers(&cap).unwrap().is_array());
     }
     let after_polls = f
         .db()
@@ -259,6 +260,8 @@ fn host_writer_readiness_does_not_invalidate_content_cas() {
             .unwrap(),
         record.data
     );
+    f.vault.lock();
+    assert!(f.vault.file_transfers(&cap).is_err());
 }
 
 #[test]
