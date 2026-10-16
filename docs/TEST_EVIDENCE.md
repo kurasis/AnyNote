@@ -2122,3 +2122,10 @@ exceeded the maintained120/session/minute limit. The corrected fixture spaces
 history requests550ms apart without changing server admission. Local actual mTLS
 verification passed: certified non-admin403, recent admin without certificate404,
 and certified recent admin200. These partial results are not phase acceptance.
+
+Candidate2443000 passed the complete real1GB upload, authenticated sync snapshot,
+retained draft/outbox creation, bounded ENOSPC/object/fsync/DB failures and actual
+queue restart. It failed before backup because an expired-enrollment SQL fixture
+omitted required P08 creator/mode/public-record columns under production strict
+SQL. The fixture now supplies all required columns and emits only safe error
+metadata; no SQL mode, runtime schema or admission rule is relaxed.
