@@ -2222,3 +2222,11 @@ before acceptance; their failures are not phase PASS evidence. The table now use
 the existing VERIFIED vocabulary with synthetic scope in its evidence column,
 and p17-check explicitly runs the unchanged baseline validator as well. No parser,
 allowed status, required check or acceptance assertion is weakened.
+
+At214c59e the new adversarial job and baseline/contracts/SQL passed, while
+vault-windows-native job117011052170 (run38912212527) stopped before tests:
+libsodium-sys-stable1.24.1 build.rs reported Windows DNS11002 during upstream
+resolution. The existing binding returned HTTP403 for the single-job rerun API;
+no token, checksum, TLS or package-source override was introduced. Recording the
+observation in a normal follow-up commit starts a new full ordinary PR cohort on
+fresh runners. The failed job is retained as failure, never relabelled PASS.
