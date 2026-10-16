@@ -6,7 +6,6 @@ use App\Backend\Authorization;
 use App\Crypto\PublicProtocol;
 use App\Files\BlobStore;
 use App\Http\ApiException;
-use App\Operations\Maintenance;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -88,9 +87,13 @@ final class RestoreFenceTest extends TestCase
             DB::table('security_transition_staging')->insert(['id' => $id, 'group_id' => $group, 'pending_group_id' => null, 'expected_policy_digest' => str_repeat('A', 43), 'expected_rosters' => '[]', 'signed_descriptor' => $descriptor, 'state' => $state, 'expires_at' => now()->subDays(3)]);
             DB::table('security_transition_pages')->insert(['id' => PublicProtocol::b64(random_bytes(16)), 'transition_id' => $id, 'page_index' => 0, 'digest' => str_repeat('A', 43), 'page_record' => '{}']);
         }
-        $maintenance = app(Maintenance::class);
-        $this->assertSame(1, $maintenance->security());
-        $this->assertSame(0, $maintenance->security());
+        $this->assertSame(0, Artisan::call('operations:maintain'));
+        $first = json_decode(Artisan::output(), true, 32, JSON_THROW_ON_ERROR);
+        $this->assertSame('PASS', $first['status']);
+        $this->assertSame(1, $first['expired_unpublished_grant_pages']);
+        $this->assertSame(0, Artisan::call('operations:maintain'));
+        $second = json_decode(Artisan::output(), true, 32, JSON_THROW_ON_ERROR);
+        $this->assertSame(0, $second['expired_unpublished_grant_pages']);
         $this->assertSame($descriptor, DB::table('security_transition_staging')->where('id', $ids[0])->value('signed_descriptor'));
         $this->assertSame('expired', DB::table('security_transition_staging')->where('id', $ids[0])->value('state'));
         $this->assertSame(1, DB::table('security_transition_pages')->where('transition_id', $ids[1])->count());

@@ -69,6 +69,7 @@ Artisan::command('operations:maintain', function () {
         $auth = app(Maintenance::class)->prune();
         $files = app(Service::class)->collect(50);
         $deliveries = app(Delivery::class)->collect();
+        $expiredGrants = app(App\Operations\Maintenance::class)->security();
         $invites = DB::table('account_invites')->where('status', 'pending')->where('expires_at', '<=', now())->limit(100)->update(['status' => 'cancelled']);
         $enrollments = DB::table('enrollment_sessions')->whereIn('state', ['pending', 'approved'])->where('expires_at', '<=', now())->limit(100)->update(['state' => 'expired']);
         $this->line(json_encode(['status' => 'PASS', 'authentication_rows' => $auth, 'files' => $files, 'invitations' => $invites, 'enrollments' => $enrollments, 'delivery_leases' => $deliveries, 'expired_unpublished_grant_pages' => $expiredGrants], JSON_THROW_ON_ERROR));

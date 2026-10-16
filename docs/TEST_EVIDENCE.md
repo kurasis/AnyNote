@@ -2129,3 +2129,11 @@ queue restart. It failed before backup because an expired-enrollment SQL fixture
 omitted required P08 creator/mode/public-record columns under production strict
 SQL. The fixture now supplies all required columns and emits only safe error
 metadata; no SQL mode, runtime schema or admission rule is relaxed.
+
+The follow-up console review also found the expired-grant collector result was
+referenced without invoking its service. The actual scheduled/console command
+now calls the bounded collector; its regression exercises the real Artisan
+entry point twice and verifies committed pages/burned descriptors survive.
+
+The strengthened real-command regression passes in26 tests/362 assertions;
+full owned SQL concurrency/rollback and supervised kill/restart follow below.

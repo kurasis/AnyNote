@@ -180,7 +180,7 @@
     },
     {
       "path": "apps/api/routes/console.php",
-      "sha256": "f58f4bbce2926775a2adbe189f4b4a2fa2fb2701511a9142c3deb344aacfd128"
+      "sha256": "759a0908ed634f629859491a2ff83c0abdf0dc7f50829ec4cbaacd9d7c293aac"
     },
     {
       "path": "apps/api/app/Http/Controllers/CapabilitiesController.php",
