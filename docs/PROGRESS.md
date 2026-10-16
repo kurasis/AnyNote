@@ -941,6 +941,19 @@ roll back data or clear quarantine to make old credentials work.
 
 ## P17 adversarial software evaluation and review handoff
 
+Post-merge correction: the first main cohort (`626e25e`) exposed a long-history
+native writer failure despite its 30/30 PR. Controlled local slowdown reproduced
+`STALE_WRITER` during 1001-event snapshot verification. Snapshot adoption now
+claims its unchanged 10-second lease after full replay, and checks that no state
+revision changed except that lease's own increment. Existing authority/lifecycle/
+rollback fences and every signed event remain mandatory. Original failed logs
+are preserved separately from final corrected PR/main acceptance.
+The same initial main also exposed transfer-list polls incrementing the writer
+revision during the upload attachment transaction. A deterministic extension of
+the existing readiness/CAS regression reproduces that failure. Transfer listing
+now authenticates a read without claiming a write; actual mutations and stale/
+locked-state denials retain their existing fences.
+
 Added all24 threat-to-authority/test bindings, reproducible raw/schema/envelope/
 archive mutation, actual three-account adversarial HTTPS/SQL, concurrent immutable
 publication with typed transient retries and exact once-only SQL counts, synthetic

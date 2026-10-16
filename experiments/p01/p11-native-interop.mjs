@@ -21,7 +21,7 @@ try{
  const d=rosterDetails(proof.roster),snapshot={identity:f.snapshot.identity,head:d.head,generation:d.generation,events};check(events.length===1001);check(verifiedSnapshot(snapshot,f.pins,f.snapshot.head).details.head.digest===d.head.digest);
  await sync(f.old,snapshot);check((await run(f.old,'summary')).state==='REVOKED');
  native=await nativeHarness({scope:{service_id:f.pins.service_id,account_id:f.pins.account_id,device_id:id(),profile_id:id()},pins:f.pins,phrase:'public synthetic purple harbor paper lantern'});check(!native.device.error);
- const stored=await native.call({operation:'device-snapshot',snapshot});check(!stored.error);check(stored.head.digest===d.head.digest);
+ const stored=await native.call({operation:'device-snapshot',snapshot});if(stored.error)throw Error('P11_NATIVE_SNAPSHOT_'+stored.error);check(!stored.error);check(stored.head.digest===d.head.digest);
  const shortened=structuredClone(snapshot);shortened.events.splice(700,1);check(!!(await native.call({operation:'device-snapshot',snapshot:shortened})).error);
  const corrupt=structuredClone(snapshot);corrupt.events[900].signature=b64(sodium.randombytes_buf(64));check(!!(await native.call({operation:'device-snapshot',snapshot:corrupt})).error);
  check(!!(await native.call({operation:'device-snapshot',snapshot:f.snapshot})).error);

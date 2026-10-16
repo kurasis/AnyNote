@@ -560,7 +560,6 @@ impl Vault {
         Ok(())
     }
     pub fn record_device_snapshot(&self, cap: &Capability, snapshot: &Value) -> Result<Value> {
-        let fence = self.lease(cap)?;
         let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
         let s = self.authorize(&mut i, cap)?;
         let (old, _) = self.device_saved(&mut i, &s)?;
@@ -577,6 +576,15 @@ impl Vault {
         control["identity"] = snapshot["identity"].clone();
         control["head"] = snapshot["head"].clone();
         control["generation"] = snapshot["generation"].clone();
+        // Replay can exceed the short writer lease on a large signed history.
+        // Claim only after verification, then require exactly our own revision
+        // increment: any intervening writer invalidates the prepared control.
+        let expected_revision = s.revision.checked_add(1).ok_or(Error("RESOURCE_LIMIT"))?;
+        drop(i);
+        let fence = self.lease(cap)?;
+        let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
+        let s = self.authorize(&mut i, cap)?;
+        check(s.revision == expected_revision, "STALE_WRITER")?;
         self.store_device_control(&mut i, cap, &s, fence, &control, Some(snapshot))?;
         i.device_anchor = Some(roster.head.clone());
         self.authorize(&mut i, cap)?;
