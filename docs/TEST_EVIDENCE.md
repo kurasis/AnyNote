@@ -1984,3 +1984,34 @@ within the unchanged 30-second bound, recording closed lifecycle states if it
 fails. A non-null waiting slot is no longer used as the transition barrier.
 No early activation, runtime cache policy or timeout is changed. This diagnostic
 follow-up is not a passing update or quota result until actually exercised.
+
+The ordinary 6bec7d9 Windows job116733736143 / run38826077937 fails explicitly
+with `Native job STALE_WRITER` in the small-dialog upload preflight, before its
+1GB flow. The existing native host acquired a new write lease for each protected
+IPC poll. New real-SQLite regression coverage interleaves those admission calls
+between content_read and content_commit and reproduces STALE_WRITER before the
+fix. Admission now reuses a live owned lease without changing metadata; real
+mutation/CAS, foreign-owner exclusion, expiry takeover and invalidated capability
+checks remain. Both focused regressions pass with real Argon and serial execution.
+The full native suite and actual new-source Windows acceptance remain required;
+this local result alone is not a passing hosted cohort. Earlier silent updater
+exits remain NOT_ESTABLISHED.
+
+The e87e4dd and6bec7d9 PWA runs also failed the old waiting-worker assertion,
+before quota acceptance. The installed Playwright1.64.0 poller body was executed
+with public closed predicates: async-false settles false without repolling;
+a synchronous false/false/true control repolls twice. The exact bundle/body
+hashes and result are retained in development/playwright-poll-diagnostic.json.
+This is tool diagnosis, not browser acceptance. An explicit awaited Node loop
+now checks actual registration states within the unchanged30s; there is no async
+waitForFunction predicate. The full1GB/new-worker/late-receipt/quota hosted run
+remains required at the new source.
+
+After the native admission fix, the complete locked/all-features native vault
+command passes72 unit tests plus40 integration tests, including genuine1GB,
+resume/export and real Argon, with-j4/serial test execution. The Windows native
+coordinator's14 Linux software tests also pass using the supported
+ANYNOTE_NATIVE_NODE override pointing to pinned Node24.21.0. Its initial local
+attempt lacked the default Windows node.exe path; the override fixes that test
+configuration without source or timeout changes. These Linux tests do not
+establish the separate installed Windows/WebView2 job or physical Hello/TPM.

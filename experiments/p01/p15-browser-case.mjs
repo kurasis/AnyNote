@@ -36,6 +36,9 @@ export async function pwaCase({page, action, check, scratch, readyWriter, commit
   check(await page.locator('#note-title').inputValue()==='PUBLIC P12 attached entry','P15_VERIFIED_ENTRY_TITLE_AFTER_LOCK');
   const workerPath = fileURLToPath(new URL('../../.local/p06/static/auth/sw.js', import.meta.url));
   const originalWorker = readFileSync(workerPath, 'utf8');
+  const noteRoute='https://api.anynote.test:18443/api/v1/threads/*/entries';
+  const receiptRoute='https://api.anynote.test:18443/api/v1/me/content-receipts/*';
+  let updateReceiptObserver;
   const memory = browserMemory(), processes = processMemory(); let heap;
   try {
     heap = await browserHeap(page);
@@ -201,28 +204,32 @@ export async function pwaCase({page, action, check, scratch, readyWriter, commit
     // Commit the original immutable request at the real API, then lose only its
     // response. The newer local version and unknown older attempt must both
     // survive activation; the old receipt must not retire the newer draft.
-    const noteRoute='https://api.anynote.test:18443/api/v1/threads/*/entries';
     let updateAttempt,updateRequestHash;
+    // Keep the genuine committed receipt unavailable until actual activation,
+    // so a background poll cannot acknowledge the old attempt before this test.
+    await page.route(receiptRoute,route=>updateAttempt&&route.request().url().endsWith('/'+updateAttempt)?route.abort('failed'):route.continue());
     await page.route(noteRoute,async route=>{
       if(route.request().method()==='POST'&&!updateAttempt){
         const body=route.request().postData();
         updateAttempt=JSON.parse(body).bundle.envelope.header.context.operation_id;
         updateRequestHash=createHash('sha256').update(body).digest('hex');
         await commitBeforeLosingResponse(route.request());await route.abort('failed');
-      }else await route.continue();
+      }else if(route.request().method()==='POST'&&createHash('sha256').update(route.request().postData()??'').digest('hex')===updateRequestHash)await route.abort('failed');
+      else await route.continue();
     });
-    try{
-      await page.locator('#save-note').click();
-      await page.waitForFunction(()=>!document.getElementById('status').dataset.busy&&!!document.getElementById('status').dataset.error,null,{timeout:300000});
-      check(/^[A-Za-z0-9_-]{22}$/.test(updateAttempt)&&await page.locator('#save-state').getAttribute('data-state')==='SENT_UNKNOWN','P15_UPDATE_STARTS_WITH_REAL_UNKNOWN_IMMUTABLE_ATTEMPT');
-    }finally{await page.unroute(noteRoute);}
+    await page.locator('#save-note').click();
+    await page.waitForFunction(()=>!document.getElementById('status').dataset.busy&&!!document.getElementById('status').dataset.error,null,{timeout:300000});
+    check(/^[A-Za-z0-9_-]{22}$/.test(updateAttempt)&&await page.locator('#save-state').getAttribute('data-state')==='SENT_UNKNOWN','P15_UPDATE_STARTS_WITH_REAL_UNKNOWN_IMMUTABLE_ATTEMPT');
     let outboxBefore;
     await page.locator('#note-body').fill('PUBLIC P15 latest update draft');
-    let updateReceipt;
+    let updateReceipt,receiptReleased=false,receiptAfterActivation=false;
     const updateReceipts=[];
-    const updateReceiptObserver=response=>{
+    updateReceiptObserver=response=>{
       const u=new URL(response.url());
-      if(u.origin==='https://api.anynote.test:18443'&&u.pathname==='/api/v1/me/content-receipts/'+updateAttempt&&response.ok())updateReceipts.push(response.json().then(value=>{updateReceipt=value.receipt;}));
+      if(u.origin==='https://api.anynote.test:18443'&&u.pathname==='/api/v1/me/content-receipts/'+updateAttempt&&response.ok()){
+        receiptAfterActivation=receiptReleased;
+        updateReceipts.push(response.json().then(value=>{updateReceipt=value.receipt;}));
+      }
     };
     page.on('response',updateReceiptObserver);
     const match = originalWorker.match(/anynote-p07-static-([a-f0-9]{64})/);
@@ -246,16 +253,16 @@ export async function pwaCase({page, action, check, scratch, readyWriter, commit
     check(outboxBefore.length>0,'P15_UNKNOWN_ATTEMPT_HAS_PROTECTED_OUTBOX_RECORD');
     check(await page.locator('#note-body').inputValue() === '', 'P15_UPDATE_MASKS_PLAINTEXT');
     check(await page.locator('#copy-destination option').count() === 0 && await page.locator('#draft-recovery-target option').count() === 0, 'P15_LOCK_CLEARS_DECRYPTED_DESTINATION_TITLES');
-    // Registration slots and each ServiceWorker state arrive as separate browser
-    // messages. Require the complete stable condition within the existing 30s
-    // bound; a non-null waiting slot alone is not a state-transition barrier.
-    try{await page.waitForFunction(async () => {
-      const r = await navigator.serviceWorker.getRegistration('/auth/');
-      return r?.active?.state === 'activated' && r.waiting?.state === 'installed'
-        && navigator.serviceWorker.controller===r.active;
-    },null,{timeout:30000});}catch{throw Error('P15_UPDATE_WAIT:'+JSON.stringify({before:updateBefore,observed:await updateState()}));}
-    const updateWaiting=await updateState();
-    check(updateWaiting.active==='activated'&&updateWaiting.waiting==='installed'&&updateWaiting.controlledByActive,'P15_NEW_WORKER_WAITS_FOR_CONTROLLED_WINDOW');
+    // This pinned Playwright poller treats an async predicate's Promise as
+    // truthy, even when it resolves false. Await each real evaluation explicitly.
+    const waitingDeadline=Date.now()+30000;
+    const isWaiting=s=>s.active==='activated'&&s.waiting==='installed'&&s.controlledByActive;
+    let updateWaiting=await updateState();
+    while(!isWaiting(updateWaiting)&&Date.now()<waitingDeadline){
+      await new Promise(resolve=>setTimeout(resolve,100));updateWaiting=await updateState();
+    }
+    if(!isWaiting(updateWaiting))throw Error('P15_UPDATE_WAIT:'+JSON.stringify({before:updateBefore,observed:updateWaiting}));
+    check(isWaiting(updateWaiting),'P15_NEW_WORKER_WAITS_FOR_CONTROLLED_WINDOW');
     await page.goto('about:blank');
     const activationDeadline = Date.now() + 30000;
     let activated = false;
@@ -265,6 +272,7 @@ export async function pwaCase({page, action, check, scratch, readyWriter, commit
       await new Promise(resolve => setTimeout(resolve, 100));
     }
     check(activated, 'P15_ACTUAL_ACTIVATION_AFTER_LAST_WINDOW_CLOSES');
+    await page.unroute(noteRoute);await page.unroute(receiptRoute);receiptReleased=true;
     await page.goto('https://app.anynote.test:18443/auth/notes.html');
     await page.waitForFunction(() => document.getElementById('status').dataset.state === 'ready');
     await readyWriter(page);
@@ -274,6 +282,7 @@ export async function pwaCase({page, action, check, scratch, readyWriter, commit
     await Promise.all(updateReceipts);page.off('response',updateReceiptObserver);
     check(await page.locator('#workspace').isVisible(), 'P15_POST_UPDATE_FRESH_UNLOCK_AND_AUTHORIZATION');
     check(updateReceipt?.operation_id===updateAttempt&&updateReceipt?.status==='COMMITTED','P15_POST_UPDATE_RECONCILES_EXACT_OLD_RECEIPT');
+    check(receiptAfterActivation,'P15_OLD_RECEIPT_ARRIVES_AFTER_ACTIVATION');
     await page.locator('#drafts li[data-id="' + draft + '"] button').click();
     await page.waitForFunction(() => !document.getElementById('status').dataset.busy);
     check(await page.locator('#note-body').inputValue() === 'PUBLIC P15 latest update draft', 'P15_UPDATE_RETAINS_LATEST_ENCRYPTED_DRAFT');
@@ -284,11 +293,16 @@ export async function pwaCase({page, action, check, scratch, readyWriter, commit
       source_sha256: sourceHash, recovered_sha256: recoveredHash, imported_bytes: importedBytes,
       imported_sha256: importedDigest, mobile_viewport: '390x844; keyboard 390x420',
       updated_attempt_id:updateAttempt,original_update_request_sha256:updateRequestHash,old_receipt_verified_after_update:true,
+      old_receipt_verified_after_activation:true,
       retained_update_draft_id:draft,
       update_lifecycle:{before:updateBefore,waiting:updateWaiting},
       retained_outbox_records:outboxBefore.length,outbox_before_after_sha256:createHash('sha256').update(JSON.stringify(outboxBefore)).digest('hex'),
       memory: memory.finish(), process_memory: processes.finish(), v8_memory: await heap.finish(), physical_acceptance: false,
       scope: 'Actual production API/Worker/IndexedDB/OPFS and streaming service-worker download in sandboxed hosted desktop Chromium; not iPhone Files/storage/PRF evidence',
     };
-  } finally { memory.abort(); processes.abort(); await heap?.abort(); writeFileSync(workerPath, originalWorker); }
+  } finally {
+    if(updateReceiptObserver)page.off('response',updateReceiptObserver);
+    await page.unroute(noteRoute).catch(()=>{});await page.unroute(receiptRoute).catch(()=>{});
+    memory.abort(); processes.abort(); await heap?.abort(); writeFileSync(workerPath, originalWorker);
+  }
 }

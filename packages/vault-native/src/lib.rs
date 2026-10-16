@@ -597,6 +597,26 @@ impl Vault {
         i.observed_revision = s.revision;
         Ok(s)
     }
+    /// Host admission may reuse its live lease without advancing a write fence.
+    /// Actual mutation methods still acquire a new lease and validate their CAS.
+    pub fn writer_ready(&self, cap: &Capability) -> Result<u64> {
+        {
+            let mut inner = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
+            let state = self.authorize(&mut inner, cap)?;
+            if let Some(lease) = &state.lease {
+                let t = now()?;
+                check(t >= lease.issued, "WRITER_BUSY")?;
+                if t < lease.expires {
+                    check(lease.owner == self.owner, "WRITER_BUSY")?;
+                    self.fence(&state, lease.fence)?;
+                    return Ok(lease.fence);
+                }
+            }
+        }
+        // An absent/expired lease still uses the original transactional claim,
+        // including foreign-owner exclusion, a fresh fence and generation checks.
+        self.lease(cap)
+    }
     pub fn lease(&self, cap: &Capability) -> Result<u64> {
         let mut i = self.inner.lock().map_err(|_| Error("VAULT_BUSY"))?;
         let expected = self.authorize(&mut i, cap)?;

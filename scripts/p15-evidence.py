@@ -27,6 +27,7 @@ assert pwa['imported_bytes'] == 1000000000
 assert len(pwa['source_sha256']) == 64
 assert pwa['source_sha256'] == pwa['recovered_sha256'] == pwa['imported_sha256']
 assert pwa['old_receipt_verified_after_update'] is True
+assert pwa['old_receipt_verified_after_activation'] is True
 assert len(pwa['updated_attempt_id']) == 22 and len(pwa['original_update_request_sha256']) == 64
 assert pwa['retained_outbox_records'] > 0 and len(pwa['outbox_before_after_sha256']) == 64
 storage = browser['p15_storage']

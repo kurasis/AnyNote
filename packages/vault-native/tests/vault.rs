@@ -210,6 +210,99 @@ fn cross_connection_leader_and_stale_fence() {
     assert!(f.vault.lease(&a).is_err());
 }
 #[test]
+fn host_writer_readiness_does_not_invalidate_content_cas() {
+    let f = TestVault::new();
+    let cap = f.vault.unlock_phrase(PHRASE).unwrap();
+    let fence = f.vault.writer_ready(&cap).unwrap();
+    let root = anynote_local_vault::content::control_id(&f.scope).unwrap();
+    let before = f
+        .vault
+        .content_read(&cap, &root, "content-control")
+        .unwrap();
+    let metadata: String = f
+        .db()
+        .query_row("SELECT value FROM meta", [], |r| r.get(0))
+        .unwrap();
+    // Actual host status/transfer polls may interleave between the protected
+    // helper's read and commit. They must not manufacture a concurrent writer.
+    let mut observed_fence = fence;
+    for _ in 0..16 {
+        observed_fence = f.vault.writer_ready(&cap).unwrap();
+    }
+    let after_polls = f
+        .db()
+        .query_row("SELECT value FROM meta", [], |r| r.get::<_, String>(0))
+        .unwrap();
+    let record = Record {
+        id: root.clone(),
+        kind: "content-control".into(),
+        data: json!({"purpose":"P15 public CAS regression","version":1}),
+    };
+    f.vault
+        .content_commit(&cap, before.revision, std::slice::from_ref(&record), &[])
+        .unwrap();
+    assert_eq!(observed_fence, fence);
+    assert_eq!(metadata, after_polls);
+    // A real intervening commit still invalidates the old snapshot.
+    assert_eq!(
+        f.vault
+            .content_commit(&cap, before.revision, std::slice::from_ref(&record), &[])
+            .unwrap_err()
+            .0,
+        "STALE_WRITER"
+    );
+    assert_eq!(
+        f.vault
+            .content_read(&cap, &root, "content-control")
+            .unwrap()
+            .data
+            .unwrap(),
+        record.data
+    );
+}
+
+#[test]
+fn host_writer_readiness_preserves_owner_expiry_and_generation_fences() {
+    let f = TestVault::new();
+    let other = Vault::open(f.vault.path(), f.scope.clone()).unwrap();
+    let a = f.vault.unlock_phrase(PHRASE).unwrap();
+    let b = other.unlock_phrase(PHRASE).unwrap();
+    let first = f.vault.writer_ready(&a).unwrap();
+    assert_eq!(other.writer_ready(&b).unwrap_err().0, "WRITER_BUSY");
+    let connection = f.db();
+    let mut state: Value = serde_json::from_str(
+        &connection
+            .query_row("SELECT value FROM meta", [], |r| r.get::<_, String>(0))
+            .unwrap(),
+    )
+    .unwrap();
+    state["lease"]["issued"] = json!(0);
+    state["lease"]["expires"] = json!(10000);
+    connection
+        .execute("UPDATE meta SET value=?1", [state.to_string()])
+        .unwrap();
+    let next = other.writer_ready(&b).unwrap();
+    assert!(next > first);
+    assert_eq!(f.vault.writer_ready(&a).unwrap_err().0, "WRITER_BUSY");
+    assert_eq!(
+        f.vault
+            .save_batch(
+                &a,
+                first,
+                &[Record {
+                    id: id(),
+                    kind: "draft".into(),
+                    data: fixture("draft")
+                }]
+            )
+            .unwrap_err()
+            .0,
+        "STALE_WRITER"
+    );
+    other.lock_all().unwrap();
+    assert!(other.writer_ready(&b).is_err());
+}
+#[test]
 fn known_record_rollback_and_nonce_after_unknown_full_restart() {
     let f = TestVault::new();
     let c = f.vault.unlock_phrase(PHRASE).unwrap();

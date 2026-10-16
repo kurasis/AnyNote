@@ -1139,3 +1139,36 @@ after the guarded merge. Each retains its actual source SHA and verified Git
 inputs. This preserves the checked main tree and avoids a report/commit
 self-reference cycle; the branch is a public evidence archive, not a software
 release or another implementation checkout.
+
+P15 inherited Windows acceptance exposed `STALE_WRITER` on a real small-file
+upload at 6bec7d9. Native host capability admission previously called `lease`
+even for transfer/status polling. That increments the global protected revision
+and fence, so polling between content_read and content_commit can manufacture a
+CAS conflict without another content writer. A real SQLite regression reproduces
+the same typed denial with the former admission behavior.
+
+Host admission now validates/reuses a live lease belonging to this exact vault
+instance. Missing/expired leases still go through the original transactional
+claim, foreign live owners still get WRITER_BUSY and clock/generation checks
+remain. Every actual mutation retains its original lease/fence/CAS path, including
+rejection of a genuinely stale snapshot. No lease duration, retry bound, signed
+authority or cryptographic format changes. This addresses the demonstrated
+polling conflict; the earlier a3706f4/cf1c631 abrupt updater exits still have no
+established cause and are not retrospectively reclassified.
+
+The pinned Playwright1.64.0 waitForFunction poller calls its predicate, treats
+its Promise as truthy and fulfills with that Promise. It then adopts false
+without polling again. Executing the exact installed poller body demonstrates
+async-false returns false with zero repolls, while the synchronous control polls
+twice before true. Thus the prior async registration predicate was not a waiting
+barrier; it did not establish a service-worker lifecycle defect. The P15 harness
+now explicitly awaits each real page evaluation in Node, retaining the same
+30-second bound and all active/waiting/controller assertions. Worker runtime,
+activation and dependency locks do not change.
+
+The update scenario also keeps the genuine committed receipt and exact immutable
+request retry unavailable until actual activation. It then releases the network
+fault before fresh unlock and requires the real old receipt to arrive after
+activation. This makes the late acknowledgement/newer-draft ordering explicit
+instead of depending on the background poll's timing. No API response, signature,
+local-store result or custody operation is fabricated.
