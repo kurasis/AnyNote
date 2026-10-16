@@ -1,57 +1,74 @@
-# Continue P16 acceptance and final handoff
+# Next task: P17 adversarial testing and review preparation
 
-P16 is implemented in a development branch and remains IN PROGRESS until the
-exact-source ordinary29-job cohort, raw evidence audit and guarded merge pass.
-Read AGENTS, PROGRESS, DECISIONS, KNOWN_LIMITATIONS, TEST_EVIDENCE,
-P16_OPERATIONS and the frozen00/02/07/08/12/13/14/17/18/20 requirements.
+P16 independent deployment/backup/recovery software is complete under the
+synthetic-evaluation boundary. Read AGENTS, PROGRESS, DECISIONS, KNOWN_LIMITATIONS,
+TEST_EVIDENCE, P16_OPERATIONS, evidence/p16 and frozen chapters03/13/14/18/19/20.
+PR30 and the permanent evidence archive distinguish exact source/job/report bytes
+from physical100GB, independent cryptographic review and production deployment.
 
-Russian chat, English source/docs. Passing ordinary push/merge is authorized.
-Use this checkout; no agents or worktrees without an explicit request. No
-production deployment/release, physical owner trial or reviewer outreach.
+Work in the existing checkout; no agents or worktrees unless the owner explicitly
+requests them. Russian chat, English repository. Ordinary passing push, Actions
+and expected-head merge are authorized. Do not deploy/release, arrange a new
+physical owner trial, contact reviewers or collect real secrets without separate
+authorization. P17 software work may proceed without an external reviewer, but
+AI self-review cannot satisfy G2/G3 or be renamed independent professional audit.
 
-Validate full1GB concurrent consistent backup/clean-host/root-kit recovery,
-actual old-device/session revoke after the backup, newer security-checkpoint
-refusal, persistent client quarantine and unchanged encrypted outbox/drafts,
-then explicit fresh-identity/private-group re-encryption and full download hash.
-Exercise real8MiB tmpfs ENOSPC/object/fsync/DB failures, interrupted backup,
-expired auth/upload/grant cleanup with burned/committed references retained,
-and API/static/missing-secret incident containment. Capacity:10 actual accounts,
-50 certified devices,100000 encrypted/signed/client-opened/PHP-verified bulk
-retained revisions and actual authenticated paginated HTTP measurements.
-Keep100GB actual/logical inventory NOT_RUN if the host cannot hold it plus
-reserves. Do not call development small bytes or sparse/quota rows a full pass.
+Execute the specification's P17 bounded work:
 
-All27 inherited mandatory checks remain; add operations-linux-drill and
-operations-capacity. Exact clean source and every raw report input hash must
-match actual Git blobs. Archive public bytes/digests without user kits, SQL
-dumps or private operational keys. Investigate failures; no verification,
-sandbox, TLS, integrity, signing or required-check bypass.
+1. Map every R01–R24 threat/regression to actual implemented authority, maintained
+   test and evidence; expose missing coverage and unresolved composition assumptions.
+2. Run complete multi-account/device/group adversarial tests and bounded parser/
+   envelope fuzzing. Exercise malicious/stale relay/server responses, signature/
+   scope/parent/epoch substitution, revoked members/devices, replay, rollbacks,
+   interrupted atomic publication and cleanup races, retained drafts/outbox and
+   independent checkpoints. Add regressions for concrete findings and remediate.
+3. Inspect only controlled synthetic stores/logs/artifacts for unintended plaintext,
+   keys and recovery material; review frozen dependencies, build/signing/update
+   chain, source/input bindings and production operational boundaries.
+4. Measure meaningful concurrency/fault recovery under realistic bounded storage/
+   network conditions. Keep actual counts/latencies/sample scopes separate from
+   physical device budgets or unexecuted100GB capacity. Preserve P16's10GiB/10%
+   reserve; never fill production disks or fabricate sparse/quota evidence.
+5. Prepare qualified-review inputs, remediation log, threat-to-test traceability,
+   explicit unbooked/NOT_RUN independent-review status and release-risk decision.
+   Do not claim no critical/high exploitable findings merely from passing tests.
 
-Preserve retained P03/P06 volumes, TLS/OAuth, prepared profiles/keys/pins and
-all179 frozen specification/P02/prior-lock files. HTTP/reset/fault suites run
-sequentially only in their owned disposable DBs. Do not overwrite the original
-.local/p15/startup-preservation.json. Before additive P06 migrations, capture
-a supplemental exact original-migrations receipt after verifying its checksum
-against that baseline; afterward require original rows unchanged and exactly
-the three documented P16 migrations/two tables added. All other original
-content checksums/session rows/TLS/OAuth/env bytes stay unchanged.
+All29 ordinary CI gates remain mandatory, including operations-linux-drill and
+operations-capacity. Final clean-source reports must identify actual Git blobs;
+archive original raw bytes/ZIP digests without relabelling failures. Full1GB,
+Windows quiet upgrade/native flows, Chromium sandbox and hosted WebKit remain
+required; no TLS, signature, integrity, authority, timeout or sandbox bypass.
+Use frozen locks, native-j4 and single-thread Argon tests; avoid expensive unrelated
+reruns once affected checks pass. Guard merge by exact checked SHA and unchanged
+base; verify clean local/remote main and checked tree after ordinary merge.
 
-The cloud uses Docker VFS and has a small filesystem. Avoid repeated image
-layers and unnecessary full native/gigabyte reruns. Never lower the production
-10GiB/10% reserve or globally prune/reset retained state to get a pass. Only
-exact new disposable P16 fixtures/caches from this task may be moved/retired
-with provenance and retained evidence. Hosted full-size acceptance remains
-mandatory. Native tests retain frozen locks,-j4 and single-thread Argon gates.
+Preserve all179 frozen specification/P02/prior-lock files, retained .local/SQL
+volumes/TLS/OAuth/native profiles/keys/pins/drafts/outbox/unknown attempts/journals.
+The original .local/p15/startup-preservation.json must stay unchanged; P16's separate
+.local/p16/additive-preservation.json anchors original migrations. Original76
+SQL tables and content/session rows survive exactly3 additive migrations/2 new
+tables. Startup is read-only except marked additive dev migrations/readiness.
+Reset/outage/fault tests are sequential and only in their explicitly owned
+synthetic DBs; never reset retained state, delete volumes/orphans or globally prune.
+The small cloud uses Docker VFS. P16 fixture container copies may be retired with
+proven ownership while retaining their bind-mounted data; default cloud startup
+starts P03/P06 and P16 local checks, not a persistent production-template service.
 
-After passing acceptance, update progress/decisions/limitations/licenses/evidence
-and replace this with the exact P17 adversarial-review task. Guard merge by
-expected checked SHA; verify clean local/remote main and same checked tree.
-Validate preserved-data setup/start and save/read back complete environment
-instructions plus actual merged HEAD, preserving unrelated config/bindings.
-Draft save, owner Review/Save→Publish and independently observed fresh-task
-restoration remain distinct.
+Keep conservative restore semantics: all restored ordinary credentials/security
+are fenced; no automatic in-place current-security reconciliation or unquarantine
+exists. The offline root-kit reader covers private epoch-zero groups/1000 notes/
+32 files with independently witnessed checkpoints; shared/rotated/history recovery
+uses maintained portable exports plus their separate kits. Never infer root
+ownership of another group or server plaintext decryption from backup custody.
 
-Owner targets are already known:iPhone17Pro/iOS26.7.1 and Windows11Pro25H2/Hello;
-trusted private HTTPS host is not ready. Do not ask hardware/host/password/key
-questions again. Full physicalG1/U11/U12/PRF/Hello/TPM, qualifiedG2/G3, production
-keys/signing/deployment and measured device-memory budgets remain open.
+P01 owner targets are known:iPhone17Pro/iOS26.7.1, Windows11Pro25H2/Hello. Trusted
+private HTTPS host is not ready; do not ask hardware/host/password/key questions
+again. PhysicalG1/U11/U12/PRF/Hello/TPM, qualifiedG2/G3, production signing/keys,
+100GB capacity and device-memory budgets remain open. Initial native+helper
+sampled growth339361792bytes exceeds128MiB; hosted samples are not physical budgets.
+
+Update progress, decisions, limitations, evidence and the exact next task with
+each completed slice. Preserve/test reusable installation/startup instructions;
+save and read back the complete configuration with actual merged HEAD while
+preserving unrelated bindings. Current instance, saved draft, owner Review/Save→
+Publish and independently observed fresh-task restoration remain separate facts.

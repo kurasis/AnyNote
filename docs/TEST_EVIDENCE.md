@@ -2161,3 +2161,16 @@ A focused real-TLS/Nginx/FastCGI internal-redirect regression now passes approve
 origin/credentials/request-ID/HSTS preservation, ticket-header hiding, direct
 internal-path404 and absent CORS for a hostile origin. It uses public synthetic
 FastCGI bytes and is not labelled application-authorization/full-phase acceptance.
+
+P16 full candidate `09247a08feedf61a07cd6e60c76b57da069622fb` operations/capacity acceptance PASS. Actual
+1GB full source/offline/fresh-destination hashes agree: `ce198dae9dd34339a224009e285e227389e90222b6f5de0b7198deedb4da1510`.
+The exact-source raw reports, original source SHAs, ZIP/Git input-byte audit and
+final29-job/merge/environment receipts are indexed in evidence/p16 and PR30.
+Candidate backup 9548ms; offline-content RTO
+73.882s; fresh-state drill RTO
+164.463s. Capacity history latency:{"p50": 33.74903300002916, "p95": 40.76833899994381, "max": 84.0695790000027}ms.
+Counts are10 actual accounts/50 certified devices/100000 verified signed inserted
+revisions/1001 authenticated HTTP pages/100001 history rows.10 signed-age negative
+cases,26 PHP tests/362 assertions, full SQL concurrency/rollback and supervised
+restart passed. Final documentation head requires its own full normal29-job
+cohort before merge; physical100GB/device/review/production are not claimed.

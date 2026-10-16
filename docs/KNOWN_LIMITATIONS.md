@@ -563,10 +563,10 @@ one-byte-origin-quota write failure demonstrates encrypted transaction retention
 recovery, not physical disk filling or immunity from operating-system eviction.
 
 
-## P16 implementation boundary during validation
+## P16 verified software and production boundary
 
-The new deployment/backup/restore source is in validation, not a production
-deployment or completed release gate. Restore selects conservative offline/fresh-
+P16 synthetic deployment/backup/recovery software acceptance is recorded in
+PR30/evidence/p16; production deployment and release gates remain unmet. Restore selects conservative offline/fresh-
 state recovery and never automatically reenables old members/devices/passkeys.
 There is no completed-current-security reconciliation/unquarantine mechanism for
 ordinary in-place service resumption. The private root-kit helper is bounded to
