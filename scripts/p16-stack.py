@@ -108,7 +108,9 @@ def main():
     target=initialize(a.name,a.port)
     env=ops.Environment(target/'environment')
     if a.operation=='up':print(json.dumps(up(target)))
-    elif a.operation=='check':print(env.php('operations:health'))
+    elif a.operation=='check':
+        health=env.health();print(json.dumps(health))
+        if health['status']!='ready':raise SystemExit(1)
     elif a.operation=='stop':env.compose('stop','edge','api','queue','scheduler','db');print('Stopped only owned P16 services; state retained')
     else:print(json.dumps({'status':'PASS','target':str(target)}))
 

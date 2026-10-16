@@ -5,6 +5,7 @@ namespace App\Files;
 use App\Crypto\PublicProtocol as P;
 use App\Devices\Protocol as D;
 use App\Http\ApiException;
+use App\Operations\Storage;
 use Illuminate\Support\Facades\DB;
 
 /** Private ciphertext-only immutable store. No user-controlled path components. */
@@ -14,7 +15,7 @@ final class BlobStore
 
     public function root(): string
     {
-        $root = storage_path('app/private/p12-blobs');
+        $root = Storage::privatePath('p12-blobs');
         if (! is_dir($root) && ! mkdir($root, 0700, true) && ! is_dir($root)) {
             throw new ApiException('STORAGE_UNAVAILABLE');
         }

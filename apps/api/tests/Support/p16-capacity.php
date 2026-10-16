@@ -4,12 +4,21 @@
 // retained history in batches; not a claim of 100,000 HTTP publication requests.
 use App\Backend\QuotaLedger;
 use App\Crypto\PublicProtocol as P;
+use App\Devices\Protocol;
+use App\Http\ApiException;
 use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 require '/app/vendor/autoload.php';
 $app = require '/app/bootstrap/app.php';
 $app->make(Kernel::class)->bootstrap();
+$count = 0;
+$phase = 'metadata';
+set_exception_handler(function (Throwable $error) use (&$count, &$phase): void {
+    fwrite(STDERR, json_encode(['status' => 'FAIL', 'phase' => $phase, 'verified_rows' => $count, 'class' => get_class($error), 'code' => $error instanceof ApiException ? $error->errorCode : $error->getCode(), 'driver_code' => $error instanceof QueryException ? ($error->errorInfo[1] ?? null) : null, 'source' => basename($error->getFile()), 'line' => $error->getLine()], JSON_THROW_ON_ERROR)."\n");
+    exit(1);
+});
 if (! hash_equals((string) getenv('ANYNOTE_P16_OWNER'), (string) DB::table('p16_test_owner')->value('owner'))) {
     throw new LogicException('Owned capacity database required');
 }
@@ -34,9 +43,10 @@ while ($count < $meta->count) {
         if ($line === false) {
             throw new LogicException('Truncated capacity fixture');
         }
+        $phase = 'verify-bundle';
         $bundle = $protocol->bundle($line, $device->signing_key);
         $c = $bundle->envelope->header->context;
-        if ($c->group_id !== $meta->group_id || $c->object_id !== $meta->object_id || $c->author->account_id !== $meta->account_id || $c->author->device_id !== $meta->device_id || P::canonical($c->parents) !== P::canonical([$previous]) || $c->action !== 'update') {
+        if ($c->group_id !== $meta->group_id || $c->object_id !== $meta->object_id || $c->author->account_id !== $meta->account_id || $c->author->device_id !== $meta->device_id || ! Protocol::equal($c->parents, [$previous]) || $c->action !== 'update') {
             throw new LogicException('Unbound capacity revision');
         }
         $cipher = P::binary($bundle->ciphertext);
@@ -47,6 +57,7 @@ while ($count < $meta->count) {
         $previous = (object) ['revision_id' => $c->revision_id, 'envelope_digest' => $digest];
         $batchBytes += strlen($cipher) + 48;
     }
+    $phase = 'insert-batch';
     DB::transaction(function () use ($revisions, $wraps, $parents, $meta, $batchBytes) {
         $ledger = app(QuotaLedger::class);
         $ledger->apply($ledger->lock($meta->account_id, $meta->group_id), $batchBytes, 0);

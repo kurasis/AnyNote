@@ -80,6 +80,14 @@ class Environment:
     def php(self, *args):
         return self.compose('run', '--rm', '--no-deps', '-T', 'api', 'php', 'artisan', *args).decode().strip()
 
+    def health(self):
+        result=subprocess.run(list(map(str,[*self.command,'run','--rm','--no-deps','-T','api','php','artisan','operations:health'])),capture_output=True)
+        if result.returncode not in [0,1]:raise RuntimeError('Operator health failed; private output omitted')
+        try:value=json.loads(result.stdout)
+        except ValueError:raise RuntimeError('Health unavailable; no valid private health receipt') from None
+        if value.get('status') not in ['ready','unavailable'] or (result.returncode==0)!=(value['status']=='ready'):raise RuntimeError('Inconsistent health outcome')
+        return value
+
     def sql(self, query):
         return self.compose('exec', '-T', 'db', 'sh', '-c', 'export MYSQL_PWD="$(cat /run/secrets/database_root)"; exec mariadb -uroot --batch --skip-column-names anynote', input=query.encode()).decode()
 
@@ -367,7 +375,7 @@ def main():
                 restart=[s for s in WRITERS if s in running]
                 if restart:env.compose('up','-d',*restart)
     else:
-        result=json.loads(env.php('operations:health'));result['requests']=request_metrics(env.state/'storage/logs')
+        result=env.health();result['requests']=request_metrics(env.state/'storage/logs')
         database_space=shutil.disk_usage(env.state/'database');result['database_free_bytes']=database_space.free
         if database_space.free<max(10737418240,database_space.total//10):result['status']='unavailable'
         for name,path,limit in [('backup',a.backup_receipt,86400),('restore_drill',a.drill_receipt,30*86400)]:

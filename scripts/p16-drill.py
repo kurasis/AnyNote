@@ -48,6 +48,9 @@ def prepare():
 
 def action(name):
     env=ops.Environment(ROOT/'.local/p16/source/environment')
+    marker=json.loads((stack.STATE/'source/owner.json').read_text())
+    expected_project='anynote-p16-'+hashlib.sha256(str(ROOT).encode()).hexdigest()[:8]+'-source'
+    if marker!={'purpose':'AnyNote P16 synthetic staging only','checkout':str(ROOT),'name':'source'} or env.project!=expected_project or env.state!=stack.STATE/'source':raise ValueError('Only the exact owned synthetic source project is allowed')
     custody=ROOT/'.local/p16/offline-operator'
     backups=ROOT/'.local/p16/off-host-backups';backups.mkdir(exist_ok=True,mode=0o700)
     checkpoints=ROOT/'.local/p16/off-host-security';checkpoints.mkdir(exist_ok=True,mode=0o700)
@@ -81,11 +84,15 @@ def action(name):
     if name=='isolate':
         env.compose('stop','edge','api','queue','scheduler');return {'status':'ISOLATED','runtime_writers_stopped':True,'unsafe_static_delivery_stopped':True}
     if name=='incident-static':
+        static_private=custody/'static-signing.pem';static_public=custody/'static-verification.pem'
+        if not static_private.exists() and not static_public.exists():
+            ops.run(['openssl','genpkey','-algorithm','ED25519','-out',static_private]);static_private.chmod(0o600);ops.run(['openssl','pkey','-in',static_private,'-pubout','-out',static_public])
+        if not static_private.is_file() or not static_public.is_file():raise ValueError('Incomplete independent synthetic static-signing pair')
         with tempfile.TemporaryDirectory(prefix='anynote-p16-incident-') as directory:
             directory=Path(directory);release=directory/'release';shutil.copytree(env.values['ANYNOTE_STATIC_ROOT'],release)
-            manifest=directory/'release.json';manifest.write_text(json.dumps({'purpose':'anynote-static-release','source_commit':ops.run(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),'inputs':[{'path':str(p.relative_to(release)),'sha256':ops.digest(p)} for p in sorted(release.rglob('*')) if p.is_file()]}));signature=directory/'release.sig';signature.write_bytes(ops.sign(manifest,custody/'backup-signing.pem'))
-            verified=ops.verify_static(release,manifest,signature,custody/'backup-verification.pem');script=release/'auth/notes.js';script.write_bytes(script.read_bytes()+b'\n// PUBLIC synthetic tampering fixture\n')
-            try:ops.verify_static(release,manifest,signature,custody/'backup-verification.pem')
+            manifest=directory/'release.json';manifest.write_text(json.dumps({'purpose':'anynote-static-release','source_commit':ops.run(['git','rev-parse','HEAD'],cwd=ROOT).decode().strip(),'inputs':[{'path':str(p.relative_to(release)),'sha256':ops.digest(p)} for p in sorted(release.rglob('*')) if p.is_file()]}));signature=directory/'release.sig';signature.write_bytes(ops.sign(manifest,static_private))
+            verified=ops.verify_static(release,manifest,signature,static_public);script=release/'auth/notes.js';script.write_bytes(script.read_bytes()+b'\n// PUBLIC synthetic tampering fixture\n')
+            try:ops.verify_static(release,manifest,signature,static_public)
             except ValueError:return {'status':'PASS','reviewed_signature_and_complete_inventory_verified':verified['status']=='PASS','altered_pwa_release_refused':True,'malicious_script_executed':False}
             raise RuntimeError('Tampered static release was accepted')
     if name=='capacity-prepare':
@@ -94,8 +101,16 @@ def action(name):
         return {'status':'PASS','port':22443,'target':'capacity'}
     if name=='capacity-load':
         clean=ops.Environment(ROOT/'.local/p16/capacity/environment');owner=hashlib.sha256(('P16 owned synthetic database '+str(ROOT)).encode()).hexdigest()
-        result=clean.compose('run','--rm','--no-deps','-T','-e','ANYNOTE_P16_OWNER='+owner,'-v',str(ROOT/'apps/api/tests/Support/p16-capacity.php')+':/tmp/p16-capacity.php:ro','api','php','/tmp/p16-capacity.php',stdin=sys.stdin.buffer)
-        return json.loads(result.decode())
+        command=[*clean.command,'run','--rm','--no-deps','-T','-e','ANYNOTE_P16_OWNER='+owner,'-v',str(ROOT/'apps/api/tests/Support/p16-capacity.php')+':/tmp/p16-capacity.php:ro','api','php','/tmp/p16-capacity.php']
+        result=subprocess.run(list(map(str,command)),stdin=sys.stdin.buffer,capture_output=True)
+        if result.returncode:
+            safe={'status':'FAIL','exit_code':result.returncode}
+            for line in result.stderr.splitlines():
+                try:row=json.loads(line)
+                except ValueError:continue
+                if isinstance(row,dict) and row.get('status')=='FAIL' and set(row)<={'status','phase','verified_rows','class','code','driver_code','source','line'}:safe=row
+            raise RuntimeError('Capacity loader refused: '+json.dumps(safe))
+        return json.loads(result.stdout)
     if name=='capacity-metrics':
         clean=ops.Environment(ROOT/'.local/p16/capacity/environment')
         return {'status':'PASS','database_bytes':int(clean.sql("SELECT COALESCE(SUM(data_length+index_length),0) FROM information_schema.tables WHERE table_schema='anynote';").strip()),'free_disk_bytes':__import__('shutil').disk_usage(clean.state).free,'total_disk_bytes':__import__('shutil').disk_usage(clean.state).total,'database_counts':{table:int(clean.sql('SELECT COUNT(*) FROM '+table+';').strip()) for table in ['users','devices','object_revisions']}}
@@ -142,7 +157,9 @@ def action(name):
             try:env.compose('exec','-T','api','touch',path)
             except RuntimeError:denied+=1
         if denied!=3:raise RuntimeError('Runtime wrote protected source/static path')
-        return {'status':'PASS','denied_writes':denied,'runtime_ddl_privileges':False,'static_mounted_in_php':False}
+        runtime=json.loads(env.compose('run','--rm','--no-deps','-T','api','php','-r','echo json_encode(["php"=>PHP_VERSION,"pcntl"=>extension_loaded("pcntl")]);').decode())
+        if runtime!={'php':'8.4.26','pcntl':True}:raise RuntimeError('Pinned PHP/pcntl worker prerequisite missing')
+        return {'status':'PASS','php':runtime['php'],'pcntl':runtime['pcntl'],'denied_writes':denied,'runtime_ddl_privileges':False,'static_mounted_in_php':False}
     if name=='start-restored-edge':
         restored=json.loads((backups/'restore-receipt.json').read_text());clean=ops.Environment(restored['restore_environment']);clean.compose('up','-d','api','edge');return {'status':'PASS'}
     if name=='fresh-install':

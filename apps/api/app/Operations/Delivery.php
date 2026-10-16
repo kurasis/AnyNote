@@ -13,7 +13,7 @@ final class Delivery
 {
     private function root(): string
     {
-        $path = storage_path('app/private/p16-delivery');
+        $path = Storage::privatePath('p16-delivery');
         D::require(is_dir($path) || mkdir($path, 0700, true), 'STORAGE_UNAVAILABLE');
 
         return $path;
@@ -26,18 +26,20 @@ final class Delivery
         D::require(P::isBinary($id, 16) && $path === app(BlobStore::class)->path($id), 'INVALID_REQUEST');
         $ticket = P::b64(random_bytes(16));
         $destination = $this->root().'/'.$ticket;
+        $created = false;
         try {
-            return DB::transaction(function () use ($path, $destination, $ticket) {
+            return DB::transaction(function () use ($path, $destination, $ticket, &$created) {
                 DB::table('gc_coordination')->where('singleton', 1)->lockForUpdate()->first();
                 D::require(DB::table('ciphertext_delivery_leases')->count() < 1000 && iterator_count(new \FilesystemIterator($this->root())) < 1000, 'RESOURCE_LIMIT');
                 DB::table('ciphertext_delivery_leases')->insert(['id' => $ticket, 'expires_at' => now()->addHour()]);
-                D::require(link($path, $destination), 'STORAGE_UNAVAILABLE');
+                D::require(@link($path, $destination), 'STORAGE_UNAVAILABLE');
+                $created = true;
                 app(DirectoryDurability::class)->sync($this->root());
 
                 return '/_anynote-cipher/'.$ticket;
             });
         } catch (\Throwable $error) {
-            if (is_file($destination)) {
+            if ($created && is_file($destination)) {
                 unlink($destination);
             }
             throw $error;

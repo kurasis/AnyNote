@@ -91,7 +91,7 @@ Artisan::command('operations:security', function () {
 Artisan::command('operations:health', function () {
     $disk = disk_free_space(storage_path('app/private'));
     $total = disk_total_space(storage_path('app/private'));
-    $components = [];
+    $components = ['database' => (int) DB::selectOne('SELECT @@innodb_flush_log_at_trx_commit AS durable')->durable === 1];
     foreach (['queue', 'scheduler'] as $component) {
         $components[$component] = DB::table('runtime_heartbeats')->where('component', $component)->where('observed_at', '>', now()->subSeconds(150))->exists();
     }

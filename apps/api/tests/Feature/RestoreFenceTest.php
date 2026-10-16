@@ -4,10 +4,12 @@ namespace Tests\Feature;
 
 use App\Backend\Authorization;
 use App\Crypto\PublicProtocol;
+use App\Files\BlobStore;
 use App\Http\ApiException;
 use App\Operations\Maintenance;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\Support\SyntheticBackend;
 use Tests\TestCase;
@@ -92,5 +94,31 @@ final class RestoreFenceTest extends TestCase
         $this->assertSame($descriptor, DB::table('security_transition_staging')->where('id', $ids[0])->value('signed_descriptor'));
         $this->assertSame('expired', DB::table('security_transition_staging')->where('id', $ids[0])->value('state'));
         $this->assertSame(1, DB::table('security_transition_pages')->where('transition_id', $ids[1])->count());
+    }
+
+    public function test_collector_cannot_delete_another_disposable_database_blob_namespace(): void
+    {
+        $original = storage_path();
+        $temporary = sys_get_temp_dir().'/anynote-p16-scope-'.bin2hex(random_bytes(16));
+        $this->app->useStoragePath($temporary);
+        try {
+            $legacy = storage_path('app/private/p12-blobs');
+            mkdir($legacy, 0700, true);
+            $id = PublicProtocol::b64(random_bytes(16));
+            file_put_contents($legacy.'/'.$id, 'PUBLIC separate-database sentinel');
+            touch($legacy.'/'.$id, time() - 400000);
+            $blobs = app(BlobStore::class);
+            $this->assertNotSame($legacy, $blobs->root());
+            $owned = $blobs->path(PublicProtocol::b64(random_bytes(16)));
+            file_put_contents($owned, 'PUBLIC disposable orphan');
+            touch($owned, time() - 400000);
+            $this->assertSame(1, $blobs->orphans());
+            $this->assertFileDoesNotExist($owned);
+            $this->assertSame('PUBLIC separate-database sentinel', file_get_contents($legacy.'/'.$id));
+            unlink($legacy.'/'.$id);
+        } finally {
+            $this->app->useStoragePath($original);
+            File::deleteDirectory($temporary);
+        }
     }
 }

@@ -180,7 +180,7 @@
     },
     {
       "path": "apps/api/routes/console.php",
-      "sha256": "6e1c47b4598192f82946616c6c622cbdc2612887d58d61a16c6c6b398869fb2c"
+      "sha256": "f58f4bbce2926775a2adbe189f4b4a2fa2fb2701511a9142c3deb344aacfd128"
     },
     {
       "path": "apps/api/app/Http/Controllers/CapabilitiesController.php",
@@ -420,7 +420,7 @@
     },
     {
       "path": "apps/api/app/Operations/Delivery.php",
-      "sha256": "18a1c40c73e78c54f76b5216a7687cbb4c31e3e7ca340f5ddd1efc53b7cab6c6"
+      "sha256": "1f44ab02e61ecaef697c82ea365ec2bef4f836c9603d23612b5108bc7c88e842"
     },
     {
       "path": "apps/api/app/Operations/Maintenance.php",
@@ -435,8 +435,12 @@
       "sha256": "d86c44ecbd7acbceb6a08ed1e1e8dd2aad23cc3ffe6d09eabd6222b2ab2e7894"
     },
     {
+      "path": "apps/api/app/Operations/Storage.php",
+      "sha256": "dbb55e074f547e87232f34230635bddb8240db66b9f501ed9d37ac655844e8e6"
+    },
+    {
       "path": "apps/api/app/Files/BlobStore.php",
-      "sha256": "bef95d02f68b82ae2cf571022659ecc0e7124e46fbe7783777d8e50207c70be1"
+      "sha256": "92c5bf2348b6d1bb04dca4fef2fb4f135dabb280a49ede9c815739b715f3e5d9"
     },
     {
       "path": "apps/api/app/Files/DirectoryDurability.php",
