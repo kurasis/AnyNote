@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use App\Files\DirectoryDurability;
+use Illuminate\Queue\Events\JobFailed;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Tests\Support\P14WindowsDurability;
 
@@ -24,6 +27,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Event::listen(JobFailed::class, function (): void {
+            // Aggregate operational state only; never persist raw job payloads or exceptions.
+            DB::table('runtime_heartbeats')->updateOrInsert(['component' => 'queue-failure'], ['observed_at' => now()]);
+        });
     }
 }

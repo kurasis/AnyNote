@@ -9,10 +9,10 @@ class DirectoryDurability
 {
     public function sync(string $path): void
     {
-        $directory = fopen($path, 'r');
+        $directory = @fopen($path, 'r');
         D::require($directory !== false, 'STORAGE_UNAVAILABLE');
         try {
-            D::require(fsync($directory), 'STORAGE_UNAVAILABLE');
+            D::require(@fsync($directory), 'STORAGE_UNAVAILABLE');
         } finally {
             fclose($directory);
         }

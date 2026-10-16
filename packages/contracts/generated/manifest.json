@@ -4,7 +4,7 @@
   "inputs": [
     {
       "path": "scripts/p03-contracts.py",
-      "sha256": "7791f216086b6ebc70bdff668510a46f12edf285f226fcef63a998c97925fcba"
+      "sha256": "49bccce54b3d52dbe4b2140feecf93a17d1d8d25059d4d148913d9174a3593f7"
     },
     {
       "path": "scripts/p04_compatibility.py",
@@ -24,11 +24,11 @@
     },
     {
       "path": "apps/api/app/Backend/ObjectService.php",
-      "sha256": "28dde6e05b2ab3ac214c67d7821232c2297ad8410ec16d789b86470ad87359b6"
+      "sha256": "4340ebc28e3def64da515703fce3a5544abe27cf652438022ba8acc0308e2ee9"
     },
     {
       "path": "apps/api/app/Backend/Authorization.php",
-      "sha256": "810f7773118c3d8cd3be533ff92f9e8e9a5f75d843481fa298076eff637d0a42"
+      "sha256": "53a6a74bad148359f716d3a3eda782d18bf7ddec7c1de58bb5a87e51bffb3151"
     },
     {
       "path": "apps/api/app/Backend/ReservationService.php",
@@ -180,7 +180,7 @@
     },
     {
       "path": "apps/api/routes/console.php",
-      "sha256": "6f2f054562f517f08bef3d0b8381374ea97268d5303499e507426eefb6de2ce1"
+      "sha256": "759a0908ed634f629859491a2ff83c0abdf0dc7f50829ec4cbaacd9d7c293aac"
     },
     {
       "path": "apps/api/app/Http/Controllers/CapabilitiesController.php",
@@ -417,6 +417,66 @@
     {
       "path": "apps/api/database/migrations/2026_10_14_000013_add_content_retention_and_exports.php",
       "sha256": "8aada7499564217d0df0c5ac2d7c50b132fe83c0083297f7f407d15d6275285e"
+    },
+    {
+      "path": "apps/api/app/Operations/Delivery.php",
+      "sha256": "1f44ab02e61ecaef697c82ea365ec2bef4f836c9603d23612b5108bc7c88e842"
+    },
+    {
+      "path": "apps/api/app/Operations/Maintenance.php",
+      "sha256": "dac2a417ee7d7a03c88dd8c68e4490e8e852d7121585a04796c8fd19a7e9aaf0"
+    },
+    {
+      "path": "apps/api/app/Operations/Recovery.php",
+      "sha256": "b616134434d364900fc1f2c8f77b9a769056b41f0ae2b3e708ba79b47fb68790"
+    },
+    {
+      "path": "apps/api/app/Operations/RecoveryFence.php",
+      "sha256": "d86c44ecbd7acbceb6a08ed1e1e8dd2aad23cc3ffe6d09eabd6222b2ab2e7894"
+    },
+    {
+      "path": "apps/api/app/Operations/Storage.php",
+      "sha256": "dbb55e074f547e87232f34230635bddb8240db66b9f501ed9d37ac655844e8e6"
+    },
+    {
+      "path": "apps/api/app/Files/BlobStore.php",
+      "sha256": "92c5bf2348b6d1bb04dca4fef2fb4f135dabb280a49ede9c815739b715f3e5d9"
+    },
+    {
+      "path": "apps/api/app/Files/DirectoryDurability.php",
+      "sha256": "769b8a0cf8e48e1fed4f455b94c16c7ac2ebc172c104d62ac93337516c8a8583"
+    },
+    {
+      "path": "apps/api/app/Files/Service.php",
+      "sha256": "fc20bea02b1c11a889abf6ee614953abcfb54e30b8854423819014ccc57ee824"
+    },
+    {
+      "path": "apps/api/config/operations.php",
+      "sha256": "58b536c7b348e7c2d18778f0ea0f51ed51f38ff4562db3ed531410b2f350a791"
+    },
+    {
+      "path": "apps/api/app/Http/Middleware/ApiBoundary.php",
+      "sha256": "8fe6135a014ff79b4f0afade517141c3ef3b92e2380237f48e1e542c362d774b"
+    },
+    {
+      "path": "apps/api/app/Http/Controllers/FilesController.php",
+      "sha256": "248b4e0a876fd7ff560eb4678539584f2845c85826699c16f85f366b35fec744"
+    },
+    {
+      "path": "apps/api/app/Providers/AppServiceProvider.php",
+      "sha256": "90e85b3cddbc2996104ff2ea8e4c25c8b214371744b207c9014c4b03e4f0b40c"
+    },
+    {
+      "path": "apps/api/database/migrations/2026_10_16_000014_create_ciphertext_delivery_leases.php",
+      "sha256": "9af8f3e238a68aa475a2b4f8349aed000091faed01b73de300a8c6381bdb3005"
+    },
+    {
+      "path": "apps/api/database/migrations/2026_10_16_000015_create_restore_fence.php",
+      "sha256": "32efb21b2156eadb18f9b09d0fde87639ebc3aec1d5e80a1f391dcb4cba42cf7"
+    },
+    {
+      "path": "apps/api/database/migrations/2026_10_16_000016_allow_expired_unpublished_grant_collection.php",
+      "sha256": "b20a1f61980448862cc624208cce007032222ca1e7d8b0af924e3ff4c9a26845"
     }
   ],
   "outputs": [

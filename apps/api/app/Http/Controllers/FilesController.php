@@ -10,6 +10,7 @@ use App\Crypto\PublicProtocol as P;
 use App\Devices\Protocol as D;
 use App\Files\Service;
 use App\Http\ApiException;
+use App\Operations\Delivery;
 use Illuminate\Http\Request;
 
 final class FilesController
@@ -46,6 +47,16 @@ final class FilesController
             if ($r->headers->has('Range')) {
                 fclose($handle);
                 throw new ApiException('INVALID_REQUEST');
+            }
+
+            if (config('operations.accel')) {
+                try {
+                    $ticket = app(Delivery::class)->ticket($handle);
+                } finally {
+                    fclose($handle);
+                }
+
+                return response('', 200, ['X-Accel-Redirect' => $ticket, 'Content-Type' => 'application/octet-stream', 'Content-Disposition' => 'attachment']);
             }
 
             return response()->stream(function () use ($handle) {

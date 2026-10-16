@@ -561,3 +561,33 @@ retain their own baselines, restarts, cadence and missing/external-memory limits
 It is not physical iPhone budget or unsampled-maximum evidence. Actual hosted
 one-byte-origin-quota write failure demonstrates encrypted transaction retention and
 recovery, not physical disk filling or immunity from operating-system eviction.
+
+
+## P16 verified software and production boundary
+
+P16 synthetic deployment/backup/recovery software acceptance is recorded in
+PR30/evidence/p16; production deployment and release gates remain unmet. Restore selects conservative offline/fresh-
+state recovery and never automatically reenables old members/devices/passkeys.
+There is no completed-current-security reconciliation/unquarantine mechanism for
+ordinary in-place service resumption. The private root-kit helper is bounded to
+private epoch-zero groups/1000 retained notes/32 files; shared/rotated/history
+recovery requires independently retained P13 portable exports and their kits.
+Server backups still preserve all matching encrypted DB/blob bytes; this reader
+limit must not be presented as full generic service recovery.
+
+An external backup provider, immutable/offline copy, host firewall/egress, operator
+SSH, independent production deployment credentials and real operational keys need
+actual-host provisioning/review. Synthetic directory/filesystem separation and
+ephemeral test signatures do not prove these properties. Daily14/weekly8 retention
+is an explicit operator policy; no background restore-point deletion is enabled.
+Backup creation needs private encrypted temporary SQL capacity, a mutation pause
+and an independent verification/decryption path. Grace-period delivery links and
+all proxy/PHP/DB/log/export copies count toward physical capacity.
+
+The capacity fixture uses genuine WebAuthn/certified-device registration and
+client-encrypted/signed revisions installed through bounded verified SQL batches,
+then real authenticated paginated HTTP reads. It is not100000 individually
+authorized HTTP publication requests or full UI/search/sync convergence at that
+scale. Actual/logical100GB inventory stays NOT_RUN if the host has less than100GB
+free before reserves; sparse files or quota inflation cannot substitute. Resource
+samples retain process/phase scope and do not establish physical device budgets.

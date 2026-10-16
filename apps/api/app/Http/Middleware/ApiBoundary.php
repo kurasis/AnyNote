@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Http\ApiErrors;
 use App\Http\ApiException;
 use App\Http\ControlJson;
+use App\Operations\RecoveryFence;
 use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,6 +29,7 @@ final class ApiBoundary
                 throw new ApiException('REQUEST_TOO_LARGE');
             }
             if ($request->is('api/*')) {
+                app(RecoveryFence::class)->admit();
                 if (! app()->environment(['local', 'testing']) && ! $request->isSecure()) {
                     throw new ApiException('INVALID_REQUEST');
                 }
