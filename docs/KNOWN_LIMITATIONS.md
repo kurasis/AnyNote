@@ -591,3 +591,37 @@ authorized HTTP publication requests or full UI/search/sync convergence at that
 scale. Actual/logical100GB inventory stays NOT_RUN if the host has less than100GB
 free before reserves; sparse files or quota inflation cannot substitute. Resource
 samples retain process/phase scope and do not establish physical device budgets.
+
+
+## P17 review and synthetic release boundary
+
+Qualified independent protocol/security review remains TRACKED_NOT_BOOKED / NOT_RUN.
+The AI-assisted R01–R24 traceability, finite deterministic mutation, source review,
+canary inspection and passing ordinary jobs do not establish the absence of
+critical/high exploitable defects or satisfy production G2/G3. ASVS5.0.0 Level2
+is an engineering reference, not certification or a complete control assessment.
+
+The extra P17 HTTP test is three accounts,24 publications/up to8 in flight, eight
+lost-response retries and25 independently counted once-only SQL revisions. Typed
+transient503 retries and latency scope remain explicit. Its real random file is
+1MiB+1; unchanged inherited full1GB jobs supply different evidence. Portable
+transactional fixtures are not OPFS/SQLite/SQL or power-loss tests. PHP differential
+mutation covers raw syntax; shared frozen Node/portable design is not independent
+cryptographic implementation diversity. Canary scanning is bounded to owned
+synthetic values/files/logs, not exhaustive forensic proof or a claim about swap,
+crashes, arbitrary encodings, malicious delivery origins or perfect zeroization.
+
+Live OSV review retains glib0.18.5 unsoundness and proc-macro-error1.0.4 maintenance
+notices in the excluded Linux GTK closure. Windows metadata excludes both and uses
+rustls0.23.46. Old frozen standalone auth/vault test locks retain affected0.23.45;
+these are synthetic-only and cannot be P18 release inputs. New standalone/Linux
+distribution needs new maintained profiles and review, without rewriting old
+fixtures. OS/browser/container OS package advisories, production CI/key custody
+and provider compromise are outside that language-lock census. See exact triage.
+
+Optional outbound push remains unsupported with404 and zero canary requests;
+enabled-provider allowlist/DNS revalidation/redirect handling is not implemented.
+Do not enable it based on disabled-route evidence. Restored-source quarantine,
+bounded private epoch-zero root-kit recovery, independent export kits, static-origin
+trust, physical G1/U11/U12/Hello/TPM/PRF, actual100GB, failed native memory budget and
+production signing/deployment limitations remain unchanged.

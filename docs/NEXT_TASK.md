@@ -1,74 +1,97 @@
-# Next task: P17 adversarial testing and review preparation
+# Next task: P18 release packaging, final acceptance and handoff software
 
-P16 independent deployment/backup/recovery software is complete under the
-synthetic-evaluation boundary. Read AGENTS, PROGRESS, DECISIONS, KNOWN_LIMITATIONS,
-TEST_EVIDENCE, P16_OPERATIONS, evidence/p16 and frozen chapters03/13/14/18/19/20.
-PR30 and the permanent evidence archive distinguish exact source/job/report bytes
-from physical100GB, independent cryptographic review and production deployment.
+P17 adversarial software evaluation is complete only within synthetic scope.
+Read AGENTS, PROGRESS, DECISIONS, KNOWN_LIMITATIONS, TEST_EVIDENCE,
+P17_SECURITY_REVIEW, security/P17_TRACEABILITY, security/p17-advisory-triage,
+P16_OPERATIONS, evidence/p16/p17 and frozen chapters03/13/14/16/18/19/20.
+The merged PR/permanent evidence distinguish exact30-job PR/main acceptance from
+unbooked qualified review, physical/memory/100GB and production release gates.
 
-Work in the existing checkout; no agents or worktrees unless the owner explicitly
+Work in the existing checkout. No agents or worktrees unless the owner explicitly
 requests them. Russian chat, English repository. Ordinary passing push, Actions
 and expected-head merge are authorized. Do not deploy/release, arrange a new
-physical owner trial, contact reviewers or collect real secrets without separate
-authorization. P17 software work may proceed without an external reviewer, but
-AI self-review cannot satisfy G2/G3 or be renamed independent professional audit.
+physical owner trial, contact/book reviewers or collect real secrets without
+separate authorization. P18 packaging/handoff software may proceed without those
+actions. AI self-review is not independent professional audit; G2/G3 are NOT_RUN.
+Do not fabricate owner risk acceptance or assert no critical/high exploitable
+findings merely from passing engineering tests. Production remains blocked.
 
-Execute the specification's P17 bounded work:
+Execute the specification's P18 bounded software work:
 
-1. Map every R01–R24 threat/regression to actual implemented authority, maintained
-   test and evidence; expose missing coverage and unresolved composition assumptions.
-2. Run complete multi-account/device/group adversarial tests and bounded parser/
-   envelope fuzzing. Exercise malicious/stale relay/server responses, signature/
-   scope/parent/epoch substitution, revoked members/devices, replay, rollbacks,
-   interrupted atomic publication and cleanup races, retained drafts/outbox and
-   independent checkpoints. Add regressions for concrete findings and remediate.
-3. Inspect only controlled synthetic stores/logs/artifacts for unintended plaintext,
-   keys and recovery material; review frozen dependencies, build/signing/update
-   chain, source/input bindings and production operational boundaries.
-4. Measure meaningful concurrency/fault recovery under realistic bounded storage/
-   network conditions. Keep actual counts/latencies/sample scopes separate from
-   physical device budgets or unexecuted100GB capacity. Preserve P16's10GiB/10%
-   reserve; never fill production disks or fabricate sparse/quota evidence.
-5. Prepare qualified-review inputs, remediation log, threat-to-test traceability,
-   explicit unbooked/NOT_RUN independent-review status and release-risk decision.
-   Do not claim no critical/high exploitable findings merely from passing tests.
+1. Inventory maintained Windows installer/update, PWA static package, hardened API
+   deployment/backup and recovery/export kits. Build reviewable candidates with
+   corresponding source, frozen inputs, notices/SBOM and signature requirements.
+   Separate synthetic test keys, updater signatures and actual OS code signing.
+2. Make final F/C/S/U/X/O/R and G-gate acceptance concrete, with actual source/job/
+   report bytes and honest PASS/FAIL/BLOCKED/NOT_RUN scope. Exercise supported
+   software journeys, preserved-data update/rollback rejection, verified independent
+   recovery and multilingual handoff. Keep existing actual1GB/native/PWA/operations
+   and capacity gates, rather than replacing them with a final checklist.
+3. Prepare install/update, key custody, recovery/restore/fresh-state, backup/retention,
+   incident response, support and maintenance documentation. Explain irreversible
+   plaintext export and bounded recovery authority in useful product language.
+4. Make release eligibility fail closed on missing qualified review, physical/device
+   memory, actual100GB and real signing/custody evidence. Unsigned/synthetically
+   signed candidates do not constitute production publication. Record concrete
+   missing external evidence/owner steps without repeated setup questions/outreach.
 
-All29 ordinary CI gates remain mandatory, including operations-linux-drill and
-operations-capacity. Final clean-source reports must identify actual Git blobs;
-archive original raw bytes/ZIP digests without relabelling failures. Full1GB,
-Windows quiet upgrade/native flows, Chromium sandbox and hosted WebKit remain
-required; no TLS, signature, integrity, authority, timeout or sandbox bypass.
-Use frozen locks, native-j4 and single-thread Argon tests; avoid expensive unrelated
-reruns once affected checks pass. Guard merge by exact checked SHA and unchanged
-base; verify clean local/remote main and checked tree after ordinary merge.
+All30 ordinary jobs remain mandatory: prior29 plus adversarial-linux. P17 executes
+69 client tests,6728 raw/schema mutations plus512 envelope/512 tar/five KDF
+negatives, exact old/new stream regressions, separate three-account SQL/canary
+checks and live advisory review. New advisories require exact disposition; network
+failure is not an empty scan. Bind clean reports to actual Git blobs; preserve raw
+bytes/ZIP digests and synthetic merge source objects, never relabel failures.
+Full1GB, Windows quiet upgrade/WebView2, native, Chromium sandbox and WebKit remain
+mandatory. Native-j4/single-thread Argon, frozen locks; no TLS/signature/integrity/
+authority/timeout/rate/storage/sandbox bypass. Guard ordinary merge with the exact
+checked SHA, unchanged base and equal checked/merged tree; verify clean remote main.
 
-Preserve all179 frozen specification/P02/prior-lock files, retained .local/SQL
+P17 fixed response allocation retention, reader-lock cleanup after stream failure
+and untyped portable base64 format errors. Five portable codecs retain generated
+frozen predicates via a safe format adapter. Contract manifest remains325 structures/
+111 operations. P04 counter reports add actual before/blocked/after commit/rollback
+observations. P17 adds no production migration or wire/lock change.
+
+Live advisory census retains glib0.18.5/proc-macro-error1.0.4 in excluded Linux GTK
+closure and rustls0.23.45 in old auth-native/vault-native frozen synthetic test
+locks. Product Windows/helper/content locks and actual supported Windows graph use
+fixed0.23.46 and exclude those GTK packages. P18 may not distribute old standalone
+test profiles. New standalone/Linux targets require new reviewed maintained
+profiles, preserving historical locks. Exact triage is not a production waiver.
+
+Preserve all179 frozen specification/P02/prior-lock files and retained .local/SQL
 volumes/TLS/OAuth/native profiles/keys/pins/drafts/outbox/unknown attempts/journals.
-The original .local/p15/startup-preservation.json must stay unchanged; P16's separate
-.local/p16/additive-preservation.json anchors original migrations. Original76
-SQL tables and content/session rows survive exactly3 additive migrations/2 new
-tables. Startup is read-only except marked additive dev migrations/readiness.
-Reset/outage/fault tests are sequential and only in their explicitly owned
-synthetic DBs; never reset retained state, delete volumes/orphans or globally prune.
-The small cloud uses Docker VFS. P16 fixture container copies may be retired with
-proven ownership while retaining their bind-mounted data; default cloud startup
-starts P03/P06 and P16 local checks, not a persistent production-template service.
+Never rewrite .local/p15/startup-preservation.json or P16 supplemental migration
+proof. Original76 tables/content/session rows survive exactly3 P16 additive
+migrations/2 tables. P17 adds no retained P06 migration. The documented P16 expired
+rate-counter deletion does not permit further deletion. Use supplemental verifier;
+never rebaseline. Startup is read-only except documented additive migration/readiness.
 
-Keep conservative restore semantics: all restored ordinary credentials/security
-are fenced; no automatic in-place current-security reconciliation or unquarantine
-exists. The offline root-kit reader covers private epoch-zero groups/1000 notes/
-32 files with independently witnessed checkpoints; shared/rotated/history recovery
-uses maintained portable exports plus their separate kits. Never infer root
-ownership of another group or server plaintext decryption from backup custody.
+Reset/outage/fault/maintenance tests run sequentially only in explicitly owned
+synthetic DBs. P17 has separate anynote_p17_security/loopback20443/private logs and
+never resets existing data. Default cloud startup retains P03/P06 and read-only
+P17 checks. No global prune, volume/orphan deletion or profile reset. P16 clean
+acceptance refuses reused source/capacity targets. Small Docker VFS cloud requires
+sized clean CI hosts for full fresh drills; preserve production10GiB/10% reserve.
+Never fake100GB with sparse files or quota inflation.
 
-P01 owner targets are known:iPhone17Pro/iOS26.7.1, Windows11Pro25H2/Hello. Trusted
-private HTTPS host is not ready; do not ask hardware/host/password/key questions
-again. PhysicalG1/U11/U12/PRF/Hello/TPM, qualifiedG2/G3, production signing/keys,
-100GB capacity and device-memory budgets remain open. Initial native+helper
-sampled growth339361792bytes exceeds128MiB; hosted samples are not physical budgets.
+Keep restore fencing: all restored credentials/security stay quarantined, without
+automatic current-security reconciliation/unquarantine. Offline root-kit reader
+covers private epoch-zero groups/1000 notes/32 files with independent checkpoints;
+shared/rotated/history recovery uses portable archives and separate export kits.
+Root ownership never confers another group's authority or server plaintext access.
+Outbound push remains unsupported/404; enabled provider DNS/redirect protection
+is not implemented and must precede enablement.
 
-Update progress, decisions, limitations, evidence and the exact next task with
-each completed slice. Preserve/test reusable installation/startup instructions;
-save and read back the complete configuration with actual merged HEAD while
-preserving unrelated bindings. Current instance, saved draft, owner Review/Save→
-Publish and independently observed fresh-task restoration remain separate facts.
+Known owner targets:iPhone17Pro/iOS26.7.1, Windows11Pro25H2/Hello. Private trusted
+HTTPS host is not ready; do not ask hardware/host/password/key questions again.
+PhysicalG1/U11/U12/PRF/Hello/TPM, qualifiedG2/G3, production signing/keys,
+actual100GB and device-memory budgets remain open. Prior native+helper sampled
+growth339361792bytes exceeds128MiB; hosted samples do not close it. Fresh-client
+rollback/forks, malicious static origin, cached content/keys and OS remnants
+retain documented limits. No production release/deployment is authorized here.
+
+Update progress, decisions, limitations, evidence and exact next task. Preserve/test
+reusable startup, save/read back complete cloud instructions with actual merged
+HEAD and unrelated bindings preserved. Current-instance validation, saved draft,
+owner Review/Save→Publish and observed fresh-task restoration are separate facts.

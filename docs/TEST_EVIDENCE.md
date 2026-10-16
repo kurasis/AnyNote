@@ -2174,3 +2174,59 @@ revisions/1001 authenticated HTTP pages/100001 history rows.10 signed-age negati
 cases,26 PHP tests/362 assertions, full SQL concurrency/rollback and supervised
 restart passed. Final documentation head requires its own full normal29-job
 cohort before merge; physical100GB/device/review/production are not claimed.
+
+
+## P17 adversarial development and final acceptance
+
+Development (dirty source, never final acceptance):69 maintained client tests PASS
+with zero skipped/cancelled/todo/failures;4352 schema/portable-reference mutations,
+2376 actual PHP/JS raw controls,512 authenticated envelope/context substitutions,
+512 actual streaming tar header corruptions and5 excessive KDF denials PASS.
+The fixed public mutation corpus SHA256 is
+48d9e6b09197f264ba72b4404074ec48fd3f8df6eb284f1f45dbaacd20a465de.
+Exact old Git boundedResponse retains consumed chunks and leaves an errored reader
+locked; the current implementation allows real GC before EOF and releases the lock.
+
+A new separate owner-marked target passed genuine WebAuthn registration for3
+accounts, known foreign-ID denials, malformed raw controls, sibling Origin/CSRF,
+real response interruption,8 immutable retries,24 concurrent publications and25
+actual once-only SQL revision counts. The development run measured11 typed
+transient503 retries with unchanged bytes and bounded Retry-After. Real random
+1048577-byte upload/download hash passed. Canary scanning found none of11 actual
+private/plaintext markers in its78-table SQL, blob, actual log and local-ciphertext
+scope; a positive control was detected. Repeated local runs append only owned
+synthetic data and are not labelled fresh installations.
+
+The complete owned SQL suite and26 PHP tests/362 assertions passed. R03 observations:
+commit:before2/A-uncommitted3/observer2/B-and-after4;
+rollback:before4/A-uncommitted5/observer4/B-and-after5. These are connected processes
+plus independent PDO reads, not only a transaction model or physical power loss.
+
+Live OSV query matched3 component versions; exact upstream advisory details and
+actual Windows metadata qualified their scope. glib/proc-macro-error are absent
+from the Windows graph; product rustls is fixed0.23.46. Old frozen standalone
+synthetic locks retain0.23.45 and are excluded from distribution. Every match and
+conditional risk stays in P17_SECURITY_REVIEW and p17-advisory-triage.json.
+
+The final candidate and merged main require their own all30 ordinary-job cohorts.
+Original public reports, ZIP digests, actual Git input-byte audits, source/tree,
+merge/environment and final acceptance receipts are indexed in evidence/p17.
+This document is not a substitute for those exact-source results. Independent
+review is TRACKED_NOT_BOOKED / NOT_RUN; production, physical, memory and100GB are
+not claimed. The frozen179-file audit and original retained-state proof remain
+unchanged; no reset/fault/maintenance test targets retained P06.
+
+Initial documentation headaa58c56 failed the ordinary baseline because its P17
+table used an unsupported combined status label. Affected dependent jobs stopped
+before acceptance; their failures are not phase PASS evidence. The table now uses
+the existing VERIFIED vocabulary with synthetic scope in its evidence column,
+and p17-check explicitly runs the unchanged baseline validator as well. No parser,
+allowed status, required check or acceptance assertion is weakened.
+
+At214c59e the new adversarial job and baseline/contracts/SQL passed, while
+vault-windows-native job117011052170 (run38912212527) stopped before tests:
+libsodium-sys-stable1.24.1 build.rs reported Windows DNS11002 during upstream
+resolution. The existing binding returned HTTP403 for the single-job rerun API;
+no token, checksum, TLS or package-source override was introduced. Recording the
+observation in a normal follow-up commit starts a new full ordinary PR cohort on
+fresh runners. The failed job is retained as failure, never relabelled PASS.

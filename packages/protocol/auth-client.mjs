@@ -24,9 +24,12 @@ export async function boundedResponse(response,maximum=262144){
   const size=response.headers.get('Content-Length');
   if(size&&(!/^[0-9]+$/.test(size)||BigInt(size)>BigInt(maximum))){await response.body?.cancel();throw Error('AUTH_RESPONSE_TOO_LARGE');}
   if(!response.body)throw Error('EMPTY_AUTH_RESPONSE');
-  const reader=response.body.getReader(),parts=[];let length=0;
-  try{while(true){const {done,value}=await reader.read();if(done)break;length+=value.length;if(length>maximum)throw Error('AUTH_RESPONSE_TOO_LARGE');parts.push(value);}return Buffer.concat(parts);}
-  finally{await reader.cancel();reader.releaseLock();}
+  // A byte bound must also bound retained allocations: a hostile peer can
+  // fragment a small body into hundreds of thousands of one-byte chunks.
+  // Copy into one bounded destination rather than retaining every chunk object.
+  const reader=response.body.getReader(),bytes=Buffer.alloc(maximum);let length=0,empty=0;
+  try{while(true){const {done,value}=await reader.read();if(done)break;if(value.length===0){if(++empty>1024)throw Error('AUTH_RESPONSE_TOO_LARGE');continue;}empty=0;if(value.length>maximum-length)throw Error('AUTH_RESPONSE_TOO_LARGE');bytes.set(value,length);length+=value.length;}return bytes.subarray(0,length);}
+  finally{try{await reader.cancel();}finally{reader.releaseLock();}}
 }
 export function authValue(kind, value) {
   if (!validators.get(kind)?.(value)) throw Error('INVALID_AUTH_DTO');

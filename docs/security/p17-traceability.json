@@ -1,0 +1,507 @@
+{
+  "purpose": "P17 authority/test anchors are not execution proof",
+  "independent_review": "NOT_RUN",
+  "production_release_allowed": false,
+  "regressions": [
+    {
+      "id": "R01",
+      "scenario": "Fresh recipient with no uploader cache downloads a file",
+      "required_outcome": "Device/recovery key -> epoch -> manifest DEK -> file-data DEK -> exact original bytes; server never obtains these keys",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "packages/protocol/adapters/files.mjs",
+          "anchor": "export class FileReader"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/files/test-files.mjs",
+          "anchor": "another enrolled installation attaches a verified file without the original upload journal",
+          "gate": "files-linux-http-browser"
+        }
+      ],
+      "limitations": "Fresh enrolled recipient without uploader journal; inherited1GB gates remain separate from physical iPhone memory/output."
+    },
+    {
+      "id": "R02",
+      "scenario": "Recovery from a completely new untrusted device",
+      "required_outcome": "Separate login then root challenge/reset activates new device before recovery-envelope access; removed groups stay denied",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "apps/api/app/Devices/Lifecycle.php",
+          "anchor": "recovery"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/test/state.test.mjs",
+          "anchor": "reset advances generation, revokes all old sessions/pending before recovery recipient access",
+          "gate": "file-contract"
+        },
+        {
+          "path": "packages/protocol/p08-http.mjs",
+          "anchor": "/me/recovery-reset",
+          "gate": "devices-linux-http-browser"
+        }
+      ],
+      "limitations": "Root reset is separate from login and never restores a removed shared membership. Actual HTTP counterpart also runs in devices-linux-http-browser."
+    },
+    {
+      "id": "R03",
+      "scenario": "Transaction A delays after event allocation while B tries to commit; concurrent reader polls",
+      "required_outcome": "B cannot advertise a later sequence before A commits/rolls back; no event skipped",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "apps/api/app/Backend/SyncWriter.php",
+          "anchor": "lockForUpdate"
+        }
+      ],
+      "tests": [
+        {
+          "path": "apps/api/tests/Support/p04-concurrency.php",
+          "anchor": "observer_while_b_blocked",
+          "gate": "foundation"
+        }
+      ],
+      "limitations": "Actual two-process counter contention, independent PDO observer and before/blocked/after sequences; not power-loss proof."
+    },
+    {
+      "id": "R04",
+      "scenario": "Actual app/API sibling origins, hostile sibling, preflight and session rotation",
+      "required_outcome": "Host-only cookie works, exact CORS and synchronizer CSRF reject attacker, API cannot supply app scripts",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "apps/api/app/Http/Middleware/ApiBoundary.php",
+          "anchor": "Access-Control-Allow-Origin"
+        }
+      ],
+      "tests": [
+        {
+          "path": "apps/api/tests/Feature/ApiBoundaryTest.php",
+          "anchor": "test_profile_cors_and_preflight_reject_downgrades_and_hostile_origins",
+          "gate": "foundation"
+        }
+      ],
+      "limitations": "Actual TLS origins also run in auth-linux-http-browser and P17. A compromised static origin can replace trusted client code."
+    },
+    {
+      "id": "R05",
+      "scenario": "Logged-in attacker supplies a victim device ID",
+      "required_outcome": "No trusted-device session without fresh possession proof bound to that session",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "apps/api/app/Auth/Proof.php",
+          "anchor": "public function upgrade"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/test/state.test.mjs",
+          "anchor": "one-use normal device proof binds restricted session, current keys and challenge",
+          "gate": "file-contract"
+        }
+      ],
+      "limitations": "Authentication alone never proves device possession. Actual HTTP counterpart also runs in devices-linux-http-browser."
+    },
+    {
+      "id": "R06",
+      "scenario": "Approval expires or races with revocation before enrollment confirm",
+      "required_outcome": "No active device, session upgrade or keys; activation is one atomic validated transition",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "apps/api/app/Devices/Lifecycle.php",
+          "anchor": "confirm"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/test/state.test.mjs",
+          "anchor": "head advance invalidates other provisional approvals; no blind reuse",
+          "gate": "file-contract"
+        },
+        {
+          "path": "packages/protocol/p08-http.mjs",
+          "anchor": "/confirm",
+          "gate": "devices-linux-http-browser"
+        }
+      ],
+      "limitations": "Expiry, current heads and atomic activation also have real lifecycle HTTP tests; physical QR ceremony remains unrun."
+    },
+    {
+      "id": "R07",
+      "scenario": "Compromised device enrolled two descendants before revoke",
+      "required_outcome": "Descendants, sessions and pending approvals are also revoked; independent devices remain",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "apps/api/app/Devices/Lifecycle.php",
+          "anchor": "revoke"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/test/state.test.mjs",
+          "anchor": "compromise revoke computes transitive closure and invalidates both descendant sessions",
+          "gate": "file-contract"
+        },
+        {
+          "path": "packages/protocol/p08-http.mjs",
+          "anchor": "/revoke",
+          "gate": "devices-linux-http-browser"
+        }
+      ],
+      "limitations": "Actual HTTP descendant tests also run in devices-linux-http-browser. Revocation cannot erase previously received keys/plaintext."
+    },
+    {
+      "id": "R08",
+      "scenario": "Reader loses a device while owner offline",
+      "required_outcome": "Reader may rotate exact existing recipient set, cannot write/change roles; history remains protected until required writer closure",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "apps/api/app/Groups/Service.php",
+          "anchor": "class Service"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/test/group.test.mjs",
+          "anchor": "reader performs mandatory roster maintenance while history remains blocked for writer closure",
+          "gate": "file-contract"
+        }
+      ],
+      "limitations": "Exact-recipient mandatory maintenance never confers writer/history-closure authority. Shared real HTTP/browser gates also remain mandatory."
+    },
+    {
+      "id": "R09",
+      "scenario": "Commit response lost then epoch changes or conflict occurs",
+      "required_outcome": "Old receipt checked first; same operation bytes stay immutable; new attempt cannot duplicate a successful old publication",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "packages/protocol/notes/workflow.mjs",
+          "anchor": "SENT_UNKNOWN"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/security/http.mjs",
+          "anchor": "SYNTHETIC_RESPONSE_LOSS",
+          "gate": "adversarial-linux"
+        }
+      ],
+      "limitations": "Actual TLS response destroyed after response bytes begin;8 identical retries and SQL exactly-once verification. Shared role/epoch-change cases remain separate gates."
+    },
+    {
+      "id": "R10",
+      "scenario": "Snapshot pages overlap concurrent edits/deletes, invitation and GC",
+      "required_outcome": "Consistent watermark and pinned inventory; all later changes obtained; no deletion inferred from incomplete page; revoked access denied",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "apps/api/app/Sync/Service.php",
+          "anchor": "public function start"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/p11-http.mjs",
+          "anchor": "captured heads and ciphertext stay immutable",
+          "gate": "sync-linux-http-browser"
+        }
+      ],
+      "limitations": "Materialized inventory/watermark precedes real concurrent edit and2001 hidden events; file-pin/GC races are additional files/content gates, not a universal server freshness guarantee."
+    },
+    {
+      "id": "R11",
+      "scenario": "Crash between file commit and entry publication",
+      "required_outcome": "Quota counted once; recoverable unattached file visible; retry attaches once or explicit cleanup",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "apps/api/app/Files/Service.php",
+          "anchor": "function commit"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/p12-http.mjs",
+          "anchor": "COMMIT_UNKNOWN",
+          "gate": "files-linux-http-browser"
+        }
+      ],
+      "limitations": "Actual commit response loss, lock/reopen, unattached state and quota reconciliation. This particular fixture is not an OS process/power kill; native/installed restart is separate evidence."
+    },
+    {
+      "id": "R12",
+      "scenario": "More than three file versions referenced by retained note history",
+      "required_outcome": "Referenced bytes survive; UI explains pins; collection only after final strong reference expires",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "apps/api/app/Content/Retainer.php",
+          "anchor": "private function reasons"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/p13-http.mjs",
+          "anchor": "retention",
+          "gate": "content-linux-http-browser"
+        }
+      ],
+      "limitations": "Retained strong references and explicit pins survive the soft version target; no unbounded retention or SSD secure-erasure guarantee."
+    },
+    {
+      "id": "R13",
+      "scenario": "Maximum-size file plus framing; two simultaneous uploads; epoch changes after partial upload",
+      "required_outcome": "Reservation/cache arithmetic works; epoch change restarts with new keys/AAD; ordinary network resume reuses identical ciphertext",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "packages/protocol/files/workflow.mjs",
+          "anchor": "REKEY_RESTART_REQUIRED"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/p12-http.mjs",
+          "anchor": "1000001920",
+          "gate": "files-linux-http-browser"
+        }
+      ],
+      "limitations": "Actual decimal1GB/120 parts/framing and concurrent commit/GC. Physical100GB inventory remains NOT_RUN; arithmetic is not storage capacity evidence."
+    },
+    {
+      "id": "R14",
+      "scenario": "Removed writer submits newly signed backdated revisions; reader signs a history closure",
+      "required_outcome": "Retired-policy data lacks required witnessed/inventory proof and is quarantined; reader cannot certify writer history",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "packages/protocol/adapters/history.mjs",
+          "anchor": "export class HistoryAnchor"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/test/group.test.mjs",
+          "anchor": "a newly forged backdated signature remains unanchored after writer removal",
+          "gate": "file-contract"
+        },
+        {
+          "path": "packages/protocol/p10-http.mjs",
+          "anchor": "UNANCHORED_HISTORY",
+          "gate": "shared-linux-http-browser"
+        }
+      ],
+      "limitations": "History requires independent witnessed ancestry; fresh clients cannot derive universal freshness from the same relay."
+    },
+    {
+      "id": "R15",
+      "scenario": "Many empty objects, oversized nested JSON, repeated transitions/snapshots",
+      "required_outcome": "Count/depth/time/rate bounds apply independently of byte quota; normal data and maintenance retain bounded availability",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "apps/api/app/Http/ControlJson.php",
+          "anchor": "count($frames) >= 32"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/security/fuzz.mjs",
+          "anchor": "raw_control",
+          "gate": "adversarial-linux"
+        }
+      ],
+      "limitations": "Finite deterministic mutation and real malformed HTTP admission; byte/count/page/rate bounds do not prove availability against unlimited distributed attackers."
+    },
+    {
+      "id": "R16",
+      "scenario": "Local DB rolled back then same record edited; adversarial KDF parameters",
+      "required_outcome": "Fresh random local nonce, no replayed counter; excessive KDF rejected before allocation, correct cross-binding vectors",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "packages/protocol/adapters/objects.mjs",
+          "anchor": "sodium.randombytes_buf(24)"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/vault/test-engine.mjs",
+          "anchor": "fresh nonce after full rollback",
+          "gate": "adversarial-linux"
+        }
+      ],
+      "limitations": "Fresh local random nonces and preallocation KDF bounds; physical memory/time budgets remain open."
+    },
+    {
+      "id": "R17",
+      "scenario": "Valid initial age chunks but corrupt/truncated footer or duplicate tar paths",
+      "required_outcome": "No trusted live import before complete validation; only encrypted staging; no unsafe extraction or secret temp files",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "packages/protocol/content/archive.mjs",
+          "anchor": "export async function parseTar"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/content/test-portable.mjs",
+          "anchor": "authenticated outer encryption cannot certify missing footer",
+          "gate": "adversarial-linux"
+        }
+      ],
+      "limitations": "Full age EOF/footer/inventory/independent pins and encrypted staging are distinct from generic tar framing;10 real operational age negatives also remain mandatory."
+    },
+    {
+      "id": "R18",
+      "scenario": "Native callback IP/path/issuer/PKCE changes or code reused/expired",
+      "required_outcome": "Handoff rejected; tokens never in callback URL; no embedded secret or public listener",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "apps/api/app/Auth/Native.php",
+          "anchor": "public function token"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/auth-native/src/lib.rs",
+          "anchor": "callback_attack_matrix",
+          "gate": "auth-windows-native"
+        }
+      ],
+      "limitations": "Literal loopback/issuer/path/state/PKCE and one-use code; hosted Windows is not physical Hello proof."
+    },
+    {
+      "id": "R19",
+      "scenario": "Signed ciphertext transplanted to another thread/attachment inventory; mutated key-wrap bytes",
+      "required_outcome": "Context/signature/AAD checks reject; IDs cannot substitute for signed digests",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "packages/protocol/adapters/objects.mjs",
+          "anchor": "export function verifyObject"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/security/fuzz.mjs",
+          "anchor": "authenticated_envelope_rejections",
+          "gate": "adversarial-linux"
+        }
+      ],
+      "limitations": "512 authenticated envelope mutations; parsing alone never establishes independently pinned trust or role authority."
+    },
+    {
+      "id": "R20",
+      "scenario": "Two PWA windows, leader crash, old worker reply after lock, passkey/file sheet hides app",
+      "required_outcome": "Fenced single publication, no stale decryption, recoverable flow, no unlock loop or plaintext cache",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "packages/protocol/vault/engine.mjs",
+          "anchor": "export class VaultEngine"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/devices/test-workflow.mjs",
+          "anchor": "second window cannot mutate active leader state",
+          "gate": "adversarial-linux"
+        }
+      ],
+      "limitations": "PWA delayed reply/old Worker/lock and installed upgrade gates remain mandatory. Physical iOS sheets/background/force-close matrix remains open."
+    },
+    {
+      "id": "R21",
+      "scenario": "Invite target changes identity/declines; one grant missing/wrong",
+      "required_outcome": "No premature membership; structural completeness checked, bad unwrap enters explicit repair state",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "apps/api/app/Groups/Service.php",
+          "anchor": "class Service"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/test/group.test.mjs",
+          "anchor": "signed structurally complete wrong keys cause explicit repair after unwrap",
+          "gate": "file-contract"
+        }
+      ],
+      "limitations": "Exact-target acceptance and complete structural grants never imply successful unwrap; actual three-account HTTP/browser counterparts remain mandatory."
+    },
+    {
+      "id": "R22",
+      "scenario": "Backup predates member/device/passkey revocation",
+      "required_outcome": "Restored credentials disabled and groups quarantined until reconciled; no silent rollback of security policy",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "apps/api/app/Operations/Recovery.php",
+          "anchor": "class Recovery"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/p16-acceptance.mjs",
+          "anchor": "beforeQuarantine",
+          "gate": "operations-linux-drill"
+        }
+      ],
+      "limitations": "Actual clean SQL/blob restore, old/new generation, saved cursor and exact encrypted draft/outbox comparison. No automatic current-security reconciliation/unquarantine exists."
+    },
+    {
+      "id": "R23",
+      "scenario": "User quota full, reserve nearly full, or physical storage fails mid-revoke",
+      "required_outcome": "Bounded reserve used only for maintenance; no false durable success; actionable fail-closed recovery",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "apps/api/app/Files/BlobStore.php",
+          "anchor": "public function capacity"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/p16-acceptance.mjs",
+          "anchor": "storage_faults",
+          "gate": "operations-linux-drill"
+        }
+      ],
+      "limitations": "Actual8MiB tmpfs ENOSPC, unavailable object dir, /proc fsync failure, DB outage and worker restart. Production10GiB/10% reserve is unchanged; logical reserves cannot defeat failed storage."
+    },
+    {
+      "id": "R24",
+      "scenario": "Push endpoint points at loopback/link-local/internal host or redirects/rebinds DNS",
+      "required_outcome": "No unsafe outbound request; supported provider allowlist, address revalidation and redirect restrictions",
+      "coverage": "BOUNDED_SOFTWARE; runtime status comes only from exact-head cohort",
+      "authority": [
+        {
+          "path": "apps/api/routes/web.php",
+          "anchor": "Route::"
+        }
+      ],
+      "tests": [
+        {
+          "path": "packages/protocol/security/http.mjs",
+          "anchor": "disabled_push_outbound_requests",
+          "gate": "adversarial-linux"
+        }
+      ],
+      "limitations": "Push registration/delivery is unsupported:404 and zero listening-loopback canary requests. Enabled-provider DNS revalidation/redirect handling is NOT_IMPLEMENTED and must precede enabling push."
+    }
+  ]
+}
