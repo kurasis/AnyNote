@@ -48,6 +48,12 @@ def durable(path):
         os.fsync(f.fileno())
 
 
+def durable_directory(path):
+    descriptor=os.open(path,os.O_RDONLY)
+    try:os.fsync(descriptor)
+    finally:os.close(descriptor)
+
+
 def publish(path, target):
     durable(path)
     # Link is an atomic no-replace publication on the same backup filesystem.
@@ -122,7 +128,8 @@ def security_checkpoint(env, directory, signing_key):
     predecessor = digest(previous[-1]) if previous else None
     document = json.loads(env.php('operations:security'))
     document['previous_checkpoint_sha256'] = predecessor
-    stamp = f'{time.time_ns():020d}.checkpoint.age'
+    sequence=max(time.time_ns(),int(previous[-1].name.split('.')[0])+1 if previous else 0)
+    stamp = f'{sequence:020d}.checkpoint.age'
     target = directory/stamp
     recipient = env.values['ANYNOTE_BACKUP_RECIPIENT']
     with tempfile.TemporaryDirectory(prefix='.checkpoint-', dir=directory) as tmp:
@@ -145,8 +152,8 @@ def backup(env, destination, signing_key, checkpoint_dir):
     with lock(env):
         env.assert_runtime_image()
         running = env.compose('ps', '--status', 'running', '--services').decode().splitlines()
-        env.quiet()
         try:
+            env.quiet()
             # No API/job writer or external SQL listener; DB and immutable blob
             # copy share this complete pause. No overlapping maintenance CLI.
             inventory = json.loads(env.php('operations:inventory'))
@@ -271,7 +278,7 @@ def restore(env, archive, public_key, identity, expected_checkpoint):
         # The host fence precedes import and persists across EVERY failure.
         fence=env.state/'storage/app/private/RESTORE_QUARANTINE'
         fence.write_text('Isolated recovery only; ordinary authentication and content access denied.\n')
-        durable(fence)
+        durable(fence);durable_directory(fence.parent)
         env.compose('up','-d','--wait','db')
         with (root/'database.sql').open('rb') as source:
             command=[*env.command,'exec','-T','db','sh','-c','export MYSQL_PWD="$(cat /run/secrets/database_root)"; exec mariadb -uroot anynote']
@@ -280,6 +287,7 @@ def restore(env, archive, public_key, identity, expected_checkpoint):
         destination=env.state/'storage/app/private/p12-blobs';destination.mkdir(mode=0o700)
         for p in (root/'blobs').iterdir() if (root/'blobs').exists() else []:
             shutil.copyfile(p,destination/p.name);durable(destination/p.name)
+        durable_directory(destination)
         observed=json.loads(env.php('operations:inventory'))
         if observed!=manifest['inventory']:
             raise ValueError('Restored DB/blob/reference inventory mismatch; target stays fenced')
@@ -310,6 +318,7 @@ def verify_static(directory,manifest_path,signature,verification_key):
     manifest=json.loads(manifest_path.read_text())
     if manifest.get('purpose')!='anynote-static-release' or not re.fullmatch('[0-9a-f]{40}',manifest['source_commit']):raise ValueError('Unsupported signed static manifest')
     expected={r['path']:r['sha256'] for r in manifest['inputs']}
+    if len(expected)!=len(manifest['inputs']):raise ValueError('Duplicate static release path')
     actual={}
     for path in directory.rglob('*'):
         if path.is_symlink():raise ValueError('Static release symlink refused')

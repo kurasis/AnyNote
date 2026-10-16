@@ -18,6 +18,7 @@ import {openObject} from '../packages/protocol/adapters/core.mjs';
 import {FileReader} from '../packages/protocol/adapters/files.mjs';
 import {envelopeDigest} from '../packages/protocol/adapters/codecs/codec.mjs';
 const ensure=(v,m)=>{if(!v)throw Error(m);};
+const writeAll=(fd,input)=>{const bytes=typeof input==='string'?Buffer.from(input):input;for(let offset=0;offset<bytes.length;){const count=writeSync(fd,bytes,offset,bytes.length-offset);ensure(count>0,'OUTPUT_WRITE_FAILED');offset+=count;}};
 const json=(p,max)=>{ensure(lstatSync(p).isFile()&&!lstatSync(p).isSymbolicLink()&&lstatSync(p).size<=max,'RESOURCE_LIMIT');return strictJson(readFileSync(p),max);};
 export async function recover({catalogue,blobs,kit,checkpoint,output,confirm=false}){
  const source=json(catalogue,33554432),anchor=json(checkpoint,1048576),document=json(kit,262144);
@@ -31,7 +32,7 @@ export async function recover({catalogue,blobs,kit,checkpoint,output,confirm=fal
  ensure(grants.length===1,'KEYS_PENDING');
  const grant=grants[0],ctx=grant.body.context,issuer=historicalSnapshot(source.snapshot,anchor.pins,ctx.issuer.roster_head),cert=activeCertificateForEvaluation(issuer.roster,ctx.issuer.device_id,'distribute-group-key');
  ensure(ctx.service_id===anchor.pins.service_id&&ctx.group_id===anchor.group_id&&ctx.epoch_digest===info.epoch_digest&&same(ctx.recipient,recipientForRecovery(issuer.identity,issuer.details.generation,issuer.details.head)),'GRANT_CONTEXT_MISMATCH');
- const root=await recoverRoot(wire(document.kit??document),wire(anchor.pins));let key,temporary;
+ const root=await recoverRoot(wire(document.kit??document),wire(anchor.pins));let key,temporary,reservation;
  try{
   key=openGroupKeyForEvaluation(wire(grant),wire(ctx),cert,root.recovery.publicKey,root.recovery.privateKey);
   ensure(groupCodec.groupKeyCommitment({service_id:anchor.pins.service_id,group_id:anchor.group_id},key)===info.key_commitment,'INTEGRITY_FAILURE');
@@ -41,16 +42,16 @@ export async function recover({catalogue,blobs,kit,checkpoint,output,confirm=fal
   const result={status:'VERIFIED_OFFLINE',network_used:false,server_authorization_restored:false,notes:[],files:[]};
   const paths=new Set();
   const visit=async(write=false)=>{
-   for(const record of source.records){const w=witnessed(record),payload=openObject(wire(record),key,w.publicKey,wire(w.c));if(write){const fd=openSync(join(temporary,'note-'+w.id+'.json'),'wx',0o600);try{writeSync(fd,JSON.stringify(payload));fsyncSync(fd);}finally{closeSync(fd);}}else{ensure(!paths.has(w.id),'DUPLICATE_RECORD');paths.add(w.id);result.notes.push({revision_id:w.id});}}
+   for(const record of source.records){const w=witnessed(record),payload=openObject(wire(record),key,w.publicKey,wire(w.c));if(write){const fd=openSync(join(temporary,'note-'+w.id+'.json'),'wx',0o600);try{writeAll(fd,JSON.stringify(payload));fsyncSync(fd);}finally{closeSync(fd);}}else{ensure(!paths.has(w.id),'DUPLICATE_RECORD');paths.add(w.id);result.notes.push({revision_id:w.id});}}
    for(const file of source.files){const w=witnessed(file.record,true),reader=new FileReader(wire(file.record),key,w.publicKey,wire(w.c)),hash=createHash('sha256');let bytes=0,fd;
-    try{if(write)fd=openSync(join(temporary,'file-'+w.id+'.bin'),'wx',0o600);for(const part of file.chunks){ensure(/^[A-Za-z0-9_-]{22}$/.test(part.blob_id),'UNSAFE_BLOB_PATH');const path=resolve(blobs,part.blob_id),stat=lstatSync(path);ensure(stat.isFile()&&!stat.isSymbolicLink()&&stat.size<=8388624,'RESOURCE_LIMIT');const cipher=readFileSync(path);ensure(String(cipher.length)===String(part.ciphertext_bytes)&&createHash('sha256').update(cipher).digest('base64url')===part.digest,'CHUNK_DIGEST_MISMATCH');const plain=reader.decryptNext(cipher);try{bytes+=plain.length;hash.update(plain);if(write)writeSync(fd,plain);}finally{plain.fill(0);}}reader.finish();if(write)fsyncSync(fd);else{ensure(!paths.has(w.id),'DUPLICATE_RECORD');paths.add(w.id);result.files.push({file_version_id:w.id,plaintext_bytes:bytes,sha256:hash.digest('hex')});}}
+    try{if(write)fd=openSync(join(temporary,'file-'+w.id+'.bin'),'wx',0o600);for(const part of file.chunks){ensure(/^[A-Za-z0-9_-]{22}$/.test(part.blob_id),'UNSAFE_BLOB_PATH');const path=resolve(blobs,part.blob_id),stat=lstatSync(path);ensure(stat.isFile()&&!stat.isSymbolicLink()&&stat.size<=8388624,'RESOURCE_LIMIT');const cipher=readFileSync(path);ensure(String(cipher.length)===String(part.ciphertext_bytes)&&createHash('sha256').update(cipher).digest('base64url')===part.digest,'CHUNK_DIGEST_MISMATCH');const plain=reader.decryptNext(cipher);try{bytes+=plain.length;hash.update(plain);if(write)writeAll(fd,plain);}finally{plain.fill(0);}}reader.finish();if(write)fsyncSync(fd);else{ensure(!paths.has(w.id),'DUPLICATE_RECORD');paths.add(w.id);result.files.push({file_version_id:w.id,plaintext_bytes:bytes,sha256:hash.digest('hex')});}}
     finally{reader.close();if(fd!==undefined)closeSync(fd);}
    }
   };
   await visit();ensure(paths.size===selected.size,'INCOMPLETE_RECOVERY_SOURCE');
-  if(output){ensure(confirm&&!existsSync(output),'EXPLICIT_NEW_PLAINTEXT_DESTINATION_REQUIRED');temporary=mkdtempSync(join(dirname(resolve(output)),'.anynote-p16-recovery-'));await visit(true);const fd=openSync(temporary,'r');try{fsyncSync(fd);}finally{closeSync(fd);}renameSync(temporary,output);temporary=undefined;result.plaintext_output=true;}
+  if(output){ensure(confirm&&!existsSync(output),'EXPLICIT_NEW_PLAINTEXT_DESTINATION_REQUIRED');reservation=openSync(output+'.reservation','wx',0o600);ensure(!existsSync(output),'DESTINATION_EXISTS');temporary=mkdtempSync(join(dirname(resolve(output)),'.anynote-p16-recovery-'));await visit(true);const fd=openSync(temporary,'r');try{fsyncSync(fd);}finally{closeSync(fd);}ensure(!existsSync(output),'DESTINATION_EXISTS');renameSync(temporary,output);temporary=undefined;const parent=openSync(dirname(resolve(output)),'r');try{fsyncSync(parent);}finally{closeSync(parent);}result.plaintext_output=true;}
   return result;
- }finally{if(temporary)rmSync(temporary,{recursive:true,force:true});if(key)sodium.memzero(key);sodium.memzero(root.signing.privateKey);sodium.memzero(root.recovery.privateKey);}
+ }finally{if(reservation!==undefined){closeSync(reservation);rmSync(output+'.reservation');}if(temporary)rmSync(temporary,{recursive:true,force:true});if(key)sodium.memzero(key);sodium.memzero(root.signing.privateKey);sodium.memzero(root.recovery.privateKey);}
 }
 if(process.argv[1]===new URL(import.meta.url).pathname){
  const {values:v}=parseArgs({options:{catalogue:{type:'string'},blobs:{type:'string'},kit:{type:'string'},checkpoint:{type:'string'},output:{type:'string'},'plaintext-confirm':{type:'boolean'}}});

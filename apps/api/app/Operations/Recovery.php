@@ -93,7 +93,11 @@ final class Recovery
         $genesis = DB::table('private_group_geneses')->where('group_id', $group)->first();
         D::require($genesis && DB::table('object_revisions')->where('group_id', $group)->count() <= 1000, 'RESOURCE_LIMIT');
         $records = [];
+        $metadataBytes = 0;
+        D::require(DB::table('account_roster_events')->where('account_id', $i->account_id)->count() <= 10000 && (int) DB::table('account_roster_events')->where('account_id', $i->account_id)->sum(DB::raw('OCTET_LENGTH(signed_record)')) <= 8388608, 'RESOURCE_LIMIT');
         foreach (DB::table('object_revisions')->where('group_id', $group)->where('payload_status', 'retained')->orderBy('revision_id')->cursor() as $r) {
+            $metadataBytes += (int) ceil(strlen($r->ciphertext) * 4 / 3) + strlen($r->signed_envelope) + 4096;
+            D::require($metadataBytes <= 16777216, 'RESOURCE_LIMIT');
             $records[] = ['envelope' => json_decode($r->signed_envelope), 'ciphertext' => P::b64($r->ciphertext), 'wrap' => json_decode(DB::table('object_key_wraps')->where('revision_id', $r->revision_id)->value('wrap_record'))];
         }
         $files = [];

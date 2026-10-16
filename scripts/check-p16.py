@@ -3,6 +3,7 @@
 import subprocess
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
+subprocess.run(['python3','scripts/p03-contracts.py'],cwd=ROOT,check=True)
 subprocess.run(['python3','scripts/check_baseline.py'],cwd=ROOT,check=True)
 subprocess.run(['python3','scripts/test-operations.py'],cwd=ROOT,check=True)
 for path in ['scripts/p16-recover.mjs','packages/protocol/p16-acceptance.mjs','packages/protocol/p16-capacity.mjs','packages/protocol/p16-fixture.mjs']:
