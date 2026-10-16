@@ -48,12 +48,14 @@ def stage(report,sources):
                 if len(data)>1048576:raise RuntimeError('Upstream license exceeds conservative notice size: '+purl)
                 target.mkdir(exist_ok=True);(target/item.name).write_bytes(data)
                 index.append({'component':purl,'file':str((target/item.name).relative_to(RES)).replace('\\','/'),'sha256':sha(data)})
-            elif item.is_dir() and item.name.lower()=='licenses':
+            elif item.is_dir() and item.name.lower() in ['licenses','cmaps','standard_fonts','wasm','iccs']:
                 for nested in sorted(item.rglob('*')):
                     if not nested.is_file():continue
+                    if item.name.lower()!='licenses' and not LICENSE.match(nested.name):continue
                     data=nested.read_bytes()
                     if len(data)>1048576:raise RuntimeError('Upstream license file too large')
-                    out=target/'LICENSES'/nested.relative_to(item);out.parent.mkdir(parents=True,exist_ok=True);out.write_bytes(data);index.append({'component':purl,'file':str(out.relative_to(RES)).replace('\\','/'),'sha256':sha(data)})
+                    relative=nested.relative_to(item) if item.name.lower()=='licenses' else Path(item.name)/nested.relative_to(item)
+                    out=target/'LICENSES'/relative;out.parent.mkdir(parents=True,exist_ok=True);out.write_bytes(data);index.append({'component':purl,'file':str(out.relative_to(RES)).replace('\\','/'),'sha256':sha(data)})
     shutil.copyfile(ROOT/'packages/vault-native/LICENSE',RES/'COPYING-GPL-3.0')
     (RES/'dependency-inventory.json').write_text(json.dumps(report,indent=2)+'\n')
     (RES/'license-index.json').write_text(json.dumps({'purpose':'Installer upstream notice files staged from verified package sources','files':index},indent=2)+'\n')

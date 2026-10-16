@@ -2260,7 +2260,7 @@ correction (2/2). Full final ordinary gates remain mandatory.
 
 ## P18 development and final acceptance evidence
 
-The P18 development candidate archive suite actually passed18 tests (including
+The P18 development candidate archive suite actually passed19 tests (including
 subcase negatives) covering byte tampering, malformed paths, links, duplicates,
 missing members, size limits, source binding, immutable output and forged release
 clearance. Baseline179/P03 contracts remain unchanged. Syntax and documentation
@@ -2299,3 +2299,12 @@ reading any body, hashes bounded1MiB blocks and validates zero padding plus gzip
 EOF/CRC. A new real compressed-header negative covers PAX/global/long-name/sparse
 multi-gigabyte declarations with no body; all18 tests pass. The initial PR source
 is preserved separately as superseded, never claimed as final acceptance.
+
+P18 notice follow-up: the PDF package's bundled fonts/CMaps and optional ICC/WASM
+subassets ship additional upstream license texts below their own directories.
+The old root-only collector omitted those notices. Windows installer staging and
+PWA review packaging now include those exact installed texts under collision-safe
+asset-directory paths. Frozen712-component metadata/locks are unchanged. Local
+staging verified975 notice files, including Foxit/Liberation/CMap/ICC/OpenJPEG
+terms; the new actual-dependency packaging case brings the passing suite to19.
+Both superseded source cohorts remain separate from final acceptance.

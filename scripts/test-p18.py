@@ -162,6 +162,16 @@ class Candidate(unittest.TestCase):
                 value = copy.deepcopy(downloads); mutate(value)
                 with self.assertRaises(ValueError): a.check_cohort(cohort, value)
 
+    def test_embedded_pdf_assets_keep_their_actual_upstream_notices(self):
+        files = {}; c.add_notices(files, 'pwa', self.root)
+        pdf = c.ROOT / 'packages/content-browser/node_modules/pdfjs-dist'
+        for name in ['standard_fonts/LICENSE_FOXIT', 'standard_fonts/LICENSE_LIBERATION',
+                     'cmaps/LICENSE', 'iccs/LICENSE', 'wasm/LICENSE_OPENJPEG']:
+            source = pdf / name
+            selected = [path for path in files.values() if path == source]
+            self.assertEqual(selected, [source], name)
+            self.assertGreater(source.stat().st_size, 0)
+
 
 if __name__ == '__main__':
     result = unittest.TextTestRunner(verbosity=1).run(unittest.defaultTestLoader.loadTestsFromTestCase(Candidate))

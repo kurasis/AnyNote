@@ -18,7 +18,7 @@ target; it uses rustls0.23.46 and excludes the tracked GTK closure.
 
 | Package | Exact executable/static input | Contents and evidence |
 | --- | --- | --- |
-| Windows x64 | NSIS executable hashed by the actual installed Windows/WebView2 job | Single installer, GPL text, source identifier, conservative712-component inventory, SBOM and upstream notices; test updater signatures remain synthetic |
+| Windows x64 | NSIS executable hashed by the actual installed Windows/WebView2 job | Single installer, GPL text, source identifier, conservative712-component inventory, SBOM and upstream notices including embedded PDF font/CMap terms; test updater signatures remain synthetic |
 | PWA | The actual restored original static directory used by sandboxed Chromium's full1GB/lifecycle/update journey | All20 static files, frozen dependency metadata, installed notices, SBOM; no session/auth response, private key or profile |
 | API | The immutable Docker image ID recorded inside the actual signed backup and tested during clean-host restore | Exact saved image, hardened deployment templates, operator script, Composer production inventory/notices/SBOM; no environment values, DB dump, blob store, TLS/OAuth or backup identity |
 | Recovery and protocol | Corresponding source in every package | Frozen OpenAPI/schemas/fixtures, P13 portable export/import/offline reader, P16 private-genesis root-kit reader, frozen installation locks and instructions |

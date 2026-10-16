@@ -293,6 +293,10 @@ def add_notices(files, role, temp):
         for p in sorted(base.iterdir()):
             if p.is_file() and re.match(r'^(license|licence|copying|copyright|notice)([._-].*)?$', p.name, re.I):
                 files['dependencies/notices/' + str(index) + '/' + p.name] = regular(p)
+            elif p.is_dir() and p.name.lower() in ('licenses', 'cmaps', 'standard_fonts', 'wasm', 'iccs'):
+                for nested in sorted(p.rglob('*')):
+                    if nested.is_file() and (p.name.lower() == 'licenses' or re.match(r'^(license|licence|copying|copyright|notice)([._-].*)?$', nested.name, re.I)):
+                        files['dependencies/notices/' + str(index) + '/' + p.name + '/' + nested.relative_to(p).as_posix()] = regular(nested)
     inventory = temp / 'dependencies.json'
     inventory.write_bytes(canonical({'scope': 'Frozen metadata and installed upstream notices; not an exact linked-code census or independent legal/security review', 'components': components}))
     files['dependencies/inventory.json'] = inventory

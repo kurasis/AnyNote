@@ -58,7 +58,7 @@ def acceptance(cohort_path, folder, output):
 
     negative, _ = raw('p17-security-report', 'p18-negative-report.json')
     c.require(negative['status'] == 'PASS' and negative['source_commit'] == head and negative['source_tree_dirty'] is False
-              and negative['tests_run'] >= 18 and negative['failures'] == negative['errors'] == negative['skipped'] == 0,
+              and negative['tests_run'] >= 19 and negative['failures'] == negative['errors'] == negative['skipped'] == 0,
               'Candidate integrity negative suite did not pass')
     operations, _ = raw('p16-operations-report', 'operations-report.json')
     journey = operations['p18_journey']
