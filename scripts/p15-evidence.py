@@ -55,6 +55,8 @@ report = {
     'reports': {'browser': {'path': str(path.relative_to(ROOT)),
                             'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}},
     'inputs': inputs, 'physical_acceptance': False, 'independent_review': 'NOT_RUN',
+    'static_inputs': [{'path': p.name, 'sha256': hashlib.sha256(p.read_bytes()).hexdigest()}
+                      for p in sorted((ROOT / '.local/p06/static/auth').iterdir()) if p.is_file()],
 }
 output = ROOT / 'artifacts/p15'
 output.mkdir(parents=True, exist_ok=True)

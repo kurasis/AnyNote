@@ -206,7 +206,7 @@ def backup(env, destination, signing_key, checkpoint_dir):
                 signature = work/'backup.sig';signature.write_bytes(sign(archive, signing_key))
                 publish(signature, destination.with_suffix(destination.suffix+'.sig'))
                 publish(archive, destination)
-                return {'status':'PASS','completed_at_unix_ns':time.time_ns(),'archive_sha256':digest(destination),'archive_bytes':destination.stat().st_size,'snapshot_unix_ns':manifest['created_at_unix_ns'],'elapsed_ms':round((time.monotonic()-started)*1000),'inventory':inventory,'api_release':release_provenance,'security_checkpoint':checkpoint,'consistency':'all API/queue/scheduler processes stopped; no external DB listener; exclusive operator lock'}
+                return {'status':'PASS','completed_at_unix_ns':time.time_ns(),'archive_sha256':digest(destination),'archive_bytes':destination.stat().st_size,'snapshot_unix_ns':manifest['created_at_unix_ns'],'elapsed_ms':round((time.monotonic()-started)*1000),'inventory':inventory,'api_release':release_provenance,'api_image_id':manifest['api_image_id'],'security_checkpoint':checkpoint,'consistency':'all API/queue/scheduler processes stopped; no external DB listener; exclusive operator lock'}
         finally:
             restart = [s for s in WRITERS if s in running]
             if restart:
