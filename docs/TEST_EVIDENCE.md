@@ -2015,3 +2015,12 @@ ANYNOTE_NATIVE_NODE override pointing to pinned Node24.21.0. Its initial local
 attempt lacked the default Windows node.exe path; the override fixes that test
 configuration without source or timeout changes. These Linux tests do not
 establish the separate installed Windows/WebView2 job or physical Hello/TPM.
+
+The 5a83489 P07 Linux browser/custody job116747913041 (run38830492330)
+passes its28 browser checks and executes the native suite, then its evidence
+script rejects the old exact16 custody count after P15 adds two tests. P07–P10
+receipt gates now require exact18 plus both new regression names; all original
+subprocess success, platform/WTS, source, HTTP/browser and interop checks remain.
+Preserved-custody report counts are updated accordingly. The actual complete
+local native stdout contains18 and both names. This is a receipt maintenance
+fix, not removal of a native failure or a passing new hosted cohort.

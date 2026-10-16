@@ -9,11 +9,13 @@ assert '3 passed; 0 failed; 0 ignored' in test.stdout
 assert 'native_shared_sql_fault_keeps_previous_security_journal ... ok' in test.stdout
 assert 'native_shared_attempt_restart_and_ciphertext_privacy ... ok' in test.stdout
 assert 'native_shared_closed_commands_and_main_window_fences ... ok' in test.stdout
-assert '16 passed; 0 failed; 0 ignored' in test.stdout
+assert '18 passed; 0 failed; 0 ignored' in test.stdout,'The 18 native custody tests did not execute'
+for name in ['host_writer_readiness_does_not_invalidate_content_cas', 'host_writer_readiness_preserves_owner_expiry_and_generation_fences']:
+ assert name+' ... ok' in test.stdout
 if role=='windows':assert 'actual_windows_wts_registration_and_message_fences_without_hello_objects ... ok' in test.stdout
 paths=subprocess.check_output(['git','ls-files','-z'],cwd=ROOT).decode().split('\0');prefixes=('packages/vault-native/','packages/crypto-core/','packages/auth-native/','packages/protocol/','packages/contracts/','packages/api-client/','apps/api/','apps/auth-web/','apps/vault-web/','apps/devices-web/','apps/notes-web/','experiments/p01/p10-' ,'experiments/p01/p06-build','infra/dev/p06-','scripts/p10','scripts/check-p10','scripts/p06-stack.py','scripts/runtime-env.sh','.github/workflows/')
 inputs=[{'path':p,'sha256':hashlib.sha256((ROOT/p).read_bytes()).hexdigest()} for p in sorted(paths) if p and p.startswith(prefixes)]
-report={'purpose':'P10 exact-source shared-group software receipt','status':'PASS','role':role,'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'source_tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=ROOT,text=True).strip(),'source_tree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),'timestamp':datetime.now(timezone.utc).isoformat(),'python_version':sys.version.split()[0],'native_shared_tests':3, 'preserved_native_device_tests':9,'preserved_native_custody_tests':15,'hello_tpm_objects_created':False,'physical_acceptance':False,'independent_review':'NOT_RUN','inputs':inputs}
+report={'purpose':'P10 exact-source shared-group software receipt','status':'PASS','role':role,'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'source_tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=ROOT,text=True).strip(),'source_tree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),'timestamp':datetime.now(timezone.utc).isoformat(),'python_version':sys.version.split()[0],'native_shared_tests':3, 'preserved_native_device_tests':9,'preserved_native_custody_tests':18,'hello_tpm_objects_created':False,'physical_acceptance':False,'independent_review':'NOT_RUN','inputs':inputs}
 assert not report['source_tree_dirty'],'Acceptance requires clean source'
 if role=='linux':
  for name in ['http','browser','native-interop']:

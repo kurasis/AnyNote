@@ -8,11 +8,13 @@ test=subprocess.run(['cargo','test','--manifest-path','packages/vault-native/Car
 assert '9 passed; 0 failed; 0 ignored' in test.stdout
 assert 'native_fresh_recovery_rejects_substituted_root_and_recovers_keys_only_after_activation ... ok' in test.stdout
 assert 'native_two_connections_and_aborted_sql_write_preserve_acknowledged_control ... ok' in test.stdout
-assert '16 passed; 0 failed; 0 ignored' in test.stdout
+assert '18 passed; 0 failed; 0 ignored' in test.stdout,'The 18 native custody tests did not execute'
+for name in ['host_writer_readiness_does_not_invalidate_content_cas', 'host_writer_readiness_preserves_owner_expiry_and_generation_fences']:
+ assert name+' ... ok' in test.stdout
 if role=='windows':assert 'actual_windows_wts_registration_and_message_fences_without_hello_objects ... ok' in test.stdout
 paths=subprocess.check_output(['git','ls-files','-z'],cwd=ROOT).decode().split('\0');prefixes=('packages/vault-native/','packages/crypto-core/','packages/auth-native/','packages/protocol/','packages/contracts/','packages/api-client/','apps/api/','apps/auth-web/','apps/vault-web/','apps/devices-web/','experiments/p01/p08-','experiments/p01/p06-build','infra/dev/p06-','scripts/p08','scripts/check-p08','scripts/p06-stack.py','scripts/runtime-env.sh','.github/workflows/')
 inputs=[{'path':p,'sha256':hashlib.sha256((ROOT/p).read_bytes()).hexdigest()} for p in sorted(paths) if p and p.startswith(prefixes)]
-report={'purpose':'P08 exact-source trusted-device and recovery software receipt','status':'PASS','role':role,'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'source_tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=ROOT,text=True).strip(),'source_tree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),'timestamp':datetime.now(timezone.utc).isoformat(),'python_version':sys.version.split()[0],'native_device_tests':9,'preserved_native_custody_tests':15,'hello_tpm_objects_created':False,'physical_acceptance':False,'independent_review':'NOT_RUN','inputs':inputs}
+report={'purpose':'P08 exact-source trusted-device and recovery software receipt','status':'PASS','role':role,'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'source_tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=ROOT,text=True).strip(),'source_tree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),'timestamp':datetime.now(timezone.utc).isoformat(),'python_version':sys.version.split()[0],'native_device_tests':9,'preserved_native_custody_tests':18,'hello_tpm_objects_created':False,'physical_acceptance':False,'independent_review':'NOT_RUN','inputs':inputs}
 assert not report['source_tree_dirty'],'Acceptance requires clean source'
 if role=='linux':
  for name in ['http','browser']:
