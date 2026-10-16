@@ -1,0 +1,57 @@
+{
+  "status": "PASS",
+  "purpose": "P16 O06 actual capacity fixture, distinct from 100 GB physical acceptance",
+  "source_commit": "c50a16ed4c99a29cc6a2f17c3ea7df9a53c810e1",
+  "source_tree_dirty": false,
+  "reference_host": {
+    "platform": "linux",
+    "arch": "x64",
+    "logical_cpus": 4,
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "total_memory_bytes": 16766414848
+  },
+  "request_spacing_ms": 550,
+  "memory_scope": "sampled Node main process; PHP allocated peak separately; container snapshots are not process peaks",
+  "accounts": 10,
+  "active_devices": 50,
+  "retained_signed_revisions_inserted": 100000,
+  "every_client_record_encrypted_signed_and_opened": true,
+  "every_server_bundle_signature_verified": true,
+  "bulk_fixture_installed": {
+    "status": "PASS",
+    "retained_signed_revisions_inserted": 100000,
+    "actual_logical_ciphertext_bytes": 213300000,
+    "elapsed_ms": 307157,
+    "peak_php_allocated_bytes": 37748736,
+    "http_publications": false,
+    "every_bundle_public_signature_verified": true,
+    "quota_journal_consistent": true
+  },
+  "http_publication_requests_for_bulk": 0,
+  "actual_authenticated_http_history_pages": 1001,
+  "actual_history_rows_read": 100001,
+  "http_page_latency_ms": {
+    "p50": 47.187981999944896,
+    "p95": 53.84224999998696,
+    "max": 126.54264199995669
+  },
+  "generation_and_load_ms": 307751,
+  "history_read_elapsed_ms": 599342,
+  "maximum_observed_node_rss_bytes": 394145792,
+  "metrics": {
+    "status": "PASS",
+    "database_bytes": 889585664,
+    "free_disk_bytes": 87584190464,
+    "total_disk_bytes": 154894188544,
+    "database_counts": {
+      "users": 10,
+      "devices": 50,
+      "object_revisions": 100002
+    }
+  },
+  "logical_100gb_inventory": "NOT_RUN",
+  "physical_100gb_fixture": "NOT_RUN",
+  "reason": "The runner has less than 100 GB free before backup/working reserves; no sparse files, fabricated quota rows or production-disk fill substitute for real ciphertext.",
+  "elapsed_ms": 961929,
+  "physical_acceptance": false
+}

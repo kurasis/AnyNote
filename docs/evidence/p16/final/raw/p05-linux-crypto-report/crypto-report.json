@@ -1,0 +1,457 @@
+{
+  "purpose": "P05 actual crypto interoperability and bounded resources",
+  "status": "PASS",
+  "source_commit": "81298cc8cc110a25347e40a56011f84c65f8c66b",
+  "source_tree_dirty": false,
+  "physical_acceptance": false,
+  "inputs": [
+    {
+      "path": "experiments/p01/p05-crypto.mjs",
+      "sha256": "dc47bdb43e9974f6c6673c34e9277896e327df6d8e5699c2e522e6749bd5b9b6"
+    },
+    {
+      "path": "experiments/p01/package-lock.json",
+      "sha256": "1650aa50dffb948fc50d46c17b141cc708b8ba7abada0b82c933c8628662ba5e"
+    },
+    {
+      "path": "packages/contracts/p02-errors.json",
+      "sha256": "d902e85fba79437c5916825d2e94e2e10a2d740fbf2ac31db01d709457873d74"
+    },
+    {
+      "path": "packages/contracts/p02-file-c1.schema.json",
+      "sha256": "e36d622612accafc633f86279c809761575c731541ca5173bd75871dd12234bb"
+    },
+    {
+      "path": "packages/contracts/p02-group-c1.schema.json",
+      "sha256": "b6c68ce2d7e2bac167f053000b997ead9403fd9be97b19e804ab8330019a4c54"
+    },
+    {
+      "path": "packages/contracts/p02-group-c2.schema.json",
+      "sha256": "b55b186bbb0b94fb9f836fa814daf3641affe62d444f7d9175e1ef8880a52faa"
+    },
+    {
+      "path": "packages/contracts/p02-identity-c1.schema.json",
+      "sha256": "ef497fb54b899d103b3cd06904e1dbd23d191a586f14b9d358264213af9cfc4e"
+    },
+    {
+      "path": "packages/contracts/p02-state-c1.schema.json",
+      "sha256": "09f428ee820c9c7ab1de40edfe8584d50335d2e103039b98a99e14de4ec671d6"
+    },
+    {
+      "path": "packages/contracts/p02-v1.schema.json",
+      "sha256": "3a9fef9ee152b35b3b1d560d1d724f89fb7dc3864213375d1816a96237649f44"
+    },
+    {
+      "path": "packages/contracts/p03-api.schema.json",
+      "sha256": "d5397875d6fba4fcd63d7fa33939ce34e59dd17a17923048f7fe45db72f897ed"
+    },
+    {
+      "path": "packages/contracts/p04-api.schema.json",
+      "sha256": "30d0c2e77fc889188fe1e1b08051dc52e9b85a00e58d283e90927121fbe001fe"
+    },
+    {
+      "path": "packages/contracts/p06-auth.schema.json",
+      "sha256": "82c275ba04cb28ebdd905c9f1666616335987cb164e2a7137af216e2256a590e"
+    },
+    {
+      "path": "packages/contracts/p08-devices.schema.json",
+      "sha256": "dfcb5b01c5961a6b684b01d910371ca64bfb6beb8ead71b16608c094776c0f2e"
+    },
+    {
+      "path": "packages/contracts/p09-notes.schema.json",
+      "sha256": "96f05ee1db05886d01514fa953df1302c766bfbc3b85e34f3f804144c44a28a8"
+    },
+    {
+      "path": "packages/contracts/p10-shared.schema.json",
+      "sha256": "32bd2c874e29f84c411b251bb2870544b9f2795889d3cb74a1e8f7104681c9ca"
+    },
+    {
+      "path": "packages/contracts/p11-sync.schema.json",
+      "sha256": "3049de2a284a6732e940e47564ec6c6a3f7966315b76d22c0109ce1b8d24fcba"
+    },
+    {
+      "path": "packages/contracts/p12-files.schema.json",
+      "sha256": "3a3c801e3563ef5f3aa74f5296f8d1a93d84249d812a0917aab9489565403883"
+    },
+    {
+      "path": "packages/contracts/p13-content.schema.json",
+      "sha256": "bc7cd415a36eeb0d4d380eb1430dcb8e194f0af92c851166043056099da873c1"
+    },
+    {
+      "path": "packages/crypto-core/Cargo.lock",
+      "sha256": "8163882cc5f603820dd938bd6ecb18bd0319bff3a1b71f1c0eb35bef62c48961"
+    },
+    {
+      "path": "packages/crypto-core/Cargo.toml",
+      "sha256": "71df4cfef902f1131fa7ce03820b20534708294b809acc35f89d666a81e381f7"
+    },
+    {
+      "path": "packages/crypto-core/src/codec.rs",
+      "sha256": "654a4f06b65ddc49cfd2dd3b4b794a1c9016b79e6e506ce7eb19e7a173094342"
+    },
+    {
+      "path": "packages/crypto-core/src/crypto.rs",
+      "sha256": "3d694e774f2809d748a20dddf6b78da3c7c61aba5df4f9ada17b66f1df32cfd9"
+    },
+    {
+      "path": "packages/crypto-core/src/files.rs",
+      "sha256": "a9e37a04fb5a1708a03e6f3b965663d4931028167a15702f39c6a91b7696c937"
+    },
+    {
+      "path": "packages/crypto-core/src/history.rs",
+      "sha256": "21b9b9104170a6d10804fdb00e6c8572f0a020e4f9c5288590600982ca805f2b"
+    },
+    {
+      "path": "packages/crypto-core/src/lib.rs",
+      "sha256": "d0f85ee01318028f982d62e3e07f87220778cf3b5fd4446160759958c0201e27"
+    },
+    {
+      "path": "packages/crypto-core/src/local.rs",
+      "sha256": "c3e8f56928e0173e3f3f2c743d6ac8cec6dbd5fe6f6478ae6c5a082a331ff390"
+    },
+    {
+      "path": "packages/crypto-core/src/main.rs",
+      "sha256": "d084db8c784ddcda04f54bf388ea4582d3671580335029ae4480fe16f249a4c7"
+    },
+    {
+      "path": "packages/crypto-core/src/objects.rs",
+      "sha256": "701b8ccf02b956fced3e8946106c28e2dbb7f793c64182f7baca739dbd080b14"
+    },
+    {
+      "path": "packages/crypto-core/src/tests.rs",
+      "sha256": "a5a999b48c00c22d094a936e9e47704a75f94fb67ec4761677144bf8dcf8058c"
+    },
+    {
+      "path": "packages/protocol/adapters/bytes.mjs",
+      "sha256": "a96ff910fb6cd030cd9c63ac2b73aeaf21002ddd33d234e701cc5c26a4610608"
+    },
+    {
+      "path": "packages/protocol/adapters/codecs/codec.mjs",
+      "sha256": "f17ef2bc9b7f7c5c501f2f0d77f0e0cd59d1d72300e192c0d55c21c52bc17af9"
+    },
+    {
+      "path": "packages/protocol/adapters/codecs/group-codec.mjs",
+      "sha256": "297918fdaa82fcb306278a69c3153cd0595b7bfc836a621340009937da8eda72"
+    },
+    {
+      "path": "packages/protocol/adapters/codecs/identity-codec.mjs",
+      "sha256": "319f37ce6b490e92f0c409693a1d849efcef053e71954b11d505b86277adcbca"
+    },
+    {
+      "path": "packages/protocol/adapters/codecs/protocol-codec.mjs",
+      "sha256": "bbc40a60b4bb02a611136c7f7efab0a6339820ce2e51dc3f9587e4cde936247b"
+    },
+    {
+      "path": "packages/protocol/adapters/codecs/state-codec.mjs",
+      "sha256": "76e35a91d52e2664940c6e162af2b941e142beabbef642e83286299c210bfe4c"
+    },
+    {
+      "path": "packages/protocol/adapters/core.mjs",
+      "sha256": "6eed5a778c51b172a7055925ace2a76039205c81c7e0373f90e59ccfffcbff75"
+    },
+    {
+      "path": "packages/protocol/adapters/files.mjs",
+      "sha256": "3dd5d685588a6db8f6abddda9ad9da8e8ffc67f19d2ac6b17033dd0d91436cf1"
+    },
+    {
+      "path": "packages/protocol/adapters/history.mjs",
+      "sha256": "598b5de90a2ad3b9427d7c076b80d2ec0fbb464c0d7a888847ceb262c8ee58f0"
+    },
+    {
+      "path": "packages/protocol/adapters/identity.mjs",
+      "sha256": "26f0216a40acbfb1dec4e7e8518d2cfccc2d069afd157c4e6a43f7183342df73"
+    },
+    {
+      "path": "packages/protocol/adapters/local.mjs",
+      "sha256": "1e3a8b28090624ea694fee9aaaaffa094730cf4d0e16093018b20ebab889d0f4"
+    },
+    {
+      "path": "packages/protocol/adapters/objects.mjs",
+      "sha256": "961efe8b4dcf4b5e23fbde220641a039ffa8978220a8253873204f1e7304d0cc"
+    },
+    {
+      "path": "packages/protocol/adapters/primitives.mjs",
+      "sha256": "3f774869e1142f8efc8adf98738ac29d3661b30ffbaa7b8485396ee8b0736ca9"
+    },
+    {
+      "path": "packages/protocol/adapters/public-signatures.mjs",
+      "sha256": "5b277d6ca64dda8abba801fb88e55fb1b60122652066a4204d5dfae252bff430"
+    },
+    {
+      "path": "packages/protocol/adapters/worker-client.mjs",
+      "sha256": "7fa0fe02dd70587c7ee2391d47e6840158cff9ca51b26e838cdbf3014f4bf698"
+    },
+    {
+      "path": "packages/protocol/adapters/worker.mjs",
+      "sha256": "7bd59d07bc2bdb735de03e1164e5a30fa2552c95f46ad564c7e423c67d8853ab"
+    },
+    {
+      "path": "packages/protocol/p05-corpus.mjs",
+      "sha256": "f167ddd2f0d00799d5be2de92eb40972cd5fc780c57a979985ca7172a155e6ed"
+    },
+    {
+      "path": "packages/protocol/p05-native-node.mjs",
+      "sha256": "2c66beb443d9696f09be54656d105cec67fc99d9609eb38544cba2308815b75f"
+    },
+    {
+      "path": "packages/protocol/p05-public-frames.mjs",
+      "sha256": "f24a23e4c7883cca78d8e586dfe380c8777b53548ac2f7b712d68c9c60f9bf68"
+    },
+    {
+      "path": "packages/protocol/p05-suite.mjs",
+      "sha256": "cc02ee80adf858a58c39e5a9b46f56a025b9f9cab5ddc5eb8dc51f088855a351"
+    },
+    {
+      "path": "packages/protocol/p05-worker.mjs",
+      "sha256": "8f586acd73204d6dad48bb9c822ca6f1cbdfe1bb4f65cca08f430743ac2bc17a"
+    },
+    {
+      "path": "packages/protocol/package-lock.json",
+      "sha256": "6e7286286b0fe2797310c57a8fb4d768c4dae2bec53f58f788b8d0c830fafb7f"
+    },
+    {
+      "path": "packages/protocol/src/archive-profile.mjs",
+      "sha256": "b537957b2bcad86e5789fd403b8a92a44dfd9241f3b272cf7401ea7854bde82b"
+    },
+    {
+      "path": "packages/protocol/src/codec.mjs",
+      "sha256": "75ef1ee513d4fc96feab4a2085c9b768f56c60f5a96e24b6d6abd9faea129410"
+    },
+    {
+      "path": "packages/protocol/src/enrollment.mjs",
+      "sha256": "bca6d9fc0dc17e698145d6d8d0353732d3b433221df0325d942edf50432c1a35"
+    },
+    {
+      "path": "packages/protocol/src/evaluation-authority.mjs",
+      "sha256": "75be34c6b1e67255fe0207a9b73959b706f911c224d9aab786ccf52280b0fe11"
+    },
+    {
+      "path": "packages/protocol/src/export-evidence.mjs",
+      "sha256": "225b93135afa8280920ece66342c5bb34af2aa18dc42a40143223bce4f4d90ea"
+    },
+    {
+      "path": "packages/protocol/src/export-reference.mjs",
+      "sha256": "397f3e974e8068e9c55af231c9a522ff12a0632232a96e571045071180aa6f78"
+    },
+    {
+      "path": "packages/protocol/src/group-builders.mjs",
+      "sha256": "f1a7439bf9dd2d9cf562cbdde4b8081f3086d80fa673e2abac85ccc14ba63d34"
+    },
+    {
+      "path": "packages/protocol/src/group-codec.mjs",
+      "sha256": "d885ee72cca5ab20aa16e877e1379fbd24676de18da7fa2ce0e7a41b3d7526a1"
+    },
+    {
+      "path": "packages/protocol/src/group-state.mjs",
+      "sha256": "bfc525f79912ae8764ec4e2377419981b3d41c9789bd817d2a0cbdc858c3d3ed"
+    },
+    {
+      "path": "packages/protocol/src/identity-codec.mjs",
+      "sha256": "a90fdfb65fd37e0f8c688c89b96e9566b7e3bd4ad78f9cf531e39a82c4573b34"
+    },
+    {
+      "path": "packages/protocol/src/identity-crypto.mjs",
+      "sha256": "0c2999bc5e09fc9f18a2d7edaa2c86dc536e74b5fd5c531526d86ad150d42f9d"
+    },
+    {
+      "path": "packages/protocol/src/object-crypto.mjs",
+      "sha256": "734f8b74906f2ecabe5e2a82d4e76cb2fb09646a6b77050f856076ebede8ed33"
+    },
+    {
+      "path": "packages/protocol/src/pairing-channel.mjs",
+      "sha256": "63f1458bcf6b5488ea22012c699cf33c3ff4b7f55f1dc88ca79e2c65ad3d5c8e"
+    },
+    {
+      "path": "packages/protocol/src/protocol-codec.mjs",
+      "sha256": "bdbe5e522f0763d90d2b71a345d2bebe62df3763fef81096e98994d800cef01e"
+    },
+    {
+      "path": "packages/protocol/src/roster.mjs",
+      "sha256": "119c585b3ba41406785c222a79518ede7b963824e13de8ba89eb30415e2938f2"
+    },
+    {
+      "path": "packages/protocol/src/state-codec.mjs",
+      "sha256": "4e78787c294ec4176c7ab992d08883b47e6f40f07b1ee96251c5021dbb0f8adf"
+    },
+    {
+      "path": "packages/protocol/src/strict-json.mjs",
+      "sha256": "811b66d787a7b7467bf5c49397d1de161e9d2216f707e20e3244d967ab40b6e8"
+    },
+    {
+      "path": "packages/protocol/src/sync-reference.mjs",
+      "sha256": "00377f19864f5b7549fd11b059cf0d119c13f5013f0b8c65c3ed3c543059a7f1"
+    },
+    {
+      "path": "scripts/p05-port-codecs.py",
+      "sha256": "b9e32186d4267c28c32d900f3db9001b9faebfe98f178eaf7d5febd76e19ba7e"
+    }
+  ],
+  "fixture_inputs": [
+    {
+      "path": "fixtures/protocol/p05/jcs.json",
+      "sha256": "dfc12f346f2d13b6ed7d1b12bab2843fa9cc7f0c236893b39040d429aebe684d"
+    },
+    {
+      "path": "fixtures/protocol/p02/v1/crypto.json",
+      "sha256": "19c2aff3669c42e9f0666eb190efbef87da3c3746202574e7665cad0e853d2da"
+    },
+    {
+      "path": "fixtures/protocol/p02/v1/schema-vectors.json",
+      "sha256": "769ee73f9001e4afeb4b8a205e88aaf2915886e1569bc2c83efb61890639b1a7"
+    },
+    {
+      "path": "fixtures/protocol/p02/identity-vectors.json",
+      "sha256": "3c8dd8a60e500efa0740064b527f5e3ec64769ae4ebc353bd31d98cc876008c8"
+    },
+    {
+      "path": "fixtures/protocol/p02/vectors.json",
+      "sha256": "0b18c4525e2042caa16a8d537bba5ec1a765445d9ee6a5215f69225ac013cbed"
+    },
+    {
+      "path": "fixtures/protocol/p02/state-vectors.json",
+      "sha256": "17cd69b956957426f7fc32caf3f987a76a971abee843f312eb90d98912cb695f"
+    },
+    {
+      "path": "fixtures/protocol/p02/group-vectors.json",
+      "sha256": "5f4ff6216e397398afe2ce1ed7f4ff8da8d5a2190573a2eceb927816d11f0a5c"
+    }
+  ],
+  "native": {
+    "checks": 506,
+    "frames": 146,
+    "large": {
+      "chunks": 120,
+      "elapsed_ms": 9474,
+      "max_plain_chunk_bytes": 8388608,
+      "peak_process_rss_kib": 113424,
+      "physical_acceptance": false,
+      "plaintext_bytes": 1000000000,
+      "status": "PASS"
+    },
+    "status": "PASS"
+  },
+  "node": {
+    "status": "PASS",
+    "checks": 527,
+    "frames": 146,
+    "jcs": 28
+  },
+  "browser": {
+    "status": "PASS",
+    "checks": 527,
+    "frames": 146,
+    "jcs": 28,
+    "files": [
+      {
+        "status": "PASS",
+        "plaintext_bytes": 0,
+        "chunks": 0,
+        "max_plain_chunk_bytes": 8388608,
+        "elapsed_ms": 89,
+        "timings_ms": {
+          "source_ms": 0,
+          "encrypt_ms": 0,
+          "persist_ms": 0,
+          "decrypt_verify_ms": 0
+        },
+        "storage": "owned OPFS ciphertext only; bounded sync access, no Blob/File accumulation",
+        "wasm_heap_bytes": 67371008,
+        "physical_acceptance": false
+      },
+      {
+        "status": "PASS",
+        "plaintext_bytes": 1,
+        "chunks": 1,
+        "max_plain_chunk_bytes": 8388608,
+        "elapsed_ms": 35,
+        "timings_ms": {
+          "source_ms": 0,
+          "encrypt_ms": 0,
+          "persist_ms": 14,
+          "decrypt_verify_ms": 2
+        },
+        "storage": "owned OPFS ciphertext only; bounded sync access, no Blob/File accumulation",
+        "wasm_heap_bytes": 67371008,
+        "physical_acceptance": false
+      },
+      {
+        "status": "PASS",
+        "plaintext_bytes": 8388607,
+        "chunks": 1,
+        "max_plain_chunk_bytes": 8388608,
+        "elapsed_ms": 232,
+        "timings_ms": {
+          "source_ms": 3,
+          "encrypt_ms": 106,
+          "persist_ms": 7,
+          "decrypt_verify_ms": 109
+        },
+        "storage": "owned OPFS ciphertext only; bounded sync access, no Blob/File accumulation",
+        "wasm_heap_bytes": 67371008,
+        "physical_acceptance": false
+      },
+      {
+        "status": "PASS",
+        "plaintext_bytes": 8388608,
+        "chunks": 1,
+        "max_plain_chunk_bytes": 8388608,
+        "elapsed_ms": 242,
+        "timings_ms": {
+          "source_ms": 3,
+          "encrypt_ms": 105,
+          "persist_ms": 7,
+          "decrypt_verify_ms": 118
+        },
+        "storage": "owned OPFS ciphertext only; bounded sync access, no Blob/File accumulation",
+        "wasm_heap_bytes": 67371008,
+        "physical_acceptance": false
+      },
+      {
+        "status": "PASS",
+        "plaintext_bytes": 8388609,
+        "chunks": 2,
+        "max_plain_chunk_bytes": 8388608,
+        "elapsed_ms": 279,
+        "timings_ms": {
+          "source_ms": 3,
+          "encrypt_ms": 109,
+          "persist_ms": 40,
+          "decrypt_verify_ms": 112
+        },
+        "storage": "owned OPFS ciphertext only; bounded sync access, no Blob/File accumulation",
+        "wasm_heap_bytes": 67371008,
+        "physical_acceptance": false
+      },
+      {
+        "status": "PASS",
+        "plaintext_bytes": 1000000000,
+        "chunks": 120,
+        "max_plain_chunk_bytes": 8388608,
+        "elapsed_ms": 28059,
+        "timings_ms": {
+          "source_ms": 348,
+          "encrypt_ms": 13000,
+          "persist_ms": 1120,
+          "decrypt_verify_ms": 13567
+        },
+        "storage": "owned OPFS ciphertext only; bounded sync access, no Blob/File accumulation",
+        "wasm_heap_bytes": 67371008,
+        "physical_acceptance": false
+      }
+    ],
+    "rpc_checks": 3,
+    "ui": {
+      "ticks": 618,
+      "max_timer_lag_ms": 6
+    },
+    "version": "155.0.8059.39",
+    "sandbox": true,
+    "peak_sampled_aggregate_process_rss_kib": 1311436,
+    "rss_definition": "sum of Chromium process RSS sampled every 250 ms; shared pages may be counted more than once; not a hard memory ceiling"
+  },
+  "browser_to_native": {
+    "checks": 505,
+    "frames": 146,
+    "status": "PASS"
+  }
+}

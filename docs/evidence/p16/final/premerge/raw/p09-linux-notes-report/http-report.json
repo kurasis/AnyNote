@@ -1,0 +1,11 @@
+{
+  "purpose": "P09 actual verified HTTPS/SQL/native private-note vertical slice",
+  "status": "PASS",
+  "checks": 131,
+  "source_commit": "c50a16ed4c99a29cc6a2f17c3ea7df9a53c810e1",
+  "source_tree_dirty": false,
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "native_storage": "Actual protected SQLite and main-window IPC",
+  "node_storage": "Transactional model; actual IndexedDB covered by hosted UI job"
+}

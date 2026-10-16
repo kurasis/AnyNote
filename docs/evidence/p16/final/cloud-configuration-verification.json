@@ -1,0 +1,36 @@
+{
+  "purpose": "Confirmed complete environment draft persistence/readback after actual merged-main startup; publication and main CI are separate",
+  "status": "PASS",
+  "source_commit": "81298cc8cc110a25347e40a56011f84c65f8c66b",
+  "observed_at": "2026-10-16T11:59:37.348929+00:00",
+  "draft_id": "c6e44868-d5c7-48f5-a9bc-581b967d3273~cecfgdraft_6ad21181aa58819dbefe9a4fd89dd3e6",
+  "revision": 7,
+  "base_version_id": "c6e44868-d5c7-48f5-a9bc-581b967d3273~cecfgver_6ad1db510410819d98675501402f820b",
+  "requires_publish": true,
+  "install_script_readback_exact": true,
+  "start_skill_readback_exact": true,
+  "repository_readback_exact": true,
+  "unrelated_configuration_preserved": true,
+  "saved_repositories": [
+    {
+      "name": "kurasis/AnyNote",
+      "host": "github.com",
+      "commit": "81298cc8cc110a25347e40a56011f84c65f8c66b",
+      "mount_path": "AnyNote"
+    }
+  ],
+  "install_script_sha256": "f9b737dd4af8e0acc936c703c36564892787d561e21a83fa87b9d4ac4fe00c25",
+  "start_skill_sha256": "8f917717e3ee0430c33a8eafc2be6862fddc2e1db84793d909a928730f16f324",
+  "install_script_bytes": 6773,
+  "start_skill_bytes": 6108,
+  "current_instance_startup_verified": true,
+  "main_ci_when_saved": {
+    "status": "PENDING",
+    "source_commit": "81298cc8cc110a25347e40a56011f84c65f8c66b",
+    "passed": 8,
+    "active": 21,
+    "failed": []
+  },
+  "published_by_agent": false,
+  "fresh_task_restoration": "NOT_RUN"
+}

@@ -1,0 +1,32 @@
+{
+  "purpose": "Actual complete saved startup and strict protected-state preservation on merged main",
+  "status": "PASS",
+  "source_commit": "81298cc8cc110a25347e40a56011f84c65f8c66b",
+  "source_tree": "660b2ff91317a86d9343f6a66d7ecc24f7a62a06",
+  "checked_pr_head": "c50a16ed4c99a29cc6a2f17c3ea7df9a53c810e1",
+  "observed_at": "2026-10-16T11:56:51.200351+00:00",
+  "startup_commands": 17,
+  "startup_script_sha256": "7ea238de1d02cb4e70b055386dbc8d89e84f215bb301542d0d3cab43e2374717",
+  "private_log_sha256": "78fb2c27a07161b7e0652eb417e748d3bf53959a194df4f206237fd74b23b63b",
+  "original_baseline_sha256": "78be1ead883e788515a787303ea79206e815e227bd1199396a4c101defee387e",
+  "original_baseline_rewritten": false,
+  "original_tables_preserved": 76,
+  "added_tables": 2,
+  "added_migrations": 3,
+  "original_non_rate_content_and_session_rows_unchanged": true,
+  "tls_oauth_environment_bytes_unchanged": true,
+  "expired_rate_counter_deletion": "Explicit deviation recorded in preservation-deviation.json; no original non-rate state changed",
+  "license_source_commit": "81298cc8cc110a25347e40a56011f84c65f8c66b",
+  "frozen_components": 712,
+  "verified_upstream_notice_files": 965,
+  "frozen_license_locks": {
+    "apps/desktop/src-tauri/Cargo.lock": "befb8a5018952cfd333728898bb6966017b0cff7b0557b7ea47ec72d438df263",
+    "packages/windows-native/Cargo.lock": "0563b1f9d5d9429b86ba2bc945880db2f55a489e4ec60608fb67228a16251fa5",
+    "apps/desktop/package-lock.json": "63d38eb8214652f00832b2819da5040a14505dea90d00254ce1b095e6cfd6a70",
+    "packages/protocol/package-lock.json": "6e7286286b0fe2797310c57a8fb4d768c4dae2bec53f58f788b8d0c830fafb7f",
+    "packages/content-browser/package-lock.json": "362c13896996f5272648ae098f3f8381688ec1fda8f6b35e791c3612d5437293"
+  },
+  "current_instance_verified": true,
+  "fresh_task_restoration": "NOT_RUN",
+  "production_deployed": false
+}

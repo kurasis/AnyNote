@@ -1,0 +1,14 @@
+{
+  "purpose": "Actual17-command preserved-data startup on P16 development candidate; not final merged acceptance",
+  "status": "PASS",
+  "source_commit": "24430008132cb15f28a9e2c3863f51349a0312dc",
+  "commands": 17,
+  "log_sha256": "c33ebbbed59affb4cef798e8985bcbb2a295e2a4284f57d7843339a3f2f0d1d8",
+  "original_baseline_unchanged": true,
+  "original_tables_preserved": 76,
+  "added_tables": 2,
+  "added_migrations": 3,
+  "original_baseline_sha256": "78be1ead883e788515a787303ea79206e815e227bd1199396a4c101defee387e",
+  "supplemental_migration_proof_sha256": "299b71b02af197211291c5681f0515a0a9776606410b35ca7b3c45d03cdf9499",
+  "production_deployed": false
+}

@@ -1,0 +1,11 @@
+{
+  "purpose": "P09 actual private-note UI, encrypted durability and safe rendering",
+  "status": "PASS",
+  "source_commit": "c50a16ed4c99a29cc6a2f17c3ea7df9a53c810e1",
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "checks": 49,
+  "chromium_sandbox": true,
+  "tls_verification": "Trusted disposable CA with real hostname/TLS validation",
+  "source_tree_dirty": false
+}

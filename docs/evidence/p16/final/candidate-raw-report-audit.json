@@ -1,0 +1,76 @@
+{
+  "purpose": "P16 phase-only candidate reports; inherited ordinary cohort is explicitly not aggregate acceptance here",
+  "status": "VERIFIED",
+  "candidate_head": "09247a08feedf61a07cd6e60c76b57da069622fb",
+  "candidate_tree": "973bbb2ad3999aeffc276e01bfe730805fe8478c",
+  "cohort_status_when_downloaded": "PENDING",
+  "actual_report_source_trees": {
+    "09247a08feedf61a07cd6e60c76b57da069622fb": "973bbb2ad3999aeffc276e01bfe730805fe8478c"
+  },
+  "git_input_rows_verified": 1848,
+  "reports": [
+    {
+      "artifact_id": 12041241680,
+      "artifact_name": "p16-capacity-report",
+      "member": "capacity-report.json",
+      "sha256": "f527a9a2eb2682491b0dc1fa056fd7ceb0fc1578f54086be4c0675ba054fdaae",
+      "source_commit": "09247a08feedf61a07cd6e60c76b57da069622fb",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 0
+    },
+    {
+      "artifact_id": 12041241680,
+      "artifact_name": "p16-capacity-report",
+      "member": "capacity-source-report.json",
+      "sha256": "baa06137f8f14658159f17ed624bd104d76af25c05105ef355f73930baabb6a2",
+      "source_commit": "09247a08feedf61a07cd6e60c76b57da069622fb",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 924
+    },
+    {
+      "artifact_id": 12039974504,
+      "artifact_name": "p16-operations-report",
+      "member": "archive-negative-report.json",
+      "sha256": "9229810cddce2071346b1073f0097d1c96f495716d8d45270aedda908f6b1e12",
+      "source_commit": "09247a08feedf61a07cd6e60c76b57da069622fb",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 0
+    },
+    {
+      "artifact_id": 12039974504,
+      "artifact_name": "p16-operations-report",
+      "member": "operations-report.json",
+      "sha256": "14f49aec47f1ad08997d1776c0e0bbafab93aff9b7f88d1ce94b936d8e2e8a61",
+      "source_commit": "09247a08feedf61a07cd6e60c76b57da069622fb",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 0
+    },
+    {
+      "artifact_id": 12039974504,
+      "artifact_name": "p16-operations-report",
+      "member": "operations-source-report.json",
+      "sha256": "255834e371bc486b61b1a49394328ca435f293ef259a42497e411f21c30b80d2",
+      "source_commit": "09247a08feedf61a07cd6e60c76b57da069622fb",
+      "status_as_reported": "PASS",
+      "git_input_rows_verified": 924
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 12041241680,
+      "name": "p16-capacity-report",
+      "run_id": 38887692350,
+      "zip_sha256": "979a2dd3ab984a59129cebefdc07d22499bd950e0592331d01b579713377d0f3",
+      "zip_bytes": 44637
+    },
+    {
+      "id": 12039974504,
+      "name": "p16-operations-report",
+      "run_id": 38887692350,
+      "zip_sha256": "45ecc79d2c467727967f01e2429912dabda2a9fbd6bb28796d81661152a2876f",
+      "zip_bytes": 45743
+    }
+  ],
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN"
+}

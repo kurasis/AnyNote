@@ -1,0 +1,30 @@
+{
+  "purpose": "Built CI binaries only; reuse is diagnostic, never fresh-source application acceptance",
+  "status": "BUILT_UNVERIFIED",
+  "source_commit": "81298cc8cc110a25347e40a56011f84c65f8c66b",
+  "source_tree": "660b2ff91317a86d9343f6a66d7ecc24f7a62a06",
+  "source_tree_dirty": false,
+  "binaries": {
+    "harness": {
+      "path": ".local/p14-tools/instrumented-host.exe",
+      "sha256": "32641921063589ccf6cf301d36aed5a96991a8c518add8a7ca17f0da1de84d53",
+      "bytes": 29761024
+    },
+    "native_driver": {
+      "path": "packages/windows-native/target/release/p14-integration.exe",
+      "sha256": "021a967ba2d1f255fbc60087075e332336205352c2bcdca7ef53cf9079bf6771",
+      "bytes": 16961536
+    },
+    "candidate": {
+      "path": ".local/p14-candidate/AnyNote_0.14.1_x64-setup.exe",
+      "sha256": "5c86e711c808325ec3e2b089ed8bf00292005afdc32e1673c78d558875b8be47",
+      "bytes": 32674391
+    },
+    "owner_installer": {
+      "path": "apps/desktop/src-tauri/target/release/bundle/nsis/AnyNote_0.14.0_x64-setup.exe",
+      "sha256": "8b806fafe0a5c9b5f584062ca95400455a2da378f2807e9a496f65a7f43564f7",
+      "bytes": 32677966
+    }
+  },
+  "physical_acceptance": false
+}

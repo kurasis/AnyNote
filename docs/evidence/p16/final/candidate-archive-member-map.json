@@ -1,0 +1,35 @@
+{
+  "purpose": "Exact phase-only candidate bytes; not final29-job aggregate acceptance",
+  "members": [
+    {
+      "archive_path": "candidate/raw/p16-capacity-report/capacity-report.json",
+      "sha256": "f527a9a2eb2682491b0dc1fa056fd7ceb0fc1578f54086be4c0675ba054fdaae",
+      "artifact_id": 12041241680,
+      "original_member": "capacity-report.json"
+    },
+    {
+      "archive_path": "candidate/raw/p16-capacity-report/capacity-source-report.json",
+      "sha256": "baa06137f8f14658159f17ed624bd104d76af25c05105ef355f73930baabb6a2",
+      "artifact_id": 12041241680,
+      "original_member": "capacity-source-report.json"
+    },
+    {
+      "archive_path": "candidate/raw/p16-operations-report/archive-negative-report.json",
+      "sha256": "9229810cddce2071346b1073f0097d1c96f495716d8d45270aedda908f6b1e12",
+      "artifact_id": 12039974504,
+      "original_member": "archive-negative-report.json"
+    },
+    {
+      "archive_path": "candidate/raw/p16-operations-report/operations-report.json",
+      "sha256": "14f49aec47f1ad08997d1776c0e0bbafab93aff9b7f88d1ce94b936d8e2e8a61",
+      "artifact_id": 12039974504,
+      "original_member": "operations-report.json"
+    },
+    {
+      "archive_path": "candidate/raw/p16-operations-report/operations-source-report.json",
+      "sha256": "255834e371bc486b61b1a49394328ca435f293ef259a42497e411f21c30b80d2",
+      "artifact_id": 12039974504,
+      "original_member": "operations-source-report.json"
+    }
+  ]
+}

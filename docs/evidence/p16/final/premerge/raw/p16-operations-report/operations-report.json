@@ -1,0 +1,109 @@
+{
+  "status": "PASS",
+  "purpose": "P16 genuine hardened synthetic staging and clean-host/root-kit recovery",
+  "source_commit": "c50a16ed4c99a29cc6a2f17c3ea7df9a53c810e1",
+  "source_tree_dirty": false,
+  "checks": 202,
+  "reference_host": {
+    "platform": "linux",
+    "arch": "x64",
+    "logical_cpus": 4,
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "total_memory_bytes": 16766414848
+  },
+  "runtime_permissions": {
+    "status": "PASS",
+    "php": "8.4.26",
+    "pcntl": true,
+    "denied_writes": 3,
+    "runtime_ddl_privileges": false,
+    "static_mounted_in_php": false,
+    "operator_health": {
+      "status": "ready",
+      "components": {
+        "database": true,
+        "queue": true,
+        "scheduler": true
+      },
+      "recent_queue_failure": false,
+      "delivery_leases": 0,
+      "queue_depth": 0,
+      "free_bytes": 88538963968,
+      "total_bytes": 154894188544,
+      "restore_quarantine": false
+    }
+  },
+  "protected_admin_mtls_and_recent_role_verified": true,
+  "memory_scope": "sampled Node main process; excludes Python/age/MariaDB/FPM/Nginx peers and is not a sampled aggregate or hard maximum",
+  "api_image_source": {
+    "source_commit": "c50a16ed4c99a29cc6a2f17c3ea7df9a53c810e1",
+    "source_tree_dirty": false,
+    "input_count": 109,
+    "manifest_sha256": "2c095ffeecdb321b9ea3249d5c9bacf68b5b0d5c886422b0cb7b4164b9faa8a7"
+  },
+  "plaintext_bytes": 1000000000,
+  "source_sha256": "768e52389399e4af26c296f11f890f3ee90ace596b4328828546d65f15aae83f",
+  "recovered_sha256": "768e52389399e4af26c296f11f890f3ee90ace596b4328828546d65f15aae83f",
+  "backup_archive_bytes": 1000774376,
+  "backup_elapsed_ms": 11673,
+  "clean_host_restore_ms": 26429,
+  "clean_client_recovery_and_export_ms": 51436,
+  "acknowledged_data_loss_window_seconds": 9.618138112,
+  "backup_age_at_drill_end_seconds": 179.638138368,
+  "rto_offline_content_seconds": 80.054,
+  "rto_drill_seconds": 168.182,
+  "fresh_identity_group_and_file_copy_verified": true,
+  "accel_delivery_verified": true,
+  "storage_faults": {
+    "status": "PASS",
+    "physical_tmpfs_bytes": 8388608,
+    "actual_enospc_observed": true,
+    "typed_denials": [
+      "INSUFFICIENT_STORAGE",
+      "STORAGE_UNAVAILABLE",
+      "STORAGE_UNAVAILABLE"
+    ],
+    "committed_bytes_preserved": true,
+    "quota_unchanged": true,
+    "real_directory_fsync_failure": true,
+    "recovered_write_bytes": 65536
+  },
+  "interrupted_backup": {
+    "status": "PASS",
+    "actual_partial_age_bytes_observed": 8259736,
+    "no_final_archive_or_signature": true,
+    "owned_writers_resumed": true,
+    "exit_nonzero": true
+  },
+  "cleanup": {
+    "expired_upload_released": true,
+    "expired_invite_and_enrollment_removed": true,
+    "committed_reference_preserved": true,
+    "idempotent": true
+  },
+  "incident_drill": {
+    "status": "PASS",
+    "reviewed_signature_and_complete_inventory_verified": true,
+    "altered_pwa_release_refused": true,
+    "malicious_script_executed": false
+  },
+  "api_isolation_verified": true,
+  "missing_recovery_secret_no_admin_decryption": true,
+  "modified_recovery_ciphertext_refused_before_output": true,
+  "concurrent_writes": {
+    "acknowledged": 2,
+    "unavailable_or_retained": 8
+  },
+  "restored_generation_changed": true,
+  "existing_client_restore_quarantine_and_old_cursor_preserved": true,
+  "encrypted_draft_and_immutable_outbox_bytes_preserved": true,
+  "old_credentials_and_unreconciled_security_blocked": true,
+  "security_checkpoint_matches_latest": false,
+  "offline_network_used": false,
+  "private_genesis_scope": true,
+  "shared_rotated_recovery": "maintained P13 portable archive + separate export kit; no in-place trust restoration",
+  "maximum_observed_node_rss_bytes": 541093888,
+  "elapsed_ms": 290053,
+  "physical_acceptance": false,
+  "production_deployed": false
+}
