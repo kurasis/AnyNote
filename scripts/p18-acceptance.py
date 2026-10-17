@@ -37,6 +37,22 @@ def check_cohort(cohort, downloads):
     c.require(all(r['run_id'] in run_ids for r in downloads['artifacts']), 'Artifact outside observed ordinary cohort')
 
 
+def memory_verification(budget, host, head, row):
+    c.require(budget['status'] == 'PASS' and budget['source_commit'] == head and budget['source_tree_dirty'] is False,
+              'Stale or failed Windows memory receipt')
+    c.require(budget['memory'] == host['memory'] and host['large_file']['bytes'] == 1000000000 and host['large_file']['status'] == 'PASS', 'Memory receipt is not the actual installed 1GB workflow')
+    t = budget['memory']['transfer']; base = t['baseline_bytes']; peak = t['observed_peak_bytes']
+    c.require(all(type(v) is int and 0 <= v < 2**53 for v in [base['native'], base['helper'], base['native_helper'], peak['native_helper']]), 'Invalid OS memory counters')
+    c.require(base['native'] > 0 and base['helper'] == 0 and base['native_helper'] == base['native'] and peak['native_helper'] >= base['native_helper'], 'Helper startup must stay included in the original baseline')
+    growth = peak['native_helper'] - base['native_helper']
+    c.require(t['initial_native_helper_target_bytes'] == 134217728 and growth == t['observed_increase_bytes']['native_helper'] <= 134217728 and t['target_observation'] == 'OBSERVED_WITHIN_INITIAL_TARGET', 'Windows memory target was raised or exceeded')
+    c.require(t['samples'] >= 2 and all(t['phases'][phase]['samples'] >= 2 for phase in ['upload', 'download', 'export', 'inspect', 'import', 'recovered-download']), 'Missing phase memory observations')
+    c.require(all(t['phases'][phase]['helper_samples'] >= 2 for phase in ['export', 'inspect', 'import']), 'Missing actual helper observations')
+    return {'status': 'PASS', 'source_commit': head, 'target_bytes': 134217728, 'observed_growth_bytes': growth,
+            'baseline_bytes': base, 'observed_peak_bytes': peak, 'phases': t['phases'], 'raw_receipt': row,
+            'scope': 'Actual hosted Windows installed 1GB workflow; sampled native/helper working-set growth includes helper startup. Physical/unsampled budgets remain separate.'}
+
+
 def acceptance(cohort_path, folder, output):
     c.require(not output.exists(), 'New output directory required; previous evidence is preserved')
     cohort = json.loads(cohort_path.read_text()); downloads = json.loads((folder / 'download-receipt.json').read_text())
@@ -56,6 +72,13 @@ def acceptance(cohort_path, folder, output):
         c.require(hashlib.sha256(data).hexdigest() == row['sha256'], 'Raw report changed')
         return json.loads(data), row
 
+    memory = None
+    if any(r['artifact_name'] == 'p14-windows-development-installer' and r['member'].endswith('memory-budget-development.json') for r in audit['reports']):
+        budget, row = raw('p14-windows-development-installer', 'memory-budget-development.json')
+        host, _ = raw('p14-windows-development-installer', 'windows-webview-development.json')
+        memory = memory_verification(budget, host, head, row)
+    else:
+        c.require(b'memory-budget-development.json' not in c.git('show', head + ':scripts/p14-evidence.py'), 'Current Windows memory receipt missing')
     negative, _ = raw('p17-security-report', 'p18-negative-report.json')
     c.require(negative['status'] == 'PASS' and negative['source_commit'] == head and negative['source_tree_dirty'] is False
               and negative['tests_run'] >= 19 and negative['failures'] == negative['errors'] == negative['skipped'] == 0,
@@ -108,12 +131,16 @@ def acceptance(cohort_path, folder, output):
                              'retention_days': 14, 'manifest_sha256': receipt['manifest_sha256']})
             (stage / (role + '-manifest.json')).write_bytes(c.canonical(manifest))
         original.unlink()
-        matrix = matrix_for(cohort, audit)
+        matrix = matrix_for(cohort, audit, memory)
+        release_eligibility = c.eligibility()
+        if memory:
+            release_eligibility['blockers'].pop('native_128mib_budget')
+            release_eligibility['resolved_software_gates'] = {'hosted_native_128mib_budget': 'PASS'}
         result = {'purpose': 'P18 exact-artifact final synthetic acceptance and handoff; no production publication',
                   'status': 'PASS', 'scope': 'Software review candidate only', 'source_commit': head, 'source_tree': tree,
                   'ordinary_event': cohort['event'], 'mandatory_jobs': 30, 'packages': packages,
                   'raw_report_members': len(audit['reports']), 'git_input_rows_verified': audit['git_input_rows_verified'],
-                  'journey': journey, 'release_eligibility': c.eligibility(),
+                  'journey': journey, 'release_eligibility': release_eligibility, 'windows_transfer_memory': memory,
                   'evidence_trust': 'Operator-observed GitHub API receipts plus actual Git blobs; checksums alone are not independent publisher authentication',
                   'retention': 'Actions attachments expire after 14 days. Keep this entire offline set with its original ZIP receipts before expiry. No GitHub Release or production deploy was created.'}
         (stage / 'acceptance.json').write_bytes(c.canonical(result))
@@ -131,7 +158,7 @@ def acceptance(cohort_path, folder, output):
     print(json.dumps({'status': 'PASS', 'source_commit': head, 'packages': len(packages), 'matrix_cases': len(matrix['cases']), 'production_release_allowed': False}))
 
 
-def matrix_for(cohort, audit):
+def matrix_for(cohort, audit, memory=None):
     # Frozen criterion text is preserved verbatim. Passing a related whole suite
     # is not relabelled as case-level or physical acceptance of every outcome.
     text = c.git('show', cohort['source_commit'] + ':docs/spec/13_TESTING_AND_ACCEPTANCE.md').decode()
@@ -169,6 +196,8 @@ def matrix_for(cohort, audit):
                 'X06': ('NOT_RUN', 'Owned synthetic canary inspection passed; real APM/crash/OS remnants are not covered.'),
                 'X10': ('NOT_RUN', 'Hosted Windows DPAPI is not the owner physical Hello/TPM trial.'),
                 'O06': ('BLOCKED', '10 accounts,50 devices,100000 retained revisions measured; actual 100 GB NOT_RUN.')}
+    if memory:
+        external['U10'] = ('PASS', 'Actual installed Windows1GB bytes plus inherited cancel/resume tests passed; native/helper growth ' + str(memory['observed_growth_bytes']) + ' bytes within unchanged128MiB. Physical and unsampled budgets remain separate.')
     for ident, definition in sorted(definitions.items()):
         status, limitation = external.get(ident, ('PASS', observed[ident]) if ident in observed else
                                           ('NOT_RUN', 'Related exact-source suites ran successfully. This assembler does not infer complete per-criterion acceptance from whole-suite counts; case-level acceptance remains unrecorded.'))
@@ -176,7 +205,8 @@ def matrix_for(cohort, audit):
         c.require(evidence, 'Missing related execution evidence for ' + ident)
         cases.append({'id': ident, 'requirement': definition, 'status': status, 'scope': 'Synthetic software only; qualified/physical/production acceptance separate', 'limitation': limitation,
                       'related_executed_software_evidence': [{'artifact_id': r['artifact_id'], 'member': r['member'], 'sha256': r['sha256'], 'status_as_reported': r['status_as_reported']} for r in evidence],
-                      **({'authority_and_test_bindings': next(r for r in trace['regressions'] if r['id'] == ident)} if ident.startswith('R') else {})})
+                      **({'authority_and_test_bindings': next(r for r in trace['regressions'] if r['id'] == ident)} if ident.startswith('R') else {}),
+                      **({'hosted_memory_evidence': memory} if ident == 'U10' and memory else {})})
     gates = [{'id': 'G' + str(n), 'status': 'BLOCKED' if n in (0, 1, 2, 3, 4) else 'PASS',
               'scope': 'Synthetic software handoff only' if n in (5, 6) else 'Full advertised production outcome is not accepted',
               'production_pass': False} for n in range(7)]

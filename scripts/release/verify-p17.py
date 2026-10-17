@@ -27,8 +27,16 @@ h=reports['http'];assert h['accounts']==3 and h['concurrent_publications']==24 a
 assert h['actual_file_bytes']==1048577 and h['full_file_hash_verified'] and h['disabled_push_outbound_requests']==0
 assert h['inspection']['status']=='PASS' and h['inspection']['positive_canary_detected'] and h['inspection']['canaries']>=11 and h['inspection']['operation_revision_counts']==[1]*25
 s=reports['supply-chain'];assert s['unique_component_versions']==1075 and not s['unreviewed_findings'] and s['supported_target']=='x86_64-pc-windows-msvc'
-assert s['fixed_windows_rustls']==[{'name':'rustls','version':'0.23.46','features':['ring','std','tls12']}] and s['new_advisory_negative_controls']==6
-assert {x['disposition']for x in s['findings']}<={'EXCLUDED_WINDOWS_TARGET','FROZEN_SYNTHETIC_PROFILES_ONLY'}
+assert s['fixed_windows_rustls']==[{'name':'rustls','version':'0.23.46','features':['ring','std','tls12']}] and s['new_advisory_negative_controls']in [6,10]
+assert {x['disposition']for x in s['findings']}<={'EXCLUDED_WINDOWS_TARGET','FROZEN_SYNTHETIC_PROFILES_ONLY','SCOPED_PE_ONLY_UPDATER','BUILD_ONLY_SIGNED_VENDOR_ARCHIVE'}
+if any(f['query']['package']['name']=='zip'for f in s['findings']):
+ assert s['new_advisory_negative_controls']==10
+ z=raw('p17-security-report','zip-boundary-review.json');assert z['status']=='PASS' and z['source_commit']==head and z['source_tree_dirty']is False and z['production_release_allowed']is False
+ assert {f['query']['version']for f in s['findings']if f['query']['package']['name']=='zip'}=={'4.6.1','8.6.0'}
+ vendor=raw('p14-windows-development-installer','signed-vendor-zip-development.json');assert vendor['status']=='PASS' and vendor['source_commit']==head and vendor['source_tree_dirty']is False and vendor['platform']=='win32'
+ assert vendor['cases'][0]['exit_code']==0 and vendor['cases'][0]['installed_files']>0 and vendor['cases'][1]['exit_code']!=0 and vendor['cases'][1]['installed_files']==0
+ assert vendor['upstream_build_source_sha256']==next(p['member_sha256']for p in z['registry_source_proofs']if p['package']=='libsodium-sys-stable'and p['version']=='1.24.3')
+ host=raw('p14-windows-development-installer','windows-webview-development.json');assert host['updater']['unsupported_signed_zip_rejected']is True
 t=reports['traceability'];assert t['regressions']==24 and {x['regression']for x in t['bindings']}=={f'R{n:02}'for n in range(1,25)}
 r=reports['remediation'];assert r['before']=={'consumed_chunk_collectible_before_eof':False,'reader_locked_after_failure':True} and r['after']=={'consumed_chunk_collectible_before_eof':True,'reader_locked_after_failure':False}
 src=reports['source'];assert src['source_tree']==tree and src['independent_review']=='NOT_RUN' and src['production_release_allowed']is False and src['review_booking']=='TRACKED_NOT_BOOKED'

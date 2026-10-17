@@ -6,6 +6,12 @@ Windows128MiB failure remains open until fresh installed-Windows phase-attribute
 receipts pass the unchanged target. Physical-device memory and all other external
 release gates remain separate.
 
+Live RustSec ZIP0367/0368/0369 findings are explicit: frozen zip4.6.1/8.6.0 remain
+in the conservative inventory. The updater admits only authenticated PE bytes,
+and zip8 is build-only with vendor signatures before extraction. Actual scope/
+crate checks and signed/tampered-input regressions are required; this is not an
+upstream fix or independent supply-chain review. See [Windows memory](WINDOWS_MEMORY.md).
+
 P15 merged-main push checks finished 25/27 despite the separately passing
 premerge cohort. The PWA stale-network generation and Windows installer observer
 follow-up requires its own clean-source CI, runtime receipts and guarded merge;

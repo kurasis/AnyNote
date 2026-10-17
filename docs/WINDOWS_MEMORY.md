@@ -61,3 +61,32 @@ oversize/truncation and simultaneous duplex backpressure. The saved19-command
 startup and frozen179-file check passed. These are dirty development receipts;
 the final branch requires fresh ordinary PR and merged-main Windows/1GB/30-job
 evidence. No physical, independent-review, signing or production gate is closed.
+
+## New live ZIP advisories discovered by the required gate
+
+The first exact-source PR security run failed on newly published
+RUSTSEC-2026-0367/0368/0369 for frozen zip4.6.1 and8.6.0. Its original report and
+upstream responses are preserved in [ZIP development evidence](evidence/windows-memory/zip-development/index.json).
+The vulnerable library versions are not silently upgraded or declared patched.
+
+The Windows updater now checks signed/hash-bound bytes for PE/MZ before calling
+Tauri install dispatch. Even a correctly signed ZIP is unsupported; the genuine
+NSIS upgrade remains mandatory. The pinned infer ZIP detector requires a PK
+prefix, disjoint from the admitted MZ prefix. New native offset/header negatives
+and a correctly signed symlink-ZIP Windows case exercise this boundary.
+
+zip8.6.0 is solely a libsodium-sys-stable build dependency, absent from the normal
+runtime closure. Its exact crate source verifies the entire archive against the
+pinned vendor minisign key before extraction, including local override inputs.
+The actual frozen extraction/verification functions, driven directly with their
+locked build dependencies, extracted157 authentic vendor files and rejected a
+one-byte mutation before creating any installed file. Every new ordinary Windows
+run repeats that positive/negative check. Rust crate archives/member hashes,
+dependency kinds, signature-before-extraction and updater call ordering are
+rechecked by `scripts/p17-zip-review.py`; unknown versions/advisories still fail.
+
+These are scoped input/authority dispositions with executable regression gates,
+not an upstream fix, a universal ZIP-safety assertion or independent review.
+Vendor/signing/build-host compromise and any future archive/target/profile need
+separate review. All179 original frozen files remain unchanged. Full Windows
+negative/update acceptance and final ordinary PR/main cohorts remain pending.

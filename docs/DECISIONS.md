@@ -9,6 +9,14 @@ fail the existing Windows job. No smaller old-space ceiling limits valid metadat
 Linux helper-only improvements and sampled hosted observations do not establish
 physical or unsampled memory bounds. See [Windows memory](WINDOWS_MEMORY.md).
 
+The required live advisory gate discovered new ZIP extraction issues during this
+follow-up. Preserve historical locks and the actual failing report. Narrow the
+supported updater dispatch to authenticated PE installers before Tauri install,
+reject even signed ZIPs, and prove the build-only vendor ZIP path authenticates
+before extraction with real positive/tampered bytes. Exact crate/input/graph
+checks and new-advisory controls constrain the scoped engineering dispositions;
+no upstream fix, independent review or production waiver is claimed.
+
 ## P15 postmerge network generations and updater observation
 
 An HTTP response started before lock has no right to enter a later vault

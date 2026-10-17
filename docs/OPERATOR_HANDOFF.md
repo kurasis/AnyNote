@@ -56,6 +56,13 @@ candidate; Actions artifacts expire after14 days.
    binary switch is permitted only after a separately tested schema-compatible
    plan; none is presumed by P18.
 
+The supported Windows updater payload is the signed/hash-bound PE NSIS installer.
+ZIP updates remain unsupported even with a valid publisher signature; archive,
+MSI or new target support requires a separately reviewed profile. Frozen ZIP
+dependencies remain vulnerable upstream and have scoped input-boundary
+dispositions in the live advisory report; passing these checks is not an upstream
+patch or independent review.
+
 An API image archive is a saved Docker image, not a VM or a complete production
 host. Validate the image digest before loading/running and review deployment
 environment separately. The PWA package is bound to the tested synthetic issuer;

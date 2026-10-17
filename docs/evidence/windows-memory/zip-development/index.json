@@ -1,0 +1,11 @@
+{
+  "purpose": "Preserved first exact-source advisory gate failure and later dirty-development path proofs",
+  "initial_run": 39018651548,
+  "initial_source": "72f1d1d5bd8954540945cd1716421adf3741b300",
+  "initial_status": "FAIL",
+  "artifact_id": 12095987028,
+  "artifact_zip_sha256": "9b3eb01f6e8ee7a826240ca90e493ce56dda5cd3d369aa2908996a606567d6bd",
+  "initial_run_url": "https://github.com/kurasis/AnyNote/actions/runs/39018651548",
+  "later_proofs": "DEVELOPMENT_ONLY; signed ZIP native dispatch still needs final Windows CI",
+  "production_release_allowed": false
+}

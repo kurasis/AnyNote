@@ -21,6 +21,20 @@ pub struct UpdatePolicy {
     pub channel: String,
 }
 impl UpdatePolicy {
+    /// The supported Windows update is one PE installer, never an extracted
+    /// ZIP. Keep this check before Tauri's install/format dispatch, even when
+    /// the caller has already authenticated both signatures and exact bytes.
+    pub fn windows_installer(bytes: &[u8]) -> Result<()> {
+        check(
+            bytes.len() >= 64 && bytes.starts_with(b"MZ"),
+            "UPDATE_FORMAT_UNSUPPORTED",
+        )?;
+        let offset = u32::from_le_bytes(bytes[60..64].try_into().unwrap()) as usize;
+        check(
+            offset >= 64 && bytes.get(offset..offset.saturating_add(4)) == Some(b"PE\0\0"),
+            "UPDATE_FORMAT_UNSUPPORTED",
+        )
+    }
     /// Standard minisign over the canonical public claims; separate from Tauri's payload signature.
     pub fn signed_claims(
         &self,
