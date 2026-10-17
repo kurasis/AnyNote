@@ -1,5 +1,16 @@
 # Test evidence
 
+## Windows memory follow-up — development, exact-source CI pending
+
+See [measurement scope and actual results](WINDOWS_MEMORY.md). Development passed
+72 client tests,6728 deterministic parser/schema cases,512 envelope and512 tar
+negatives,112 native vault tests including1GB, restricted frozen-archive bridge,
+three pipe regressions and62 release-native HTTPS/API checks with1GB. Independent
+Go age and full authenticated helper before/after1GB recovery passed. Startup19
+commands and all179 frozen files passed. Raw local reports remain under
+`artifacts/p14`, `artifacts/p17` and `/workspace/anynote-setup`; dirty development
+does not replace the30-job ordinary PR/main cohorts or the installed Windows gate.
+
 ## P15 postmerge lifecycle follow-up
 
 Merged main `b1832ce` finished 25/27 ordinary push jobs: PWA failed unlocking

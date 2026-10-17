@@ -18,7 +18,16 @@ for name,minimum in [('windows-host-preflight.json',3),('native-pairing-developm
  if name.startswith('windows-webview'):
   assert value['updater']['status']=='PASS' and value['updater']['production_signing'] is False
   assert value['memory']['transfer']['samples']>=2 and value['memory']['transfer']['baseline_bytes']['native']>0
+  transfer=value['memory']['transfer']
+  assert transfer['initial_native_helper_target_bytes']==134217728
+  assert transfer['target_observation']=='OBSERVED_WITHIN_INITIAL_TARGET' and transfer['observed_increase_bytes']['native_helper']<=134217728
+  assert all(transfer['phases'][phase]['samples']>=2 for phase in ['upload','download','export','inspect','import','recovered-download'])
+  assert all(transfer['phases'][phase]['helper_samples']>=2 for phase in ['export','inspect','import'])
  reports[name]={'path':'artifacts/p14/'+name,'sha256':sha(path),'checks':value['checks']}
+budget=ROOT/'artifacts/p14/memory-budget-development.json';value=json.loads(budget.read_text(encoding='utf-8'))
+assert value['status']=='PASS' and value['source_commit']==head and not value['source_tree_dirty'] and value['physical_acceptance']is False
+assert value['memory']==json.loads((ROOT/'artifacts/p14/windows-webview-development.json').read_text(encoding='utf-8'))['memory']
+reports[budget.name]={'path':'artifacts/p14/'+budget.name,'sha256':sha(budget)}
 observer=ROOT/'artifacts/p14/installer-observation.json';value=json.loads(observer.read_text(encoding='utf-8'))
 assert value['status']=='PASS' and value['source_commit']==head and not value['source_tree_dirty']
 assert value['rm_read_handle_registers_test_process'] is True and value['metadata_polling_registers_test_process'] is False

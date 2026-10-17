@@ -1,0 +1,28 @@
+{
+  "label": "zero-copy-growth",
+  "status": "PASS",
+  "validated_before_recovery": true,
+  "plaintext_bytes": 1000000000,
+  "parts": 120,
+  "samples": 734,
+  "baseline": {
+    "rss": 104390656,
+    "heapTotal": 29519872,
+    "heapUsed": 24490224,
+    "external": 8021866,
+    "arrayBuffers": 462781
+  },
+  "peak": {
+    "rss": 149311488,
+    "heapUsed": 29781728,
+    "external": 49778964,
+    "arrayBuffers": 29320392
+  },
+  "elapsed_ms": 96817,
+  "flags": [
+    "--optimize-for-size",
+    "--max-semi-space-size=1",
+    "--heap-growing-percent=10"
+  ],
+  "scope": "Actual restricted bundled helper validates every archive item, independent authority, full file AEAD/hash, then recovers real random 1GB; Linux helper-only diagnostic, no API/installer/physical acceptance"
+}

@@ -13,6 +13,17 @@ const base=new URL('../../../fixtures/protocol/p02/v1/',import.meta.url),f=JSON.
 const actual=JSON.parse(readFileSync(new URL('crypto.json',base))).objects;
 const archive=readFileSync(new URL('rust.age',base));
 const source=bytes=>()=>new Blob([bytes]).stream();
+test('age input respects destination backpressure and retains member ownership until consumption or cancellation',async()=>{
+ const member=new Uint8Array(8388608).fill(97);let advances=0,closed=0;
+ async function* entries(){try{advances++;yield member;advances++;yield new Uint8Array([98]);}finally{closed++;member.fill(0);}}
+ const reader=streamFromIterator(entries()).getReader();
+ for(let i=0;i<3;i++){const next=await reader.read();assert.equal(next.value.length,65536);assert(next.value.every(b=>b===97));assert.equal(advances,1);}
+ await reader.cancel();assert.equal(closed,1);assert(member.every(b=>b===0));
+ for(const value of [new Uint8Array(8388625),'invalid']){
+  const invalid=streamFromIterator((async function*(){yield value;})()).getReader();
+  await assert.rejects(invalid.read(),/EXPORT_RESOURCE_LIMIT/);
+ }
+});
 async function collect(stream){const items=[];for await(const p of stream)items.push(p);return Buffer.concat(items);}
 test('streaming USTAR bytes and inventory framing remain byte-identical to frozen P02',async()=>{
  for(const path of ['export-header.json','files/'+actual.file_export_key.revision_id+'/00000000.bin','identity/evidence.json'])assert.deepEqual(Buffer.from(tarHeader(path,17)),archiveHeader(path,17));

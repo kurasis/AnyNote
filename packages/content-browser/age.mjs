@@ -17,13 +17,24 @@ export async function decryptArchive(stream, identity) {
 }
 export function streamFromIterator(iterator, authorize = () => {}) {
   const items = iterator[Symbol.asyncIterator]();
+  let part, offset = 0;
   return new ReadableStream({
     async pull(controller) {
-      try { await authorize(); const next = await items.next();
-        if (next.done) controller.close();
-        else { if (!(next.value instanceof Uint8Array) || next.value.length > 8388624) throw Error('EXPORT_RESOURCE_LIMIT'); controller.enqueue(next.value); }
+      try { await authorize();
+        if (!part || offset === part.length) {
+          part = undefined; offset = 0;
+          const next = await items.next();
+          if (next.done) { controller.close(); return; }
+          if (!(next.value instanceof Uint8Array) || next.value.length > 8388624) throw Error('EXPORT_RESOURCE_LIMIT');
+          part = next.value;
+        }
+        // age's synchronous transform emits one 64 KiB ciphertext per block.
+        // Feed it one block per pull so a whole 8 MiB member cannot enqueue
+        // 128 encrypted blocks before the destination acknowledges any of them.
+        const end = Math.min(offset + 65536, part.length);
+        controller.enqueue(part.subarray(offset, end)); offset = end;
       } catch (error) { await items.return?.(); controller.error(error); }
     },
-    async cancel() { await items.return?.(); },
+    async cancel() { part = undefined; await items.return?.(); },
   }, {highWaterMark: 0});
 }
