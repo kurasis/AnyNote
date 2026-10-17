@@ -21,6 +21,15 @@ tests, including memory-receipt target/baseline/phase/source substitutions and
 legacy blocked-candidate verification. Final measured Windows growth and all30
 ordinary PR/main outcomes must be read from the retained exact-source receipts.
 
+The first revised cohort passed29/30, including Windows memory growth83300352
+bytes below134217728, signed ZIP updater refusal and vendor157/0 extraction.
+Its browser-content search assertion failed after rebuild: background catch-up
+can conservatively stale the protected index between UI actions. The ordinary
+browser case now uses actual browser offline mode for explicit rebuild/search,
+then restores networking in `finally` before retention/export checks. It retains
+the real Worker and required result; no source-staleness or authority rule changes.
+The original failed job117363066594/run39021156319 remains failure evidence.
+
 ## P15 postmerge lifecycle follow-up
 
 Merged main `b1832ce` finished 25/27 ordinary push jobs: PWA failed unlocking

@@ -31,6 +31,12 @@ test('real verified local search persists encrypted, survives restart, and refus
 });
 test('new source content requires an explicit complete rebuild rather than false no-match coverage',async()=>{
  const f=await fixture();try{const g=await group(f),first=await publish(f,g,'P13 original indexed title');await content(f,'index',{revision_ids:[first]});
+  // Sync bookkeeping changes the protected note-control source even without
+  // another publication. The UI must not assume an index stays current across
+  // independently scheduled sync operations.
+  await notes(f,'sync',['offline',{}]);
+  const observed=await content(f,'search',{query:'original'});assert.equal(observed.rebuild_required,true);assert.deepEqual(observed.results,[]);
+  await content(f,'clearIndex',{confirm:true});await content(f,'index',{revision_ids:[first]});assert.equal((await content(f,'search',{query:'original'})).results.length,1);
   const second=await publish(f,g,'P13 later unindexed title');const stale=await content(f,'search',{query:'original'});assert.equal(stale.rebuild_required,true);assert.equal(stale.coverage.indexed,0);assert.equal(stale.coverage.stale,1);
   await assert.rejects(()=>content(f,'index',{revision_ids:[second]}),/INDEX_REBUILD_REQUIRED/);
   await assert.rejects(()=>content(f,'clearIndex',{confirm:false}),/CONFIRMATION_REQUIRED/);

@@ -17,6 +17,13 @@ before extraction with real positive/tampered bytes. Exact crate/input/graph
 checks and new-advisory controls constrain the scoped engineering dispositions;
 no upstream fix, independent review or production waiver is claimed.
 
+The revised ordinary cohort exposed a browser search scheduling race. Protected
+note-control sync changes conservatively invalidate the local index, even when
+no new publication occurs; a deterministic regression retains that fail-closed
+behavior. The browser acceptance now rebuilds/searches with actual offline
+networking, then restores it before the original retention/export checks. It
+does not suppress a failed assertion or change source-staleness/custody policy.
+
 ## P15 postmerge network generations and updater observation
 
 An HTTP response started before lock has no right to enter a later vault

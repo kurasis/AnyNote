@@ -8,7 +8,17 @@ export async function contentCase({page,action,check,scratch,control}){
  await page.bringToFront();if(await page.locator('#workspace').isHidden()){await page.locator('#phrase').fill(phrase);await action(page,'unlock');}
  await page.locator('#groups button').filter({hasText:'PUBLIC browser shared group'}).click();await page.waitForFunction(()=>!document.getElementById('status').dataset.busy);if(!await page.locator('#members-panel').evaluate(el=>el.open))await page.locator('#members-panel > summary').click();await action(page,'close-history');
  await page.locator('#group-kind').selectOption('private');await page.locator('#group-title').fill('PUBLIC P13 content group');await action(page,'create-group');await page.locator('#thread-title').fill('PUBLIC P13 thread');await action(page,'create-thread');await action(page,'new-entry');await page.locator('#note-title').fill('PUBLIC P13 searchphrase');await page.locator('#note-body').fill('PUBLIC P13 transfer body <script>literal</script>');await action(page,'save-note');
- await action(page,'rebuild-search');await page.locator('#vault-search').fill('searchphrase');await action(page,'search-vault');check((await page.locator('#search-results').textContent()).includes('searchphrase'),'P13_ACTUAL_WORKER_SEARCH');check(await page.locator('#preview script').count()===0,'P13_MARKDOWN_SCRIPT_DENIED');
+ // Background catch-up may conservatively invalidate the protected index
+ // between two UI actions. Exercise local-only search with the browser actually
+ // offline so no new server observation races the explicit rebuild. Keep the
+ // real Worker, custody policy and required result unchanged.
+ await page.context().setOffline(true);
+ try{
+  await page.waitForFunction(()=>navigator.onLine===false);
+  await action(page,'rebuild-search');await page.locator('#vault-search').fill('searchphrase');await action(page,'search-vault');
+  check((await page.locator('#search-results').textContent()).includes('searchphrase'),'P13_ACTUAL_WORKER_SEARCH:'+await page.locator('#search-coverage').textContent());
+ }finally{await page.context().setOffline(false);}
+ check(await page.locator('#preview script').count()===0,'P13_MARKDOWN_SCRIPT_DENIED');
  const disk=await page.evaluate(async()=>{const {IndexedVault}=await import('/auth/vault-store.js'),store=await new IndexedVault(JSON.parse(document.getElementById('profiles').value)).open();try{return await store.transaction(false,async tx=>{const rows=[];await tx.each(r=>rows.push(r));return JSON.stringify({state:await tx.get(),rows});});}finally{store.close();}});check(!disk.includes('searchphrase')&&!disk.includes('transfer body'),'P13_INDEX_AND_PAYLOAD_ENCRYPTED_IN_IDB');
  await action(page,'retention-report');check((await page.locator('#retention-items').textContent()).includes('current-or-conflict-head'),'P13_RETENTION_REASONS_VISIBLE');
  await page.locator('#offline').click();await page.waitForFunction(()=>Boolean(navigator.serviceWorker?.controller));

@@ -38,6 +38,14 @@ before an assertion can fail. The existing Windows job now fails if coverage is
 missing or native/helper growth exceeds134217728bytes. All30 ordinary gates remain.
 Sampled working sets do not establish unsampled maxima or physical-device memory.
 
+The first revised ordinary Windows run at a364813 passed with baseline138821632
+bytes (helper0), peak222121984 and growth83300352 (79.4MiB),277 samples and repeated
+coverage in all six transfer phases. Actual signed ZIP refusal, genuine NSIS
+upgrade and vendor positive/tampered checks also passed. The entire cohort was
+29/30 because the separate browser-content search assertion failed. The next
+ordinary cohort must pass after the explicitly offline local-search scheduling
+correction; this intermediate Windows PASS does not authorize merge by itself.
+
 ## Development evidence and remaining validation
 
 Linux development reproduced helper-only export RSS430276608bytes. Iterative
