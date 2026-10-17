@@ -94,6 +94,7 @@ zip_path=OUT/'zip-boundary-review.json';zip_path.write_text(json.dumps(zip_revie
 upstream_reports['zip-boundary-review']={'path':str(zip_path.relative_to(ROOT)),'sha256':hashlib.sha256(zip_path.read_bytes()).hexdigest()}
 triage=json.loads((ROOT/'docs/security/p17-advisory-triage.json').read_text());assert triage['production_release_allowed']is False
 reviewed={(e['ecosystem'],e['name'],e['version']):e for e in triage['entries']}
+assert len(reviewed)==len(triage['entries']),'Duplicate advisory policy component/version'
 def disposition(query,ids):
     key=(query['package']['ecosystem'],query['package']['name'],query['version']);entry=reviewed.get(key)
     return entry if entry is not None and ids and ids<=set(entry['advisories']) else None
@@ -108,6 +109,7 @@ for finding in findings:
         assert components[key]==set(entry['affected_lockfiles'])
     elif entry['disposition']=='EXCLUDED_WINDOWS_TARGET':
         assert not any(p['name']==key[1]for p in reachable)
+        if 'affected_lockfiles' in entry:assert components[key]==set(entry['affected_lockfiles'])
     elif entry['disposition'] in ['SCOPED_PE_ONLY_UPDATER','BUILD_ONLY_SIGNED_VENDOR_ARCHIVE']:
         assert components[key]==set(entry['affected_lockfiles']) and zip_review['status']=='PASS'
         assert key[0]=='crates.io' and key[1]=='zip'

@@ -1,5 +1,11 @@
 # Known limitations
 
+The live query at819d3b4 also reported informational unmaintained D-Bus crates
+zbus_names4.3.4/zvariant5.15.0/zvariant_derive5.15.0. They are absent from the
+actual Windows build/test/runtime graph; Linux native desktop is unsupported.
+Exact target exclusions do not patch upstream or permit a future Linux product.
+Original reports are retained under evidence/windows-memory/dbus-development.
+
 The separately authorized [Windows memory follow-up](WINDOWS_MEMORY.md) is in
 progress. Actual Linux1GB helper improvements are measured, but the historical
 Windows128MiB failure remains open until fresh installed-Windows phase-attributed

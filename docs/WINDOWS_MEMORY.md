@@ -98,3 +98,12 @@ not an upstream fix, a universal ZIP-safety assertion or independent review.
 Vendor/signing/build-host compromise and any future archive/target/profile need
 separate review. All179 original frozen files remain unchanged. Full Windows
 negative/update acceptance and final ordinary PR/main cohorts remain pending.
+
+The later819d3b4 live gate also discovered three informational unmaintained D-Bus
+notices. Their original failure is preserved in
+[D-Bus advisory evidence](evidence/windows-memory/dbus-development/index.json).
+Exact versions/IDs occur only in the conservative desktop cross-target lock and
+are absent from the actual supported Windows graph, including build/test features.
+The disposition is rechecked from metadata and exact lock membership; Linux native
+desktop distribution remains unsupported and needs a maintained reviewed profile.
+Unknown IDs/versions still fail; no historical dependency lock was rewritten.

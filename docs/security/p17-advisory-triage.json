@@ -88,6 +88,51 @@
         "packages/windows-native/Cargo.lock"
       ],
       "followup": "Adopt a maintained fixed dependency profile without rewriting historical locks. Reassess for any new build target, source override, signing authority or archive path; upstream/vendor/build-host compromise remains an independent review concern."
+    },
+    {
+      "ecosystem": "crates.io",
+      "name": "zbus_names",
+      "version": "4.3.4",
+      "advisories": [
+        "RUSTSEC-2026-0371"
+      ],
+      "classification": "Informational upstream unmaintained notice; standalone functionality moved into zbus6, no demonstrated vulnerability in this notice",
+      "disposition": "EXCLUDED_WINDOWS_TARGET",
+      "reason": "Present only in the conservative desktop cross-target lock. The actual locked x86_64-pc-windows-msvc resolve graph, including build/test features, contains none of zbus_names, zvariant or zvariant_derive. Linux native desktop distribution is unsupported; this is not an exclusion for browser/PWA code or for future executable targets. Exact version/ID and affected lock membership remain checked.",
+      "affected_lockfiles": [
+        "apps/desktop/src-tauri/Cargo.lock"
+      ],
+      "followup": "Migrate the Linux D-Bus dependency chain to maintained upstream profiles before enabling a Linux native desktop target. Preserve historical locks; new versions/advisory IDs require fresh explicit review. Production and qualified review remain blocked."
+    },
+    {
+      "ecosystem": "crates.io",
+      "name": "zvariant",
+      "version": "5.15.0",
+      "advisories": [
+        "RUSTSEC-2026-0370"
+      ],
+      "classification": "Informational upstream unmaintained notice; standalone functionality moved into zbus6, no demonstrated vulnerability in this notice",
+      "disposition": "EXCLUDED_WINDOWS_TARGET",
+      "reason": "Present only in the conservative desktop cross-target lock. The actual locked x86_64-pc-windows-msvc resolve graph, including build/test features, contains none of zbus_names, zvariant or zvariant_derive. Linux native desktop distribution is unsupported; this is not an exclusion for browser/PWA code or for future executable targets. Exact version/ID and affected lock membership remain checked.",
+      "affected_lockfiles": [
+        "apps/desktop/src-tauri/Cargo.lock"
+      ],
+      "followup": "Migrate the Linux D-Bus dependency chain to maintained upstream profiles before enabling a Linux native desktop target. Preserve historical locks; new versions/advisory IDs require fresh explicit review. Production and qualified review remain blocked."
+    },
+    {
+      "ecosystem": "crates.io",
+      "name": "zvariant_derive",
+      "version": "5.15.0",
+      "advisories": [
+        "RUSTSEC-2026-0372"
+      ],
+      "classification": "Informational upstream unmaintained notice; standalone functionality moved into zbus6, no demonstrated vulnerability in this notice",
+      "disposition": "EXCLUDED_WINDOWS_TARGET",
+      "reason": "Present only in the conservative desktop cross-target lock. The actual locked x86_64-pc-windows-msvc resolve graph, including build/test features, contains none of zbus_names, zvariant or zvariant_derive. Linux native desktop distribution is unsupported; this is not an exclusion for browser/PWA code or for future executable targets. Exact version/ID and affected lock membership remain checked.",
+      "affected_lockfiles": [
+        "apps/desktop/src-tauri/Cargo.lock"
+      ],
+      "followup": "Migrate the Linux D-Bus dependency chain to maintained upstream profiles before enabling a Linux native desktop target. Preserve historical locks; new versions/advisory IDs require fresh explicit review. Production and qualified review remain blocked."
     }
   ]
 }

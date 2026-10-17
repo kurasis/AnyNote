@@ -31,6 +31,16 @@ burst over about16seconds. Pace only the synthetic capacity browser requests at
 100ms across sessions/port; do not retry ambiguous writes, reset the rate store,
 raise the server limit or reduce10accounts/50devices/100000signed revisions.
 
+A later live query added informational unmaintained notices0370/0371/0372 for
+zvariant5.15.0, zbus_names4.3.4 and zvariant_derive5.15.0. Original failed reports
+are retained. All three occur solely in the desktop cross-target lock and are
+absent from the actual supported Windows resolve graph, including build/test
+features. Review only those exact versions/IDs/lock memberships as excluded;
+unsupported Linux native desktop needs a maintained, separately reviewed profile.
+Unknown advisories/versions still fail. The offline verifier derives the exact
+negative-control count from the actual candidate's Git-bound triage policy,
+preserving legacy archive verification without a stale hard-coded count.
+
 ## P15 postmerge network generations and updater observation
 
 An HTTP response started before lock has no right to enter a later vault

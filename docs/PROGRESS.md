@@ -12,6 +12,12 @@ cohorts and retained raw receipts govern final acceptance. New live ZIP findings
 are addressed by PE-only updater dispatch and authenticated vendor-build input
 boundaries, with the vulnerable frozen versions still explicitly tracked. See
 [Windows memory](WINDOWS_MEMORY.md). Historical failures and external gates remain.
+The subsequent819d3b4 cohort passed29/30, including installed Windows growth
+69808128bytes, corrected offline Worker search and full10account/50device/100000
+signed-revision capacity. Three new informational Linux D-Bus notices require
+exact target exclusion policy: the affected crates are absent from the actual
+Windows build/test/runtime graph. Original failure and16negative controls are
+retained; final all30PR/main acceptance remains separately required.
 
 Status vocabulary: NOT STARTED, IN PROGRESS, IMPLEMENTED / UNVERIFIED, BLOCKED,
 VERIFIED. Evidence outcomes: PASS, FAIL, BLOCKED, NOT RUN. A document or scaffold
