@@ -24,6 +24,7 @@ const messages:Record<string,[string,string]>={
  CONFLICT_CONFIRMATION_REQUIRED:['Inspect every conflict branch, then explicitly publish a reviewed resolution.','Проверьте все конфликтующие ветки, затем явно опубликуйте проверенный результат объединения.'],
  UPDATE_TRUST_NOT_CONFIGURED:['This installation has no operator-configured signed update channel.','Для этой установки оператор ещё не настроил подписанный канал обновлений.'],
  UPDATE_INTEGRITY_FAILURE:['The update failed signature or integrity checks. Keep the current installation.','Подпись или целостность обновления не прошла проверку. Сохраните текущую установку.'],
+ UPDATE_FORMAT_UNSUPPORTED:['This update is not a supported Windows installer. Keep the current installation.','Этот пакет не является поддерживаемым установщиком Windows. Сохраните текущую установку.'],
  PAIRING_RESTART_REQUIRED:['The pairing channel closed. Retry a prepared request first; a fresh pairing needs a new local profile.','Канал подключения закрыт. Сначала повторите подготовленный запрос; для нового подключения нужен новый локальный профиль.'],
  PAIRING_PNG_REQUIRED:['Choose a PNG QR image no larger than 2048 × 2048 pixels and 4 MiB.','Выберите PNG с QR-кодом размером не более 2048 × 2048 и 4 МиБ.'],
  CANCELLED:['The action was cancelled.','Действие отменено.']

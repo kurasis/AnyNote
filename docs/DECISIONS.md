@@ -1,5 +1,22 @@
 # Decisions
 
+## ADR028: Reduce transfer allocations and enforce the existing memory target
+
+Keep the128MiB Windows target, original pre-transfer OS baseline and helper startup
+scope. Reduce duplicate ownership and eager compilation, preserve frozen protocol
+predicates and maintained crypto, and make a missing measurement or budget breach
+fail the existing Windows job. No smaller old-space ceiling limits valid metadata.
+Linux helper-only improvements and sampled hosted observations do not establish
+physical or unsampled memory bounds. See [Windows memory](WINDOWS_MEMORY.md).
+
+The required live advisory gate discovered new ZIP extraction issues during this
+follow-up. Preserve historical locks and the actual failing report. Narrow the
+supported updater dispatch to authenticated PE installers before Tauri install,
+reject even signed ZIPs, and prove the build-only vendor ZIP path authenticates
+before extraction with real positive/tampered bytes. Exact crate/input/graph
+checks and new-advisory controls constrain the scoped engineering dispositions;
+no upstream fix, independent review or production waiver is claimed.
+
 ## P15 postmerge network generations and updater observation
 
 An HTTP response started before lock has no right to enter a later vault

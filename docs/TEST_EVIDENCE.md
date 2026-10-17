@@ -1,5 +1,26 @@
 # Test evidence
 
+## Windows memory follow-up — development and exact-source acceptance
+
+See [measurement scope and actual results](WINDOWS_MEMORY.md). Development passed
+72 client tests,6728 deterministic parser/schema cases,512 envelope and512 tar
+negatives,112 native vault tests including1GB, restricted frozen-archive bridge,
+three pipe regressions and62 release-native HTTPS/API checks with1GB. Independent
+Go age and full authenticated helper before/after1GB recovery passed. Startup19
+commands and all179 frozen files passed. Raw local reports remain under
+`artifacts/p14`, `artifacts/p17` and `/workspace/anynote-setup`; dirty development
+does not replace the30-job ordinary PR/main cohorts or the installed Windows gate.
+
+The PE-only updater policy passes native valid-header/invalid-offset/truncation/
+ZIP-prefix negatives. The exact frozen vendor build functions with locked build
+dependencies extract157 authentic files and reject a one-byte archive mutation
+before installing any file. These local Linux checks do not claim Windows
+execution; the ordinary Windows job repeats both cases and a correctly signed ZIP
+update refusal before the genuine NSIS upgrade. The P18 candidate suite passes23
+tests, including memory-receipt target/baseline/phase/source substitutions and
+legacy blocked-candidate verification. Final measured Windows growth and all30
+ordinary PR/main outcomes must be read from the retained exact-source receipts.
+
 ## P15 postmerge lifecycle follow-up
 
 Merged main `b1832ce` finished 25/27 ordinary push jobs: PWA failed unlocking

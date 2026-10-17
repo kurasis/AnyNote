@@ -8,6 +8,30 @@ import {join,resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {once} from 'node:events';
 import {createHash} from 'node:crypto';
+import {PassThrough} from 'node:stream';
+import {frameReader} from '../apps/desktop/bridge/framed-input.mjs';
+
+const frame=(kind,bytes=Buffer.alloc(0))=>{const h=Buffer.alloc(8);h.writeUInt32BE(kind);h.writeUInt32BE(bytes.length,4);return Buffer.concat([h,bytes]);};
+test('fragmented input preserves selective prefetch, zeroes released members and reuses their bounded storage',async()=>{
+ const input=new PassThrough(),reader=frameReader(input),bytes=Buffer.alloc(8388608,97);
+ try{
+  const first=reader.take([3]);input.write(frame(13,Buffer.from('PUBLIC_REQUEST')));
+  const message=frame(3,bytes);for(let i=0;i<message.length;i+=65531)input.write(message.subarray(i,i+65531));
+  const received=await first;assert.deepEqual(received.bytes,bytes);
+  assert.equal((await reader.take([13])).bytes.toString(),'PUBLIC_REQUEST');
+  const allocation=received.bytes.buffer;reader.release(received.bytes);assert(received.bytes.every(b=>b===0));
+  const second=reader.take([3]);input.write(frame(3,bytes));const reused=await second;
+  assert.equal(reused.bytes.buffer,allocation);assert.deepEqual(reused.bytes,bytes);
+  reader.release(reused.bytes);reader.close();assert(reused.bytes.every(b=>b===0));
+ }finally{reader.close();}
+});
+test('input rejects oversize declarations and truncated headers/bodies without waiting for untrusted allocation',async()=>{
+ for(const bytes of [frame(3).subarray(0,7),Buffer.from([0,0,0,3,1,0,0,1]),frame(3,Buffer.alloc(16)).subarray(0,23)]){
+  const input=new PassThrough(),reader=frameReader(input);
+  try{const denied=assert.rejects(reader.take(),/BRIDGE_CLOSED|RESOURCE_LIMIT/);input.end(bytes);await denied;}
+  finally{reader.close();}
+ }
+});
 
 test('restricted async frame output drains input before output is read, retaining concurrent frame order',async()=>{
  const root=mkdtempSync(join(tmpdir(),'anynote-duplex-')),entry=join(root,'public.mjs'),writer=resolve(import.meta.dirname,'../apps/desktop/bridge/framed-output.mjs');const size=8388608;let child,timer;

@@ -1,5 +1,18 @@
 # Implementation progress
 
+## Authorized follow-up: Windows transfer memory — IN PROGRESS
+
+The owner requested remediation of the observed native/helper128MiB target
+violation after P18. Bounded helper startup/schema compilation, frame ownership,
+age backpressure, tar storage and WASM hash updates are implemented, with an
+enforced original-baseline Windows memory gate and phase-attributed receipts.
+Local genuine1GB/crypto/native/API regressions pass. The first ordinary Windows
+run passed its installed1GB memory assertion; the exact-source final PR/main
+cohorts and retained raw receipts govern final acceptance. New live ZIP findings
+are addressed by PE-only updater dispatch and authenticated vendor-build input
+boundaries, with the vulnerable frozen versions still explicitly tracked. See
+[Windows memory](WINDOWS_MEMORY.md). Historical failures and external gates remain.
+
 Status vocabulary: NOT STARTED, IN PROGRESS, IMPLEMENTED / UNVERIFIED, BLOCKED,
 VERIFIED. Evidence outcomes: PASS, FAIL, BLOCKED, NOT RUN. A document or scaffold
 does not satisfy a feature gate. Production release is not ready.

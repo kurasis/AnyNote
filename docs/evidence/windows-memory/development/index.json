@@ -1,0 +1,54 @@
+{
+  "purpose": "Original incremental Linux development measurements; not one exact-source acceptance cohort",
+  "status": "DEVELOPMENT_ONLY",
+  "baseline_commit": "388e6d7206f4c4937943924673bfa045ab704dc5",
+  "final_windows_budget": "NOT_RUN",
+  "physical_acceptance": false,
+  "reports": [
+    {
+      "path": "profile-before.json",
+      "bytes": 555,
+      "sha256": "63f5b101d83d619ad2d388993e58c01c9c954eb0ae9f7388491c3bbd3d8d67df"
+    },
+    {
+      "path": "profile-minified.json",
+      "bytes": 551,
+      "sha256": "78e4b1e74a2bd9df814936337bc11012b2fcfbfe17c15d324311cc14fb865a50"
+    },
+    {
+      "path": "inspect-before.json",
+      "bytes": 681,
+      "sha256": "f5883fe399b8fa71e87974e702158accc82f8898aad8fd5d7ee541e7b479e65d"
+    },
+    {
+      "path": "inspect-intermediate.json",
+      "bytes": 737,
+      "sha256": "dc5f4b8f22be28b054a1c2c0469c12c8847d339515c3d99c4908a232975db83b"
+    },
+    {
+      "path": "inspect-zero-copy-growth.json",
+      "bytes": 776,
+      "sha256": "3cec6c9c907513ca37213ac7de7395901c2c5124f6c6d8d3517370991c8d5be7"
+    },
+    {
+      "path": "portable-report.json",
+      "bytes": 8465,
+      "sha256": "abc755dbb150d3292d155e4a25b10f79bfa787d46b61fb5e02e4c2902c38298f"
+    },
+    {
+      "path": "fuzz-report.json",
+      "bytes": 1589,
+      "sha256": "31671655310ebf4920998c31b3c1e6dccd91b7048ec4c6cda627e86281f54ec4"
+    },
+    {
+      "path": "native-http-development.json",
+      "bytes": 885,
+      "sha256": "c0a9d365bf0c5182f1e93f28a865755d4d76b7b0c63bc72cfd43fef66f264b64"
+    },
+    {
+      "path": "gigabyte-development.json",
+      "bytes": 432,
+      "sha256": "4d8aea40480d0655b5913436a819f30a668d955b5c61d9b06ff3a69fe82b2efd"
+    }
+  ]
+}

@@ -85,10 +85,11 @@ export function createHash(algorithm) {
   const api = {
     update(b) {
       if (done) throw Error("HASH_FINALIZED");
-      sodium.crypto_hash_sha256_update(
-        state,
-        b instanceof Uint8Array ? b : encoder.encode(b),
-      );
+      const bytes = b instanceof Uint8Array ? b : encoder.encode(b);
+      // The maintained wrapper copies each update into WASM memory. Chunk the
+      // update rather than growing that permanent heap for a whole file part.
+      for (let at = 0; at < bytes.length; at += 65536)
+        sodium.crypto_hash_sha256_update(state, bytes.subarray(at, at + 65536));
       return api;
     },
     digest(encoding) {

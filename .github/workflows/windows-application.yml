@@ -89,6 +89,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo build --manifest-path packages/windows-native/Cargo.toml --release --features integration-harness --locked -j 4
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Actual frozen vendor ZIP authentication before extraction
+        run: python scripts/p17-zip-vendor.py
       - name: Actual owned Windows TLS, PHP and MariaDB
         run: |
           $env:ANYNOTE_TEST_PYTHON = (Get-Command python).Source
