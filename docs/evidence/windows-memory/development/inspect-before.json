@@ -1,0 +1,24 @@
+{
+  "label": "before",
+  "status": "PASS",
+  "validated_before_recovery": true,
+  "plaintext_bytes": 1000000000,
+  "parts": 120,
+  "samples": 1505,
+  "baseline": {
+    "rss": 286044160,
+    "heapTotal": 200437760,
+    "heapUsed": 27300760,
+    "external": 27350849,
+    "arrayBuffers": 17209509
+  },
+  "peak": {
+    "rss": 408203264,
+    "heapUsed": 62266536,
+    "external": 131790826,
+    "arrayBuffers": 108752352
+  },
+  "elapsed_ms": 105550,
+  "flags": [],
+  "scope": "Actual restricted bundled helper validates every archive item, independent authority, full file AEAD/hash, then recovers real random 1GB; Linux helper-only diagnostic, no API/installer/physical acceptance"
+}

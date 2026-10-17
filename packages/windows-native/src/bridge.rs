@@ -59,6 +59,11 @@ impl Bridge {
         let script_argument = assets.script;
         let mut cmd = Command::new(assets.node);
         cmd.arg("--no-addons")
+            // Keep helper startup/young-generation allocation independent of
+            // host RAM. Preserve old-space capacity for bounded metadata.
+            .arg("--optimize-for-size")
+            .arg("--max-semi-space-size=1")
+            .arg("--heap-growing-percent=10")
             .arg("--disable-proto=throw")
             .arg("--permission")
             .arg(format!(

@@ -3,6 +3,34 @@ use anynote_windows_native::updates::UpdatePolicy;
 use base64::{Engine, engine::general_purpose::STANDARD};
 use serde_json::Value;
 #[test]
+fn update_installer_dispatch_rejects_archives_and_invalid_pe_offsets() {
+    let mut pe = vec![0u8; 128];
+    pe[..2].copy_from_slice(b"MZ");
+    pe[60..64].copy_from_slice(&64u32.to_le_bytes());
+    pe[64..68].copy_from_slice(b"PE\0\0");
+    UpdatePolicy::windows_installer(&pe).unwrap();
+    for bytes in [
+        b"PK\x03\x04".to_vec(),
+        b"PK\x05\x06".to_vec(),
+        vec![],
+        pe[..67].to_vec(),
+    ] {
+        assert_eq!(
+            UpdatePolicy::windows_installer(&bytes).unwrap_err().0,
+            "UPDATE_FORMAT_UNSUPPORTED"
+        );
+    }
+    for offset in [0, 63, 125, u32::MAX] {
+        let mut bad = pe.clone();
+        bad[60..64].copy_from_slice(&offset.to_le_bytes());
+        assert!(UpdatePolicy::windows_installer(&bad).is_err());
+    }
+    // A ZIP prefix cannot enter the updater ZIP extractor even if other bytes
+    // include a PE header or the publisher signed an unsupported archive.
+    pe[..4].copy_from_slice(b"PK\x03\x04");
+    assert!(UpdatePolicy::windows_installer(&pe).is_err());
+}
+#[test]
 fn maintained_signatures_bind_update_application_version_platform_channel_url_and_payload() {
     let fixture: Value = serde_json::from_slice(include_bytes!(
         "../../../fixtures/windows/p14/updates/signatures.json"

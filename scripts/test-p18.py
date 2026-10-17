@@ -172,6 +172,52 @@ class Candidate(unittest.TestCase):
             self.assertEqual(selected, [source], name)
             self.assertGreater(source.stat().st_size, 0)
 
+    def _memory_fixture(self):
+        spec = importlib.util.spec_from_file_location('acceptance', c.ROOT / 'scripts/p18-acceptance.py')
+        a = importlib.util.module_from_spec(spec); spec.loader.exec_module(a)
+        phases = {p: {'samples': 2, 'helper_samples': 2} for p in ['upload', 'download', 'export', 'inspect', 'import', 'recovered-download']}
+        transfer = {'baseline_bytes': {'native': 104857600, 'helper': 0, 'native_helper': 104857600},
+                    'observed_peak_bytes': {'native_helper': 209715200},
+                    'observed_increase_bytes': {'native_helper': 104857600},
+                    'samples': 12, 'phases': phases, 'initial_native_helper_target_bytes': 134217728,
+                    'target_observation': 'OBSERVED_WITHIN_INITIAL_TARGET'}
+        budget = {'status': 'PASS', 'source_commit': 'a'*40, 'source_tree_dirty': False, 'memory': {'transfer': transfer}}
+        host = {'memory': copy.deepcopy(budget['memory']), 'large_file': {'bytes': 1000000000, 'status': 'PASS'}}
+        return a, budget, host
+
+    def test_hosted_memory_proof_keeps_physical_scope_separate(self):
+        a, budget, host = self._memory_fixture()
+        proof = a.memory_verification(budget, host, 'a'*40, {'member': 'synthetic-verifier-input.json'})
+        self.assertEqual(proof['observed_growth_bytes'], 104857600)
+        self.assertEqual(proof['target_bytes'], 134217728)
+        self.assertIn('Physical/unsampled', proof['scope'])
+        self.assertIs(c.eligibility()['production_release_allowed'], False)
+
+    def test_memory_receipt_cannot_raise_target_warm_baseline_hide_growth_or_omit_phases(self):
+        a, budget, host = self._memory_fixture()
+        mutations = [lambda v: v.update(source_tree_dirty=True), lambda v: v.update(source_commit='b'*40),
+                     lambda v: v['memory']['transfer'].update(initial_native_helper_target_bytes=268435456),
+                     lambda v: v['memory']['transfer']['baseline_bytes'].update(helper=1),
+                     lambda v: v['memory']['transfer']['observed_increase_bytes'].update(native_helper=0),
+                     lambda v: v['memory']['transfer']['observed_peak_bytes'].update(native_helper=419430400),
+                     lambda v: v['memory']['transfer']['phases']['import'].update(helper_samples=0),
+                     lambda v: v['memory']['transfer']['phases']['download'].update(samples=0)]
+        for mutate in mutations:
+            value = copy.deepcopy(budget); mutate(value)
+            same_host = {**host, 'memory': copy.deepcopy(value['memory'])}
+            with self.subTest(mutation=mutate), self.assertRaises(ValueError):
+                a.memory_verification(value, same_host, 'a'*40, {})
+        host['memory']['transfer']['samples'] = 1
+        with self.assertRaises(ValueError): a.memory_verification(budget, host, 'a'*40, {})
+
+    def test_original_blocked_candidate_policy_stays_verifiable(self):
+        self.manifest['release_eligibility']['blockers']['native_128mib_budget'] = 'FAIL'
+        self.build(); self.assertFalse(c.verify(self.path)['release_eligibility']['production_release_allowed'])
+
+    def test_candidate_cannot_claim_memory_pass_without_the_ordinary_cohort(self):
+        self.manifest['release_eligibility']['blockers']['native_128mib_budget'] = 'PASS'
+        with self.assertRaises(ValueError): self.build()
+
 
 if __name__ == '__main__':
     result = unittest.TextTestRunner(verbosity=1).run(unittest.defaultTestLoader.loadTestsFromTestCase(Candidate))

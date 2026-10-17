@@ -759,6 +759,7 @@ async fn update(
     if anynote_crypto_core::crypto::hash(&bytes) != claims.artifact_sha256 {
         return Err("UPDATE_INTEGRITY_FAILURE".into());
     }
+    anynote_windows_native::updates::UpdatePolicy::windows_installer(&bytes).map_err(|e| e.0)?;
     host.capability(generation).map_err(|e| e.0)?;
     state.lock();
     next.install(bytes).map_err(|_| "UPDATE_INSTALL_FAILED")?;

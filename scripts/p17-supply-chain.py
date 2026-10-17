@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Frozen dependency provenance, live OSV query and delivery-boundary review inputs."""
 import base64
+import importlib.util
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -87,8 +88,13 @@ while pending:
 reachable=[{'name':packages[k]['name'],'version':packages[k]['version'],'features':nodes[k]['features']}for k in sorted(seen)]
 assert not any(p['name']in ['glib','proc-macro-error']for p in reachable)
 tls=[p for p in reachable if p['name']=='rustls'];assert len(tls)==1 and tls[0]['version']=='0.23.46' and set(tls[0]['features'])=={'ring','std','tls12'}
+zip_spec=importlib.util.spec_from_file_location('zip_review',ROOT/'scripts/p17-zip-review.py');zip_module=importlib.util.module_from_spec(zip_spec);zip_spec.loader.exec_module(zip_module)
+zip_review=zip_module.review(ROOT,metadata);zip_review.update({'source_commit':git('rev-parse','HEAD'),'source_tree_dirty':bool(git('status','--porcelain'))})
+zip_path=OUT/'zip-boundary-review.json';zip_path.write_text(json.dumps(zip_review,indent=2)+'\n')
+upstream_reports['zip-boundary-review']={'path':str(zip_path.relative_to(ROOT)),'sha256':hashlib.sha256(zip_path.read_bytes()).hexdigest()}
 triage=json.loads((ROOT/'docs/security/p17-advisory-triage.json').read_text());assert triage['production_release_allowed']is False
 reviewed={(e['ecosystem'],e['name'],e['version']):e for e in triage['entries']}
+assert len(reviewed)==len(triage['entries']),'Duplicate advisory policy component/version'
 def disposition(query,ids):
     key=(query['package']['ecosystem'],query['package']['name'],query['version']);entry=reviewed.get(key)
     return entry if entry is not None and ids and ids<=set(entry['advisories']) else None
@@ -103,6 +109,11 @@ for finding in findings:
         assert components[key]==set(entry['affected_lockfiles'])
     elif entry['disposition']=='EXCLUDED_WINDOWS_TARGET':
         assert not any(p['name']==key[1]for p in reachable)
+        if 'affected_lockfiles' in entry:assert components[key]==set(entry['affected_lockfiles'])
+    elif entry['disposition'] in ['SCOPED_PE_ONLY_UPDATER','BUILD_ONLY_SIGNED_VENDOR_ARCHIVE']:
+        assert components[key]==set(entry['affected_lockfiles']) and zip_review['status']=='PASS'
+        assert key[0]=='crates.io' and key[1]=='zip'
+        assert key[2]=={'SCOPED_PE_ONLY_UPDATER':'4.6.1','BUILD_ONLY_SIGNED_VENDOR_ARCHIVE':'8.6.0'}[entry['disposition']]
     else:raise RuntimeError('Unknown advisory disposition')
 # A new advisory for any package/version is never hidden by an existing entry.
 for entry in triage['entries']:

@@ -1,5 +1,69 @@
 # Test evidence
 
+## Windows memory follow-up — development and exact-source acceptance
+
+See [measurement scope and actual results](WINDOWS_MEMORY.md). Development passed
+72 client tests,6728 deterministic parser/schema cases,512 envelope and512 tar
+negatives,112 native vault tests including1GB, restricted frozen-archive bridge,
+three pipe regressions and62 release-native HTTPS/API checks with1GB. Independent
+Go age and full authenticated helper before/after1GB recovery passed. Startup19
+commands and all179 frozen files passed. Raw local reports remain under
+`artifacts/p14`, `artifacts/p17` and `/workspace/anynote-setup`; dirty development
+does not replace the30-job ordinary PR/main cohorts or the installed Windows gate.
+
+The PE-only updater policy passes native valid-header/invalid-offset/truncation/
+ZIP-prefix negatives. The exact frozen vendor build functions with locked build
+dependencies extract157 authentic files and reject a one-byte archive mutation
+before installing any file. These local Linux checks do not claim Windows
+execution; the ordinary Windows job repeats both cases and a correctly signed ZIP
+update refusal before the genuine NSIS upgrade. The P18 candidate suite passes23
+tests, including memory-receipt target/baseline/phase/source substitutions and
+legacy blocked-candidate verification. Final measured Windows growth and all30
+ordinary PR/main outcomes must be read from the retained exact-source receipts.
+
+The first revised cohort passed29/30, including Windows memory growth83300352
+bytes below134217728, signed ZIP updater refusal and vendor157/0 extraction.
+Its browser-content search assertion failed after rebuild: background catch-up
+can conservatively stale the protected index between UI actions. The ordinary
+browser case now uses actual browser offline mode for explicit rebuild/search,
+then restores networking in `finally` before retention/export checks. It retains
+the real Worker and required result; no source-staleness or authority rule changes.
+The original failed job117363066594/run39021156319 remains failure evidence.
+
+The subsequent capacity job117501556849/run39068679891 failed at the ninth
+account's relay with a genuine edge429, after8accounts/40devices. Its public log
+is retained. The synthetic capacity Browser now spaces requests100ms across all
+sessions sharing the target port, below the unchanged Nginx20requests/s limit.
+Original enrollment signatures, ten accounts/fifty devices,100000 retained signed
+revisions and1001 authenticated history pages remain mandatory; final normal CI
+must execute them. No rate-store reset, retry or server-limit increase is added.
+
+The next819d3b4 advisory job117503296165/run39069252617 failed on three newly
+queried informational unmaintained notices0370/0371/0372. Original API-verified
+artifact12114763976 and report/advisory bytes are retained. Actual Windows metadata
+contains none of the affected zbus_names/zvariant/zvariant_derive versions; all
+occur solely in the desktop cross-target lock. Exact version/ID/lock exclusions
+and16new-ID/version negative controls are required by the updated live review.
+An offline verifier reads the actual candidate's Git-bound policy to derive its
+control count; unknown findings still fail. Final clean ordinary CI is separate.
+
+The same819d3b4 source passed its complete ordinary Windows job and corrected
+sandboxed content-browser job. Windows native/helper growth was
+69808128bytes against unchanged134217728,
+with212samples and helper0 at the original baseline. Both installed/UI
+and separate native1GB/update/recovery/import paths passed. Original Windows
+artifact12115677183 ZIP digest is `8ec2fe2b809f8b5d0fe41e64cb728668a566d0b8b945d11ac3f8ba58f7e46571`.
+This is an intermediate exact-source Windows result; the overall ordinary cohort
+retains its actual advisory failure and the final PR/main cohorts are separate.
+
+The819d3b4 ordinary cohort completed29/30: only the three new informational
+advisories failed. Actual paced capacity passed10accounts/50devices,100000signed
+retained revisions,1001authenticated history pages/100001rows; the corrected
+sandboxed Worker search and complete Windows workflows passed too. All28original
+ZIPs/API digests are retained separately from final acceptance. The next source
+changes only exact advisory policy/verification and tracking evidence; final
+clean ordinary PR and independently observed main still govern completion.
+
 ## P15 postmerge lifecycle follow-up
 
 Merged main `b1832ce` finished 25/27 ordinary push jobs: PWA failed unlocking

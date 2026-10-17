@@ -1,0 +1,20 @@
+{
+  "id": 12114763976,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNDc2Mzk3Ng==",
+  "name": "p17-security-report",
+  "size_in_bytes": 48840,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12114763976",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12114763976/zip",
+  "expired": false,
+  "digest": "sha256:14bf0f4c555593294afe712f1837992b9c922b4f4bdf3fb5207ff728bb0bdb60",
+  "created_at": "2026-10-17T21:40:08Z",
+  "updated_at": "2026-10-17T21:40:08Z",
+  "expires_at": "2026-10-31T21:40:07Z",
+  "workflow_run": {
+    "id": 39069252617,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "819d3b48a7d29145664cf17ee8692dcf7a52e53e"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "label": "minified",
+  "input_bytes": 1000000000,
+  "archive_bytes": 1000327816,
+  "elapsed_ms": 55165,
+  "baseline": {
+    "rss": 115699712,
+    "heapTotal": 32141312,
+    "heapUsed": 28679912,
+    "external": 7991362,
+    "arrayBuffers": 432293
+  },
+  "peak": {
+    "rss": 127283200,
+    "heapUsed": 28679912,
+    "external": 32491347,
+    "arrayBuffers": 24759745
+  },
+  "samples": 465,
+  "scope": "Actual restricted bundled helper export of generated random 1GB archive members; helper-only diagnostic, no API/installer/physical acceptance"
+}

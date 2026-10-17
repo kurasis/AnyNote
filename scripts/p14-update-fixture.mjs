@@ -28,7 +28,13 @@ export function updateFixture(root,appRoot){
   const claims={application_id:'org.anynote.desktop',artifact_sha256:createHash('sha256').update(readFileSync(installer)).digest('base64url'),channel:'candidate',platform:'windows-x86_64',protocol:'anynote-update-v1',url,version:'0.14.1'};
   const claimsFile=join(work,'claims.json');writeFileSync(claimsFile,JSON.stringify(claims));
   const manifest={version:'0.14.1',url,signature:artifactSignature,anynote_claims:claims,anynote_claims_signature:sign(claimsFile)};
+  // A validly signed archive must still fail the supported-PE format boundary.
+  const zip=join(site,'unsupported.zip');
+  execFileSync(process.env.ANYNOTE_TEST_PYTHON??'python',['-c','import sys,zipfile; z=zipfile.ZipFile(sys.argv[1],"w"); i=zipfile.ZipInfo("outside-link"); i.create_system=3; i.external_attr=(0o120777<<16); z.writestr(i,"../anynote-synthetic-escape"); z.close()',zip],{stdio:['ignore','pipe','pipe']});
+  const zipClaims={...claims,artifact_sha256:createHash('sha256').update(readFileSync(zip)).digest('base64url')};
+  const zipClaimsFile=join(work,'zip-claims.json');writeFileSync(zipClaimsFile,JSON.stringify(zipClaims));
+  const zipManifest={...manifest,signature:sign(zip),anynote_claims:zipClaims,anynote_claims_signature:sign(zipClaimsFile)};
   writeFileSync(join(appRoot,'update-policy.json'),JSON.stringify({endpoint:'https://app.anynote.test:18443/p14-update/manifest.json',public_key:publicKey,channel:'candidate'}));
-  return {installer,manifest,set(value){writeFileSync(join(site,'manifest.json'),JSON.stringify(value));},restoreArtifact(){copyFileSync(installer,join(site,'candidate.exe'));},tamperArtifact(){const bytes=readFileSync(installer);bytes[bytes.length-1]^=1;writeFileSync(join(site,'candidate.exe'),bytes);},site,claims};
+  return {installer,manifest,zipManifest,serveZip(){copyFileSync(zip,join(site,'candidate.exe'));},set(value){writeFileSync(join(site,'manifest.json'),JSON.stringify(value));},restoreArtifact(){copyFileSync(installer,join(site,'candidate.exe'));},tamperArtifact(){const bytes=readFileSync(installer);bytes[bytes.length-1]^=1;writeFileSync(join(site,'candidate.exe'),bytes);},site,claims};
  }finally{rmSync(work,{recursive:true});}
 }

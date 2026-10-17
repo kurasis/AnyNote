@@ -1,0 +1,18 @@
+{
+  "purpose": "Original exact-source live unmaintained-advisory failure, before later explicit target review",
+  "status": "FAIL",
+  "source_commit": "819d3b48a7d29145664cf17ee8692dcf7a52e53e",
+  "run_id": 39069252617,
+  "job_id": 117503296165,
+  "artifact_id": 12114763976,
+  "artifact_zip_sha256": "14bf0f4c555593294afe712f1837992b9c922b4f4bdf3fb5207ff728bb0bdb60",
+  "actual_windows_graph_matches": [],
+  "new_ids": [
+    "RUSTSEC-2026-0370",
+    "RUSTSEC-2026-0371",
+    "RUSTSEC-2026-0372"
+  ],
+  "original_report_bytes_changed": false,
+  "production_release_allowed": false,
+  "later_review_scope": "Exact versions and lock membership; absent from actual supported Windows build/test/runtime resolve. No Linux native desktop distribution claim."
+}

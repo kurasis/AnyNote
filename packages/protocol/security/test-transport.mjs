@@ -4,6 +4,30 @@ import {boundedResponse,AuthClient} from '../auth-client.mjs';
 import {SyncClient} from '../sync/client.mjs';
 import {decode as fileDecode} from '../adapters/codecs/codec.mjs';
 import {readFileSync} from 'node:fs';
+import {createHash as nativeHash} from 'node:crypto';
+import {createHash as portableHash} from '../adapters/bytes.mjs';
+import PortableAjv from '../adapters/schema-validation.mjs';
+
+test('bounded WASM hash updates preserve empty, Unicode, chunk-boundary and multipart SHA-256 bytes',()=>{
+ const data=new Uint8Array(8388624);for(let i=0;i<data.length;i++)data[i]=i%251;
+ for(const size of [0,65535,65536,65537,data.length]){
+  const bytes=data.subarray(0,size),expected=nativeHash('sha256').update(bytes).digest('hex');
+  assert.equal(portableHash('sha256').update(bytes).digest('hex'),expected);
+  const multipart=portableHash('sha256');for(let at=0;at<size;at+=65531)multipart.update(bytes.subarray(at,at+65531));
+  assert.equal(multipart.digest('hex'),expected);
+ }
+ assert.equal(portableHash('sha256').update('Тест €').digest('hex'),nativeHash('sha256').update('Тест €').digest('hex'));
+});
+test('deferred schema compilation validates the first call and preserves format, own-property and error denials',()=>{
+ const ajv=new PortableAjv({strict:true,ownProperties:true});let calls=0;
+ ajv.addFormat('checked',value=>{calls++;if(value==='throw')throw Error('bad encoding');return value==='valid';});
+ ajv.addSchema({$id:'urn:anynote:test:deferred',type:'object',required:['value'],additionalProperties:false,properties:{value:{type:'string',format:'checked'}}});
+ const validate=ajv.compile({$ref:'urn:anynote:test:deferred'});
+ assert.equal(calls,0);assert.equal(validate({value:'invalid'}),false);assert(validate.errors.length>0);
+ assert.equal(validate({value:'valid'}),true);assert.equal(validate.errors,null);
+ assert.equal(validate({value:'throw'}),false);assert.equal(validate(Object.create({value:'valid'})),false);
+ assert.equal(validate({value:'valid',extra:true}),false);
+});
 
 function response(chunks,headers={}) {
  let cancelled=false;

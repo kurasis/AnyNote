@@ -1,5 +1,12 @@
 # Next task: independently authorized external release-gate closure
 
+Active owner-authorized request: finish the [Windows memory follow-up](WINDOWS_MEMORY.md).
+Keep the original128MiB target and pre-transfer baseline. Inspect the fresh
+phase-attributed Windows receipt and all30 ordinary PR jobs; repair any failing
+phase before an expected-head merge, then independently observe merged-main30.
+Retain development measurements/failures and all original evidence. The later
+external gates below remain open; do not infer closure from a Linux helper run.
+
 P00–P18 bounded software work is implemented. Read AGENTS, PROGRESS, DECISIONS,
 KNOWN_LIMITATIONS, TEST_EVIDENCE, P18_RELEASE, USER_GUIDE, OPERATOR_HANDOFF,
 P17_SECURITY_REVIEW/security traceability/advisory triage, P16_OPERATIONS and the

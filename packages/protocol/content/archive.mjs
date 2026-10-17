@@ -18,11 +18,11 @@ export async function* tarEntries(entries){
  yield new Uint8Array(1024);
 }
 export async function parseTar(stream,visit){
- const it=stream[Symbol.asyncIterator]();let pending=new Uint8Array(),at=0,observed=0n,count=0,finished=false;
- async function read(n){ensure(n<=16777216,'RESOURCE_LIMIT');const result=new Uint8Array(n);let written=0;while(written<n){if(at===pending.length){const next=await it.next();ensure(!next.done,'EXPORT_TRUNCATED');ensure(next.value instanceof Uint8Array&&next.value.length<=8388624,'RESOURCE_LIMIT');pending=next.value;at=0;observed+=BigInt(pending.length);ensure(observed<=ARCHIVE_LIMIT,'RESOURCE_LIMIT');if(!pending.length)continue;}const size=Math.min(n-written,pending.length-at);result.set(pending.subarray(at,at+size),written);at+=size;written+=size;}return result;}
+ const it=stream[Symbol.asyncIterator]();let pending=new Uint8Array(),body,at=0,observed=0n,count=0,finished=false;
+ async function read(n){ensure(n<=16777216,'RESOURCE_LIMIT');if(n>=1048576&&(!body||body.length<n))body=new Uint8Array(n);const result=n>=1048576?body.subarray(0,n):new Uint8Array(n);let written=0;while(written<n){if(at===pending.length){const next=await it.next();ensure(!next.done,'EXPORT_TRUNCATED');ensure(next.value instanceof Uint8Array&&next.value.length<=8388624,'RESOURCE_LIMIT');pending=next.value;at=0;observed+=BigInt(pending.length);ensure(observed<=ARCHIVE_LIMIT,'RESOURCE_LIMIT');if(!pending.length)continue;}const size=Math.min(n-written,pending.length-at);result.set(pending.subarray(at,at+size),written);at+=size;written+=size;}return result;}
  try{for(;;){const h=await read(512);if(h.every(v=>v===0)){ensure((await read(512)).every(v=>v===0),'INVALID_ARCHIVE_END');break;}const zero=h.indexOf(0);ensure(zero>0&&zero<=100,'UNSAFE_ARCHIVE_PATH');const path=td.decode(h.subarray(0,zero));ensure(generatedPath(path),'UNSAFE_ARCHIVE_PATH');const oct=td.decode(h.subarray(124,136));ensure(/^[0-7]{11}\0$/.test(oct),'INVALID_ARCHIVE_HEADER');const size=parseInt(oct,8);ensure(size<=entryCap(path)&&sodium.memcmp(h,tarHeader(path,size)),'INVALID_ARCHIVE_HEADER');ensure(++count<=4008003,'RESOURCE_LIMIT');const bytes=await read(size);ensure((await read((512-size%512)%512)).every(v=>v===0),'INVALID_ARCHIVE_PADDING');try{await visit({path,bytes});}finally{bytes.fill(0);}}
  ensure(at===pending.length,'TRAILING_ARCHIVE_DATA');for(;;){const next=await it.next();if(next.done)break;ensure(next.value instanceof Uint8Array&&next.value.length===0,'TRAILING_ARCHIVE_DATA');}finished=true;return {entries:count,observed_bytes:String(observed)};
- }finally{if(!finished)await it.return?.();pending.fill(0);}
+ }finally{body?.fill(0);if(!finished)await it.return?.();pending.fill(0);}
 }
 // Same domain/framing as frozen P02; metadata cap is independent of file bytes.
 export function pageCommitment(family,pages){
