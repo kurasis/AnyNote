@@ -24,6 +24,13 @@ behavior. The browser acceptance now rebuilds/searches with actual offline
 networking, then restores it before the original retention/export checks. It
 does not suppress a failed assertion or change source-staleness/custody policy.
 
+The next ordinary capacity run reached8accounts/40devices, then the ninth
+account's enrollment relay was rejected429 by the unchanged production-template
+Nginx20requests/s/burst60 boundary. Faster registration/enrollment consumed its
+burst over about16seconds. Pace only the synthetic capacity browser requests at
+100ms across sessions/port; do not retry ambiguous writes, reset the rate store,
+raise the server limit or reduce10accounts/50devices/100000signed revisions.
+
 ## P15 postmerge network generations and updater observation
 
 An HTTP response started before lock has no right to enter a later vault

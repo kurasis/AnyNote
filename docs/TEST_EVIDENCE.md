@@ -30,6 +30,14 @@ then restores networking in `finally` before retention/export checks. It retains
 the real Worker and required result; no source-staleness or authority rule changes.
 The original failed job117363066594/run39021156319 remains failure evidence.
 
+The subsequent capacity job117501556849/run39068679891 failed at the ninth
+account's relay with a genuine edge429, after8accounts/40devices. Its public log
+is retained. The synthetic capacity Browser now spaces requests100ms across all
+sessions sharing the target port, below the unchanged Nginx20requests/s limit.
+Original enrollment signatures, ten accounts/fifty devices,100000 retained signed
+revisions and1001 authenticated history pages remain mandatory; final normal CI
+must execute them. No rate-store reset, retry or server-limit increase is added.
+
 ## P15 postmerge lifecycle follow-up
 
 Merged main `b1832ce` finished 25/27 ordinary push jobs: PWA failed unlocking

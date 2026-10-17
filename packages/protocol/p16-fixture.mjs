@@ -15,11 +15,19 @@ const edit=(group,kind,object_id=null,thread_id=null,c=content(),parents=[],acti
 async function publish(f,e){const d=await notes(f,'save',[e]),a=await notes(f,'queue',[d.draft_id]),sent=await notes(f,'send',[a.attempt_id]),c=sent.request.bundle.envelope.header.context,path=c.action==='create'&&c.object_kind==='thread'?'/groups/'+c.group_id+'/threads':c.action==='create'&&c.object_kind==='entry'?'/threads/'+c.thread_id+'/entries':'/objects/'+c.object_id+'/revisions',receipt=await ok(f.browser,path,sent.request);await notes(f,'ack',[a.attempt_id,receipt]);return {...d,...a,request:sent.request,receipt};}
 async function privateGroup(f){const made=await notes(f,'prepareGroup'),status=await ok(f.browser,'/groups',made.request);await notes(f,'group',[status]);return status;}
 const origin='https://app.anynote.test:19443';
+// Ten synthetic accounts share the production-template edge's20requests/s
+// service budget. Pace the capacity setup across every browser/session; fast
+// runners must not turn genuine enrollment into a burst-rate test.
+const capacityRequestSlots=new Map();
 export function control(operation,input,target='source'){return JSON.parse(execFileSync('python3',['scripts/p16-drill.py','control',operation],{input:input?JSON.stringify(input):undefined,encoding:'utf8',env:{...process.env,ANYNOTE_P16_TARGET:target}}));}
 export class Browser{
  cookie;csrf;
  constructor({target='source',port=19443,operator=false}={}){this.target=target;this.port=port;this.origin='https://app.anynote.test:'+port;this.ca=readFileSync('.local/p16/'+target+'/tls/ca.crt');this.operatorTls=operator?{cert:readFileSync('.local/p16/offline-operator/admin-client.crt'),key:readFileSync('.local/p16/offline-operator/admin-client.key')}:{};}
  async call(path,body,method=body?'POST':'GET',extra={}){
+  if(this.target==='capacity'){
+   const now=performance.now(),next=Math.max(now,capacityRequestSlots.get(this.port)??now);capacityRequestSlots.set(this.port,next+100);
+   if(next>now)await new Promise(resolve=>setTimeout(resolve,next-now));
+  }
   const text=body===undefined?undefined:JSON.stringify(body);
   const r=await new Promise((done,reject)=>{const request=https.request({hostname:'127.0.0.1',port:this.port,servername:'api.anynote.test',ca:this.ca,...this.operatorTls,path:'/api/v1'+path,method,headers:{Host:'api.anynote.test:'+this.port,Origin:this.origin,...(this.cookie?{Cookie:this.cookie}:{}),...(this.csrf?{'X-CSRF-TOKEN':this.csrf}:{}),...(text?{'Content-Type':'application/json','Content-Length':Buffer.byteLength(text)}:{}),...extra}},response=>{const chunks=[];let size=0;response.on('data',b=>{size+=b.length;if(size>4194304)request.destroy(Error('BOUNDED_RESPONSE'));else chunks.push(b);});response.on('end',()=>{let json;try{json=JSON.parse(Buffer.concat(chunks));}catch{}done({status:response.statusCode,json,headers:response.headers});});});request.setTimeout(30000,()=>request.destroy(Error('HTTP_TIMEOUT')));request.on('error',reject);request.end(text);});
   if(r.headers['set-cookie'])this.cookie=r.headers['set-cookie'].filter(c=>c.startsWith('__Host-vault_session=')).map(c=>c.split(';')[0]).join('; ');
