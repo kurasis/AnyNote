@@ -1,0 +1,10 @@
+{
+  "release_id": 416376319,
+  "tag": "v0.18.0-review.1",
+  "source_commit": "c52af68046f98e55fab904f2f9bfd3984e54498a",
+  "inputs_zip_sha256": "4ac7ae4c3e85f35d63cc74a57c215f8091b46e996e2a36313183885a912b6949",
+  "handoff_name": "AnyNote-offline-review-c52af68046f9.tar.gz",
+  "delivery_name": "AnyNote-0.18.0-review-c52af68046f9.zip",
+  "expected_python": "3.12.14",
+  "original_zlib": "1.3.2"
+}
