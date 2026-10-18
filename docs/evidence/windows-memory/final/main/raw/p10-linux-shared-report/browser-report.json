@@ -1,0 +1,79 @@
+{
+  "purpose": "P10 actual multi-account shared-group UI and protected persistent storage",
+  "status": "PASS",
+  "source_commit": "c52af68046f98e55fab904f2f9bfd3984e54498a",
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "browser_version": "155.0.8059.39",
+  "runtime_platform": "linux",
+  "checks": 41,
+  "custody_diagnostics": [
+    {
+      "role": "owner",
+      "events": [
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "IDENTITY_CONFIRMATION_REQUIRED",
+          "ms": 49368
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "IDENTITY_CONFIRMATION_REQUIRED",
+          "ms": 118897
+        }
+      ]
+    },
+    {
+      "role": "editor",
+      "events": [
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "PINNED_ACCOUNT_REQUIRED",
+          "ms": 166391
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "PINNED_ACCOUNT_REQUIRED",
+          "ms": 193238
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "PINNED_ACCOUNT_REQUIRED",
+          "ms": 206167
+        }
+      ]
+    },
+    {
+      "role": "reader",
+      "events": [
+        {
+          "event": "custody-error",
+          "operation": "notes.queue",
+          "error": "ROLE_FORBIDDEN",
+          "ms": 288909
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "ROSTER_CHANGED",
+          "ms": 384684
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.group",
+          "error": "POLICY_CHANGED",
+          "ms": 406035
+        }
+      ]
+    }
+  ],
+  "chromium_sandbox": true,
+  "request_pacing": "Genuine roster/group requests paced below unchanged production limits; no mocked API responses",
+  "tls_verification": "Real trusted disposable CA and hostname validation",
+  "source_tree_dirty": false
+}

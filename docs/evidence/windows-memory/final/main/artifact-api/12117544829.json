@@ -1,0 +1,20 @@
+{
+  "id": 12117544829,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNzU0NDgyOQ==",
+  "name": "p03-foundation-report",
+  "size_in_bytes": 19734,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12117544829",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12117544829/zip",
+  "expired": false,
+  "digest": "sha256:03e17336504e00d047bf95b6609102075ba20a96bb968a8fe7175f234ec807dc",
+  "created_at": "2026-10-17T23:23:08Z",
+  "updated_at": "2026-10-17T23:23:08Z",
+  "expires_at": "2026-10-31T23:23:07Z",
+  "workflow_run": {
+    "id": 39077909927,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "main",
+    "head_sha": "c52af68046f98e55fab904f2f9bfd3984e54498a"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": 12116189120,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNjE4OTEyMA==",
+  "name": "p09-windows-notes-report",
+  "size_in_bytes": 21348,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12116189120",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12116189120/zip",
+  "expired": false,
+  "digest": "sha256:61efb3f472d46ae0bf175d888f76a794022d0b3461809fdd725aa7e6d4f34e0a",
+  "created_at": "2026-10-17T22:23:06Z",
+  "updated_at": "2026-10-17T22:23:06Z",
+  "expires_at": "2026-10-31T22:23:05Z",
+  "workflow_run": {
+    "id": 39073304824,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "a3318d6af929158da5bb4a9a8a1e413f50cbc4aa"
+  }
+}

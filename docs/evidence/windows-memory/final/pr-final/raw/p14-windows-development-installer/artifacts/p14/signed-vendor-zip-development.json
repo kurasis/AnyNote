@@ -1,0 +1,70 @@
+{
+  "purpose": "Actual locked libsodium vendor build script authenticates before ZIP extraction",
+  "status": "PASS",
+  "source_commit": "a3318d6af929158da5bb4a9a8a1e413f50cbc4aa",
+  "source_tree_dirty": false,
+  "platform": "win32",
+  "target": "x86_64-pc-windows-msvc",
+  "builder_sha256": "e418e796cba8d8f1d9f1b6ebe2fea320aa369feadaf8cbe6235c84fe0b8cf48e",
+  "upstream_build_source_sha256": "e73838a8e3eb87d3afcc1cec09b1b81a812819ffc420c02c16c2ca34632fdeea",
+  "driver_source_sha256": "2a87650abc53a146c7609c0598ada4e45465e87f490f7a2e7f15f712765083e6",
+  "driver_scope": "Unchanged upstream build functions; original main renamed and a direct MSVC ZIP entry driver added",
+  "locked_build_dependencies": [
+    {
+      "name": "cc",
+      "version": "1.8.0"
+    },
+    {
+      "name": "libflate",
+      "version": "2.3.2"
+    },
+    {
+      "name": "minisign-verify",
+      "version": "0.2.5"
+    },
+    {
+      "name": "pkg-config",
+      "version": "0.3.34"
+    },
+    {
+      "name": "tar",
+      "version": "0.4.46"
+    },
+    {
+      "name": "ureq",
+      "version": "3.4.2"
+    },
+    {
+      "name": "vcpkg",
+      "version": "0.2.15"
+    },
+    {
+      "name": "zip",
+      "version": "8.6.0"
+    }
+  ],
+  "vendor_archive_sha256": "2aeac7e7f00bc0d980096ea8b908e66dfad5c858d08f1ca3b980d413833303d9",
+  "vendor_signature_sha256": "ae291b8a8a9cc3e822ff516e9e1c667205f5685b6daa7d1adf2dfeb93945e9e9",
+  "cases": [
+    {
+      "case": "authentic",
+      "status": "PASS",
+      "exit_code": 0,
+      "installed_files": 157,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "tampered",
+      "status": "PASS",
+      "exit_code": 101,
+      "installed_files": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "8527f64a02350c3ec6f5f0235e94310e42de47ff3227f8f7dbf54f25c07e051e"
+    }
+  ],
+  "untrusted_extraction_before_verification": false,
+  "upstream_zip_fixed": false,
+  "production_release_allowed": false,
+  "independent_review": "NOT_RUN"
+}

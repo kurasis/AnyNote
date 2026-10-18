@@ -1,0 +1,20 @@
+{
+  "id": 12095642212,
+  "node_id": "MDg6QXJ0aWZhY3QxMjA5NTY0MjIxMg==",
+  "name": "p05-windows-crypto-report",
+  "size_in_bytes": 789,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12095642212",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12095642212/zip",
+  "expired": false,
+  "digest": "sha256:f1dbe83a7bc224798f27db3ef0e7ea3e6f3074d00fef1386432930fdf0b17a67",
+  "created_at": "2026-10-17T08:49:20Z",
+  "updated_at": "2026-10-17T08:49:20Z",
+  "expires_at": "2026-10-31T08:49:20Z",
+  "workflow_run": {
+    "id": 39018651582,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "72f1d1d5bd8954540945cd1716421adf3741b300"
+  }
+}

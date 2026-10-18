@@ -1,0 +1,20 @@
+{
+  "id": 12113944383,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExMzk0NDM4Mw==",
+  "name": "p01-iphone-device-kit",
+  "size_in_bytes": 219971,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12113944383",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12113944383/zip",
+  "expired": false,
+  "digest": "sha256:f884811e635f238efaee52e5a0749ac192596266a3ba41c241257ab5f573e63b",
+  "created_at": "2026-10-17T20:56:12Z",
+  "updated_at": "2026-10-17T20:56:12Z",
+  "expires_at": "2026-10-31T20:56:11Z",
+  "workflow_run": {
+    "id": 39068679882,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "7320d8e08ebdf5e5a69e0f024b3dccb44e05b7a7"
+  }
+}

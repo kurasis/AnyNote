@@ -1,0 +1,8 @@
+{
+  "purpose": "P14 real empty-profile WebView2 and typed IPC preflight; complete installed workflows are separate",
+  "physical_acceptance": false,
+  "status": "PASS",
+  "checks": 5,
+  "source_commit": "72f1d1d5bd8954540945cd1716421adf3741b300",
+  "source_tree_dirty": false
+}

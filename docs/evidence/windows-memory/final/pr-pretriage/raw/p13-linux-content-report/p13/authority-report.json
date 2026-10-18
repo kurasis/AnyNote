@@ -1,0 +1,8 @@
+{
+  "purpose": "P13 actual signed shared-group removal and captured-export reauthorization",
+  "status": "PASS",
+  "checks": 427,
+  "source_commit": "819d3b48a7d29145664cf17ee8692dcf7a52e53e",
+  "source_tree_dirty": false,
+  "physical_acceptance": false
+}

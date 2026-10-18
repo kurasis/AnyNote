@@ -1,0 +1,9 @@
+{
+  "purpose": "P12 actual TLS/SQL/blob/protected file transfers",
+  "status": "PASS",
+  "checks": 368,
+  "source_commit": "a3318d6af929158da5bb4a9a8a1e413f50cbc4aa",
+  "source_tree": "f1ea75f3ceb91eb264ba771fa267fcd2239221fe",
+  "source_tree_dirty": false,
+  "physical_acceptance": false
+}

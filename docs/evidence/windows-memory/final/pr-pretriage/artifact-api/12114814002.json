@@ -1,0 +1,20 @@
+{
+  "id": 12114814002,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNDgxNDAwMg==",
+  "name": "p11-windows-sync-report",
+  "size_in_bytes": 35891,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12114814002",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12114814002/zip",
+  "expired": false,
+  "digest": "sha256:215e7d1ac6cf8fe4c6c1b54d35677e4d386cc6f939c0bfee5ee555176641b328",
+  "created_at": "2026-10-17T21:20:32Z",
+  "updated_at": "2026-10-17T21:20:32Z",
+  "expires_at": "2026-10-31T21:20:31Z",
+  "workflow_run": {
+    "id": 39069252532,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "819d3b48a7d29145664cf17ee8692dcf7a52e53e"
+  }
+}

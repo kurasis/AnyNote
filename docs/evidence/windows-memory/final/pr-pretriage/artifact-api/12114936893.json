@@ -1,0 +1,20 @@
+{
+  "id": 12114936893,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNDkzNjg5Mw==",
+  "name": "p12-windows-files-report",
+  "size_in_bytes": 36156,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12114936893",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12114936893/zip",
+  "expired": false,
+  "digest": "sha256:da0a615a3150bd73e17a15adc4239ed45ce689515afbbd8b575f42691c58c19c",
+  "created_at": "2026-10-17T21:17:28Z",
+  "updated_at": "2026-10-17T21:17:28Z",
+  "expires_at": "2026-10-31T21:17:27Z",
+  "workflow_run": {
+    "id": 39069252655,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "819d3b48a7d29145664cf17ee8692dcf7a52e53e"
+  }
+}

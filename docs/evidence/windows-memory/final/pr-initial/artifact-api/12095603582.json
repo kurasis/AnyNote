@@ -1,0 +1,20 @@
+{
+  "id": 12095603582,
+  "node_id": "MDg6QXJ0aWZhY3QxMjA5NTYwMzU4Mg==",
+  "name": "p08-windows-devices-report",
+  "size_in_bytes": 20196,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12095603582",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12095603582/zip",
+  "expired": false,
+  "digest": "sha256:5620de99a72a298dc8709706191c7739afad87a19908a4320e78b3d3a705b6c4",
+  "created_at": "2026-10-17T09:04:27Z",
+  "updated_at": "2026-10-17T09:04:27Z",
+  "expires_at": "2026-10-31T09:04:26Z",
+  "workflow_run": {
+    "id": 39018651493,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "72f1d1d5bd8954540945cd1716421adf3741b300"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": 12095622242,
+  "node_id": "MDg6QXJ0aWZhY3QxMjA5NTYyMjI0Mg==",
+  "name": "p06-windows-authentication-report",
+  "size_in_bytes": 9659,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12095622242",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12095622242/zip",
+  "expired": false,
+  "digest": "sha256:20514324544ee32df948a5d6906a028506e20120977e70bf3056ccf783aff696",
+  "created_at": "2026-10-17T08:48:39Z",
+  "updated_at": "2026-10-17T08:48:39Z",
+  "expires_at": "2026-10-31T08:48:39Z",
+  "workflow_run": {
+    "id": 39018651508,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "72f1d1d5bd8954540945cd1716421adf3741b300"
+  }
+}

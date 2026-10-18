@@ -1,0 +1,20 @@
+{
+  "id": 12118046994,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExODA0Njk5NA==",
+  "name": "p13-windows-content-report",
+  "size_in_bytes": 45722,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12118046994",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12118046994/zip",
+  "expired": false,
+  "digest": "sha256:455befc46bf761b8fcb174cb6c1f907a59366653afeaf8169a4d5ffb476a8eb2",
+  "created_at": "2026-10-17T23:20:48Z",
+  "updated_at": "2026-10-17T23:20:48Z",
+  "expires_at": "2026-10-31T23:20:48Z",
+  "workflow_run": {
+    "id": 39077909908,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "main",
+    "head_sha": "c52af68046f98e55fab904f2f9bfd3984e54498a"
+  }
+}

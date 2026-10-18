@@ -1,0 +1,9 @@
+{
+  "purpose": "P14 actual native-to-native enrollment over maintained verified TLS/API/SQL",
+  "status": "PASS",
+  "checks": 33,
+  "source_commit": "c52af68046f98e55fab904f2f9bfd3984e54498a",
+  "source_tree_dirty": false,
+  "physical_acceptance": false,
+  "scope": "Three native custodians, both invitation directions, independent candidate keys, QR-channel substitution denial, signed transcript/approval, actual possession proof, immutable roster publication/replay denial, recipient-only group key delivery, bound revocation and immediate custody fencing. Native dialog/WebView2 acceptance is separate."
+}

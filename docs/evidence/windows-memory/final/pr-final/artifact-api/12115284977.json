@@ -1,0 +1,20 @@
+{
+  "id": 12115284977,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNTI4NDk3Nw==",
+  "name": "p03-foundation-report",
+  "size_in_bytes": 19733,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12115284977",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12115284977/zip",
+  "expired": false,
+  "digest": "sha256:c821f89a737148256ecc610f41d9dda8dd234677ca7fb14d020dddd5e33c86d2",
+  "created_at": "2026-10-17T22:12:07Z",
+  "updated_at": "2026-10-17T22:12:07Z",
+  "expires_at": "2026-10-31T22:12:06Z",
+  "workflow_run": {
+    "id": 39073304920,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "a3318d6af929158da5bb4a9a8a1e413f50cbc4aa"
+  }
+}

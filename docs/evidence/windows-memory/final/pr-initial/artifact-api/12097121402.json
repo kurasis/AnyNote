@@ -1,0 +1,20 @@
+{
+  "id": 12097121402,
+  "node_id": "MDg6QXJ0aWZhY3QxMjA5NzEyMTQwMg==",
+  "name": "p15-linux-pwa-report",
+  "size_in_bytes": 11420558,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12097121402",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12097121402/zip",
+  "expired": false,
+  "digest": "sha256:b56252b2b316a67aa6028fb18c046f6c3c736325dd529233879c352c010679e3",
+  "created_at": "2026-10-17T09:33:40Z",
+  "updated_at": "2026-10-17T09:33:40Z",
+  "expires_at": "2026-10-31T09:33:38Z",
+  "workflow_run": {
+    "id": 39018651543,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "72f1d1d5bd8954540945cd1716421adf3741b300"
+  }
+}

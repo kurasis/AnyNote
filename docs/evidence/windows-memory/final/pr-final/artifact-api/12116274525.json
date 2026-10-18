@@ -1,0 +1,20 @@
+{
+  "id": 12116274525,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNjI3NDUyNQ==",
+  "name": "p15-webkit-shell-report",
+  "size_in_bytes": 45623,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12116274525",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12116274525/zip",
+  "expired": false,
+  "digest": "sha256:f49540430fe407a6a584c83f9e8a4431006887a610637446af2aac7c739e404c",
+  "created_at": "2026-10-17T22:28:26Z",
+  "updated_at": "2026-10-17T22:28:26Z",
+  "expires_at": "2026-10-31T22:28:26Z",
+  "workflow_run": {
+    "id": 39073304866,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "a3318d6af929158da5bb4a9a8a1e413f50cbc4aa"
+  }
+}

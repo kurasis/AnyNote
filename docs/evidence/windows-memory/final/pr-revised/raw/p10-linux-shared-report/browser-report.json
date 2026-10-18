@@ -1,0 +1,97 @@
+{
+  "purpose": "P10 actual multi-account shared-group UI and protected persistent storage",
+  "status": "PASS",
+  "source_commit": "a364813462f5af6d60e80ecd7afd7c2037b07145",
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "browser_version": "155.0.8059.39",
+  "runtime_platform": "linux",
+  "checks": 41,
+  "custody_diagnostics": [
+    {
+      "role": "owner",
+      "events": [
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "IDENTITY_CONFIRMATION_REQUIRED",
+          "ms": 49767
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "IDENTITY_CONFIRMATION_REQUIRED",
+          "ms": 118928
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.sync",
+          "error": "POLICY_CHANGED",
+          "ms": 203503
+        }
+      ]
+    },
+    {
+      "role": "editor",
+      "events": [
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "PINNED_ACCOUNT_REQUIRED",
+          "ms": 167065
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "PINNED_ACCOUNT_REQUIRED",
+          "ms": 194342
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "PINNED_ACCOUNT_REQUIRED",
+          "ms": 209901
+        }
+      ]
+    },
+    {
+      "role": "reader",
+      "events": [
+        {
+          "event": "custody-error",
+          "operation": "notes.queue",
+          "error": "ROLE_FORBIDDEN",
+          "ms": 279696
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "ROSTER_CHANGED",
+          "ms": 359267
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.sync",
+          "error": "POLICY_CHANGED",
+          "ms": 359738
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "ROSTER_CHANGED",
+          "ms": 370939
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.group",
+          "error": "POLICY_CHANGED",
+          "ms": 391398
+        }
+      ]
+    }
+  ],
+  "chromium_sandbox": true,
+  "request_pacing": "Genuine roster/group requests paced below unchanged production limits; no mocked API responses",
+  "tls_verification": "Real trusted disposable CA and hostname validation",
+  "source_tree_dirty": false
+}

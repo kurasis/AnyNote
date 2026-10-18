@@ -1,0 +1,20 @@
+{
+  "id": 12114895254,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNDg5NTI1NA==",
+  "name": "p05-linux-crypto-report",
+  "size_in_bytes": 4722,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12114895254",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12114895254/zip",
+  "expired": false,
+  "digest": "sha256:641bf89420e27969679eb415fc6b933e4d6501c38bee5803d767f9b1931fc18f",
+  "created_at": "2026-10-17T21:02:47Z",
+  "updated_at": "2026-10-17T21:02:47Z",
+  "expires_at": "2026-10-31T21:02:47Z",
+  "workflow_run": {
+    "id": 39068679864,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "7320d8e08ebdf5e5a69e0f024b3dccb44e05b7a7"
+  }
+}

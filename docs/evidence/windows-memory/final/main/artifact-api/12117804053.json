@@ -1,0 +1,20 @@
+{
+  "id": 12117804053,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNzgwNDA1Mw==",
+  "name": "p08-linux-devices-report",
+  "size_in_bytes": 20975,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12117804053",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12117804053/zip",
+  "expired": false,
+  "digest": "sha256:0389b3de06d3b500b4e4f7318600a01893091da091c35e7022339e6917bd613c",
+  "created_at": "2026-10-17T23:25:02Z",
+  "updated_at": "2026-10-17T23:25:02Z",
+  "expires_at": "2026-10-31T23:25:01Z",
+  "workflow_run": {
+    "id": 39077909963,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "main",
+    "head_sha": "c52af68046f98e55fab904f2f9bfd3984e54498a"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "purpose": "Actual saved cloud draft and independent backend readback; no publication or fresh-task restoration claim",
+  "status": "PASS",
+  "source_commit": "c52af68046f98e55fab904f2f9bfd3984e54498a",
+  "draft_id": "c6e44868-d5c7-48f5-a9bc-581b967d3273~cecfgdraft_6ad40fce8240819d896f5c76d551db40",
+  "revision": 12,
+  "base_version_id": "c6e44868-d5c7-48f5-a9bc-581b967d3273~cecfgver_6ad2a5546450819da97d22727e33bc12",
+  "save_status": "saved",
+  "requires_publish": true,
+  "full_install_script_readback_equal": true,
+  "full_start_skill_readback_equal": true,
+  "repositories": [
+    {
+      "name": "kurasis/AnyNote",
+      "host": "github.com",
+      "commit": "c52af68046f98e55fab904f2f9bfd3984e54498a",
+      "mount_path": "AnyNote"
+    }
+  ],
+  "unrelated_fields_preserved": [
+    "network_policy",
+    "secrets",
+    "runtime_requirements",
+    "pending_runtime_requirements"
+  ],
+  "unrelated_configuration": {
+    "network_policy": {
+      "type": "unrestricted"
+    },
+    "secrets": [],
+    "runtime_requirements": [],
+    "pending_runtime_requirements": []
+  },
+  "publication": "NOT_RUN",
+  "fresh_task_restoration": "NOT_RUN",
+  "historical_data_restoration": "NOT_CLAIMED",
+  "verified_at": "2026-10-18T00:16:26.318545+00:00",
+  "install_script_sha256": "dca12dcede4c8ac85594f7c97c877c08871009979927a3ad9ffcbeefadd7ebf0",
+  "start_skill_sha256": "0990759e75e37cf93819e259fc8311cfe496a615e8e47b23c3cbfd00c6ac8143"
+}

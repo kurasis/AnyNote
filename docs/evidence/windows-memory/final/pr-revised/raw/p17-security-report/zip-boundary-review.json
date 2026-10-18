@@ -1,0 +1,63 @@
+{
+  "purpose": "Exact frozen ZIP dependency paths and authenticated input dispatch; AI engineering review only",
+  "status": "PASS",
+  "supported_target": "x86_64-pc-windows-msvc",
+  "incoming_edges": [
+    {
+      "parent": "libsodium-sys-stable",
+      "parent_version": "1.24.3",
+      "zip_version": "8.6.0",
+      "kinds": [
+        "build"
+      ]
+    },
+    {
+      "parent": "tauri-plugin-updater",
+      "parent_version": "2.13.3",
+      "zip_version": "4.6.1",
+      "kinds": [
+        null
+      ]
+    }
+  ],
+  "runtime_zip_4_dispatch": "Signed and hash-bound PE-only policy precedes Tauri dispatch; MZ and PK prefixes are disjoint",
+  "build_zip_8_dispatch": "Build dependency only; complete vendor archive is verified against the pinned minisign key before extraction",
+  "vendor_build_profiles_checked": [
+    "1.24.3"
+  ],
+  "registry_source_proofs": [
+    {
+      "package": "tauri-plugin-updater",
+      "version": "2.13.3",
+      "crate_sha256": "855a336eb389d2c1502244fd48fa2d8cb487a430f691bbaed025195f99a04489",
+      "member": "src/updater.rs",
+      "member_sha256": "ab3815c6a8f6de84b48720d1abe4f9b605911288998addb7b45248f0a0a6974d"
+    },
+    {
+      "package": "infer",
+      "version": "0.22.0",
+      "crate_sha256": "f4200d433cbd5178df7797c9c2e75b348b728e39631cf14520d1e2fc424201f4",
+      "member": "src/matchers/archive.rs",
+      "member_sha256": "8a9843279d2cc97df5b7d7017fa03a48feb68a596b43b74391372fe494bb4145"
+    },
+    {
+      "package": "libsodium-sys-stable",
+      "version": "1.24.3",
+      "crate_sha256": "1f55c1c508d31e2cf0a649c9c889e4bcf554cbfb2a6803f049f219784b044283",
+      "member": "build.rs",
+      "member_sha256": "e73838a8e3eb87d3afcc1cec09b1b81a812819ffc420c02c16c2ca34632fdeea"
+    }
+  ],
+  "upstream_vulnerable_versions_remain": true,
+  "upstream_fixed_version": "9.0.0",
+  "production_release_allowed": false,
+  "independent_review": "NOT_RUN",
+  "limitations": [
+    "Not an upstream ZIP fix; no blanket exclusion for new versions or advisories",
+    "Signed ZIP updates are explicitly unsupported, including otherwise valid publisher signatures",
+    "Vendor signing authority and build environment compromise require independent supply-chain review",
+    "New targets, archive inputs or disabled signature/PE checks invalidate this disposition"
+  ],
+  "source_commit": "a364813462f5af6d60e80ecd7afd7c2037b07145",
+  "source_tree_dirty": false
+}

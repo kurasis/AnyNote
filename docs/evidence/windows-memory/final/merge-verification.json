@@ -1,0 +1,19 @@
+{
+  "purpose": "Normal expected-head squash merge after all 30 ordinary PR jobs and full offline original-evidence audit",
+  "status": "PASS",
+  "pr": 34,
+  "base": "388e6d7206f4c4937943924673bfa045ab704dc5",
+  "checked_head": "a3318d6af929158da5bb4a9a8a1e413f50cbc4aa",
+  "synthetic_merge": "a73b414e97c9ca73f37371b70db91bd449e16fbf",
+  "synthetic_parents": [
+    "388e6d7206f4c4937943924673bfa045ab704dc5",
+    "a3318d6af929158da5bb4a9a8a1e413f50cbc4aa"
+  ],
+  "checked_tree": "f1ea75f3ceb91eb264ba771fa267fcd2239221fe",
+  "merged_commit": "c52af68046f98e55fab904f2f9bfd3984e54498a",
+  "merged_tree": "f1ea75f3ceb91eb264ba771fa267fcd2239221fe",
+  "normal_merge": true,
+  "bypass_used": false,
+  "main_ci": "SEPARATELY_OBSERVED_REQUIRED",
+  "production_release_allowed": false
+}

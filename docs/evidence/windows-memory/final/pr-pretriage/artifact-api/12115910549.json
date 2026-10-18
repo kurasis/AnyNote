@@ -1,0 +1,20 @@
+{
+  "id": 12115910549,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNTkxMDU0OQ==",
+  "name": "p07-windows-custody-report",
+  "size_in_bytes": 6531,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12115910549",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12115910549/zip",
+  "expired": false,
+  "digest": "sha256:7be2a4c954377e46257a0c77444b50407d69474592a86d785c9ff1fa64f010c8",
+  "created_at": "2026-10-17T21:43:51Z",
+  "updated_at": "2026-10-17T21:43:51Z",
+  "expires_at": "2026-10-31T21:43:50Z",
+  "workflow_run": {
+    "id": 39069252600,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "819d3b48a7d29145664cf17ee8692dcf7a52e53e"
+  }
+}

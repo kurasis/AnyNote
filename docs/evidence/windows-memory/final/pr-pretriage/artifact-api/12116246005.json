@@ -1,0 +1,20 @@
+{
+  "id": 12116246005,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNjI0NjAwNQ==",
+  "name": "p16-capacity-report",
+  "size_in_bytes": 46331,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12116246005",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12116246005/zip",
+  "expired": false,
+  "digest": "sha256:544d38c5dd88612313b397428e0922e633370a3e4f6147e20756568d4a19fc6b",
+  "created_at": "2026-10-17T21:57:46Z",
+  "updated_at": "2026-10-17T21:57:46Z",
+  "expires_at": "2026-10-31T21:57:45Z",
+  "workflow_run": {
+    "id": 39069252528,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "819d3b48a7d29145664cf17ee8692dcf7a52e53e"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": 12114582020,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNDU4MjAyMA==",
+  "name": "p16-operations-report",
+  "size_in_bytes": 214278453,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12114582020",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12114582020/zip",
+  "expired": false,
+  "digest": "sha256:bcb8a1a3bd8909e1ac7ea6c28fad20f1cd5cd24da4311826b25b72496d824663",
+  "created_at": "2026-10-17T21:11:43Z",
+  "updated_at": "2026-10-17T21:11:43Z",
+  "expires_at": "2026-10-31T21:11:38Z",
+  "workflow_run": {
+    "id": 39069252528,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "819d3b48a7d29145664cf17ee8692dcf7a52e53e"
+  }
+}

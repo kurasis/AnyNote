@@ -1,0 +1,20 @@
+{
+  "id": 12117340890,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNzM0MDg5MA==",
+  "name": "p12-linux-files-report",
+  "size_in_bytes": 37820,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12117340890",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12117340890/zip",
+  "expired": false,
+  "digest": "sha256:fa2e929cee5f325dd7a0dbf6cc458176bd844b1adec2d9be8b9dbab142058b7d",
+  "created_at": "2026-10-17T22:43:15Z",
+  "updated_at": "2026-10-17T22:43:15Z",
+  "expires_at": "2026-10-31T22:43:14Z",
+  "workflow_run": {
+    "id": 39073304828,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "a3318d6af929158da5bb4a9a8a1e413f50cbc4aa"
+  }
+}

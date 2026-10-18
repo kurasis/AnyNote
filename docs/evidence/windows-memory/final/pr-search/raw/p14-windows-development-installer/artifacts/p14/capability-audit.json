@@ -1,0 +1,21 @@
+{
+  "purpose": "P14 static installed-host capability and unchanged-baseline audit",
+  "status": "PASS",
+  "source_commit": "7320d8e08ebdf5e5a69e0f024b3dccb44e05b7a7",
+  "source_tree_dirty": false,
+  "frozen_baseline": "7aaf3b770b739c2bd554bd6feb7e653c00dbe3b9",
+  "unchanged_files": 179,
+  "baseline_digest": "97baac659047880d0652d31e31d398bb972b8acbf804b790e01ddaab517c6c40",
+  "main_permissions": [
+    "allow-file-job",
+    "allow-open-link",
+    "allow-product",
+    "allow-profile",
+    "allow-update",
+    "core:event:allow-listen",
+    "core:event:allow-unlisten"
+  ],
+  "preview_native_permissions": [],
+  "scope": "Static configuration only; actual runtime denials, installer, WebView2 and hardware have separate receipts",
+  "physical_acceptance": false
+}

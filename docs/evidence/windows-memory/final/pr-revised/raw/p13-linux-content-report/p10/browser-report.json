@@ -1,0 +1,88 @@
+{
+  "purpose": "P10 actual multi-account shared-group UI and protected persistent storage",
+  "status": "FAIL",
+  "source_commit": "a364813462f5af6d60e80ecd7afd7c2037b07145",
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "browser_version": "155.0.8059.39",
+  "runtime_platform": "linux",
+  "p11_staged_sync_checks": 4,
+  "checks": 44,
+  "reason": "P13_ACTUAL_WORKER_SEARCH",
+  "custody_diagnostics": [
+    [
+      {
+        "hidden": false,
+        "events": []
+      },
+      {
+        "hidden": false,
+        "events": []
+      }
+    ],
+    [
+      {
+        "hidden": false,
+        "events": []
+      },
+      {
+        "hidden": false,
+        "events": [
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "PINNED_ACCOUNT_REQUIRED",
+            "ms": 175610
+          },
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "PINNED_ACCOUNT_REQUIRED",
+            "ms": 198407
+          },
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "PINNED_ACCOUNT_REQUIRED",
+            "ms": 207288
+          }
+        ]
+      }
+    ],
+    [
+      {
+        "hidden": false,
+        "events": []
+      },
+      {
+        "hidden": true,
+        "events": [
+          {
+            "event": "custody-error",
+            "operation": "notes.queue",
+            "error": "ROLE_FORBIDDEN",
+            "ms": 283149
+          },
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "ROSTER_CHANGED",
+            "ms": 365963
+          },
+          {
+            "event": "custody-error",
+            "operation": "notes.sync",
+            "error": "POLICY_CHANGED",
+            "ms": 368649
+          },
+          {
+            "event": "custody-error",
+            "operation": "notes.shared",
+            "error": "ROSTER_CHANGED",
+            "ms": 376704
+          }
+        ]
+      }
+    ]
+  ]
+}

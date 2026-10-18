@@ -1,0 +1,115 @@
+{
+  "purpose": "Actual hosted Windows installed 1GB transfer memory budget",
+  "status": "PASS",
+  "source_commit": "c52af68046f98e55fab904f2f9bfd3984e54498a",
+  "source_tree_dirty": false,
+  "coverage": {
+    "phases": true,
+    "helpers": true
+  },
+  "memory": {
+    "native_peak_bytes": 186220544,
+    "helper_peak_bytes": 123850752,
+    "webview2_sum_observed_peak_bytes": 488325120,
+    "webview2_max_process_bytes": 147464192,
+    "samples": 439,
+    "scope": "Actual OS native/helper/WebView2 processes. WebView2 sum includes shared pages; not a mobile or JS heap measurement.",
+    "transfer": {
+      "baseline_bytes": {
+        "native": 117772288,
+        "helper": 0,
+        "webview2_sum": 320925696,
+        "native_helper": 117772288
+      },
+      "observed_peak_bytes": {
+        "native": 128708608,
+        "helper": 121929728,
+        "webview2_sum": 320925696,
+        "native_helper": 213151744
+      },
+      "samples": 340,
+      "phases": {
+        "source-generation": {
+          "samples": 1,
+          "helper_samples": 0,
+          "observed_peak_bytes": {
+            "native": 116588544,
+            "helper": 0,
+            "native_helper": 116588544,
+            "webview2_sum": 319250432
+          }
+        },
+        "upload": {
+          "samples": 84,
+          "helper_samples": 0,
+          "observed_peak_bytes": {
+            "native": 128708608,
+            "helper": 0,
+            "native_helper": 128708608,
+            "webview2_sum": 303988736
+          }
+        },
+        "download": {
+          "samples": 26,
+          "helper_samples": 0,
+          "observed_peak_bytes": {
+            "native": 82427904,
+            "helper": 0,
+            "native_helper": 82427904,
+            "webview2_sum": 210067456
+          }
+        },
+        "export": {
+          "samples": 69,
+          "helper_samples": 57,
+          "observed_peak_bytes": {
+            "native": 124157952,
+            "helper": 89763840,
+            "native_helper": 213151744,
+            "webview2_sum": 197423104
+          }
+        },
+        "inspect": {
+          "samples": 31,
+          "helper_samples": 31,
+          "observed_peak_bytes": {
+            "native": 73297920,
+            "helper": 121696256,
+            "native_helper": 187899904,
+            "webview2_sum": 160514048
+          }
+        },
+        "import": {
+          "samples": 104,
+          "helper_samples": 94,
+          "observed_peak_bytes": {
+            "native": 91455488,
+            "helper": 121929728,
+            "native_helper": 213090304,
+            "webview2_sum": 158416896
+          }
+        },
+        "recovered-download": {
+          "samples": 25,
+          "helper_samples": 0,
+          "observed_peak_bytes": {
+            "native": 78032896,
+            "helper": 0,
+            "native_helper": 78032896,
+            "webview2_sum": 156377088
+          }
+        }
+      },
+      "scope": "Same installed app process before the real gigabyte workflow and during upload/download/export/validation/import. Native+helper includes helper startup. WebView2 sum includes shared pages. Sampled working sets are not heap or unsampled maxima.",
+      "observed_increase_bytes": {
+        "native": 10936320,
+        "helper": 121929728,
+        "webview2_sum": 0,
+        "native_helper": 95379456
+      },
+      "initial_native_helper_target_bytes": 134217728,
+      "target_observation": "OBSERVED_WITHIN_INITIAL_TARGET"
+    }
+  },
+  "physical_acceptance": false
+}

@@ -1,0 +1,73 @@
+{
+  "format_version": 1,
+  "date_utc": "2026-10-17T09:32:35.2815388Z",
+  "environment_kind": "hosted",
+  "source_commit": "a364813462f5af6d60e80ecd7afd7c2037b07145",
+  "executable_sha256": "b336bb69fe4a3dcaebffebad03a6d9be9b7354c3aab4840e9e6e35e207e2e0bd",
+  "operation": "capabilities",
+  "os": {
+    "caption": "Microsoft Windows Server 2025 Datacenter",
+    "version": "10.0.26100",
+    "build": "26100",
+    "architecture": "64-bit",
+    "display_version": "24H2",
+    "ubr": 33438
+  },
+  "hardware": {
+    "manufacturer": "Microsoft Corporation",
+    "model": "Virtual Machine",
+    "physical_memory_bytes": 17174360064
+  },
+  "capability": {
+    "native_objects_created": false,
+    "physical_acceptance": false,
+    "report": {
+      "algorithm": "webauthn-prf-aes256gcm",
+      "checks": [
+        {
+          "status": "passed",
+          "test": "webauthn-load"
+        },
+        {
+          "operation": "webauthn-api-9-required",
+          "status": "failed",
+          "test": "webauthn-api"
+        },
+        {
+          "status": "not-run",
+          "test": "hello-platform"
+        },
+        {
+          "status": "not-run",
+          "test": "hello-route"
+        }
+      ],
+      "eligible": false,
+      "enrolled": false,
+      "outcome": "blocked",
+      "purpose": "webauthn-prf-capability",
+      "remaining": [
+        "per-key-tpm-proof",
+        "fresh-authorization-proof",
+        "fresh-process-proof",
+        "account-machine-copy-proof"
+      ],
+      "unlocked": false,
+      "version": 1,
+      "webauthn": {
+        "apiVersion": 7,
+        "osBuild": 26100,
+        "routing": "display-name-candidate",
+        "tpmBinding": "not-verified"
+      }
+    },
+    "source_commit": "a364813462f5af6d60e80ecd7afd7c2037b07145",
+    "status": "CAPABILITY_ONLY",
+    "trial_route_available": false
+  },
+  "operation_outcome": "blocked",
+  "native_exit_code": 0,
+  "native_output": "{\"native_objects_created\":false,\"physical_acceptance\":false,\"report\":{\"algorithm\":\"webauthn-prf-aes256gcm\",\"checks\":[{\"status\":\"passed\",\"test\":\"webauthn-load\"},{\"operation\":\"webauthn-api-9-required\",\"status\":\"failed\",\"test\":\"webauthn-api\"},{\"status\":\"not-run\",\"test\":\"hello-platform\"},{\"status\":\"not-run\",\"test\":\"hello-route\"}],\"eligible\":false,\"enrolled\":false,\"outcome\":\"blocked\",\"purpose\":\"webauthn-prf-capability\",\"remaining\":[\"per-key-tpm-proof\",\"fresh-authorization-proof\",\"fresh-process-proof\",\"account-machine-copy-proof\"],\"unlocked\":false,\"version\":1,\"webauthn\":{\"apiVersion\":7,\"osBuild\":26100,\"routing\":\"display-name-candidate\",\"tpmBinding\":\"not-verified\"}},\"source_commit\":\"a364813462f5af6d60e80ecd7afd7c2037b07145\",\"status\":\"CAPABILITY_ONLY\",\"trial_route_available\":false}\r\n",
+  "physical_acceptance": false,
+  "operator_observations": "Record actual prompts, deliberate cancellation/lock and cleanup in the trial template; native success alone does not certify G1."
+}

@@ -1,0 +1,222 @@
+{
+  "purpose": "Windows transfer-memory follow-up final synthetic acceptance",
+  "status": "PASS",
+  "source_commit": "c52af68046f98e55fab904f2f9bfd3984e54498a",
+  "source_tree": "f1ea75f3ceb91eb264ba771fa267fcd2239221fe",
+  "pr_source_commit": "a3318d6af929158da5bb4a9a8a1e413f50cbc4aa",
+  "pr": 34,
+  "ordinary_pr_jobs": 30,
+  "ordinary_main_jobs": 30,
+  "windows_memory": {
+    "pr": {
+      "baseline_bytes": {
+        "helper": 0,
+        "native": 126275584,
+        "native_helper": 126275584,
+        "webview2_sum": 330420224
+      },
+      "observed_growth_bytes": 89608192,
+      "observed_peak_bytes": {
+        "helper": 121987072,
+        "native": 130990080,
+        "native_helper": 215883776,
+        "webview2_sum": 330420224
+      },
+      "phases": {
+        "download": {
+          "helper_samples": 0,
+          "observed_peak_bytes": {
+            "helper": 0,
+            "native": 80433152,
+            "native_helper": 80433152,
+            "webview2_sum": 234913792
+          },
+          "samples": 25
+        },
+        "export": {
+          "helper_samples": 61,
+          "observed_peak_bytes": {
+            "helper": 88186880,
+            "native": 123498496,
+            "native_helper": 211087360,
+            "webview2_sum": 201351168
+          },
+          "samples": 73
+        },
+        "import": {
+          "helper_samples": 77,
+          "observed_peak_bytes": {
+            "helper": 121987072,
+            "native": 94216192,
+            "native_helper": 215883776,
+            "webview2_sum": 159895552
+          },
+          "samples": 87
+        },
+        "inspect": {
+          "helper_samples": 31,
+          "observed_peak_bytes": {
+            "helper": 121749504,
+            "native": 79323136,
+            "native_helper": 187637760,
+            "webview2_sum": 163069952
+          },
+          "samples": 32
+        },
+        "recovered-download": {
+          "helper_samples": 0,
+          "observed_peak_bytes": {
+            "helper": 0,
+            "native": 82874368,
+            "native_helper": 82874368,
+            "webview2_sum": 154025984
+          },
+          "samples": 23
+        },
+        "source-generation": {
+          "helper_samples": 0,
+          "observed_peak_bytes": {
+            "helper": 0,
+            "native": 122793984,
+            "native_helper": 122793984,
+            "webview2_sum": 329183232
+          },
+          "samples": 1
+        },
+        "upload": {
+          "helper_samples": 0,
+          "observed_peak_bytes": {
+            "helper": 0,
+            "native": 130990080,
+            "native_helper": 130990080,
+            "webview2_sum": 317853696
+          },
+          "samples": 68
+        }
+      },
+      "raw_receipt": {
+        "artifact_id": 12117124762,
+        "artifact_name": "p14-windows-development-installer",
+        "git_input_rows_verified": 0,
+        "member": "artifacts/p14/memory-budget-development.json",
+        "sha256": "d50e15101bd7ec069d259ff1a6050f939aa500d236d78ecc47777ad0fa73f5bf",
+        "source_commit": "a3318d6af929158da5bb4a9a8a1e413f50cbc4aa",
+        "status_as_reported": "PASS"
+      },
+      "scope": "Actual hosted Windows installed 1GB workflow; sampled native/helper working-set growth includes helper startup. Physical/unsampled budgets remain separate.",
+      "source_commit": "a3318d6af929158da5bb4a9a8a1e413f50cbc4aa",
+      "status": "PASS",
+      "target_bytes": 134217728
+    },
+    "main": {
+      "baseline_bytes": {
+        "helper": 0,
+        "native": 117772288,
+        "native_helper": 117772288,
+        "webview2_sum": 320925696
+      },
+      "observed_growth_bytes": 95379456,
+      "observed_peak_bytes": {
+        "helper": 121929728,
+        "native": 128708608,
+        "native_helper": 213151744,
+        "webview2_sum": 320925696
+      },
+      "phases": {
+        "download": {
+          "helper_samples": 0,
+          "observed_peak_bytes": {
+            "helper": 0,
+            "native": 82427904,
+            "native_helper": 82427904,
+            "webview2_sum": 210067456
+          },
+          "samples": 26
+        },
+        "export": {
+          "helper_samples": 57,
+          "observed_peak_bytes": {
+            "helper": 89763840,
+            "native": 124157952,
+            "native_helper": 213151744,
+            "webview2_sum": 197423104
+          },
+          "samples": 69
+        },
+        "import": {
+          "helper_samples": 94,
+          "observed_peak_bytes": {
+            "helper": 121929728,
+            "native": 91455488,
+            "native_helper": 213090304,
+            "webview2_sum": 158416896
+          },
+          "samples": 104
+        },
+        "inspect": {
+          "helper_samples": 31,
+          "observed_peak_bytes": {
+            "helper": 121696256,
+            "native": 73297920,
+            "native_helper": 187899904,
+            "webview2_sum": 160514048
+          },
+          "samples": 31
+        },
+        "recovered-download": {
+          "helper_samples": 0,
+          "observed_peak_bytes": {
+            "helper": 0,
+            "native": 78032896,
+            "native_helper": 78032896,
+            "webview2_sum": 156377088
+          },
+          "samples": 25
+        },
+        "source-generation": {
+          "helper_samples": 0,
+          "observed_peak_bytes": {
+            "helper": 0,
+            "native": 116588544,
+            "native_helper": 116588544,
+            "webview2_sum": 319250432
+          },
+          "samples": 1
+        },
+        "upload": {
+          "helper_samples": 0,
+          "observed_peak_bytes": {
+            "helper": 0,
+            "native": 128708608,
+            "native_helper": 128708608,
+            "webview2_sum": 303988736
+          },
+          "samples": 84
+        }
+      },
+      "raw_receipt": {
+        "artifact_id": 12119396508,
+        "artifact_name": "p14-windows-development-installer",
+        "git_input_rows_verified": 0,
+        "member": "artifacts/p14/memory-budget-development.json",
+        "sha256": "0bbdfc4f8e230ac678e6981bb80e04a16b1d361de6f00fa43af880fa61a85b73",
+        "source_commit": "c52af68046f98e55fab904f2f9bfd3984e54498a",
+        "status_as_reported": "PASS"
+      },
+      "scope": "Actual hosted Windows installed 1GB workflow; sampled native/helper working-set growth includes helper startup. Physical/unsampled budgets remain separate.",
+      "source_commit": "c52af68046f98e55fab904f2f9bfd3984e54498a",
+      "status": "PASS",
+      "target_bytes": 134217728
+    }
+  },
+  "prior_failed_cohorts_preserved": [
+    "pr-initial",
+    "pr-revised",
+    "pr-search",
+    "pr-pretriage"
+  ],
+  "raw_original_json_members": 583,
+  "production_release_allowed": false,
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN"
+}

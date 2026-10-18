@@ -1,0 +1,38 @@
+{
+  "purpose": "Retain actual direct/synthetic CI source commit objects for offline Git-blob verification",
+  "status": "PASS",
+  "local_file": "/workspace/AnyNote/.local/windows-memory/original-ci-sources.bundle",
+  "bytes": 4925243,
+  "sha256": "4a9c6e936136c4860c800c8c4dca84e5f345ed3079cc2a84892f3c9034467857",
+  "source_commits": [
+    "388e6d7206f4c4937943924673bfa045ab704dc5",
+    "72f1d1d5bd8954540945cd1716421adf3741b300",
+    "7320d8e08ebdf5e5a69e0f024b3dccb44e05b7a7",
+    "819d3b48a7d29145664cf17ee8692dcf7a52e53e",
+    "9453fa1bf523adb3d34d7d9ef70d5e20185bdbf3",
+    "96e33d824871559169fc427778a3b251ddca337e",
+    "a3318d6af929158da5bb4a9a8a1e413f50cbc4aa",
+    "a364813462f5af6d60e80ecd7afd7c2037b07145",
+    "a73b414e97c9ca73f37371b70db91bd449e16fbf",
+    "b12a57ec42d4fd68612c71dad7274292b5c33bb3",
+    "c52af68046f98e55fab904f2f9bfd3984e54498a",
+    "eee5c553011768eb07e760b391dcd2108580e257"
+  ],
+  "local_refs": [
+    "refs/anynote-memory-source/388e6d7206f4c4937943924673bfa045ab704dc5",
+    "refs/anynote-memory-source/72f1d1d5bd8954540945cd1716421adf3741b300",
+    "refs/anynote-memory-source/7320d8e08ebdf5e5a69e0f024b3dccb44e05b7a7",
+    "refs/anynote-memory-source/819d3b48a7d29145664cf17ee8692dcf7a52e53e",
+    "refs/anynote-memory-source/9453fa1bf523adb3d34d7d9ef70d5e20185bdbf3",
+    "refs/anynote-memory-source/96e33d824871559169fc427778a3b251ddca337e",
+    "refs/anynote-memory-source/a3318d6af929158da5bb4a9a8a1e413f50cbc4aa",
+    "refs/anynote-memory-source/a364813462f5af6d60e80ecd7afd7c2037b07145",
+    "refs/anynote-memory-source/a73b414e97c9ca73f37371b70db91bd449e16fbf",
+    "refs/anynote-memory-source/b12a57ec42d4fd68612c71dad7274292b5c33bb3",
+    "refs/anynote-memory-source/c52af68046f98e55fab904f2f9bfd3984e54498a",
+    "refs/anynote-memory-source/eee5c553011768eb07e760b391dcd2108580e257"
+  ],
+  "remote_refs_added": false,
+  "private_runtime_state_included": false,
+  "scope": "Only existing public CI-declared Git commits and their public repository ancestry; no working tree/ignored runtime files"
+}

@@ -1,0 +1,11 @@
+{
+  "purpose": "P06 actual sandboxed WebAuthn account-security UI",
+  "status": "PASS",
+  "source_commit": "b12a57ec42d4fd68612c71dad7274292b5c33bb3",
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "checks": 19,
+  "tls_verification": "NSS trusted disposable test CA, no bypass",
+  "chromium_sandbox": true,
+  "synthetic_authenticator": "two independent CDP ctap2 resident UV providers"
+}

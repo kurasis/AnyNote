@@ -1,0 +1,10 @@
+{
+  "purpose": "Actual Windows PHP filesystem durability capability",
+  "file_fsync": true,
+  "directory_open": false,
+  "directory_fsync": false,
+  "ci_directory_durability_adapter": {
+    "status": "PASS",
+    "primitive": "Windows FlushFileBuffers volume"
+  }
+}

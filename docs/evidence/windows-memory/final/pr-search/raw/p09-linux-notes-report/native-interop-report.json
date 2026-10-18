@@ -1,0 +1,11 @@
+{
+  "purpose": "P09 actual native SQLite and maintained PWA adapter interoperation",
+  "status": "PASS",
+  "checks": 16,
+  "platform": "linux",
+  "source_commit": "7320d8e08ebdf5e5a69e0f024b3dccb44e05b7a7",
+  "source_tree_dirty": false,
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "browser_scope": "Portable PWA crypto/custody adapter; actual sandboxed UI is a separate required job"
+}

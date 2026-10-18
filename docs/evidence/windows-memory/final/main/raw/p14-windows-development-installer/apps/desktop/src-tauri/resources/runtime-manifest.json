@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "node_sha256": "uk5tEQ6MFZKh7NOQ9rBfPaEksThxpb5is0GgeoU8bDI",
+  "script_sha256": "WY0LijlTOrSDyi3LWBzC4mpTFc1kiCYO8w07uZ99qmk",
+  "provenance": {
+    "url": "https://nodejs.org/dist/v24.21.0/node-v24.21.0-win-x64.zip",
+    "archive_sha256": "158f7685b44de51f6c0df1d153526cbcd3e1bc739a8dfc607721cef75de9e541",
+    "node": "24.21.0",
+    "license": "Installed NODE-LICENSE includes bundled components"
+  }
+}

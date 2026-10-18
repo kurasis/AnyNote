@@ -1,0 +1,135 @@
+{
+  "purpose": "P14 actual Windows installed application and instrumented WebView2 software acceptance",
+  "status": "PASS",
+  "checks": 31210,
+  "source_commit": "819d3b48a7d29145664cf17ee8692dcf7a52e53e",
+  "source_tree_dirty": false,
+  "installer_sha256": "qVrBa5g-nFHD78eOLLyjsii4kSaw1WhIVokgsUDNJeY",
+  "production_executable_sha256": "1MZPKIFYCrE9xBMsoEq5aQefgX2O0bOCAy7ZcBGPa6c",
+  "instrumented_executable_sha256": "BOBpzgCnL9OwZM1pgWsQtWinh8v6UApBXfQngptdrhY",
+  "instrumentation": "Explicit integration-harness feature permits local CDP only. Owner installer removes debug environment overrides; native custody/IPC/TLS checks remain enabled.",
+  "memory": {
+    "native_peak_bytes": 229007360,
+    "helper_peak_bytes": 123310080,
+    "webview2_sum_observed_peak_bytes": 396316672,
+    "webview2_max_process_bytes": 154894336,
+    "samples": 272,
+    "scope": "Actual OS native/helper/WebView2 processes. WebView2 sum includes shared pages; not a mobile or JS heap measurement.",
+    "transfer": {
+      "baseline_bytes": {
+        "native": 161902592,
+        "helper": 0,
+        "webview2_sum": 357236736,
+        "native_helper": 161902592
+      },
+      "observed_peak_bytes": {
+        "native": 178704384,
+        "helper": 122712064,
+        "webview2_sum": 357240832,
+        "native_helper": 231710720
+      },
+      "samples": 212,
+      "phases": {
+        "source-generation": {
+          "samples": 1,
+          "helper_samples": 0,
+          "observed_peak_bytes": {
+            "native": 161902592,
+            "helper": 0,
+            "native_helper": 161902592,
+            "webview2_sum": 357240832
+          }
+        },
+        "upload": {
+          "samples": 48,
+          "helper_samples": 0,
+          "observed_peak_bytes": {
+            "native": 178704384,
+            "helper": 0,
+            "native_helper": 178704384,
+            "webview2_sum": 355209216
+          }
+        },
+        "download": {
+          "samples": 15,
+          "helper_samples": 0,
+          "observed_peak_bytes": {
+            "native": 119758848,
+            "helper": 0,
+            "native_helper": 119758848,
+            "webview2_sum": 276738048
+          }
+        },
+        "export": {
+          "samples": 43,
+          "helper_samples": 33,
+          "observed_peak_bytes": {
+            "native": 145391616,
+            "helper": 90550272,
+            "native_helper": 231710720,
+            "webview2_sum": 253198336
+          }
+        },
+        "inspect": {
+          "samples": 19,
+          "helper_samples": 19,
+          "observed_peak_bytes": {
+            "native": 82984960,
+            "helper": 122064896,
+            "native_helper": 202133504,
+            "webview2_sum": 209838080
+          }
+        },
+        "import": {
+          "samples": 68,
+          "helper_samples": 60,
+          "observed_peak_bytes": {
+            "native": 104894464,
+            "helper": 122712064,
+            "native_helper": 227074048,
+            "webview2_sum": 187637760
+          }
+        },
+        "recovered-download": {
+          "samples": 18,
+          "helper_samples": 0,
+          "observed_peak_bytes": {
+            "native": 88748032,
+            "helper": 0,
+            "native_helper": 88748032,
+            "webview2_sum": 166764544
+          }
+        }
+      },
+      "scope": "Same installed app process before the real gigabyte workflow and during upload/download/export/validation/import. Native+helper includes helper startup. WebView2 sum includes shared pages. Sampled working sets are not heap or unsampled maxima.",
+      "observed_increase_bytes": {
+        "native": 16801792,
+        "helper": 122712064,
+        "webview2_sum": 4096,
+        "native_helper": 69808128
+      },
+      "initial_native_helper_target_bytes": 134217728,
+      "target_observation": "OBSERVED_WITHIN_INITIAL_TARGET"
+    }
+  },
+  "large_file": {
+    "bytes": 1000000000,
+    "source_sha256": "BKG_VrWv0xHxWLoh7dXaUKrYS-8InfxZOvrpFkF31Ak",
+    "status": "PASS"
+  },
+  "physical_acceptance": false,
+  "wts_scope": "Actual HWND software messages, real GetLastInputInfo/SendInput and five-minute idle. Synthetic operator input during transfers; physical Win+L/Hello/TPM remain NOT_RUN",
+  "updater": {
+    "status": "PASS",
+    "unsupported_signed_zip_rejected": true,
+    "candidate_version": "0.14.1",
+    "candidate_build_override": {
+      "version": "0.14.1"
+    },
+    "candidate_installer_sha256": "o0dbRI8b1t1d0ar0IFeLGJno7Bc8wgETHHbZgV5D2Lc",
+    "updated_executable_sha256": "d_AEU-lClrQN9bDhWN4rcoYJBaqNN1cM570RaXIopuQ",
+    "scope": "Ephemeral maintained CLI signatures over HTTPS, claims/payload tampering denied, actual next-version installer launched, existing encrypted SQLite retained and exact fresh-process draft read",
+    "production_signing": false
+  },
+  "signing": "Unsigned development installer; synthetic updater signatures only; no production release claim"
+}

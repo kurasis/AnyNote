@@ -1,0 +1,197 @@
+{
+  "purpose": "Owned Windows backend static error-code diagnostics; no identifiers, headers or bodies",
+  "failures": [
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "upload-control",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "upload-control",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "upload-control",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "upload-control",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "upload-control",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "route_kind": "other-api",
+      "status": 404,
+      "error_code": "NOT_FOUND"
+    }
+  ]
+}

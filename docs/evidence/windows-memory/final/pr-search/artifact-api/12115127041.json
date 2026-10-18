@@ -1,0 +1,20 @@
+{
+  "id": 12115127041,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNTEyNzA0MQ==",
+  "name": "p14-windows-development-installer",
+  "size_in_bytes": 32625542,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12115127041",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12115127041/zip",
+  "expired": false,
+  "digest": "sha256:26104472db70b29daf5a6d8e33395b82ccd4c82984113cac766731a06f3f37e1",
+  "created_at": "2026-10-17T21:22:21Z",
+  "updated_at": "2026-10-17T21:22:21Z",
+  "expires_at": "2026-10-31T21:22:19Z",
+  "workflow_run": {
+    "id": 39068679897,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "7320d8e08ebdf5e5a69e0f024b3dccb44e05b7a7"
+  }
+}

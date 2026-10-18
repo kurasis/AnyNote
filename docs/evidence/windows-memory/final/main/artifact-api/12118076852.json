@@ -1,0 +1,20 @@
+{
+  "id": 12118076852,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExODA3Njg1Mg==",
+  "name": "p13-linux-content-report",
+  "size_in_bytes": 47966,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12118076852",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12118076852/zip",
+  "expired": false,
+  "digest": "sha256:da63e3a6ad7924f0e23a860c0548cf664b03f079e42fb9452b02a6b44f3f1021",
+  "created_at": "2026-10-17T23:31:20Z",
+  "updated_at": "2026-10-17T23:31:20Z",
+  "expires_at": "2026-10-31T23:31:19Z",
+  "workflow_run": {
+    "id": 39077909908,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "main",
+    "head_sha": "c52af68046f98e55fab904f2f9bfd3984e54498a"
+  }
+}

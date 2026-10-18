@@ -1,0 +1,1802 @@
+{
+  "purpose": "P10 actual multi-account shared-group UI and protected persistent storage",
+  "status": "PASS",
+  "source_commit": "a364813462f5af6d60e80ecd7afd7c2037b07145",
+  "physical_acceptance": false,
+  "independent_review": "NOT_RUN",
+  "browser_version": "155.0.8059.39",
+  "runtime_platform": "linux",
+  "p11_staged_sync_checks": 4,
+  "p15_lock_race": {
+    "status": "PASS",
+    "scenarios": 2,
+    "actual_authenticated_responses": true,
+    "physical_acceptance": false
+  },
+  "p15_storage_preflight": {
+    "status": "PASS",
+    "checks": [
+      "P15_QUOTA_STARTS_WITH_ACKNOWLEDGED_ENCRYPTED_DRAFT",
+      "P15_QUOTA_REOPENS_SAME_DISK_PROFILE_IN_NEW_BROWSER_PROCESS",
+      "P15_ACTUAL_BROWSER_ORIGIN_QUOTA_IS_ONE_BYTE",
+      "P15_REAL_QUOTA_WRITE_FAILURE_REPORTED",
+      "P15_QUOTA_FAILURE_CANNOT_ACKNOWLEDGE_NEW_WORK",
+      "P15_QUOTA_ABORT_RETAINS_EXACT_ENCRYPTED_DRAFT_BYTES",
+      "P15_NO_SPACE_RECOVERY_REOPENS_LAST_ACKNOWLEDGED_TEXT"
+    ],
+    "physical_acceptance": false,
+    "forced_origin_quota_bytes": 1,
+    "failed_operation": "writer-admission",
+    "previous_browser_pid": 24640,
+    "browser_pid": 32392,
+    "prior_origin_usage_bytes": 21407462,
+    "prior_origin_quota_bytes": 92936513126,
+    "observed_error": "STORAGE_FAILURE",
+    "retained_draft_records": 1,
+    "retained_ciphertext_sha256": "f2cf38826dd6d8b04befa7edb08f3d069d8cbb54d27ffe20067ece9ed1178d0d",
+    "scope": "Actual Chromium restart with the same persistent disk profile and one-byte quota before real Worker/IndexedDB write admission; no storage import/reset, crypto/store mocks or physical disk/iPhone eviction claim"
+  },
+  "p12_files": {
+    "gigabyte_bytes": 1000000000,
+    "memory": {
+      "samples": 1535,
+      "sample_interval_ms": 250,
+      "baseline_rss_bytes": 4411518976,
+      "observed_peak_rss_bytes": 5756432384,
+      "observed_peak_growth_bytes": 1344913408,
+      "scope": "sum of actual hosted Chromium process RSS; includes shared-page double counts and other open fixture windows; no iPhone or hard memory ceiling claim"
+    },
+    "checks": 14,
+    "physical_acceptance": false,
+    "stream_completion": "actual desktop saved output hash; iPhone Files acceptance remains NOT_RUN"
+  },
+  "p15_pwa": {
+    "status": "PASS",
+    "checks": [
+      "P15_VERIFIED_ENTRY_TITLE_AFTER_LOCK",
+      "P15_REAL_INCOMPRESSIBLE_SOURCE_SIZE",
+      "P15_MOBILE_CONTENT_NAVIGATION",
+      "P15_NO_HORIZONTAL_MOBILE_OVERFLOW",
+      "P15_KEYBOARD_VIEWPORT_READABLE_INPUT",
+      "P15_KEYBOARD_VIEWPORT_VISIBLE_SAVE_STATE",
+      "P15_RUSSIAN_INSTALL_GUIDANCE",
+      "P15_STABLE_INSTALL_MANIFEST",
+      "P15_INSTALLED_STATIC_ASSETS_CACHED",
+      "P15_REAL_MANIFEST_MEDIA_TYPE",
+      "P15_NO_API_OR_EXPORT_CACHE_ENTRIES",
+      "P15_UNANCHORED_EXPORT_DENIED_BEFORE_DOWNLOAD",
+      "P15_GIGABYTE_SHIPPED_ARCHIVE_EOF",
+      "P15_KIT_RELEASED_ONLY_AFTER_DURABLE_ARCHIVE",
+      "P15_GIGABYTE_ARCHIVE_VERIFIED_WITHOUT_ORIGINAL_API",
+      "P15_INDEPENDENT_FULL_PLAINTEXT_HASH",
+      "P15_IMPORT_PAUSE_PRESERVES_PROTECTED_PROGRESS",
+      "P15_PAGE_DESTRUCTION_RETAINS_EXACT_IMPORT_JOB",
+      "P15_REAL_GIGABYTE_PRIVATE_IMPORT_RECEIPTS",
+      "P15_IMPORTED_FILE_HAS_REAL_IMMUTABLE_RECEIPT",
+      "P15_IMPORTED_DESTINATION_FULL_DOWNLOAD_HASH",
+      "P15_UPDATE_STARTS_WITH_REAL_UNKNOWN_IMMUTABLE_ATTEMPT",
+      "P15_UPDATE_STARTS_WITH_ACTUAL_CONTROLLED_WINDOW",
+      "P15_UNKNOWN_ATTEMPT_HAS_PROTECTED_OUTBOX_RECORD",
+      "P15_UPDATE_MASKS_PLAINTEXT",
+      "P15_LOCK_CLEARS_DECRYPTED_DESTINATION_TITLES",
+      "P15_NEW_WORKER_WAITS_FOR_CONTROLLED_WINDOW",
+      "P15_ACTUAL_ACTIVATION_AFTER_LAST_WINDOW_CLOSES",
+      "P15_ACTIVATION_PRESERVES_EXACT_ENCRYPTED_OUTBOX_BYTES",
+      "P15_POST_UPDATE_FRESH_UNLOCK_AND_AUTHORIZATION",
+      "P15_POST_UPDATE_RECONCILES_EXACT_OLD_RECEIPT",
+      "P15_OLD_RECEIPT_ARRIVES_AFTER_ACTIVATION",
+      "P15_UPDATE_RETAINS_LATEST_ENCRYPTED_DRAFT",
+      "P15_OLD_RECEIPT_DOES_NOT_RETIRE_NEWER_DRAFT"
+    ],
+    "plaintext_bytes": 1000000000,
+    "recovered_bytes": 1000000000,
+    "source_sha256": "62830f8b37d0abbddfb3669eeab028bfa2caf8f7d1edc3f2b17588440359eda7",
+    "recovered_sha256": "62830f8b37d0abbddfb3669eeab028bfa2caf8f7d1edc3f2b17588440359eda7",
+    "imported_bytes": 1000000000,
+    "imported_sha256": "62830f8b37d0abbddfb3669eeab028bfa2caf8f7d1edc3f2b17588440359eda7",
+    "mobile_viewport": "390x844; keyboard 390x420",
+    "updated_attempt_id": "sxXE1VYtLUCYC048H2feDQ",
+    "original_update_request_sha256": "b8cc437a34c1fbf4706fe78f82b9057efc03fdd7742c547f186da2ef9514ea69",
+    "old_receipt_verified_after_update": true,
+    "old_receipt_verified_after_activation": true,
+    "retained_update_draft_id": "jvaybLmB8l_icGBYbfn-nw",
+    "update_lifecycle": {
+      "before": {
+        "active": "activated",
+        "waiting": null,
+        "installing": null,
+        "controlled": true,
+        "controlledByActive": true
+      },
+      "waiting": {
+        "active": "activated",
+        "waiting": "installed",
+        "installing": null,
+        "controlled": true,
+        "controlledByActive": true
+      }
+    },
+    "retained_outbox_records": 16,
+    "outbox_before_after_sha256": "b25779eb9ec7e67108a1c5eed58f9c5943b187c403161e42ee3eda905050da95",
+    "memory": {
+      "samples": 4058,
+      "sample_interval_ms": 250,
+      "baseline_rss_bytes": 4531429376,
+      "observed_peak_rss_bytes": 5816623104,
+      "observed_peak_growth_bytes": 1285193728,
+      "scope": "sum of actual hosted Chromium process RSS; includes shared-page double counts and other open fixture windows; no iPhone or hard memory ceiling claim"
+    },
+    "process_memory": {
+      "requested_sample_interval_ms": 1000,
+      "samples": 1039,
+      "largest_observed_gap_ms": 1335,
+      "baseline_rss_bytes": 4531499008,
+      "observed_peak_rss_bytes": 5808664576,
+      "observed_peak_growth_bytes": 1277165568,
+      "processes": [
+        {
+          "pid": 25089,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 250159104,
+            "anonymous_rss": 55345152,
+            "file_rss": 189788160,
+            "shared_memory_rss": 5025792,
+            "proportional_set": 87012352
+          },
+          "first_observed_bytes": {
+            "rss": 250159104,
+            "anonymous_rss": 55345152,
+            "file_rss": 189788160,
+            "shared_memory_rss": 5025792,
+            "proportional_set": 87012352
+          },
+          "observed_peak_bytes": {
+            "rss": 250515456,
+            "anonymous_rss": 56344576,
+            "file_rss": 189788160,
+            "shared_memory_rss": 5025792,
+            "proportional_set": 87605248
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 356352,
+            "anonymous_rss": 999424,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 592896
+          }
+        },
+        {
+          "pid": 25096,
+          "process_name": "chrome_crashpad",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 6488064,
+            "anonymous_rss": 389120,
+            "file_rss": 6098944,
+            "shared_memory_rss": 0,
+            "proportional_set": 871424
+          },
+          "first_observed_bytes": {
+            "rss": 6488064,
+            "anonymous_rss": 389120,
+            "file_rss": 6098944,
+            "shared_memory_rss": 0,
+            "proportional_set": 871424
+          },
+          "observed_peak_bytes": {
+            "rss": 6488064,
+            "anonymous_rss": 389120,
+            "file_rss": 6098944,
+            "shared_memory_rss": 0,
+            "proportional_set": 871424
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 25098,
+          "process_name": "chrome_crashpad",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 6443008,
+            "anonymous_rss": 360448,
+            "file_rss": 6082560,
+            "shared_memory_rss": 0,
+            "proportional_set": 838656
+          },
+          "first_observed_bytes": {
+            "rss": 6443008,
+            "anonymous_rss": 360448,
+            "file_rss": 6082560,
+            "shared_memory_rss": 0,
+            "proportional_set": 838656
+          },
+          "observed_peak_bytes": {
+            "rss": 6443008,
+            "anonymous_rss": 360448,
+            "file_rss": 6082560,
+            "shared_memory_rss": 0,
+            "proportional_set": 838656
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 25104,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 103391232,
+            "anonymous_rss": 20365312,
+            "file_rss": 83025920,
+            "shared_memory_rss": 0,
+            "proportional_set": 17125376
+          },
+          "first_observed_bytes": {
+            "rss": 103391232,
+            "anonymous_rss": 20365312,
+            "file_rss": 83025920,
+            "shared_memory_rss": 0,
+            "proportional_set": 17125376
+          },
+          "observed_peak_bytes": {
+            "rss": 103391232,
+            "anonymous_rss": 20365312,
+            "file_rss": 83025920,
+            "shared_memory_rss": 0,
+            "proportional_set": 17125376
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 25105,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 103436288,
+            "anonymous_rss": 20217856,
+            "file_rss": 83218432,
+            "shared_memory_rss": 0,
+            "proportional_set": 9817088
+          },
+          "first_observed_bytes": {
+            "rss": 103436288,
+            "anonymous_rss": 20217856,
+            "file_rss": 83218432,
+            "shared_memory_rss": 0,
+            "proportional_set": 9817088
+          },
+          "observed_peak_bytes": {
+            "rss": 103436288,
+            "anonymous_rss": 20217856,
+            "file_rss": 83218432,
+            "shared_memory_rss": 0,
+            "proportional_set": 9817088
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 25107,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 24424448,
+            "anonymous_rss": 20324352,
+            "file_rss": 4100096,
+            "shared_memory_rss": 0,
+            "proportional_set": 3444736
+          },
+          "first_observed_bytes": {
+            "rss": 24424448,
+            "anonymous_rss": 20324352,
+            "file_rss": 4100096,
+            "shared_memory_rss": 0,
+            "proportional_set": 3444736
+          },
+          "observed_peak_bytes": {
+            "rss": 24424448,
+            "anonymous_rss": 20324352,
+            "file_rss": 4100096,
+            "shared_memory_rss": 0,
+            "proportional_set": 3444736
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 25128,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 95621120,
+            "anonymous_rss": 27914240,
+            "file_rss": 60936192,
+            "shared_memory_rss": 6770688,
+            "proportional_set": 25946112
+          },
+          "first_observed_bytes": {
+            "rss": 95621120,
+            "anonymous_rss": 27914240,
+            "file_rss": 60936192,
+            "shared_memory_rss": 6770688,
+            "proportional_set": 25946112
+          },
+          "observed_peak_bytes": {
+            "rss": 95891456,
+            "anonymous_rss": 28184576,
+            "file_rss": 60936192,
+            "shared_memory_rss": 6770688,
+            "proportional_set": 26188800
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 270336,
+            "anonymous_rss": 270336,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 242688
+          }
+        },
+        {
+          "pid": 25130,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 132530176,
+            "anonymous_rss": 18616320,
+            "file_rss": 113438720,
+            "shared_memory_rss": 475136,
+            "proportional_set": 27580416
+          },
+          "first_observed_bytes": {
+            "rss": 132530176,
+            "anonymous_rss": 18616320,
+            "file_rss": 113438720,
+            "shared_memory_rss": 475136,
+            "proportional_set": 27580416
+          },
+          "observed_peak_bytes": {
+            "rss": 132530176,
+            "anonymous_rss": 18706432,
+            "file_rss": 113438720,
+            "shared_memory_rss": 475136,
+            "proportional_set": 27610112
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 90112,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 29696
+          }
+        },
+        {
+          "pid": 25143,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 59596800,
+            "anonymous_rss": 21118976,
+            "file_rss": 38334464,
+            "shared_memory_rss": 143360,
+            "proportional_set": 6122496
+          },
+          "first_observed_bytes": {
+            "rss": 59596800,
+            "anonymous_rss": 21118976,
+            "file_rss": 38334464,
+            "shared_memory_rss": 143360,
+            "proportional_set": 6122496
+          },
+          "observed_peak_bytes": {
+            "rss": 59727872,
+            "anonymous_rss": 21250048,
+            "file_rss": 38334464,
+            "shared_memory_rss": 143360,
+            "proportional_set": 6246400
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 131072,
+            "anonymous_rss": 131072,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 123904
+          }
+        },
+        {
+          "pid": 25172,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 147218432,
+            "anonymous_rss": 39088128,
+            "file_rss": 107782144,
+            "shared_memory_rss": 348160,
+            "proportional_set": 31227904
+          },
+          "first_observed_bytes": {
+            "rss": 147218432,
+            "anonymous_rss": 39088128,
+            "file_rss": 107782144,
+            "shared_memory_rss": 348160,
+            "proportional_set": 31227904
+          },
+          "observed_peak_bytes": {
+            "rss": 147222528,
+            "anonymous_rss": 39092224,
+            "file_rss": 107782144,
+            "shared_memory_rss": 348160,
+            "proportional_set": 31227904
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 4096,
+            "anonymous_rss": 4096,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 25181,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 233230336,
+            "anonymous_rss": 94138368,
+            "file_rss": 134262784,
+            "shared_memory_rss": 4829184,
+            "proportional_set": 95021056
+          },
+          "first_observed_bytes": {
+            "rss": 233230336,
+            "anonymous_rss": 94138368,
+            "file_rss": 134262784,
+            "shared_memory_rss": 4829184,
+            "proportional_set": 95021056
+          },
+          "observed_peak_bytes": {
+            "rss": 233230336,
+            "anonymous_rss": 94138368,
+            "file_rss": 134262784,
+            "shared_memory_rss": 4829184,
+            "proportional_set": 95021056
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 25182,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 117456896,
+            "anonymous_rss": 27246592,
+            "file_rss": 89849856,
+            "shared_memory_rss": 360448,
+            "proportional_set": 16495616
+          },
+          "first_observed_bytes": {
+            "rss": 117456896,
+            "anonymous_rss": 27246592,
+            "file_rss": 89849856,
+            "shared_memory_rss": 360448,
+            "proportional_set": 16495616
+          },
+          "observed_peak_bytes": {
+            "rss": 117456896,
+            "anonymous_rss": 27246592,
+            "file_rss": 89849856,
+            "shared_memory_rss": 360448,
+            "proportional_set": 16495616
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 25204,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 85929984,
+            "anonymous_rss": 25489408,
+            "file_rss": 60223488,
+            "shared_memory_rss": 217088,
+            "proportional_set": 11843584
+          },
+          "first_observed_bytes": {
+            "rss": 85929984,
+            "anonymous_rss": 25489408,
+            "file_rss": 60223488,
+            "shared_memory_rss": 217088,
+            "proportional_set": 11843584
+          },
+          "observed_peak_bytes": {
+            "rss": 85934080,
+            "anonymous_rss": 25493504,
+            "file_rss": 60223488,
+            "shared_memory_rss": 217088,
+            "proportional_set": 11843584
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 4096,
+            "anonymous_rss": 4096,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 25414,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 248156160,
+            "anonymous_rss": 52695040,
+            "file_rss": 190435328,
+            "shared_memory_rss": 5025792,
+            "proportional_set": 85264384
+          },
+          "first_observed_bytes": {
+            "rss": 248156160,
+            "anonymous_rss": 52695040,
+            "file_rss": 190435328,
+            "shared_memory_rss": 5025792,
+            "proportional_set": 85264384
+          },
+          "observed_peak_bytes": {
+            "rss": 249536512,
+            "anonymous_rss": 53997568,
+            "file_rss": 190513152,
+            "shared_memory_rss": 5025792,
+            "proportional_set": 86524928
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 1380352,
+            "anonymous_rss": 1302528,
+            "file_rss": 77824,
+            "shared_memory_rss": 0,
+            "proportional_set": 1260544
+          }
+        },
+        {
+          "pid": 25421,
+          "process_name": "chrome_crashpad",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 6488064,
+            "anonymous_rss": 389120,
+            "file_rss": 6098944,
+            "shared_memory_rss": 0,
+            "proportional_set": 871424
+          },
+          "first_observed_bytes": {
+            "rss": 6488064,
+            "anonymous_rss": 389120,
+            "file_rss": 6098944,
+            "shared_memory_rss": 0,
+            "proportional_set": 871424
+          },
+          "observed_peak_bytes": {
+            "rss": 6488064,
+            "anonymous_rss": 389120,
+            "file_rss": 6098944,
+            "shared_memory_rss": 0,
+            "proportional_set": 871424
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 25423,
+          "process_name": "chrome_crashpad",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 6451200,
+            "anonymous_rss": 360448,
+            "file_rss": 6090752,
+            "shared_memory_rss": 0,
+            "proportional_set": 840704
+          },
+          "first_observed_bytes": {
+            "rss": 6451200,
+            "anonymous_rss": 360448,
+            "file_rss": 6090752,
+            "shared_memory_rss": 0,
+            "proportional_set": 840704
+          },
+          "observed_peak_bytes": {
+            "rss": 6451200,
+            "anonymous_rss": 360448,
+            "file_rss": 6090752,
+            "shared_memory_rss": 0,
+            "proportional_set": 840704
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 25429,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 102445056,
+            "anonymous_rss": 18321408,
+            "file_rss": 84123648,
+            "shared_memory_rss": 0,
+            "proportional_set": 16166912
+          },
+          "first_observed_bytes": {
+            "rss": 102445056,
+            "anonymous_rss": 18321408,
+            "file_rss": 84123648,
+            "shared_memory_rss": 0,
+            "proportional_set": 16166912
+          },
+          "observed_peak_bytes": {
+            "rss": 102445056,
+            "anonymous_rss": 18321408,
+            "file_rss": 84123648,
+            "shared_memory_rss": 0,
+            "proportional_set": 16166912
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 25430,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 104026112,
+            "anonymous_rss": 20299776,
+            "file_rss": 83726336,
+            "shared_memory_rss": 0,
+            "proportional_set": 9753600
+          },
+          "first_observed_bytes": {
+            "rss": 104026112,
+            "anonymous_rss": 20299776,
+            "file_rss": 83726336,
+            "shared_memory_rss": 0,
+            "proportional_set": 9753600
+          },
+          "observed_peak_bytes": {
+            "rss": 104026112,
+            "anonymous_rss": 20299776,
+            "file_rss": 83726336,
+            "shared_memory_rss": 0,
+            "proportional_set": 9753600
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 25432,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 24596480,
+            "anonymous_rss": 20406272,
+            "file_rss": 4190208,
+            "shared_memory_rss": 0,
+            "proportional_set": 3440640
+          },
+          "first_observed_bytes": {
+            "rss": 24596480,
+            "anonymous_rss": 20406272,
+            "file_rss": 4190208,
+            "shared_memory_rss": 0,
+            "proportional_set": 3440640
+          },
+          "observed_peak_bytes": {
+            "rss": 24596480,
+            "anonymous_rss": 20406272,
+            "file_rss": 4190208,
+            "shared_memory_rss": 0,
+            "proportional_set": 3440640
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 25452,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 93069312,
+            "anonymous_rss": 25808896,
+            "file_rss": 60387328,
+            "shared_memory_rss": 6873088,
+            "proportional_set": 24849408
+          },
+          "first_observed_bytes": {
+            "rss": 93069312,
+            "anonymous_rss": 25808896,
+            "file_rss": 60387328,
+            "shared_memory_rss": 6873088,
+            "proportional_set": 24849408
+          },
+          "observed_peak_bytes": {
+            "rss": 94023680,
+            "anonymous_rss": 26169344,
+            "file_rss": 60981248,
+            "shared_memory_rss": 6873088,
+            "proportional_set": 25266176
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 954368,
+            "anonymous_rss": 360448,
+            "file_rss": 593920,
+            "shared_memory_rss": 0,
+            "proportional_set": 416768
+          }
+        },
+        {
+          "pid": 25454,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 133734400,
+            "anonymous_rss": 20692992,
+            "file_rss": 112693248,
+            "shared_memory_rss": 348160,
+            "proportional_set": 29400064
+          },
+          "first_observed_bytes": {
+            "rss": 133734400,
+            "anonymous_rss": 20692992,
+            "file_rss": 112693248,
+            "shared_memory_rss": 348160,
+            "proportional_set": 29400064
+          },
+          "observed_peak_bytes": {
+            "rss": 134193152,
+            "anonymous_rss": 20819968,
+            "file_rss": 113025024,
+            "shared_memory_rss": 348160,
+            "proportional_set": 29537280
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 458752,
+            "anonymous_rss": 126976,
+            "file_rss": 331776,
+            "shared_memory_rss": 0,
+            "proportional_set": 137216
+          }
+        },
+        {
+          "pid": 25468,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 58806272,
+            "anonymous_rss": 21192704,
+            "file_rss": 37441536,
+            "shared_memory_rss": 172032,
+            "proportional_set": 5989376
+          },
+          "first_observed_bytes": {
+            "rss": 58806272,
+            "anonymous_rss": 21192704,
+            "file_rss": 37441536,
+            "shared_memory_rss": 172032,
+            "proportional_set": 5989376
+          },
+          "observed_peak_bytes": {
+            "rss": 60018688,
+            "anonymous_rss": 21405696,
+            "file_rss": 38440960,
+            "shared_memory_rss": 172032,
+            "proportional_set": 6253568
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 1212416,
+            "anonymous_rss": 212992,
+            "file_rss": 999424,
+            "shared_memory_rss": 0,
+            "proportional_set": 264192
+          }
+        },
+        {
+          "pid": 25493,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 146124800,
+            "anonymous_rss": 37634048,
+            "file_rss": 108134400,
+            "shared_memory_rss": 356352,
+            "proportional_set": 29358080
+          },
+          "first_observed_bytes": {
+            "rss": 146124800,
+            "anonymous_rss": 37634048,
+            "file_rss": 108134400,
+            "shared_memory_rss": 356352,
+            "proportional_set": 29358080
+          },
+          "observed_peak_bytes": {
+            "rss": 146755584,
+            "anonymous_rss": 37924864,
+            "file_rss": 108474368,
+            "shared_memory_rss": 356352,
+            "proportional_set": 29667328
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 630784,
+            "anonymous_rss": 290816,
+            "file_rss": 339968,
+            "shared_memory_rss": 0,
+            "proportional_set": 309248
+          }
+        },
+        {
+          "pid": 25502,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 239443968,
+            "anonymous_rss": 99643392,
+            "file_rss": 134971392,
+            "shared_memory_rss": 4829184,
+            "proportional_set": 99875840
+          },
+          "first_observed_bytes": {
+            "rss": 239443968,
+            "anonymous_rss": 99643392,
+            "file_rss": 134971392,
+            "shared_memory_rss": 4829184,
+            "proportional_set": 99875840
+          },
+          "observed_peak_bytes": {
+            "rss": 239443968,
+            "anonymous_rss": 99643392,
+            "file_rss": 134971392,
+            "shared_memory_rss": 4829184,
+            "proportional_set": 99875840
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 25503,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 117702656,
+            "anonymous_rss": 27426816,
+            "file_rss": 89878528,
+            "shared_memory_rss": 397312,
+            "proportional_set": 16422912
+          },
+          "first_observed_bytes": {
+            "rss": 117702656,
+            "anonymous_rss": 27426816,
+            "file_rss": 89878528,
+            "shared_memory_rss": 397312,
+            "proportional_set": 16422912
+          },
+          "observed_peak_bytes": {
+            "rss": 117702656,
+            "anonymous_rss": 27426816,
+            "file_rss": 89878528,
+            "shared_memory_rss": 397312,
+            "proportional_set": 16422912
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 25542,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 85045248,
+            "anonymous_rss": 25214976,
+            "file_rss": 59592704,
+            "shared_memory_rss": 237568,
+            "proportional_set": 11356160
+          },
+          "first_observed_bytes": {
+            "rss": 85045248,
+            "anonymous_rss": 25214976,
+            "file_rss": 59592704,
+            "shared_memory_rss": 237568,
+            "proportional_set": 11356160
+          },
+          "observed_peak_bytes": {
+            "rss": 86196224,
+            "anonymous_rss": 25575424,
+            "file_rss": 60383232,
+            "shared_memory_rss": 237568,
+            "proportional_set": 11766784
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 1150976,
+            "anonymous_rss": 360448,
+            "file_rss": 790528,
+            "shared_memory_rss": 0,
+            "proportional_set": 410624
+          }
+        },
+        {
+          "pid": 32392,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 259723264,
+            "anonymous_rss": 58507264,
+            "file_rss": 196206592,
+            "shared_memory_rss": 5009408,
+            "proportional_set": 95092736
+          },
+          "first_observed_bytes": {
+            "rss": 259723264,
+            "anonymous_rss": 58507264,
+            "file_rss": 196206592,
+            "shared_memory_rss": 5009408,
+            "proportional_set": 95092736
+          },
+          "observed_peak_bytes": {
+            "rss": 428367872,
+            "anonymous_rss": 182386688,
+            "file_rss": 196915200,
+            "shared_memory_rss": 49508352,
+            "proportional_set": 264982528
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 168644608,
+            "anonymous_rss": 123879424,
+            "file_rss": 708608,
+            "shared_memory_rss": 44498944,
+            "proportional_set": 169889792
+          }
+        },
+        {
+          "pid": 32399,
+          "process_name": "chrome_crashpad",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 6475776,
+            "anonymous_rss": 389120,
+            "file_rss": 6086656,
+            "shared_memory_rss": 0,
+            "proportional_set": 868352
+          },
+          "first_observed_bytes": {
+            "rss": 6475776,
+            "anonymous_rss": 389120,
+            "file_rss": 6086656,
+            "shared_memory_rss": 0,
+            "proportional_set": 868352
+          },
+          "observed_peak_bytes": {
+            "rss": 6479872,
+            "anonymous_rss": 393216,
+            "file_rss": 6086656,
+            "shared_memory_rss": 0,
+            "proportional_set": 872448
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 4096,
+            "anonymous_rss": 4096,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 4096
+          }
+        },
+        {
+          "pid": 32401,
+          "process_name": "chrome_crashpad",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 6459392,
+            "anonymous_rss": 360448,
+            "file_rss": 6098944,
+            "shared_memory_rss": 0,
+            "proportional_set": 842752
+          },
+          "first_observed_bytes": {
+            "rss": 6459392,
+            "anonymous_rss": 360448,
+            "file_rss": 6098944,
+            "shared_memory_rss": 0,
+            "proportional_set": 842752
+          },
+          "observed_peak_bytes": {
+            "rss": 6459392,
+            "anonymous_rss": 360448,
+            "file_rss": 6098944,
+            "shared_memory_rss": 0,
+            "proportional_set": 842752
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 32407,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 104304640,
+            "anonymous_rss": 20303872,
+            "file_rss": 84000768,
+            "shared_memory_rss": 0,
+            "proportional_set": 17176576
+          },
+          "first_observed_bytes": {
+            "rss": 104304640,
+            "anonymous_rss": 20303872,
+            "file_rss": 84000768,
+            "shared_memory_rss": 0,
+            "proportional_set": 17176576
+          },
+          "observed_peak_bytes": {
+            "rss": 104304640,
+            "anonymous_rss": 20303872,
+            "file_rss": 84000768,
+            "shared_memory_rss": 0,
+            "proportional_set": 17212416
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 35840
+          }
+        },
+        {
+          "pid": 32408,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 102465536,
+            "anonymous_rss": 18235392,
+            "file_rss": 84230144,
+            "shared_memory_rss": 0,
+            "proportional_set": 9506816
+          },
+          "first_observed_bytes": {
+            "rss": 102465536,
+            "anonymous_rss": 18235392,
+            "file_rss": 84230144,
+            "shared_memory_rss": 0,
+            "proportional_set": 9506816
+          },
+          "observed_peak_bytes": {
+            "rss": 102465536,
+            "anonymous_rss": 18235392,
+            "file_rss": 84230144,
+            "shared_memory_rss": 0,
+            "proportional_set": 9506816
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 32410,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 22609920,
+            "anonymous_rss": 18341888,
+            "file_rss": 4268032,
+            "shared_memory_rss": 0,
+            "proportional_set": 3192832
+          },
+          "first_observed_bytes": {
+            "rss": 22609920,
+            "anonymous_rss": 18341888,
+            "file_rss": 4268032,
+            "shared_memory_rss": 0,
+            "proportional_set": 3192832
+          },
+          "observed_peak_bytes": {
+            "rss": 22609920,
+            "anonymous_rss": 18341888,
+            "file_rss": 4268032,
+            "shared_memory_rss": 0,
+            "proportional_set": 3195904
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 3072
+          }
+        },
+        {
+          "pid": 32428,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 103931904,
+            "anonymous_rss": 27852800,
+            "file_rss": 61124608,
+            "shared_memory_rss": 14954496,
+            "proportional_set": 30613504
+          },
+          "first_observed_bytes": {
+            "rss": 103931904,
+            "anonymous_rss": 27852800,
+            "file_rss": 61124608,
+            "shared_memory_rss": 14954496,
+            "proportional_set": 30613504
+          },
+          "observed_peak_bytes": {
+            "rss": 107319296,
+            "anonymous_rss": 28729344,
+            "file_rss": 61255680,
+            "shared_memory_rss": 20328448,
+            "proportional_set": 38141952
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 3387392,
+            "anonymous_rss": 876544,
+            "file_rss": 131072,
+            "shared_memory_rss": 5373952,
+            "proportional_set": 7528448
+          }
+        },
+        {
+          "pid": 32429,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 135438336,
+            "anonymous_rss": 20385792,
+            "file_rss": 114724864,
+            "shared_memory_rss": 327680,
+            "proportional_set": 30386176
+          },
+          "first_observed_bytes": {
+            "rss": 135438336,
+            "anonymous_rss": 20385792,
+            "file_rss": 114724864,
+            "shared_memory_rss": 327680,
+            "proportional_set": 30386176
+          },
+          "observed_peak_bytes": {
+            "rss": 152371200,
+            "anonymous_rss": 37163008,
+            "file_rss": 114921472,
+            "shared_memory_rss": 2424832,
+            "proportional_set": 47154176
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 16932864,
+            "anonymous_rss": 16777216,
+            "file_rss": 196608,
+            "shared_memory_rss": 2097152,
+            "proportional_set": 16768000
+          }
+        },
+        {
+          "pid": 32443,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 57065472,
+            "anonymous_rss": 19128320,
+            "file_rss": 37793792,
+            "shared_memory_rss": 143360,
+            "proportional_set": 5708800
+          },
+          "first_observed_bytes": {
+            "rss": 57065472,
+            "anonymous_rss": 19128320,
+            "file_rss": 37793792,
+            "shared_memory_rss": 143360,
+            "proportional_set": 5708800
+          },
+          "observed_peak_bytes": {
+            "rss": 57065472,
+            "anonymous_rss": 19128320,
+            "file_rss": 37793792,
+            "shared_memory_rss": 143360,
+            "proportional_set": 5708800
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        },
+        {
+          "pid": 32469,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 147816448,
+            "anonymous_rss": 36376576,
+            "file_rss": 111091712,
+            "shared_memory_rss": 348160,
+            "proportional_set": 30627840
+          },
+          "first_observed_bytes": {
+            "rss": 147816448,
+            "anonymous_rss": 36376576,
+            "file_rss": 111091712,
+            "shared_memory_rss": 348160,
+            "proportional_set": 30627840
+          },
+          "observed_peak_bytes": {
+            "rss": 148074496,
+            "anonymous_rss": 36569088,
+            "file_rss": 111157248,
+            "shared_memory_rss": 348160,
+            "proportional_set": 30811136
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 258048,
+            "anonymous_rss": 192512,
+            "file_rss": 65536,
+            "shared_memory_rss": 0,
+            "proportional_set": 183296
+          }
+        },
+        {
+          "pid": 32478,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 631578624,
+            "anonymous_rss": 472723456,
+            "file_rss": 140505088,
+            "shared_memory_rss": 18350080,
+            "proportional_set": 486875136
+          },
+          "first_observed_bytes": {
+            "rss": 631578624,
+            "anonymous_rss": 472723456,
+            "file_rss": 140505088,
+            "shared_memory_rss": 18350080,
+            "proportional_set": 486875136
+          },
+          "observed_peak_bytes": {
+            "rss": 1812877312,
+            "anonymous_rss": 1660334080,
+            "file_rss": 142270464,
+            "shared_memory_rss": 54292480,
+            "proportional_set": 1684648960
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 1181298688,
+            "anonymous_rss": 1187610624,
+            "file_rss": 1765376,
+            "shared_memory_rss": 35942400,
+            "proportional_set": 1197773824
+          }
+        },
+        {
+          "pid": 32479,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 117227520,
+            "anonymous_rss": 25391104,
+            "file_rss": 91365376,
+            "shared_memory_rss": 471040,
+            "proportional_set": 16455680
+          },
+          "first_observed_bytes": {
+            "rss": 117227520,
+            "anonymous_rss": 25391104,
+            "file_rss": 91365376,
+            "shared_memory_rss": 471040,
+            "proportional_set": 16455680
+          },
+          "observed_peak_bytes": {
+            "rss": 117297152,
+            "anonymous_rss": 25395200,
+            "file_rss": 91430912,
+            "shared_memory_rss": 471040,
+            "proportional_set": 16459776
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 69632,
+            "anonymous_rss": 4096,
+            "file_rss": 65536,
+            "shared_memory_rss": 0,
+            "proportional_set": 4096
+          }
+        },
+        {
+          "pid": 35859,
+          "process_name": "chrome",
+          "present_at_phase_start": true,
+          "baseline_bytes": {
+            "rss": 104386560,
+            "anonymous_rss": 23261184,
+            "file_rss": 80916480,
+            "shared_memory_rss": 208896,
+            "proportional_set": 13882368
+          },
+          "first_observed_bytes": {
+            "rss": 104386560,
+            "anonymous_rss": 23261184,
+            "file_rss": 80916480,
+            "shared_memory_rss": 208896,
+            "proportional_set": 13882368
+          },
+          "observed_peak_bytes": {
+            "rss": 104386560,
+            "anonymous_rss": 23261184,
+            "file_rss": 80916480,
+            "shared_memory_rss": 208896,
+            "proportional_set": 13882368
+          },
+          "first_observed_ms": 0,
+          "last_observed_ms": 1042678,
+          "samples": 1039,
+          "observed_growth_from_first_sample_bytes": {
+            "rss": 0,
+            "anonymous_rss": 0,
+            "file_rss": 0,
+            "shared_memory_rss": 0,
+            "proportional_set": 0
+          }
+        }
+      ],
+      "scope": "All Chrome-family processes on this isolated Linux job, including peer test browsers. RSS double-counts shared mappings; file/anonymous/shared/PSS counters are separate and unavailable counters remain null. New processes have their own first-observed baseline; aggregate phase peak is a simultaneous sum, not a sum of individual peaks. Node offline reader is excluded. No physical iPhone or unsampled maximum claim."
+    },
+    "v8_memory": {
+      "requested_sample_interval_ms": 1000,
+      "agents": [
+        {
+          "role": "renderer",
+          "baseline_bytes": {
+            "used_heap": 9485172,
+            "allocated_heap": 11489280,
+            "backing_storage": 28801318,
+            "embedder_heap": 2610168
+          },
+          "observed_peak_bytes": {
+            "used_heap": 11127080,
+            "allocated_heap": 14897152,
+            "backing_storage": 28801318,
+            "embedder_heap": 5468760
+          },
+          "samples": 669,
+          "first_observed_ms": 3,
+          "last_observed_ms": 669808,
+          "largest_observed_gap_ms": 1892,
+          "observed_growth_bytes": {
+            "used_heap": 1641908,
+            "allocated_heap": 3407872,
+            "backing_storage": 0,
+            "embedder_heap": 2858592
+          }
+        },
+        {
+          "role": "dedicated-worker",
+          "baseline_bytes": {
+            "used_heap": 30026212,
+            "allocated_heap": 83460096,
+            "backing_storage": 22547732,
+            "embedder_heap": 5095936
+          },
+          "observed_peak_bytes": {
+            "used_heap": 46625348,
+            "allocated_heap": 88604672,
+            "backing_storage": 124837489,
+            "embedder_heap": 8335624
+          },
+          "samples": 669,
+          "first_observed_ms": 3,
+          "last_observed_ms": 669808,
+          "largest_observed_gap_ms": 1249,
+          "observed_growth_bytes": {
+            "used_heap": 16599136,
+            "allocated_heap": 5144576,
+            "backing_storage": 102289757,
+            "embedder_heap": 3239688
+          }
+        },
+        {
+          "role": "renderer",
+          "baseline_bytes": {
+            "used_heap": 7707420,
+            "allocated_heap": 18759680,
+            "backing_storage": 16087122,
+            "embedder_heap": 976168
+          },
+          "observed_peak_bytes": {
+            "used_heap": 11578600,
+            "allocated_heap": 18759680,
+            "backing_storage": 107499230,
+            "embedder_heap": 4155936
+          },
+          "samples": 345,
+          "first_observed_ms": 670808,
+          "last_observed_ms": 1025258,
+          "largest_observed_gap_ms": 1842,
+          "observed_growth_bytes": {
+            "used_heap": 3871180,
+            "allocated_heap": 0,
+            "backing_storage": 91412108,
+            "embedder_heap": 3179768
+          }
+        },
+        {
+          "role": "dedicated-worker",
+          "baseline_bytes": {
+            "used_heap": 4141916,
+            "allocated_heap": 9416704,
+            "backing_storage": 4164250,
+            "embedder_heap": 773712
+          },
+          "observed_peak_bytes": {
+            "used_heap": 47559180,
+            "allocated_heap": 87605248,
+            "backing_storage": 127403960,
+            "embedder_heap": 8156088
+          },
+          "samples": 344,
+          "first_observed_ms": 670808,
+          "last_observed_ms": 1024258,
+          "largest_observed_gap_ms": 2217,
+          "observed_growth_bytes": {
+            "used_heap": 43417264,
+            "allocated_heap": 78188544,
+            "backing_storage": 123239710,
+            "embedder_heap": 7382376
+          }
+        },
+        {
+          "role": "renderer",
+          "baseline_bytes": {
+            "used_heap": 11983928,
+            "allocated_heap": 15220736,
+            "backing_storage": 12017087,
+            "embedder_heap": 4125248
+          },
+          "observed_peak_bytes": {
+            "used_heap": 11983928,
+            "allocated_heap": 15220736,
+            "backing_storage": 12017087,
+            "embedder_heap": 4125248
+          },
+          "samples": 1,
+          "first_observed_ms": 1026258,
+          "last_observed_ms": 1026258,
+          "largest_observed_gap_ms": 0,
+          "observed_growth_bytes": {
+            "used_heap": 0,
+            "allocated_heap": 0,
+            "backing_storage": 0,
+            "embedder_heap": 0
+          }
+        },
+        {
+          "role": "renderer",
+          "baseline_bytes": {
+            "used_heap": 9980692,
+            "allocated_heap": 22044672,
+            "backing_storage": 6625430,
+            "embedder_heap": 2027416
+          },
+          "observed_peak_bytes": {
+            "used_heap": 13443180,
+            "allocated_heap": 22044672,
+            "backing_storage": 14823533,
+            "embedder_heap": 2432688
+          },
+          "samples": 17,
+          "first_observed_ms": 1027257,
+          "last_observed_ms": 1042687,
+          "largest_observed_gap_ms": 1004,
+          "observed_growth_bytes": {
+            "used_heap": 3462488,
+            "allocated_heap": 0,
+            "backing_storage": 8198103,
+            "embedder_heap": 405272
+          }
+        },
+        {
+          "role": "dedicated-worker",
+          "baseline_bytes": {
+            "used_heap": 5908732,
+            "allocated_heap": 9940992,
+            "backing_storage": 4542605,
+            "embedder_heap": 714872
+          },
+          "observed_peak_bytes": {
+            "used_heap": 32188572,
+            "allocated_heap": 81723392,
+            "backing_storage": 27504528,
+            "embedder_heap": 6060408
+          },
+          "samples": 17,
+          "first_observed_ms": 1027258,
+          "last_observed_ms": 1042687,
+          "largest_observed_gap_ms": 1003,
+          "observed_growth_bytes": {
+            "used_heap": 26279840,
+            "allocated_heap": 71782400,
+            "backing_storage": 22961923,
+            "embedder_heap": 5345536
+          }
+        }
+      ],
+      "scope": "V8 Runtime.getHeapUsage for this hosted Chromium renderer and related dedicated Workers; receipt times record observed cadence, agents restart after lock/navigation, shared/external/WASM/native memory and between-sample peaks may lie outside these counters; not iPhone/WebKit memory evidence"
+    },
+    "physical_acceptance": false,
+    "scope": "Actual production API/Worker/IndexedDB/OPFS and streaming service-worker download in sandboxed hosted desktop Chromium; not iPhone Files/storage/PRF evidence"
+  },
+  "p15_storage": {
+    "status": "PASS",
+    "checks": [
+      "P15_QUOTA_STARTS_WITH_ACKNOWLEDGED_ENCRYPTED_DRAFT",
+      "P15_QUOTA_REOPENS_SAME_DISK_PROFILE_IN_NEW_BROWSER_PROCESS",
+      "P15_ACTUAL_BROWSER_ORIGIN_QUOTA_IS_ONE_BYTE",
+      "P15_REAL_QUOTA_WRITE_FAILURE_REPORTED",
+      "P15_QUOTA_FAILURE_CANNOT_ACKNOWLEDGE_NEW_WORK",
+      "P15_QUOTA_ABORT_RETAINS_EXACT_ENCRYPTED_DRAFT_BYTES",
+      "P15_NO_SPACE_RECOVERY_REOPENS_LAST_ACKNOWLEDGED_TEXT"
+    ],
+    "physical_acceptance": false,
+    "forced_origin_quota_bytes": 1,
+    "failed_operation": "writer-admission",
+    "previous_browser_pid": 32392,
+    "browser_pid": 47894,
+    "prior_origin_usage_bytes": 2024156500,
+    "prior_origin_quota_bytes": 92936513126,
+    "observed_error": "STORAGE_FAILURE",
+    "retained_draft_records": 2,
+    "retained_ciphertext_sha256": "9e6153c5bcf2bba5114e654ab01910347ea757f97fdb8207252e141f36ba0490",
+    "scope": "Actual Chromium restart with the same persistent disk profile and one-byte quota before real Worker/IndexedDB write admission; no storage import/reset, crypto/store mocks or physical disk/iPhone eviction claim"
+  },
+  "checks": 113,
+  "custody_diagnostics": [
+    {
+      "role": "owner",
+      "events": []
+    },
+    {
+      "role": "editor",
+      "events": [
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "PINNED_ACCOUNT_REQUIRED",
+          "ms": 175623
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "PINNED_ACCOUNT_REQUIRED",
+          "ms": 201626
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "PINNED_ACCOUNT_REQUIRED",
+          "ms": 214792
+        }
+      ]
+    },
+    {
+      "role": "reader",
+      "events": [
+        {
+          "event": "custody-error",
+          "operation": "notes.queue",
+          "error": "ROLE_FORBIDDEN",
+          "ms": 298896
+        },
+        {
+          "event": "custody-error",
+          "operation": "notes.shared",
+          "error": "ROSTER_CHANGED",
+          "ms": 390577
+        }
+      ]
+    }
+  ],
+  "chromium_sandbox": true,
+  "request_pacing": "Genuine roster/group requests paced below unchanged production limits; no mocked API responses",
+  "tls_verification": "Real trusted disposable CA and hostname validation",
+  "source_tree_dirty": false
+}

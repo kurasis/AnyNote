@@ -1,0 +1,20 @@
+{
+  "id": 12118382155,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExODM4MjE1NQ==",
+  "name": "p08-windows-devices-report",
+  "size_in_bytes": 20198,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12118382155",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12118382155/zip",
+  "expired": false,
+  "digest": "sha256:fec577bdc0b81b2c02070e8d861ca15818c413e1ef1cd73d015e1f7e0444c32e",
+  "created_at": "2026-10-17T23:31:03Z",
+  "updated_at": "2026-10-17T23:31:03Z",
+  "expires_at": "2026-10-31T23:31:02Z",
+  "workflow_run": {
+    "id": 39077909963,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "main",
+    "head_sha": "c52af68046f98e55fab904f2f9bfd3984e54498a"
+  }
+}

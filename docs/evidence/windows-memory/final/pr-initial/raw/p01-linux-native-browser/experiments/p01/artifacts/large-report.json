@@ -1,0 +1,595 @@
+{
+  "experiment": "P01-CRYPTO-INTEROP",
+  "date": "2026-10-17T08:51:36.177Z",
+  "node": "v24.21.0",
+  "platform": "linux/x64",
+  "large": true,
+  "native_only": false,
+  "primitive_checks": [
+    {
+      "direction": "Rust -> Rust",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "Rust -> Node",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "Node -> Rust",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "Node -> Node",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "Rust -> Chromium worker",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "Node -> Chromium worker",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "Chromium worker -> Rust",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "Chromium worker -> Node",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "committed rust fixture -> Rust",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "committed rust fixture -> Node",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "committed rust fixture -> Chromium worker",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "committed node fixture -> Rust",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "committed node fixture -> Node",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "committed node fixture -> Chromium worker",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "committed browser-worker fixture -> Rust",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "committed browser-worker fixture -> Node",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    },
+    {
+      "direction": "committed browser-worker fixture -> Chromium worker",
+      "count": 39,
+      "sodium_version": "1.0.22"
+    }
+  ],
+  "native_files": [
+    {
+      "baseline_peak_rss_kib": 2512,
+      "chunks": 0,
+      "ciphertext_bytes": 0,
+      "elapsed_ms": 0,
+      "limitation": "local synthetic disk pipeline; no backend, recovery, manifest or Windows acceptance",
+      "mode": "native-file-roundtrip",
+      "peak_rss_kib": 2524,
+      "plaintext_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sodium_version": "1.0.22"
+    },
+    {
+      "baseline_peak_rss_kib": 2576,
+      "chunks": 1,
+      "ciphertext_bytes": 17,
+      "elapsed_ms": 4,
+      "limitation": "local synthetic disk pipeline; no backend, recovery, manifest or Windows acceptance",
+      "mode": "native-file-roundtrip",
+      "peak_rss_kib": 2632,
+      "plaintext_bytes": 1,
+      "sha256": "8f11b05da785e43e713d03774c6bd3405d99cd3024af334ffd68db663aa37034",
+      "sodium_version": "1.0.22"
+    },
+    {
+      "baseline_peak_rss_kib": 2576,
+      "chunks": 1,
+      "ciphertext_bytes": 8388623,
+      "elapsed_ms": 246,
+      "limitation": "local synthetic disk pipeline; no backend, recovery, manifest or Windows acceptance",
+      "mode": "native-file-roundtrip",
+      "peak_rss_kib": 26964,
+      "plaintext_bytes": 8388607,
+      "sha256": "86efa59267740b944b0709bb679c0a29a857f09a3e6e00bbb1c0b7dce9b47851",
+      "sodium_version": "1.0.22"
+    },
+    {
+      "baseline_peak_rss_kib": 2512,
+      "chunks": 1,
+      "ciphertext_bytes": 8388624,
+      "elapsed_ms": 251,
+      "limitation": "local synthetic disk pipeline; no backend, recovery, manifest or Windows acceptance",
+      "mode": "native-file-roundtrip",
+      "peak_rss_kib": 27120,
+      "plaintext_bytes": 8388608,
+      "sha256": "bb6a039fe44d8e56dab07b8adfb98c679d47d39f0a0bc75ff97d8ef2d103f129",
+      "sodium_version": "1.0.22"
+    },
+    {
+      "baseline_peak_rss_kib": 2576,
+      "chunks": 2,
+      "ciphertext_bytes": 8388641,
+      "elapsed_ms": 267,
+      "limitation": "local synthetic disk pipeline; no backend, recovery, manifest or Windows acceptance",
+      "mode": "native-file-roundtrip",
+      "peak_rss_kib": 27056,
+      "plaintext_bytes": 8388609,
+      "sha256": "de1360013ab5850cadbcb5d1a2940690d75c9c47c89e09319e86b76c68e645bf",
+      "sodium_version": "1.0.22"
+    },
+    {
+      "baseline_peak_rss_kib": 2516,
+      "chunks": 120,
+      "ciphertext_bytes": 1000001920,
+      "elapsed_ms": 34243,
+      "limitation": "local synthetic disk pipeline; no backend, recovery, manifest or Windows acceptance",
+      "mode": "native-file-roundtrip",
+      "peak_rss_kib": 27184,
+      "plaintext_bytes": 1000000000,
+      "sha256": "d2f4595e6506dcca6d567cc1ed972a040475609c4db06bc905bc342105079aaf",
+      "sodium_version": "1.0.22"
+    }
+  ],
+  "browser_files": [
+    {
+      "mode": "chromium-worker-loopback-roundtrip",
+      "plaintext_bytes": 0,
+      "chunks": 0,
+      "ciphertext_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsed_ms": 0,
+      "sodium_version": "1.0.22",
+      "initial_wasm_heap_bytes": 4194304,
+      "peak_wasm_heap_bytes": 4194304,
+      "timings_ms": {
+        "random_ms": 0,
+        "crypto_ms": 0,
+        "upload_ms": 0,
+        "download_ms": 0,
+        "verify_ms": 0
+      },
+      "limitation": "synthetic generated stream through local ciphertext-only HTTP; no iPhone, file picker, manifest, resume or Files export acceptance",
+      "uploaded_bytes": 0,
+      "downloaded_bytes": 0,
+      "baseline_aggregate_rss_kib": 971668,
+      "sampled_peak_aggregate_rss_kib": 971668,
+      "sampled_increment_rss_kib": 0,
+      "memory_method": "25ms CDP process enumeration + Linux /proc RSS; shared pages may count twice; transient peaks may be missed"
+    },
+    {
+      "mode": "chromium-worker-loopback-roundtrip",
+      "plaintext_bytes": 1,
+      "chunks": 1,
+      "ciphertext_bytes": 17,
+      "sha256": "380918b946a526640a40df5dced6516794f3d97bbd9e6bb553d037c4439f31c3",
+      "elapsed_ms": 23,
+      "sodium_version": "1.0.22",
+      "initial_wasm_heap_bytes": 4194304,
+      "peak_wasm_heap_bytes": 4194304,
+      "timings_ms": {
+        "random_ms": 0,
+        "crypto_ms": 0,
+        "upload_ms": 11,
+        "download_ms": 12,
+        "verify_ms": 0
+      },
+      "limitation": "synthetic generated stream through local ciphertext-only HTTP; no iPhone, file picker, manifest, resume or Files export acceptance",
+      "uploaded_bytes": 17,
+      "downloaded_bytes": 17,
+      "baseline_aggregate_rss_kib": 972676,
+      "sampled_peak_aggregate_rss_kib": 972676,
+      "sampled_increment_rss_kib": 0,
+      "memory_method": "25ms CDP process enumeration + Linux /proc RSS; shared pages may count twice; transient peaks may be missed"
+    },
+    {
+      "mode": "chromium-worker-loopback-roundtrip",
+      "plaintext_bytes": 8388607,
+      "chunks": 1,
+      "ciphertext_bytes": 8388623,
+      "sha256": "d9064dc4b1d96314f04dd34788e4472d83ac4b183b42281a4e53e545fd005a44",
+      "elapsed_ms": 876,
+      "sodium_version": "1.0.22",
+      "initial_wasm_heap_bytes": 4194304,
+      "peak_wasm_heap_bytes": 16908288,
+      "timings_ms": {
+        "random_ms": 4,
+        "crypto_ms": 207,
+        "upload_ms": 390,
+        "download_ms": 54,
+        "verify_ms": 220
+      },
+      "limitation": "synthetic generated stream through local ciphertext-only HTTP; no iPhone, file picker, manifest, resume or Files export acceptance",
+      "uploaded_bytes": 8388623,
+      "downloaded_bytes": 8388623,
+      "baseline_aggregate_rss_kib": 977132,
+      "sampled_peak_aggregate_rss_kib": 1097408,
+      "sampled_increment_rss_kib": 120276,
+      "memory_method": "25ms CDP process enumeration + Linux /proc RSS; shared pages may count twice; transient peaks may be missed"
+    },
+    {
+      "mode": "chromium-worker-loopback-roundtrip",
+      "plaintext_bytes": 8388608,
+      "chunks": 1,
+      "ciphertext_bytes": 8388624,
+      "sha256": "d4b1d3c11fa02a21050f996193d369da2634e12dba9139fc0348700b0f217a4a",
+      "elapsed_ms": 677,
+      "sodium_version": "1.0.22",
+      "initial_wasm_heap_bytes": 16908288,
+      "peak_wasm_heap_bytes": 16908288,
+      "timings_ms": {
+        "random_ms": 4,
+        "crypto_ms": 105,
+        "upload_ms": 396,
+        "download_ms": 39,
+        "verify_ms": 133
+      },
+      "limitation": "synthetic generated stream through local ciphertext-only HTTP; no iPhone, file picker, manifest, resume or Files export acceptance",
+      "uploaded_bytes": 8388624,
+      "downloaded_bytes": 8388624,
+      "baseline_aggregate_rss_kib": 1057612,
+      "sampled_peak_aggregate_rss_kib": 1142048,
+      "sampled_increment_rss_kib": 84436,
+      "memory_method": "25ms CDP process enumeration + Linux /proc RSS; shared pages may count twice; transient peaks may be missed"
+    },
+    {
+      "mode": "chromium-worker-loopback-roundtrip",
+      "plaintext_bytes": 8388609,
+      "chunks": 2,
+      "ciphertext_bytes": 8388641,
+      "sha256": "873aa2b4a0e16752671272bb9f769f6d0d612161526495ee3c7f53b9d756b6e7",
+      "elapsed_ms": 611,
+      "sodium_version": "1.0.22",
+      "initial_wasm_heap_bytes": 16908288,
+      "peak_wasm_heap_bytes": 16908288,
+      "timings_ms": {
+        "random_ms": 3,
+        "crypto_ms": 96,
+        "upload_ms": 370,
+        "download_ms": 34,
+        "verify_ms": 107
+      },
+      "limitation": "synthetic generated stream through local ciphertext-only HTTP; no iPhone, file picker, manifest, resume or Files export acceptance",
+      "uploaded_bytes": 8388641,
+      "downloaded_bytes": 8388641,
+      "baseline_aggregate_rss_kib": 1082864,
+      "sampled_peak_aggregate_rss_kib": 1196564,
+      "sampled_increment_rss_kib": 113700,
+      "memory_method": "25ms CDP process enumeration + Linux /proc RSS; shared pages may count twice; transient peaks may be missed"
+    },
+    {
+      "mode": "chromium-worker-loopback-roundtrip",
+      "plaintext_bytes": 1000000000,
+      "chunks": 120,
+      "ciphertext_bytes": 1000001920,
+      "sha256": "4f487bafe3e22688eeae912080a92a8f265fcc7316b8e5f95a1ad179ffe868b0",
+      "elapsed_ms": 77603,
+      "sodium_version": "1.0.22",
+      "initial_wasm_heap_bytes": 16908288,
+      "peak_wasm_heap_bytes": 16908288,
+      "timings_ms": {
+        "random_ms": 419,
+        "crypto_ms": 11850,
+        "upload_ms": 48247,
+        "download_ms": 4149,
+        "verify_ms": 12932
+      },
+      "limitation": "synthetic generated stream through local ciphertext-only HTTP; no iPhone, file picker, manifest, resume or Files export acceptance",
+      "uploaded_bytes": 1000001920,
+      "downloaded_bytes": 1000001920,
+      "baseline_aggregate_rss_kib": 1078348,
+      "sampled_peak_aggregate_rss_kib": 1490576,
+      "sampled_increment_rss_kib": 412228,
+      "memory_method": "25ms CDP process enumeration + Linux /proc RSS; shared pages may count twice; transient peaks may be missed"
+    }
+  ],
+  "limitations": [
+    "Primitive-only synthetic fixtures, not a frozen/reviewed application protocol.",
+    "Chromium on the host is not iPhone, Windows WebView2 or Hello evidence.",
+    "Loopback transfer is not Laravel authorization, resume, recovery, durable publication or iOS Files export."
+  ],
+  "browser_version": "155.0.8059.39",
+  "browser_storage_mode": "isolated temporary disk-backed persistent profile; not incognito",
+  "fixture_rejection_checks": 6,
+  "external_requests": 0,
+  "oversize_rejections": 2,
+  "local_unlock": {
+    "kdf_vectors": [
+      {
+        "native_ms": 50,
+        "node_ms": 182,
+        "worker_ms": 163,
+        "worker_wasm_heap_bytes": 67371008,
+        "memlimit": 67108864,
+        "opslimit": 3
+      },
+      {
+        "native_ms": 49,
+        "node_ms": 145,
+        "worker_ms": 145,
+        "worker_wasm_heap_bytes": 67371008,
+        "memlimit": 67108864,
+        "opslimit": 3
+      },
+      {
+        "native_ms": 47,
+        "node_ms": 148,
+        "worker_ms": 149,
+        "worker_wasm_heap_bytes": 67371008,
+        "memlimit": 67108864,
+        "opslimit": 3
+      }
+    ],
+    "profile_rejections": {
+      "native": 14,
+      "node": 14,
+      "worker": 14
+    },
+    "physical_iphone": "NOT RUN",
+    "wrong_phrase_rejections": 3,
+    "concurrent_kdf_rejected": true,
+    "storage_capabilities": {
+      "secure_context": true,
+      "indexeddb": true,
+      "opfs": true,
+      "usage_bytes": 0,
+      "quota_bytes": 10737418240,
+      "persisted": false
+    },
+    "persistence": {
+      "granted": false,
+      "interpretation": "Observed permission outcome only; not an eviction guarantee."
+    },
+    "storage_durability": {
+      "status": "PASS",
+      "ciphertext_only": true,
+      "indexeddb_reopened": true,
+      "opfs_reopened": true
+    },
+    "storage_denial": {
+      "status": "PASS",
+      "readonly_denial": true,
+      "quota_exhaustion": "NOT RUN: readonly denial is not quota exhaustion"
+    },
+    "quota_injection": {
+      "status": "QUOTA_EXCEEDED",
+      "bounded_attempt_bytes": 2097152,
+      "interpretation": "Browser quota error under injected CDP limit, not physical disk exhaustion."
+    }
+  },
+  "selected_file_export": {
+    "source": "real selected browser File",
+    "sink": "explicit synthetic plaintext OPFS export test only",
+    "physical_iphone": "NOT RUN",
+    "ios_files": "NOT VERIFIED",
+    "cases": [
+      {
+        "size": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "VERIFIED_EXPORT",
+        "saved_bytes": 0,
+        "uploaded_bytes": 0,
+        "downloaded_bytes": 0,
+        "memory": {
+          "upload": {
+            "status": "MEASURED",
+            "baseline_aggregate_rss_kib": 1042948,
+            "sampled_peak_aggregate_rss_kib": 1043192,
+            "sampled_increment_rss_kib": 244,
+            "samples": 2,
+            "sampling_errors": 0,
+            "requested_interval_ms": 25,
+            "longest_observed_sample_gap_ms": 5,
+            "elapsed_ms": 5,
+            "method": "25ms timer; serialized CDP process enumeration + Linux /proc aggregate RSS at irregular actual cadence; shared pages may count twice; transient peaks may be missed; desktop only"
+          },
+          "export_and_readback": {
+            "status": "MEASURED",
+            "baseline_aggregate_rss_kib": 1043192,
+            "sampled_peak_aggregate_rss_kib": 1043308,
+            "sampled_increment_rss_kib": 116,
+            "samples": 2,
+            "sampling_errors": 0,
+            "requested_interval_ms": 25,
+            "longest_observed_sample_gap_ms": 7,
+            "elapsed_ms": 7,
+            "method": "25ms timer; serialized CDP process enumeration + Linux /proc aggregate RSS at irregular actual cadence; shared pages may count twice; transient peaks may be missed; desktop only"
+          }
+        }
+      },
+      {
+        "size": 1,
+        "sha256": "8d33f520a3c4cef80d2453aef81b612bfe1cb44c8b2025630ad38662763f13d3",
+        "status": "VERIFIED_EXPORT",
+        "saved_bytes": 1,
+        "uploaded_bytes": 17,
+        "downloaded_bytes": 17,
+        "memory": {
+          "upload": {
+            "status": "MEASURED",
+            "baseline_aggregate_rss_kib": 1043748,
+            "sampled_peak_aggregate_rss_kib": 1044020,
+            "sampled_increment_rss_kib": 272,
+            "samples": 2,
+            "sampling_errors": 0,
+            "requested_interval_ms": 25,
+            "longest_observed_sample_gap_ms": 7,
+            "elapsed_ms": 7,
+            "method": "25ms timer; serialized CDP process enumeration + Linux /proc aggregate RSS at irregular actual cadence; shared pages may count twice; transient peaks may be missed; desktop only"
+          },
+          "export_and_readback": {
+            "status": "MEASURED",
+            "baseline_aggregate_rss_kib": 1044028,
+            "sampled_peak_aggregate_rss_kib": 1044820,
+            "sampled_increment_rss_kib": 792,
+            "samples": 2,
+            "sampling_errors": 0,
+            "requested_interval_ms": 25,
+            "longest_observed_sample_gap_ms": 10,
+            "elapsed_ms": 10,
+            "method": "25ms timer; serialized CDP process enumeration + Linux /proc aggregate RSS at irregular actual cadence; shared pages may count twice; transient peaks may be missed; desktop only"
+          }
+        }
+      },
+      {
+        "size": 8388609,
+        "sha256": "8c1a71ba892bf8628634700b50c9aa9ffb448c64eb80e2de8639d32d5a82656c",
+        "status": "VERIFIED_EXPORT",
+        "saved_bytes": 8388609,
+        "uploaded_bytes": 8388641,
+        "downloaded_bytes": 8388641,
+        "memory": {
+          "upload": {
+            "status": "MEASURED",
+            "baseline_aggregate_rss_kib": 1045224,
+            "sampled_peak_aggregate_rss_kib": 1167772,
+            "sampled_increment_rss_kib": 122548,
+            "samples": 24,
+            "sampling_errors": 0,
+            "requested_interval_ms": 25,
+            "longest_observed_sample_gap_ms": 628,
+            "elapsed_ms": 1161,
+            "method": "25ms timer; serialized CDP process enumeration + Linux /proc aggregate RSS at irregular actual cadence; shared pages may count twice; transient peaks may be missed; desktop only"
+          },
+          "export_and_readback": {
+            "status": "MEASURED",
+            "baseline_aggregate_rss_kib": 1092108,
+            "sampled_peak_aggregate_rss_kib": 1140760,
+            "sampled_increment_rss_kib": 48652,
+            "samples": 10,
+            "sampling_errors": 0,
+            "requested_interval_ms": 25,
+            "longest_observed_sample_gap_ms": 46,
+            "elapsed_ms": 214,
+            "method": "25ms timer; serialized CDP process enumeration + Linux /proc aggregate RSS at irregular actual cadence; shared pages may count twice; transient peaks may be missed; desktop only"
+          }
+        }
+      },
+      {
+        "size": 1000000000,
+        "sha256": "d67395bc9e963baa77cd22f2d41e97c84817cc24402d90fd1adc89b3376d056a",
+        "status": "VERIFIED_EXPORT",
+        "saved_bytes": 1000000000,
+        "uploaded_bytes": 1000001920,
+        "downloaded_bytes": 1000001920,
+        "memory": {
+          "upload": {
+            "status": "MEASURED",
+            "baseline_aggregate_rss_kib": 1094080,
+            "sampled_peak_aggregate_rss_kib": 1547200,
+            "sampled_increment_rss_kib": 453120,
+            "samples": 147,
+            "sampling_errors": 0,
+            "requested_interval_ms": 25,
+            "longest_observed_sample_gap_ms": 744,
+            "elapsed_ms": 63443,
+            "method": "25ms timer; serialized CDP process enumeration + Linux /proc aggregate RSS at irregular actual cadence; shared pages may count twice; transient peaks may be missed; desktop only"
+          },
+          "export_and_readback": {
+            "status": "MEASURED",
+            "baseline_aggregate_rss_kib": 1345892,
+            "sampled_peak_aggregate_rss_kib": 1452984,
+            "sampled_increment_rss_kib": 107092,
+            "samples": 929,
+            "sampling_errors": 0,
+            "requested_interval_ms": 25,
+            "longest_observed_sample_gap_ms": 58,
+            "elapsed_ms": 23779,
+            "method": "25ms timer; serialized CDP process enumeration + Linux /proc aggregate RSS at irregular actual cadence; shared pages may count twice; transient peaks may be missed; desktop only"
+          }
+        }
+      }
+    ],
+    "storage_estimate": {
+      "quota": 10737422559,
+      "usage": 4319,
+      "usageDetails": {
+        "indexedDB": 4319
+      }
+    },
+    "memory": "Per-case upload and export/readback desktop aggregate RSS; separate from the generated-stream trial; no iPhone memory claim",
+    "web_share_candidate": {
+      "prepared_empty_file": true,
+      "available": false,
+      "actual_share": "NOT RUN"
+    },
+    "oversize_before_read": true,
+    "locked_export_rejected": true,
+    "late_upload_after_lock_rejected": true,
+    "faults": {
+      "implementation": "real Chromium worker + loopback faults + OPFS transactional writer",
+      "physical_low_disk": "NOT RUN",
+      "physical_lifecycle": "NOT RUN",
+      "checks": [
+        {
+          "fault": "corrupt",
+          "after_verified_parts": 1,
+          "rejected": true,
+          "previous_output_preserved": true
+        },
+        {
+          "fault": "truncate",
+          "after_verified_parts": 1,
+          "rejected": true,
+          "previous_output_preserved": true
+        },
+        {
+          "fault": "lock-before-late-download",
+          "after_verified_parts": 1,
+          "rejected": true,
+          "previous_output_preserved": true
+        },
+        {
+          "fault": "gzip-decoded-overflow",
+          "encoded_length": 32784,
+          "decoded_length": 32785,
+          "rejected_before_write": true,
+          "previous_output_preserved": true
+        }
+      ],
+      "unchanged_ciphertext_retry_verified": true,
+      "exclusive_sink_denial": true,
+      "failed_prepare_cleaned": true,
+      "reload_requires_fresh_keys": true,
+      "marked_orphan_removed": true,
+      "unmarked_and_different_owner_preserved": true,
+      "cleanup_idempotent": true
+    }
+  },
+  "status": "PASS"
+}

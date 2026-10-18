@@ -1,0 +1,19 @@
+{
+  "purpose": "P13 actual shipped isolated viewer development diagnostic",
+  "status": "PASS",
+  "source_commit": "819d3b48a7d29145664cf17ee8692dcf7a52e53e",
+  "physical_acceptance": false,
+  "checks": [
+    "LITERAL_TEXT",
+    "ACTUAL_RASTER_AND_THUMBNAIL",
+    "ACTUAL_MAINTAINED_PDF",
+    "ACTIVE_PDF_DENIED",
+    "ACTIVE_IMAGE_DENIED",
+    "LATE_RESULT_CANCELLED",
+    "WRONG_RENDERER_ORIGIN_OR_ROUTE",
+    "WRONG_RENDERER_ORIGIN_OR_ROUTE",
+    "WRONG_RENDERER_ORIGIN_OR_ROUTE"
+  ],
+  "chromium_sandbox": true,
+  "foreign_requests": 0
+}

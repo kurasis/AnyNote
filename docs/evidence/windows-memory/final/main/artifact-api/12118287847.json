@@ -1,0 +1,20 @@
+{
+  "id": 12118287847,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExODI4Nzg0Nw==",
+  "name": "p11-windows-sync-report",
+  "size_in_bytes": 35893,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12118287847",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12118287847/zip",
+  "expired": false,
+  "digest": "sha256:c877b54deaf016d18ff3b009e255423ca3c3a019a120d3a53e1796ef1218d89b",
+  "created_at": "2026-10-17T23:35:48Z",
+  "updated_at": "2026-10-17T23:35:48Z",
+  "expires_at": "2026-10-31T23:35:47Z",
+  "workflow_run": {
+    "id": 39077909974,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "main",
+    "head_sha": "c52af68046f98e55fab904f2f9bfd3984e54498a"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": 12118170075,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExODE3MDA3NQ==",
+  "name": "p06-windows-authentication-report",
+  "size_in_bytes": 9656,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12118170075",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12118170075/zip",
+  "expired": false,
+  "digest": "sha256:45d811b9ce6da382772fe5aadc72236c2e6ab28a376a9863112591c53d0ad2e2",
+  "created_at": "2026-10-17T23:11:06Z",
+  "updated_at": "2026-10-17T23:11:06Z",
+  "expires_at": "2026-10-31T23:11:06Z",
+  "workflow_run": {
+    "id": 39077909913,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "main",
+    "head_sha": "c52af68046f98e55fab904f2f9bfd3984e54498a"
+  }
+}

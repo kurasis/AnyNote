@@ -1,0 +1,20 @@
+{
+  "id": 12097306915,
+  "node_id": "MDg6QXJ0aWZhY3QxMjA5NzMwNjkxNQ==",
+  "name": "p06-linux-authentication-report",
+  "size_in_bytes": 10688,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12097306915",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12097306915/zip",
+  "expired": false,
+  "digest": "sha256:f5c4d875596b3aa7f52370318e9ea08fb6bd95a7d42341b35b34d9a5fdcd0105",
+  "created_at": "2026-10-17T09:41:38Z",
+  "updated_at": "2026-10-17T09:41:38Z",
+  "expires_at": "2026-10-31T09:41:38Z",
+  "workflow_run": {
+    "id": 39021156375,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "a364813462f5af6d60e80ecd7afd7c2037b07145"
+  }
+}

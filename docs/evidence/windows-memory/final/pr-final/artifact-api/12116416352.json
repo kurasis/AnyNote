@@ -1,0 +1,20 @@
+{
+  "id": 12116416352,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNjQxNjM1Mg==",
+  "name": "p01-windows-synthetic-probe",
+  "size_in_bytes": 1119548,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12116416352",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12116416352/zip",
+  "expired": false,
+  "digest": "sha256:b5777c5900cb016747afb6cff97c9d060361224d904df4c1b121f72031f53db1",
+  "created_at": "2026-10-17T22:08:42Z",
+  "updated_at": "2026-10-17T22:08:42Z",
+  "expires_at": "2026-10-31T22:08:41Z",
+  "workflow_run": {
+    "id": 39073304905,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "a3318d6af929158da5bb4a9a8a1e413f50cbc4aa"
+  }
+}

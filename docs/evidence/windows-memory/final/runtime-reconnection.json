@@ -1,0 +1,17 @@
+{
+  "purpose": "Observed execution-channel pause and safe task-process restart; not a fresh-task restoration claim",
+  "observed_at": "2026-10-17T22:15:08.410936+00:00",
+  "source_commit": "a3318d6af929158da5bb4a9a8a1e413f50cbc4aa",
+  "working_tree_clean": true,
+  "prior_task_processes_running_when_inspected": 0,
+  "pull_request_state": "open",
+  "merged_when_reconnected": false,
+  "base_commit": "388e6d7206f4c4937943924673bfa045ab704dc5",
+  "scope": "Shell channel resumed; restarted only owned observation/guarded orchestration. GitHub CI continued independently. No publication or physical/data-restoration claim.",
+  "service_readiness_rechecked_at": "2026-10-17T22:21:06.304219+00:00",
+  "http_sql_readiness": "PASS",
+  "trusted_https_sessions_csrf_origin_readiness": "PASS",
+  "retained_owned_database_volume_present": true,
+  "reported_new_migrations": 0,
+  "recovery_log_sha256": "6cfb0461b3fde546c2dac9b0b055d08d0dd3ddcf4652a554e3ee1364d9b62b3a"
+}

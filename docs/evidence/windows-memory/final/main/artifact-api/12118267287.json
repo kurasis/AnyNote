@@ -1,0 +1,20 @@
+{
+  "id": 12118267287,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExODI2NzI4Nw==",
+  "name": "p12-windows-files-report",
+  "size_in_bytes": 36156,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12118267287",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12118267287/zip",
+  "expired": false,
+  "digest": "sha256:9950d2c4eb9cf4c6d5adf4d053b9b73766a7ad9ba5ad08d8789c3d1923b2a357",
+  "created_at": "2026-10-17T23:29:59Z",
+  "updated_at": "2026-10-17T23:29:59Z",
+  "expires_at": "2026-10-31T23:29:59Z",
+  "workflow_run": {
+    "id": 39077910028,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "main",
+    "head_sha": "c52af68046f98e55fab904f2f9bfd3984e54498a"
+  }
+}

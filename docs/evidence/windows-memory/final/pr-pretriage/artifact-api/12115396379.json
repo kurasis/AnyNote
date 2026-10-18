@@ -1,0 +1,20 @@
+{
+  "id": 12115396379,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNTM5NjM3OQ==",
+  "name": "p10-windows-shared-report",
+  "size_in_bytes": 21452,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12115396379",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12115396379/zip",
+  "expired": false,
+  "digest": "sha256:9fe34fdd04b6bb0c80d56a0953cf363d4cfae82085bb588c4cad3c8656cd8a5a",
+  "created_at": "2026-10-17T21:26:20Z",
+  "updated_at": "2026-10-17T21:26:20Z",
+  "expires_at": "2026-10-31T21:26:19Z",
+  "workflow_run": {
+    "id": 39069252653,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "819d3b48a7d29145664cf17ee8692dcf7a52e53e"
+  }
+}

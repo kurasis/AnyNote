@@ -1,0 +1,20 @@
+{
+  "id": 12095854772,
+  "node_id": "MDg6QXJ0aWZhY3QxMjA5NTg1NDc3Mg==",
+  "name": "p07-linux-custody-report",
+  "size_in_bytes": 7353,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12095854772",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12095854772/zip",
+  "expired": false,
+  "digest": "sha256:108b3663a09d10455b80dfe88b64e62d76a479f73ef05395057d7df5d9aa856b",
+  "created_at": "2026-10-17T09:09:06Z",
+  "updated_at": "2026-10-17T09:09:06Z",
+  "expires_at": "2026-10-31T09:09:06Z",
+  "workflow_run": {
+    "id": 39018651528,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "72f1d1d5bd8954540945cd1716421adf3741b300"
+  }
+}

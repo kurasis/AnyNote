@@ -1,0 +1,20 @@
+{
+  "id": 12117488960,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNzQ4ODk2MA==",
+  "name": "p07-windows-custody-report",
+  "size_in_bytes": 6530,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12117488960",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12117488960/zip",
+  "expired": false,
+  "digest": "sha256:d3407bf2bebafb08fa72ff0e4656988c1443c3b055de1053d29243434b043a70",
+  "created_at": "2026-10-17T23:32:18Z",
+  "updated_at": "2026-10-17T23:32:18Z",
+  "expires_at": "2026-10-31T23:32:17Z",
+  "workflow_run": {
+    "id": 39077909951,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "main",
+    "head_sha": "c52af68046f98e55fab904f2f9bfd3984e54498a"
+  }
+}

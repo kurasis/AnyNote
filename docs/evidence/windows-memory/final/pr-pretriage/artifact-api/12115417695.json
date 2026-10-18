@@ -1,0 +1,20 @@
+{
+  "id": 12115417695,
+  "node_id": "MDg6QXJ0aWZhY3QxMjExNTQxNzY5NQ==",
+  "name": "p13-windows-content-report",
+  "size_in_bytes": 45711,
+  "url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12115417695",
+  "archive_download_url": "https://api.github.com/repos/kurasis/AnyNote/actions/artifacts/12115417695/zip",
+  "expired": false,
+  "digest": "sha256:3b735658d16fe14650444b7dc0fe01a93a28a08c0cfb2d2fcfe2be4ea53b10ae",
+  "created_at": "2026-10-17T21:37:25Z",
+  "updated_at": "2026-10-17T21:37:25Z",
+  "expires_at": "2026-10-31T21:37:24Z",
+  "workflow_run": {
+    "id": 39069252589,
+    "repository_id": 1413127331,
+    "head_repository_id": 1413127331,
+    "head_branch": "fix/windows-transfer-memory",
+    "head_sha": "819d3b48a7d29145664cf17ee8692dcf7a52e53e"
+  }
+}
